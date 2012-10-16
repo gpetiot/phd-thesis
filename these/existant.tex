@@ -1,0 +1,324 @@
+
+\chapter{Analyse de l'existant}
+
+
+Le domaine de la vérification et de la validation regroupe un ensemble de
+techniques du cycle de développement des logiciels qui ont pour objectif de
+s'assurer de leur correction et de leur sûreté. Ces deux notions sont apparues
+dans les années soixante-dix avec les travaux de \bsc{Dijkstra} \cite{Dijkstra},
+\bsc{Floyd} \cite{Floyd} et \bsc{Hoare} \cite{Hoare}.
+
+La correction d'un logiciel représente le respect de l'implémentation par
+rapport aux spécifications. La sûreté d'un logiciel est liée à son absence
+d'erreurs à l'exécution.
+
+
+\section{Model-checking}
+\label{sec:model-checking}
+
+Le model-checking \cite{model-checking} permet de vérifier algorithmiquement si
+un modèle donné (le système ou une abstraction de ce système) satisfait une
+spécification, formulée en termes de logique temporelle \cite{LTL}. Un modèle
+est un ensemble d'états, de propriétés que vérifie chaque état, et de
+transitions entre ces états qui décrivent l'évolution du système.\\
+
+Le model-checking couvre l'ensemble des états du système et des transitions afin
+d'analyser toutes les exécutions possibles du système. Sur de grands systèmes,
+cette méthode est pénalisée par l'explosion combinatoire du nombre des états (et
+la complexité en temps ou en espace qui en résulte). Il est néanmoins possible
+de modéliser des algorithmes asynchrones répartis et des automates non
+déterministes, comme le fait notamment l'outil \textsc{Spin} \cite{SPIN}.\\
+
+La plateforme \textsc{Frama-C} du LSL intègre \textsc{Aoraï}, un greffon
+permettant d'annoter automatiquement le code source d'un programme C d'après
+une formule de logique temporelle linéaire, de sorte que les annotations sont
+vérifiées si le programme repecte la formule.
+
+
+\section{Analyse statique}
+\label{sec:AS}
+
+L'analyse statique \cite{static-analysis} examine le code source du programme
+sans l'exécuter. Elle raisonne sur tous les comportements qui pourraient
+survenir lors de l'exécution et permet donc de déduire des propriétés devant
+être vérifiées pour toutes ces exécutions, dans le but de prouver la correction
+du programme.\\
+
+En revanche, la vérification de programme étant en général indécidable
+\cite{undecidability}, il est souvent nécessaire d'utiliser des
+sur-approximations, ce qui implique que les résultats peuvent être moins précis
+que ce que l'on souhaite mais ils sont garantis pour toutes les exécutions.
+Ainsi, on peut établir des propriétés de sûreté ({\em safety}), où l’on cherche
+des invariants sur les valeurs des variables du programme (une plage de valeurs
+par exemple), afin d'exclure certains risques d'erreurs à l'exécution.\\
+
+Parmi les méthodes statiques sont distinguées : l'interprétation abstraite
+(section~\ref{sec:interpretation-abstraite}), l'abstraction à partir de
+prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de théorèmes
+(section~\ref{sec:preuve}).
+
+
+\subsection{Interprétation abstraite}
+\label{sec:interpretation-abstraite}
+
+L'interprétation abstraite \cite{abstract-interpretation} s'appuie sur les
+théories du point-fixe et des domaines pour introduire des sur-approximations
+des comportements d'un programme. Elle consiste à abstraire les domaines des
+variables par des domaines finis et beaucoup plus petits. Par exemple, le
+domaine des entiers pourrait être abstrait par un domaine de trois valeurs :
+$(-, 0, +)$. Appliquée à l’analyse de valeurs, elle consiste à calculer à
+chaque ligne du code une sur-approximation de l’ensemble des valeurs prises par
+chaque variable en cette ligne lors de toutes les exécutions du programme,
+permettant ainsi de détecter certaines erreurs comme les divisions par zéro ou
+les accès en dehors des bornes des tableaux.\\
+
+Pour contourner le problème d’indécidabilité, la théorie de l’interprétation
+abstraite construit une méthode qui, à la même question, répondra ``oui'',
+``non'' ou ``peut-être''. Si la méthode répond ``peut-être'', c’est qu’on n’a pu
+prouver ni l’un ni l’autre des deux premiers cas. C’est ce qu’on appelle une
+alarme : il est possible qu’une des exécutions du programme produise une erreur
+donnée, mais nous n’avons été capable ni de le confirmer ni de l’infirmer.
+L’erreur signalée par une alarme peut ne jamais apparaître à l’exécution, dans
+ce cas on l’appelle fausse alarme. On ne calcule donc pas la propriété exacte
+mais une abstraction de cette propriété, en imposant la contrainte de sûreté
+suivante : ``la propriété abstraite calculée ne doit oublier aucune exécution
+concrète''. L'abstraction est effectuée à partir de prédicats atomiques
+définissant des abstractions des domaines des variables.\\
+
+\textsc{PolySpace C Verifier} \cite{PolySpace} a été le premier outil commercial
+utilisant l'interprétation abstraite pour détecter les erreurs à l'exécution
+dans les programmes en C, C++ et Ada mais signale beaucoup de fausses alarmes.
+L'ENS a développé \textsc{Astrée} \cite{ASTREE}, spécifique au langage C et aux
+logiciels critiques. Le CEA LIST a développé \textsc{Fluctuat} \cite{Fluctuat},
+qui mesure précisément les approximations faites à l'exécution d'un programme C.
+\textsc{Frama-C} intègre un greffon d'interprétation abstraite : \textsc{Value}
+\cite{Value}.
+
+
+\subsection{Abstraction à partir de prédicats}
+\label{sec:abstraction-predicats}
+
+L'abstraction à partir de prédicats \cite{predicate-abstraction} est une
+technique permettant de générer automatiquement des abstractions de systèmes au
+nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
+ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
+sont des expressions booléennes sur les variables de $P$ et les constantes du
+langage.\\
+
+Chaque état concret de $P$ est mis en correspondance avec un état abstrait de
+l'abstraction de $P$, après évaluation par les prédicats de $E$. Un état
+abstrait est un $n$-upplet de valeurs booléennes correspondant à la
+satisfaisabilité des $n$ prédicats (au moyen d'un solveur SMT).\\
+
+Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et que la
+satisfaisabilité de ces prédicats à l'état concret $e$ est évaluée
+respectivement à $false, true, true$, alors dans l'abstraction générée, l'état
+$e$ correspond à l'état abstrait $(\lnot f_1, f_2, f_3)$.\\
+
+L'abstraction générée comporte un nombre fini d'états (au plus $2^n$) car il n'y
+a qu'un nombre fini de prédicats, le model-checking peut donc être appliqué à
+cette abstraction. Si une propriété de sûreté est vérifiée dans l'abstraction,
+elle l'est également dans le système concret.
+
+Cette technique est notamment utilisée par l'outil \textsc{Slam} \cite{SLAM} de
+Microsoft.
+
+
+\subsection{Preuve de théorèmes}
+\label{sec:preuve}
+
+La preuve de théorèmes utilise des fondements mathématiques et logiques
+\cite{Hoare} pour prouver des propriétés de programmes. Tout d'abord, le système
+est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
+de la plus faible précondition \cite{Dijkstra} est utilisé pour générer des
+formules appelées obligations de preuve, qui sont finalement soumises à un
+prouveur de théorèmes, qui applique différentes techniques de résolution.\\
+
+Contrairement au model-checking, la preuve de théorèmes a l'avantage d'être
+indépendante de la taille de l'espace des états, et peut donc s'appliquer sur
+des systèmes de grande taille. En contre-partie, cette technique requiert une
+expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
+par exemple) et guider le prouveur si nécessaire.\\
+
+Il existe des prouveurs automatiques tels que \textsc{Simplify}
+\cite{Simplify}, \textsc{Ergo} \cite{Ergo} et \textsc{Z3} \cite{Z3}; et des
+prouveurs interactifs, où la preuve est guidée par l'utilisateur, tels que
+\textsc{Coq} \cite{Coq}, \textsc{Isabelle} \cite{Isabelle}, et \textsc{Hol}
+\cite{HOL}. Certains de ces prouveurs ou assistants de preuve sont intégrés à
+d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
+\textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
+\textsc{Wp}, qui traitent des programmes dont le code contient des annotations
+\textsc{Acsl} \cite{ACSL}.
+
+
+\section{Analyse dynamique}
+\label{sec:AD}
+
+L’analyse dynamique est basée sur des techniques d’exécution du programme, de
+simulation \cite{simulation} d’un modèle ou d'exécution symbolique
+\cite{symbolic-execution}, regroupées sous le terme générique ``test''.\\
+
+Les tests peuvent s’appliquer tout au long du cycle de développement d’un
+logiciel. Les tests unitaires vérifient le bon fonctionnement des différentes
+entités d’un système, indépendamment les unes des autres. Les tests
+d'intégration vérifient la bonne communication entre ces entités. Les tests de
+validation s'assurent que les fonctionnalités correspondent au besoin de
+l’utilisateur final. Enfin, les tests de non-régression vérifient que l'ajout de
+nouvelles fonctionnalités ne détériore pas les anciennes fonctionnalités.\\
+
+En général, les techniques de test ne sont pas exhaustives et n'explorent qu'un
+sous-ensemble des chemins d'exécutions du programme, en conséquence, l’absence
+d’échecs lors du passage des tests n’est pas une garantie de bon fonctionnement
+du système. Néanmoins, selon les critères utilisés pour la génération des
+tests, et selon la couverture des chemins d'exécution fournie par les tests, un
+système ainsi validé peut acquérir un certain niveau de confiance.\\
+
+Les méthodes de test peuvent être classées en trois catégories : le test
+aléatoire, le test structurel (section~\ref{sec:test-structurel}) et le test
+fonctionnel (section~\ref{sec:test-fonctionnel}). Comme son nom l'indique, le
+test aléatoire consiste à générer des valeurs d'entrée du programme au hasard et
+ne sera pas détaillé davantage ici.
+
+
+\subsection{Test structurel}
+\label{sec:test-structurel}
+
+Le test structurel, ou test ``boîte blanche'', est une technique de test qui
+fonde la détermination des différents cas de test sur une analyse de la
+structure du code source du programme étudié. On distingue deux types de tests
+structurels : le test orienté flot de contrôle et le test orienté flot de
+données.\\
+
+Le test orienté flot de données cherche à couvrir certaines relations entre la
+définition d’une variable et son utilisation, par exemple, on peut souhaiter
+couvrir toutes les lectures d'une variable suivant une écriture.\\
+
+Le test orienté flot de contrôle s’intéresse quant à lui à la structure du
+programme : l'ordre dans lequel les instructions sont exécutées. Il se base sur
+le graphe de flot de contrôle du programme : un graphe connexe orienté avec un
+unique n\oe{}ud d’entrée et un unique n\oe{}ud de sortie, dont les n\oe{}uds
+sont les blocs de base du programme et les arcs représentent les branchements
+(conditions). Une couverture structurelle de ce graphe est recherchée, selon un
+critère qui peut être par exemple ``toutes les instructions'',
+``toutes les branches'' (toutes les décisions), ``tous les chemins'' ou
+``tous les $k$-chemins'' (détaillé section~\ref{sec:PathCrawler}).\\
+
+L’exécution symbolique dynamique, ou exécution ``concolique'', associe
+l’exécution concrète du programme et l’exécution symbolique afin d’explorer les
+chemins du programme. L’exécution concrète sert à confirmer que le chemin
+parcouru est bien celui pour lequel le cas de test exécuté a été généré, comme
+présenté section~\ref{sec:PathCrawler}.\\
+
+Plusieurs outils se basent sur l'exécution concolique pour explorer un programme
+sous test, dont \textsc{Smart} \cite{SMART}, \textsc{Pex} \cite{Pex} et
+\textsc{Sage} \cite{Sage} développés par Microsoft, \textsc{Cute} \cite{CUTE},
+\textsc{Klee} \cite{KLEE}, \textsc{Exe} \cite{EXE} et enfin
+\textsc{PathCrawler}, \cite{PathCrawler} développé au CEA LIST. Ces outils
+utilisent des solveurs de contraintes pour générer des cas de test permettant
+d'aboutir à une couverture souhaitée des exécutions du programme par les tests.
+
+
+\subsection{Test fonctionnel}
+\label{sec:test-fonctionnel}
+
+Le test fonctionnel, ou test ``boîte noire'', génère des jeux de test en
+fonction du comportement attendu du programme : un cas de test sera choisi pour
+chaque comportement particulier. Le test fonctionnel est utilisé pour vérifier
+la conformité des réactions du logiciel avec les attentes de l'utilisateur, sans
+connaissance du code source. Il existe de nombreuses techniques qui se
+différencient par la manière de choisir les données de test, parmi lesquelles :
+
+\begin{description}
+\item[le test de partition] \hfill \\
+les valeurs d’entrées du logiciel sont regroupées en classes d’équivalence, sur
+lesquelles le logiciel doit avoir le même comportement ({\em domain splitting}),
+une seule valeur aléatoire est choisie dans chaque classe de la partition;
+\item[le test aux limites] \hfill \\
+les données de test sont choisies aux bornes des domaines de définition des
+variables.
+\end{description}
+
+Le CEA LIST développe \textsc{GATeL} \cite{GATEL}, un outil de génération de
+tests fonctionnels qui se base sur une représentation symbolique des états du
+système : le programme, les invariants et les contraintes décrivant l'objectif
+de test sont exprimés dans le langage \textsc{Lustre} \cite{Lustre}. Cet outil
+offre la possibilité de réaliser des partitions de domaines.
+
+
+\section{Simplification syntaxique}
+
+La simplification syntaxique, ou {\em slicing} \cite{slicing}, est une technique
+de transformation qui permet de simplifier un programme tout en préservant les
+comportements définis par un critère de {\em slicing}. Il s’agit d’une
+modification purement structurelle fondée sur l'analyse du flot de contrôle et
+du flot de données du programme. Toutes les instructions et les branches du
+programme original qui n’ont pas d’intérêt par rapport au critère considéré
+n’apparaissent pas dans le programme simplifié ({\em slice}). Cette technique
+permet d’isoler les instructions influant sur une ou plusieurs variables à un
+point donné.\\
+
+Le calcul d’une {\em slice} consiste à construire récursivement l’ensemble des
+n\oe{}uds et des arcs pertinents en remontant le graphe de flot de contrôle.
+Cette technique peut être appliquée de manière intra-procédurale en exploitant
+le {\em Program Dependence Graph} \cite{PDG} ou de manière inter-procédurale en
+exploitant le {\em System Dependence Graph} \cite{SDG}.\\
+
+\textsc{Frama-C} intègre \textsc{Slicing}, un greffon produisant un programme
+composé d'un sous-ensemble des instructions (l'ordre est conservé) du programme
+analysé. Les instructions sont choisies d'après un critère de {\em slicing}
+spécifié par l'utilisateur. Le résultat est garanti d'être un programme C
+correct ayant le même comportement que le programme d'origine selon le critère
+de {\em slicing} choisi.
+
+
+\section{Combinaison d'analyses statiques et dynamiques}
+\label{sec:combinaison}
+
+Les méthodes statiques et les méthodes dynamiques ont des avantages et des
+inconvénients complémentaires : l'analyse statique étant complète mais
+imprécise, l'analyse dynamique étant précise mais incomplète. L’idée de les
+combiner pour associer leurs avantages et combattre leurs inconvénients
+\cite{duality} est une voie de recherche active et fructueuse dans le domaine de
+la vérification de programmes.\\
+
+Une première combinaison de méthodes est le raffinement d'abstraction guidé par
+des contre-exemples \cite{CEGAR}, qui associe l’abstraction par prédicats et le
+model-checking : une abstraction du programme est générée à partir d’un ensemble
+de prédicats et invariants. Si le {\em model-checking} ne peut pas établir
+qu'une propriété est satisfaite, des contre-exemples sont générés, permettant de
+raffiner l’abstraction en ajoutant de nouveaux prédicats, et ainsi de suite. Ce
+processus peut ne pas terminer. Plusieurs outils de vérification des programmes
+C se basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
+\textsc{Yogi} \cite{YOGI} et \textsc{Magic} \cite{MAGIC}.\\
+
+L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} utilise une approche différente
+et combine une génération d'invariants par génération de tests et des techniques
+d'apprentissage \cite{discover-invariants} et une analyse statique signalant des
+alarmes qui seront confirmées par un générateur de tests \cite{JCrasher}. Les
+invariants détectés permettent de guider la classification d'alarmes et la
+génération de tests, ce qui rend l'outil très dépendant de leur qualité.\\
+
+La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
+\textsc{Frama-C}, combine l'interprétation abstraite, le {\em slicing} et la
+génération de tests structurels avec \textsc{PathCrawler}. L’analyse statique
+signale les instructions risquant de provoquer des erreurs à l’exécution par des
+alarmes, dont certaines peuvent être de fausses alarmes, puis l’analyse
+dynamique génère des tests confirmant ou infirmant ces alarmes. Sur des
+programmes de grande taille, l'analyse dynamique peut manquer de temps pour
+classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
+possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
+testés et donc le temps nécessaire à leur analyse.
+
+
+\subsection{DyTa}
+Code Contracts static checker + Pex
+
+\subsection{Collaborative verification and testing with explicit assumptions}
+\cite{collaborative-verification}\\
+\cite{Dafny}\\
+\cite{Pex}
+
+\subsection{Checking properties described by state machines : on synergy of
+  instrumentation, slicing and symbolic execution}
+\cite{checking-prop-state-machines}\\
+\textsc{Klee} \cite{KLEE} pour l'exécution symbolique
