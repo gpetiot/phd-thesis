@@ -58,98 +58,6 @@ prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de théorèmes
 (section~\ref{sec:preuve}).
 
 
-\subsection{Interprétation abstraite}
-\label{sec:interpretation-abstraite}
-
-L'interprétation abstraite \cite{abstract-interpretation} s'appuie sur les
-théories du point-fixe et des domaines pour introduire des sur-approximations
-des comportements d'un programme. Elle consiste à abstraire les domaines des
-variables par des domaines finis et beaucoup plus petits. Par exemple, le
-domaine des entiers pourrait être abstrait par un domaine de trois valeurs :
-$(-, 0, +)$. Appliquée à l’analyse de valeurs, elle consiste à calculer à
-chaque ligne du code une sur-approximation de l’ensemble des valeurs prises par
-chaque variable en cette ligne lors de toutes les exécutions du programme,
-permettant ainsi de détecter certaines erreurs comme les divisions par zéro ou
-les accès en dehors des bornes des tableaux.\\
-
-Pour contourner le problème d’indécidabilité, la théorie de l’interprétation
-abstraite construit une méthode qui, à la même question, répondra ``oui'',
-``non'' ou ``peut-être''. Si la méthode répond ``peut-être'', c’est qu’on n’a pu
-prouver ni l’un ni l’autre des deux premiers cas. C’est ce qu’on appelle une
-alarme : il est possible qu’une des exécutions du programme produise une erreur
-donnée, mais nous n’avons été capable ni de le confirmer ni de l’infirmer.
-L’erreur signalée par une alarme peut ne jamais apparaître à l’exécution, dans
-ce cas on l’appelle fausse alarme. On ne calcule donc pas la propriété exacte
-mais une abstraction de cette propriété, en imposant la contrainte de sûreté
-suivante : ``la propriété abstraite calculée ne doit oublier aucune exécution
-concrète''. L'abstraction est effectuée à partir de prédicats atomiques
-définissant des abstractions des domaines des variables.\\
-
-\textsc{PolySpace C Verifier} \cite{PolySpace} a été le premier outil commercial
-utilisant l'interprétation abstraite pour détecter les erreurs à l'exécution
-dans les programmes en C, C++ et Ada mais signale beaucoup de fausses alarmes.
-L'ENS a développé \textsc{Astrée} \cite{ASTREE}, spécifique au langage C et aux
-logiciels critiques. Le CEA LIST a développé \textsc{Fluctuat} \cite{Fluctuat},
-qui mesure précisément les approximations faites à l'exécution d'un programme C.
-\textsc{Frama-C} intègre un greffon d'interprétation abstraite : \textsc{Value}
-\cite{Value}.
-
-
-\subsection{Abstraction à partir de prédicats}
-\label{sec:abstraction-predicats}
-
-L'abstraction à partir de prédicats \cite{predicate-abstraction} est une
-technique permettant de générer automatiquement des abstractions de systèmes au
-nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
-ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
-sont des expressions booléennes sur les variables de $P$ et les constantes du
-langage.\\
-
-Chaque état concret de $P$ est mis en correspondance avec un état abstrait de
-l'abstraction de $P$, après évaluation par les prédicats de $E$. Un état
-abstrait est un $n$-upplet de valeurs booléennes correspondant à la
-satisfaisabilité des $n$ prédicats (au moyen d'un solveur SMT).\\
-
-Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et que la
-satisfaisabilité de ces prédicats à l'état concret $e$ est évaluée
-respectivement à $false, true, true$, alors dans l'abstraction générée, l'état
-$e$ correspond à l'état abstrait $(\lnot f_1, f_2, f_3)$.\\
-
-L'abstraction générée comporte un nombre fini d'états (au plus $2^n$) car il n'y
-a qu'un nombre fini de prédicats, le model-checking peut donc être appliqué à
-cette abstraction. Si une propriété de sûreté est vérifiée dans l'abstraction,
-elle l'est également dans le système concret.
-
-Cette technique est notamment utilisée par l'outil \textsc{Slam} \cite{SLAM} de
-Microsoft.
-
-
-\subsection{Preuve de théorèmes}
-\label{sec:preuve}
-
-La preuve de théorèmes utilise des fondements mathématiques et logiques
-\cite{Hoare} pour prouver des propriétés de programmes. Tout d'abord, le système
-est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
-de la plus faible précondition \cite{Dijkstra} est utilisé pour générer des
-formules appelées obligations de preuve, qui sont finalement soumises à un
-prouveur de théorèmes, qui applique différentes techniques de résolution.\\
-
-Contrairement au model-checking, la preuve de théorèmes a l'avantage d'être
-indépendante de la taille de l'espace des états, et peut donc s'appliquer sur
-des systèmes de grande taille. En contre-partie, cette technique requiert une
-expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
-par exemple) et guider le prouveur si nécessaire.\\
-
-Il existe des prouveurs automatiques tels que \textsc{Simplify}
-\cite{Simplify}, \textsc{Ergo} \cite{Ergo} et \textsc{Z3} \cite{Z3}; et des
-prouveurs interactifs, où la preuve est guidée par l'utilisateur, tels que
-\textsc{Coq} \cite{Coq}, \textsc{Isabelle} \cite{Isabelle}, et \textsc{Hol}
-\cite{HOL}. Certains de ces prouveurs ou assistants de preuve sont intégrés à
-d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
-\textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
-\textsc{Wp}, qui traitent des programmes dont le code contient des annotations
-\textsc{Acsl} \cite{ACSL}.
-
 
 \subsection{\textsc{Frama-C} et \textsc{Acsl}}
 \label{sec:frama-c}
@@ -234,7 +142,7 @@ une collaboration entre différentes analyses.\\
 
 \textsc{Frama-C} est basé sur CIL \cite{CIL}, une bibliothèque qui normalise des
 programmes C (ISO C99) en opérant des modifications syntaxiques : normalisation
-des boucles en utilisant la structure {\tt while}, unique {\tt return} pour
+des boucles en utilisant la structure ${\tt while}$, unique ${\tt return}$ pour
 chaque fonction, etc. \textsc{Frama-C} étend CIL pour supporter des annotations
 dédiées portant sur le code source, exprimées dans le langage \textsc{Acsl}.
 \textsc{Acsl} \cite{ACSL} est un langage formel de spécification
@@ -243,10 +151,10 @@ propriétés fonctionnelles de programmes C : pré-conditions, post-conditions,
 invariants, etc.\\
 
 En effet, la spécification d'une fonction comprend les pré-conditions requises
-(exprimées par une clause {\tt requires}) lors de l'appel et les post-conditions
-assurées ({\tt ensures}) lors du retour. Parmi ces post-conditions, une clause
-indique quels sont les emplacements mémoire qui peuvent être affectés
-({\tt assigns}) par la fonction.\\
+(exprimées par une clause ${\tt requires}$) lors de l'appel et les
+post-conditions assurées (${\tt ensures}$) lors du retour. Parmi ces
+post-conditions, une clause indique quels sont les emplacements mémoire qui
+peuvent être affectés (${\tt assigns}$) par la fonction.\\
 
 
 \begin{figure}[h]
@@ -262,27 +170,27 @@ void swap(int* a, int* b);
 \end{figure}
 
 
-Considérons par exemple une spécification fournie pour une fonction {\tt swap}
+Considérons par exemple une spécification fournie pour une fonction $swap$
 (Fig.~\ref{fig:acsl-spec}). La première pré-condition établit que les deux
 arguments doivent être des pointeurs valides, autrement dit, le déréférencement
 de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
 pré-condition impose que les emplacements mémoire occupés par chacune de ces
-variables soient disjoints. En plus de {\tt $\backslash$valid} et
-{\tt $\backslash$separated}, \textsc{Acsl} fournit de nombreux prédicats et
-fonctions afin de décrire les états de la mémoire. {\tt $\backslash$at(e,l)}
+variables soient disjoints. En plus de ${\tt \backslash valid}$ et
+${\tt \backslash separated}$, \textsc{Acsl} fournit de nombreux prédicats et
+fonctions afin de décrire les états de la mémoire. ${\tt \backslash at(e,l)}$
 fait référence à la valeur de l'expression $e$ à l'état de la mémoire au label
 $l$. $Pre$ est un label prédéfini qui fait référence à l'état de la mémoire
-avant l'exécution de la fonction. Ainsi, les post-conditions ({\tt ensures})
+avant l'exécution de la fonction. Ainsi, les post-conditions (${\tt ensures}$)
 signifient qu'à la fin de la fonction, $*a$ aura la valeur que $*b$ avait au
 début de la fonction, et réciproquement.\\
 
 
 \textsc{Acsl} offre aussi la possibilité d'écrire des annotations dans le code
 source, permettant d'exprimer des propriétés devant être vraies à un point donné
-du programme : les assertions ({\tt assert}).
+du programme : les assertions (${\tt assert}$).
 Il est également possible d'exprimer des propriétés devant être vraies avant une
 boucle et après chaque itération de cette boucle : les invariants de boucle
-({\tt loop invariant}).\\
+(${\tt loop\ invariant}$).\\
 
 
 Les annotations du langage \textsc{Acsl} sont écrites en utilisant la logique
@@ -292,6 +200,117 @@ Les greffons peuvent valider ou invalider les propriétés \textsc{Acsl} et
 générer des annotations \textsc{Acsl}, les annotations sont donc un moyen
 d'échanger des informations entre les différentes analyses opérées par les
 greffons.
+
+
+\subsection{Interprétation abstraite}
+\label{sec:interpretation-abstraite}
+
+L'interprétation abstraite \cite{abstract-interpretation} s'appuie sur les
+théories du point-fixe et des domaines pour introduire des sur-approximations
+des comportements d'un programme. Elle consiste à abstraire les domaines des
+variables par des domaines finis et beaucoup plus petits. Par exemple, le
+domaine des entiers pourrait être abstrait par un domaine de trois valeurs :
+$(-, 0, +)$. Appliquée à l’analyse de valeurs, elle consiste à calculer à
+chaque ligne du code une sur-approximation de l’ensemble des valeurs prises par
+chaque variable en cette ligne lors de toutes les exécutions du programme,
+permettant ainsi de détecter certaines erreurs comme les divisions par zéro ou
+les accès en dehors des bornes des tableaux.\\
+
+Pour contourner le problème d’indécidabilité, la théorie de l’interprétation
+abstraite construit une méthode qui, à la même question, répondra ``oui'',
+``non'' ou ``peut-être''. Si la méthode répond ``peut-être'', c’est qu’on n’a pu
+prouver ni l’un ni l’autre des deux premiers cas. C’est ce qu’on appelle une
+alarme : il est possible qu’une des exécutions du programme produise une erreur
+donnée, mais nous n’avons été capable ni de le confirmer ni de l’infirmer.
+L’erreur signalée par une alarme peut ne jamais apparaître à l’exécution, dans
+ce cas on l’appelle fausse alarme. On ne calcule donc pas la propriété exacte
+mais une abstraction de cette propriété, en imposant la contrainte de sûreté
+suivante : ``la propriété abstraite calculée ne doit oublier aucune exécution
+concrète''. L'abstraction est effectuée à partir de prédicats atomiques
+définissant des abstractions des domaines des variables.\\
+
+\textsc{PolySpace C Verifier} \cite{PolySpace} a été le premier outil commercial
+utilisant l'interprétation abstraite pour détecter les erreurs à l'exécution
+dans les programmes en C, C++ et Ada mais signale beaucoup de fausses alarmes.
+L'ENS a développé \textsc{Astrée} \cite{ASTREE}, spécifique au langage C et aux
+logiciels critiques. Le CEA LIST a développé \textsc{Fluctuat} \cite{Fluctuat},
+qui mesure précisément les approximations faites à l'exécution d'un programme C.
+\textsc{Frama-C} intègre un greffon d'interprétation abstraite : \textsc{Value}
+\cite{Value}.
+
+
+\subsubsection{PolySpace}
+
+\subsubsection{Astree}
+
+\subsubsection{Fluctuat}
+
+\subsubsection{Value}
+
+\subsubsection{Dafny}
+
+
+\subsection{Abstraction à partir de prédicats}
+\label{sec:abstraction-predicats}
+
+L'abstraction à partir de prédicats \cite{predicate-abstraction} est une
+technique permettant de générer automatiquement des abstractions de systèmes au
+nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
+ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
+sont des expressions booléennes sur les variables de $P$ et les constantes du
+langage.\\
+
+Chaque état concret de $P$ est mis en correspondance avec un état abstrait de
+l'abstraction de $P$, après évaluation par les prédicats de $E$. Un état
+abstrait est un $n$-upplet de valeurs booléennes correspondant à la
+satisfaisabilité des $n$ prédicats (au moyen d'un solveur SMT).\\
+
+Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et que la
+satisfaisabilité de ces prédicats à l'état concret $e$ est évaluée
+respectivement à $false, true, true$, alors dans l'abstraction générée, l'état
+$e$ correspond à l'état abstrait $(\lnot f_1, f_2, f_3)$.\\
+
+L'abstraction générée comporte un nombre fini d'états (au plus $2^n$) car il n'y
+a qu'un nombre fini de prédicats, le model-checking peut donc être appliqué à
+cette abstraction. Si une propriété de sûreté est vérifiée dans l'abstraction,
+elle l'est également dans le système concret.
+
+Cette technique est notamment utilisée par l'outil \textsc{Slam} \cite{SLAM} de
+Microsoft.
+
+
+\subsection{Preuve de théorèmes}
+\label{sec:preuve}
+
+La preuve de théorèmes utilise des fondements mathématiques et logiques
+\cite{Hoare} pour prouver des propriétés de programmes. Tout d'abord, le système
+est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
+de la plus faible précondition \cite{Dijkstra} est utilisé pour générer des
+formules appelées obligations de preuve, qui sont finalement soumises à un
+prouveur de théorèmes, qui applique différentes techniques de résolution.\\
+
+Contrairement au model-checking, la preuve de théorèmes a l'avantage d'être
+indépendante de la taille de l'espace des états, et peut donc s'appliquer sur
+des systèmes de grande taille. En contre-partie, cette technique requiert une
+expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
+par exemple) et guider le prouveur si nécessaire.\\
+
+Il existe des prouveurs automatiques tels que \textsc{Simplify}
+\cite{Simplify}, \textsc{Ergo} \cite{Ergo} et \textsc{Z3} \cite{Z3}; et des
+prouveurs interactifs, où la preuve est guidée par l'utilisateur, tels que
+\textsc{Coq} \cite{Coq}, \textsc{Isabelle} \cite{Isabelle}, et \textsc{Hol}
+\cite{HOL}. Certains de ces prouveurs ou assistants de preuve sont intégrés à
+d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
+\textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
+\textsc{Wp}, qui traitent des programmes dont le code contient des annotations
+\textsc{Acsl} \cite{ACSL}.
+
+
+\subsubsection{Coq}
+
+\subsubsection{Isabelle}
+
+\subsubsection{WP}
 
 
 
@@ -490,7 +509,10 @@ inconvénients complémentaires : l'analyse statique étant complète mais
 imprécise, l'analyse dynamique étant précise mais incomplète. L’idée de les
 combiner pour associer leurs avantages et combattre leurs inconvénients
 \cite{duality} est une voie de recherche active et fructueuse dans le domaine de
-la vérification de programmes.\\
+la vérification de programmes.
+
+
+\subsection{Raffinement d'abstraction guidé par des contre-exemples}
 
 Une première combinaison de méthodes est le raffinement d'abstraction guidé par
 des contre-exemples \cite{CEGAR}, qui associe l’abstraction par prédicats et le
@@ -500,14 +522,20 @@ qu'une propriété est satisfaite, des contre-exemples sont générés, permetta
 raffiner l’abstraction en ajoutant de nouveaux prédicats, et ainsi de suite. Ce
 processus peut ne pas terminer. Plusieurs outils de vérification des programmes
 C se basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
-\textsc{Yogi} \cite{YOGI} et \textsc{Magic} \cite{MAGIC}.\\
+\textsc{Yogi} \cite{YOGI} et \textsc{Magic} \cite{MAGIC}.
+
+
+\subsection{DSD-Crasher}
 
 L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} utilise une approche différente
 et combine une génération d'invariants par génération de tests et des techniques
 d'apprentissage \cite{discover-invariants} et une analyse statique signalant des
 alarmes qui seront confirmées par un générateur de tests \cite{JCrasher}. Les
 invariants détectés permettent de guider la classification d'alarmes et la
-génération de tests, ce qui rend l'outil très dépendant de leur qualité.\\
+génération de tests, ce qui rend l'outil très dépendant de leur qualité.
+
+
+\subsection{Static ANalysis and TEst}
 
 La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
 \textsc{Frama-C}, combine l'interprétation abstraite, le {\em slicing} et la
@@ -520,6 +548,155 @@ classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
 possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
 testés et donc le temps nécessaire à leur analyse.
 
+Le fonctionnement général de la méthode est illustré par la
+Fig.~\ref{figSlicing} ~\textbf{a}. Cette méthode utilise l'analyse de valeurs
+(interprétation abstraite) afin de sélectionner les instructions pour lesquelles
+le risque d'une erreur à l'exécution n'est pas écarté (nous les appellerons
+``alarmes'' par la suite), par exemple une division par zéro ou un accès
+invalide à la mémoire.\\
+
+Ces alarmes vont être validées par des tests. Nous utilisons
+\textsc{PathCrawler} \cite{PathCrawler}, un outil de génération de tests
+structurels, pour tenter de mettre en évidence un cas de test pour lequel le
+chemin d'exécution passe par cette alarme, et provoque une erreur.\\
+
+Pour diminuer le coût de la génération de tests, nous simplifions
+syntaxiquement les programmes qui lui seront soumis pour ne garder que les
+instructions dont dépend l'alarme considérée, on appelle cette opération
+{\em slicing} \cite{slicing}. Nous obtenons ainsi des programmes plus simples,
+tels que si une alarme est présente dans le programme d'origine, elle l'est
+également dans les programmes simplifiés si le {\em slicing} a été paramétré
+pour conserver les instructions dont dépend cette alarme. Et si elle provoque
+une erreur dans le programme d'origine, alors il en sera de même dans les
+programmes simplifiés, avec les mêmes entrées. L'utilisation du {\em slicing}
+peut être paramétrée par différentes options, qui seront détaillées plus bas.\\
+
+La première phase de la méthode (l'interprétation abstraite) peut donc assurer
+que certaines instructions ne provoqueront pas d'erreur à l'exécution, tandis
+que la seconde phase permet de confirmer que certaines alarmes produisent
+effectivement une erreur à l'exécution. Et la mise en commun des résultats des
+deux phases permet de classifier davantage d'alarmes dans l'une ou l'autre de
+ces deux catégories que chacune des deux méthodes prise séparément. La preuve de
+la correction de cette méthode et le résultat des analyses comparées sont
+détaillés dans \cite{TheseOmar} et \cite{SANTE} et ne seront pas répétés ici.\\
+
+\input{SANTE_slicing.tex}
+
+L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
+simplifié et est soumis en l'état à \textsc{PathCrawler}.\\
+
+L'option {\em all} (Fig.~\ref{figSlicing} ~\textbf{b}) génère un seul programme
+simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
+option ne tire pas profit du fait que certaines alarmes peuvent être
+indépendantes (et peuvent donc être soumises séparément), la complexité du
+programme soumis à \textsc{PathCrawler} peut l'empêcher de générer des cas de
+test pour toutes les alarmes dans le temps qui lui est imparti.\\
+
+L'option {\em each} (Fig.~\ref{figSlicing} ~\textbf{c}) tente de corriger ce
+défaut, elle génère un programme simplifié par alarme et invoque
+\textsc{PathCrawler} autant de fois. Ainsi, les alarmes les plus simples ne sont
+pas pénalisées par les plus complexes. Néanmoins, en cas de dépendances
+mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
+\textsc{PathCrawler}, ce qui est une perte de temps.\\
+
+\input{SANTE_slicing_advanced.tex}
+
+
+Cette option tente de corriger les inconvénients de {\em all} et de {\em each}
+et propose de générer une couverture minimale des alarmes par {\em slicing}, de
+manière à regrouper dans un même ensemble les alarmes ayant une relation de
+dépendance \cite{SANTE}.
+Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
+dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
+$a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
+Dans cet exemple, la couverture minimale est constituée des deux ensembles
+couvrants $\{a_1; a_2\}$ et $\{a_1; a_3; a_4; a_5\}$.\\
+
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node(s) at (0,1) {$a_1$};
+    \node(t) at (1,0) {$a_2$};
+    \node(q) at (1,1) {$a_3$};
+    \node(d) at (2,1) {$a_4$};
+    \node(v) at (3,1) {$a_5$};
+    \path[->,thick] (s) edge (q);
+    \path[->,thick] (q) edge (d);
+    \path[->,thick] (d) edge (v);
+    \path[->,thick] (s) edge (t);
+  \end{tikzpicture}
+  \caption{Graphe de dépendances des alarmes}
+  \label{fig:deps}
+\end{figure}
+
+
+Chacun de ces ensembles sera utilisé pour générer un programme simplifié ne
+contenant que des alarmes ayant une relation de dépendance, évitant ainsi
+d'avoir plusieurs programmes identiques en cas de dépendances mutuelles (et
+réduisant le nombre d'appels à \textsc{PathCrawler}).
+On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
+cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
+cas de {\em each}.\\
+
+
+Dans notre implémentation, nous définissons une fonction calculant pour chaque
+alarme, les alarmes sur lesquelles elle a un impact.
+Sur notre exemple, $impacted\_stmts(\{a_1; a_2; a_3; a_4; a_5\}) =
+\{\{a_2; a_3; a_4; a_5\}; \{\}; \{a_4; a_5\}; \{a_5\}; \{\}\}$.
+
+Cette fonction nous permet de déterminer les ``alarmes finales'', qui n'ont
+d'impact sur aucune autre alarme, mais peuvent avoir des dépendances mutuelles
+avec d'autres alarmes finales.
+Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
+mutuelles).\\
+
+Cette notion d'alarmes finales nous permet de définir une couverture minimale
+des alarmes, car selon \cite{SANTE}, chaque ensemble de la couverture contient
+une classe d'équivalence d'alarmes finales et leurs dépendances.
+Deux alarmes finales sont dans la même classe d'équivalence si elles ont des
+dépendances mutuelles.
+Sur notre exemple, $min\_cover(\{a_1; a_2; a_3; a_4; a_5\}) =
+\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$.\\
+
+Les listes obtenues par ce calcul de couverture minimale vont ensuite paramétrer
+les différents {\em slicings}, on obtient un programme simplifié par liste,
+paramétré par les différentes alarmes de chaque liste. \textsc{PathCrawler} est
+ensuite exécuté sur chaque programme simplifié. Les résultats récupérés
+permettent d'obtenir un diagnostic partiel sur chacune des alarmes du programme
+simplifié. Ces diagnostics partiels sont ensuite fusionnés au sein d'une table
+d'association, on obtient donc un diagnostic global sur chaque alarme.\\
+
+Notre contribution inclut l'implémentation du calcul de la couverture minimale
+et des alarmes finales, l'analyse des résultats de \textsc{PathCrawler}, la
+fusion des diagnostics et la notification des résultats sur les alarmes à
+\textsc{Frama-C}, qui peut les récupérer pour la consolidation du statut de
+validité des propriétés du programme \cite{property-status}.\\
+
+
+Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
+{\em min} hérite de l'inconvénient de l'option {\em all} : les alarmes les plus
+complexes à classifier pénalisent les autres, qui peuvent ne pas être
+diagnostiquées dans le temps imparti.\\
+
+Pour corriger ce défaut, l'option {\em smart} va appliquer {\em min}
+itérativement en diminuant l'ensemble des alarmes considérées à chaque
+itération. Les alarmes supprimées seront des alarmes classifiées ou des alarmes
+finales.\\
+
+De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
+l'ensemble des alarmes privé des alarmes finales) produira un programme
+simplifié plus petit. Ainsi, les alarmes qui n'ont pas été diagnostiquées à
+l'itération précédente auront une chance supplémentaire de l'être, et ainsi de
+suite jusqu'à ce que toutes les alarmes soient diagnostiquées ou que l'ensemble
+considéré soit vide.\\
+
+Sur l'exemple considéré plus haut, la première itération génère la
+couverture minimale $\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$. S'il reste des
+alarmes non diagnostiquées, les alarmes finales ($a_2$ et $a_5$) et les alarmes
+diagnostiquées ne seront plus considérées. L'itération suivante génère la
+couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
+
 
 \subsection{DyTa}
 \cite{DyTa}\\
@@ -527,8 +704,8 @@ Code Contracts static checker + Pex \cite{Pex}
 
 \subsection{Collaborative verification and testing with explicit assumptions}
 \cite{collaborative-verification}\\
-\cite{Dafny}\\
-\cite{Pex}
+\textsc{Dafny} \cite{Dafny}\\
+\textsc{Pex} \cite{Pex}
 
 \subsection{Checking properties described by state machines : on synergy of
   instrumentation, slicing and symbolic execution}
