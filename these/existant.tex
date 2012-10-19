@@ -399,11 +399,11 @@ consécutives de chaque boucle.\\
 \textsc{PathCrawler} commence par construire une version instrumentée de $p$
 permettant de tracer l'exécution de chaque cas de test, puis il génère les
 contraintes représentant la sémantique de chaque instruction de $p$. La
-prochaine étape (Fig.~\ref{FigPathCrawlerAlgo}) est la génération et la
-résolution de contraintes pour produire les cas de test pour un ensemble de
-chemins $\Pi$ satisfaisant le critère de couverture. La résolution de
-contraintes s'effectue à l'aide d'\textsc{ECLiPSe Prolog} \cite{ECLiPSe}, un
-environnement de programmation en logique par contraintes basé sur Prolog.\\
+prochaine étape est la génération et la résolution de contraintes pour produire
+les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
+couverture. La résolution de contraintes s'effectue à l'aide
+d'\textsc{ECLiPSe Prolog} \cite{ECLiPSe}, un environnement de programmation en
+logique par contraintes basé sur Prolog.\\
 
 Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
 l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
@@ -699,8 +699,27 @@ couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 
 \subsection{DyTa}
-\cite{DyTa}\\
-Code Contracts static checker + Pex \cite{Pex}
+
+\textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse sttaique et
+une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
+utilisé pour spécifier des pré/post-conditions et des invariants de programmes
+C\#, il identifie également les bugs potentiels (violations de contrat) par
+interprétation abstraite.\\
+
+\textsc{DyTa} instrumente ensuite le programme pour rajouter des instructions
+assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
+aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
+également des points de contrôle à l'endroit des instructions signalées par
+l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
+par Pex \cite{Pex}. Cette étape est semblable à l'instrumentation opérée par
+\textsc{Sante} pour rajouter des points de contrôle afin de guider l'exécution
+concolique du programme par \textsc{PathCrawler}.\\
+
+L'analyse statique du graphe du flot de contrôle du programme permet à
+\textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
+permet d'atteindre une instruction potentiellement dangereuse. La génération
+dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
+cette dernière guide l'exploration pour la génération dynamique de tests.
 
 \subsection{Collaborative verification and testing with explicit assumptions}
 \cite{collaborative-verification}\\
