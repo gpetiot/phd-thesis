@@ -239,13 +239,13 @@ qui mesure précisément les approximations faites à l'exécution d'un programm
 \cite{Value}.
 
 
-\subsubsection{PolySpace}
+\subsubsection{\textsc{PolySpace}}
 
-\subsubsection{Astree}
+\subsubsection{\textsc{Astree}}
 
-\subsubsection{Fluctuat}
+\subsubsection{\textsc{Fluctuat}}
 
-\subsubsection{Value}
+\subsubsection{\textsc{Value}}
 
 
 \subsection{Abstraction à partir de prédicats}
@@ -304,11 +304,11 @@ d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
 \textsc{Acsl} \cite{ACSL}.
 
 
-\subsubsection{Coq}
+\subsubsection{\textsc{Coq}}
 
-\subsubsection{Isabelle}
+\subsubsection{\textsc{Isabelle}}
 
-\subsubsection{WP}
+\subsubsection{\textsc{WP}}
 
 
 
@@ -445,6 +445,9 @@ temps raisonnable) et que seulement le plus court des préfixes infaisables de
 chaque chemin infaisable est exploré.
 \end{itemize}
 
+\subsubsection{Résumé de boucle}
+
+\cite{loop-summarization}
 
 \subsection{Test fonctionnel}
 \label{sec:test-fonctionnel}
@@ -523,7 +526,7 @@ C se basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
 \textsc{Yogi} \cite{YOGI} et \textsc{Magic} \cite{MAGIC}.
 
 
-\subsection{DSD-Crasher}
+\subsection{\textsc{DSD-Crasher}}
 
 L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} utilise une approche différente
 et combine une génération d'invariants par génération de tests et des techniques
@@ -533,7 +536,7 @@ invariants détectés permettent de guider la classification d'alarmes et la
 génération de tests, ce qui rend l'outil très dépendant de leur qualité.
 
 
-\subsection{Static ANalysis and TEst}
+\subsection{\textsc{Static ANalysis and TEst}}
 
 La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
 \textsc{Frama-C}, combine l'interprétation abstraite, le {\em slicing} et la
@@ -696,7 +699,7 @@ diagnostiquées ne seront plus considérées. L'itération suivante génère la
 couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 
-\subsection{DyTa}
+\subsection{\textsc{DyTa}}
 
 \textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse sttaique et
 une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
@@ -739,5 +742,10 @@ statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante
 
 \subsection{Checking properties described by state machines : on synergy of
   instrumentation, slicing and symbolic execution}
+
 \cite{checking-prop-state-machines}\\
 \textsc{Klee} \cite{KLEE} pour l'exécution symbolique
+
+\subsection{Fault localization for null pointer exception based on stack trace and program slicing}
+
+\cite{fault-localization}
