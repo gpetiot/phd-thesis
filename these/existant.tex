@@ -247,8 +247,6 @@ qui mesure précisément les approximations faites à l'exécution d'un programm
 
 \subsubsection{Value}
 
-\subsubsection{Dafny}
-
 
 \subsection{Abstraction à partir de prédicats}
 \label{sec:abstraction-predicats}
@@ -712,8 +710,9 @@ aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
 également des points de contrôle à l'endroit des instructions signalées par
 l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
 par Pex \cite{Pex}. Cette étape est semblable à l'instrumentation opérée par
-\textsc{Sante} pour rajouter des points de contrôle afin de guider l'exécution
-concolique du programme par \textsc{PathCrawler}.\\
+\textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin de guider
+l'exécution concolique du programme par \textsc{PathCrawler} \cite{PathCrawler}.
+\\
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
 \textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
@@ -721,10 +720,22 @@ permet d'atteindre une instruction potentiellement dangereuse. La génération
 dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
 cette dernière guide l'exploration pour la génération dynamique de tests.
 
-\subsection{Collaborative verification and testing with explicit assumptions}
-\cite{collaborative-verification}\\
-\textsc{Dafny} \cite{Dafny}\\
-\textsc{Pex} \cite{Pex}
+\subsection{Vérification collaborative et test}
+
+Cette méthode \cite{collaborative-verification} combine une ou plusieurs
+analyses statiques de programmes C\# et une génération de test par exécution
+concolique. Le langage de contrats pour le code .Net est étendu afin d'exprimer
+explicitement les compromis faits par les analyseurs statiques (\textsc{Dafny}
+\cite{Dafny} par exemple) et les résultats de leurs analyses. Cette extension du
+langage de spécification a pour objectif de simplifier la collaboration de
+différents analyseurs statiques, à l'instar du langage de spécification
+\textsc{Acsl} \cite{ACSL} pour \textsc{Frama-C} \cite{Frama-C}.\\
+
+La spécification générée est ensuite utilisée par \textsc{Pex} \cite{Pex}
+pour générer des cas de test par exécution concolique mettant en évidence les
+erreurs soupçonnées par l'analyse statique. Cette collaboration de l'analyse
+statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante}
+\cite{SANTE}.
 
 \subsection{Checking properties described by state machines : on synergy of
   instrumentation, slicing and symbolic execution}
