@@ -476,6 +476,9 @@ de test sont exprimés dans le langage \textsc{Lustre} \cite{Lustre}. Cet outil
 offre la possibilité de réaliser des partitions de domaines.
 
 
+\subsection{Runtime Assertion Checking}
+
+
 \section{Simplification syntaxique}
 
 La simplification syntaxique, ou {\em slicing} \cite{slicing}, est une technique
@@ -759,6 +762,17 @@ dans le fait qu'il n'y aurait aucun autre framework open-source ayant une
 efficacité et une applicabilité comparable. Ils ne sont donc pas au courant de
 l'existence de \textsc{Frama-C} \cite{Frama-C}.
 
-\subsection{Fault localization for null pointer exception based on stack trace and program slicing}
+\subsection{Localisation d'erreurs par slicing guidé par la trace d'exécution}
 
-\cite{fault-localization}
+Cette méthode \cite{fault-localization} utilise un {\em slicing} arrière à
+partir d'une instruction de déréférencement produisant une {\em Null Pointer
+Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
+fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
+statique des pointeurs est ensuite opérée sur le programme slicé afin de
+déterminer si chacun des pointeurs peut être ${\tt NULL}$. Puis une analyse
+d'alias est opérée afin d'augmenter la précision de l'analyse statique.\\
+
+Conctrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
+analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
+une analyse dynamique; cette méthode commence par une analyse dynamique, dont
+le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
