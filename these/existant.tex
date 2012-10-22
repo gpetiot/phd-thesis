@@ -712,10 +712,10 @@ assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n
 aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
 également des points de contrôle à l'endroit des instructions signalées par
 l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
-par Pex \cite{Pex}. Cette étape est semblable à l'instrumentation opérée par
-\textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin de guider
-l'exécution concolique du programme par \textsc{PathCrawler} \cite{PathCrawler}.
-\\
+par \textsc{Pex} \cite{Pex}. Cette étape est semblable à l'instrumentation
+opérée par \textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin
+de guider l'exécution concolique du programme par \textsc{PathCrawler}
+\cite{PathCrawler}.\\
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
 \textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
@@ -740,11 +740,24 @@ erreurs soupçonnées par l'analyse statique. Cette collaboration de l'analyse
 statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante}
 \cite{SANTE}.
 
-\subsection{Checking properties described by state machines : on synergy of
-  instrumentation, slicing and symbolic execution}
+\subsection{Vérification de propriétés décrites par des automates finis}
 
-\cite{checking-prop-state-machines}\\
-\textsc{Klee} \cite{KLEE} pour l'exécution symbolique
+Cette méthode \cite{checking-prop-state-machines} combine une instrumentation du
+code source, une étape de {\em slicing} et une exécution symbolique.
+L'instrumentation rajoute des instructions simulant le comportement de
+l'automate fini correspondant au programme, dont les états correspondent aux
+propriétés du programme à vérifier. Le {\em slicing} est appliqué pour ne
+conserver que le code relatif aux états de l'automate. L'exécution symbolique du
+programme par \textsc{Klee} \cite{KLEE} va permettre de mettre en évidence des
+violations de ces propriétés.\\
+
+L'utilisation du {\em slicing} afin de réduire la portion de code analysée par
+l'exécution symbolique est similaire à \textsc{Sante} \cite{SANTE}. D'autre
+part, les auteurs de cette méthode développent un framework modulaire d'analyse
+statique de programmes C : \textsc{Stanse} \cite{STANSE}, dont l'intérêt réside
+dans le fait qu'il n'y aurait aucun autre framework open-source ayant une
+efficacité et une applicabilité comparable. Ils ne sont donc pas au courant de
+l'existence de \textsc{Frama-C} \cite{Frama-C}.
 
 \subsection{Fault localization for null pointer exception based on stack trace and program slicing}
 
