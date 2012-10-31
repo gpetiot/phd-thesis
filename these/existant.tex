@@ -239,14 +239,6 @@ qui mesure précisément les approximations faites à l'exécution d'un programm
 \cite{Value}.
 
 
-\subsubsection{\textsc{PolySpace}}
-
-\subsubsection{\textsc{Astree}}
-
-\subsubsection{\textsc{Fluctuat}}
-
-\subsubsection{\textsc{Value}}
-
 
 \subsection{Abstraction à partir de prédicats}
 \label{sec:abstraction-predicats}
@@ -302,13 +294,6 @@ d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
 \textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
 \textsc{Wp}, qui traitent des programmes dont le code contient des annotations
 \textsc{Acsl} \cite{ACSL}.
-
-
-\subsubsection{\textsc{Coq}}
-
-\subsubsection{\textsc{Isabelle}}
-
-\subsubsection{\textsc{WP}}
 
 
 
@@ -445,9 +430,6 @@ temps raisonnable) et que seulement le plus court des préfixes infaisables de
 chaque chemin infaisable est exploré.
 \end{itemize}
 
-\subsubsection{Résumé de boucle}
-
-\cite{loop-summarization}
 
 \subsection{Test fonctionnel}
 \label{sec:test-fonctionnel}
@@ -701,79 +683,3 @@ couverture minimale $\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$. S'il reste des
 alarmes non diagnostiquées, les alarmes finales ($a_2$ et $a_5$) et les alarmes
 diagnostiquées ne seront plus considérées. L'itération suivante génère la
 couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
-
-
-\subsection{\textsc{DyTa}}
-
-\textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse statique et
-une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
-utilisé pour spécifier des pré/post-conditions et des invariants de programmes
-C\#, il identifie également les bugs potentiels (violations de contrat) par
-interprétation abstraite.\\
-
-\textsc{DyTa} instrumente ensuite le programme pour rajouter des instructions
-assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
-aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
-également des points de contrôle à l'endroit des instructions signalées par
-l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
-par \textsc{Pex} \cite{Pex}. Cette étape est semblable à l'instrumentation
-opérée par \textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin
-de guider l'exécution concolique du programme par \textsc{PathCrawler}
-\cite{PathCrawler}.\\
-
-L'analyse statique du graphe du flot de contrôle du programme permet à
-\textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
-permet d'atteindre une instruction potentiellement dangereuse. La génération
-dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
-cette dernière guide l'exploration pour la génération dynamique de tests.
-
-\subsection{Vérification collaborative et test}
-
-Cette méthode \cite{collaborative-verification} combine une ou plusieurs
-analyses statiques de programmes C\# et une génération de test par exécution
-concolique. Le langage de contrats pour le code .Net est étendu afin d'exprimer
-explicitement les compromis faits par les analyseurs statiques (\textsc{Dafny}
-\cite{Dafny} par exemple) et les résultats de leurs analyses. Cette extension du
-langage de spécification a pour objectif de simplifier la collaboration de
-différents analyseurs statiques, à l'instar du langage de spécification
-\textsc{Acsl} \cite{ACSL} pour \textsc{Frama-C} \cite{Frama-C}.\\
-
-La spécification générée est ensuite utilisée par \textsc{Pex} \cite{Pex}
-pour générer des cas de test par exécution concolique mettant en évidence les
-erreurs soupçonnées par l'analyse statique. Cette collaboration de l'analyse
-statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante}
-\cite{SANTE}.
-
-\subsection{Vérification de propriétés décrites par des automates finis}
-
-Cette méthode \cite{checking-prop-state-machines} combine une instrumentation du
-code source, une étape de {\em slicing} et une exécution symbolique.
-L'instrumentation rajoute des instructions simulant le comportement de
-l'automate fini correspondant au programme, dont les états correspondent aux
-propriétés du programme à vérifier. Le {\em slicing} est appliqué pour ne
-conserver que le code relatif aux états de l'automate. L'exécution symbolique du
-programme par \textsc{Klee} \cite{KLEE} va permettre de mettre en évidence des
-violations de ces propriétés.\\
-
-L'utilisation du {\em slicing} afin de réduire la portion de code analysée par
-l'exécution symbolique est similaire à \textsc{Sante} \cite{SANTE}. D'autre
-part, les auteurs de cette méthode développent un framework modulaire d'analyse
-statique de programmes C : \textsc{Stanse} \cite{STANSE}, dont l'intérêt réside
-dans le fait qu'il n'y aurait aucun autre framework open-source ayant une
-efficacité et une applicabilité comparable. Ils ne sont donc pas au courant de
-l'existence de \textsc{Frama-C} \cite{Frama-C}.
-
-\subsection{Localisation d'erreurs par slicing guidé par la trace d'exécution}
-
-Cette méthode \cite{fault-localization} utilise un {\em slicing} arrière à
-partir d'une instruction de déréférencement produisant une {\em Null Pointer
-Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
-fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
-statique des pointeurs est ensuite opérée sur le programme slicé afin de
-déterminer si chacun des pointeurs peut être ${\tt NULL}$. Puis une analyse
-d'alias est opérée afin d'augmenter la précision de l'analyse statique.\\
-
-Contrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
-analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
-une analyse dynamique; cette méthode commence par une analyse dynamique, dont
-le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
