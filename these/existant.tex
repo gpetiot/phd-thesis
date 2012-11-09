@@ -498,30 +498,6 @@ combiner pour associer leurs avantages et combattre leurs inconvénients
 la vérification de programmes.
 
 
-\subsection{Raffinement d'abstraction guidé par des contre-exemples}
-
-Une première combinaison de méthodes est le raffinement d'abstraction guidé par
-des contre-exemples \cite{CEGAR}, qui associe l’abstraction par prédicats et le
-model-checking : une abstraction du programme est générée à partir d’un ensemble
-de prédicats et invariants. Si le {\em model-checking} ne peut pas établir
-qu'une propriété est satisfaite, des contre-exemples sont générés, permettant de
-raffiner l’abstraction en ajoutant de nouveaux prédicats, et ainsi de suite. Ce
-processus peut ne pas terminer. Plusieurs outils de vérification des programmes
-C se basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
-\textsc{Yogi} \cite{YOGI}, \textsc{Magic} \cite{MAGIC} et \textsc{Slam}
-\cite{SLAM}.
-
-
-\subsection{\textsc{DSD-Crasher}}
-
-L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} utilise une approche différente
-et combine une génération d'invariants par génération de tests et des techniques
-d'apprentissage \cite{discover-invariants} et une analyse statique signalant des
-alarmes qui seront confirmées par un générateur de tests \cite{JCrasher}. Les
-invariants détectés permettent de guider la classification d'alarmes et la
-génération de tests, ce qui rend l'outil très dépendant de leur qualité.
-
-
 \subsection{\textsc{Static ANalysis and TEst}}
 
 La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
