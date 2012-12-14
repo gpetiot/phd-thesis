@@ -1,0 +1,272 @@
+
+\chapter{Combinaisons de méthodes}
+
+\section{\textsc{DyTa}}
+
+\textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse statique et
+une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
+utilisé pour spécifier des pré/post-conditions et des invariants de programmes
+C\#, il identifie également les bugs potentiels (violations de contrat) par
+interprétation abstraite.\\
+
+\textsc{DyTa} instrumente ensuite le programme pour rajouter des instructions
+assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
+aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
+également des points de contrôle à l'endroit des instructions signalées par
+l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
+par \textsc{Pex} \cite{PEX}. Cette étape est semblable à l'instrumentation
+opérée par \textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin
+de guider l'exécution concolique du programme par \textsc{PathCrawler}
+\cite{PathCrawler}.\\
+
+L'analyse statique du graphe du flot de contrôle du programme permet à
+\textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
+permet d'atteindre une instruction potentiellement dangereuse. La génération
+dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
+cette dernière guide l'exploration pour la génération dynamique de tests.
+
+\section{Vérification collaborative et test}
+
+Cette méthode \cite{collaborative-verification} combine une ou plusieurs
+analyses statiques de programmes C\# et une génération de test par exécution
+concolique. Le langage de contrats pour le code .Net est étendu afin d'exprimer
+explicitement les compromis faits par les analyseurs statiques (\textsc{Dafny}
+\cite{Dafny} par exemple) et les résultats de leurs analyses. Cette extension du
+langage de spécification a pour objectif de simplifier la collaboration de
+différents analyseurs statiques, à l'instar du langage de spécification
+\textsc{Acsl} \cite{ACSL} pour \textsc{Frama-C} \cite{Frama-C}.\\
+
+La spécification générée est ensuite utilisée par \textsc{Pex} \cite{PEX}
+pour générer des cas de test par exécution concolique mettant en évidence les
+erreurs soupçonnées par l'analyse statique. Cette collaboration de l'analyse
+statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante}
+\cite{SANTE}.
+
+\section{Vérification de propriétés décrites par des automates finis}
+
+Cette méthode \cite{checking-prop-state-machines} combine une instrumentation du
+code source, une étape de {\em slicing} et une exécution symbolique.
+L'instrumentation rajoute des instructions simulant le comportement de
+l'automate fini correspondant au programme, dont les états correspondent aux
+propriétés du programme à vérifier. Le {\em slicing} est appliqué pour ne
+conserver que le code relatif aux états de l'automate. L'exécution symbolique du
+programme par \textsc{Klee} \cite{KLEE} va permettre de mettre en évidence des
+violations de ces propriétés.\\
+
+L'utilisation du {\em slicing} afin de réduire la portion de code analysée par
+l'exécution symbolique est similaire à \textsc{Sante} \cite{SANTE}. D'autre
+part, les auteurs de cette méthode développent un framework modulaire d'analyse
+statique de programmes C : \textsc{Stanse} \cite{STANSE}, dont l'intérêt est :
+{\em`` there is no other open-source framework with comparable applicability and
+efficiency ''}. Ils ne sont visiblement pas au courant de l'existence de
+\textsc{Frama-C} \cite{Frama-C}.
+
+\section{Localisation d'erreurs par slicing guidé par la trace d'exécution}
+
+Cette méthode \cite{fault-localization} utilise un {\em slicing} arrière à
+partir d'une instruction de déréférencement produisant une {\em Null Pointer
+Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
+fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
+statique des pointeurs est ensuite opérée sur le programme slicé afin de
+déterminer si chacun des pointeurs peut être ${\tt NULL}$. Puis une analyse
+d'alias est opérée afin d'augmenter la précision de l'analyse statique.\\
+
+Contrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
+analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
+une analyse dynamique; cette méthode commence par une analyse dynamique, dont
+le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
+
+\section{\textsc{Blast}}
+
+Cet outil \cite{BLAST} vérifie les propriétés temporelles de sûreté d'un
+programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
+raffinement des abstractions du programme est basé sur une abstraction par
+prédicat et la découverte des prédicats se fait par interpolation. C'est une
+implémentation de la méthode \textsc{Cegar} \cite{CEGAR} tout comme
+\textsc{Slam} \cite{SLAM} et \textsc{Magic} \cite{MAGIC}. La génération des cas
+de test se fait par exécution symbolique. Le model-checking est incrémental :
+les résultats partiels sont réutilisés afin de pouvoir passer à l'échelle.\\
+
+\textsc{Blast} ne traite ni les débordements arithmétiques ni les opérations
+bit-à-bit, et considère que toutes les opérations arithmétiques sur les
+pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
+propriétés ne contient pas de quantifieurs, contrairement à \textsc{Acsl}
+\cite{ACSL}.
+
+\section{\textsc{Smart}}
+
+Cet outil \cite{SMART} (basé sur son prédécesseur \textsc{Dart} \cite{DART})
+génère des tests par exécution concolique. Pour résoudre le problème de
+l'explosion du nombre de chemins, il va calculer à la demande des résumés de
+fonction qui sont des pré-conditions et post-conditions pour chaque fonction
+(contraintes sur les variables en entrée et en sortie). Ces résumés vont être
+réutilisés si possible afin d'éviter de ré-exécuter la fonction correspondante.
+La génération de ces résumés est présentée comme se faisant par ``analyse
+statique interprocédurale'' mais se rattacherait plutôt à une analyse dynamique
+car utilisant une exécution symbolique (et résolution de contraintes).
+
+\section{\textsc{Synergy}, \textsc{Dash} et \textsc{Yogi}}
+
+\textsc{Synergy} \cite{SYNERGY} est un algorithme combinant du test (essayer
+d'atteindre un état d'erreur) et une abstraction (trouver une abstraction
+suffisamment précise montrant qu'aucun chemin ne peut atteindre un état
+d'erreur). La sous-approximation du test et la sur-approximation de
+l'abstraction sont raffinées de manière itérative. L'abstraction est utilisée
+pour guider la génération de tests. Les tests sont utilisés pour décider
+{\em où} raffiner l'abstraction.\\
+
+Les états de l'abstraction, les régions, sont des classes d'équivalence des
+états du programme concret. S'il n'existe aucun chemin de la région initiale
+vers une région d'erreur, alors il n'existe aucune suite de transitions
+concrètes menant d'un état initial concret à un état d'erreur concret.\\
+
+\textsc{Dash} \cite{DASH} est une évolution de \textsc{Synergy}, prenant en
+compte les appels de procédure et les pointeurs (contrairement à
+\textsc{Synergy}). \textsc{Dash} raffine l'abstraction en utilisant uniquement
+les relations d'alias mises en évidence par les tests. La génération de tests
+guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
+la raffiner. Cet algorithme est implémenté dans l'outil \textsc{Yogi}
+\cite{YOGI}.
+
+\section{\textsc{Sage}}
+
+Cet outil \cite{SAGE} utilise une analyse dynamique uniquement afin de générer
+des tests pour des programmes au format binaire x86. Il combine une exécution
+symbolique à du {\em fuzz testing}. Une première exécution avec des entrées
+valides permet de récupérer une trace d'exécution du programme. L'exécution
+symbolique de cette trace permet de collecter les contraintes du chemin
+d'exécution. De nouveaux chemins sont générés par négation des contraintes,
+à la manière de \textsc{PathCrawler} \cite{PathCrawler} et autres outils
+similaires.
+
+\section{\textsc{Smash}}
+
+Cet outil \cite{SMASH} combine une abstraction par prédicats et une génération
+dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
+des informations de type $may$ (vraies pour toutes les exécutions, permettant de
+prouver l'absence d'erreurs) et un résumé des informations de type $must$
+(vraies pour quelques exécutions uniquement, permettant de prouver l'existence
+d'erreurs) sont calculés à la demande. L'analyse statique ($may$) et l'analyse
+dynamique ($must$) se font simultanément et utilisent toutes deux les résumés
+$may$ ($\lnot may$ pour des raisons techniques) et les résumés $must$.\\
+
+Les résumés $\lnot may$ et $must$ sont progressivement raffinés pour chaque
+fonction, afin de prouver qu'une propriété n'est jamais violée (si un résumé
+$\lnot may$ est applicable), ou de mettre en évidence une exécution violant une
+propriété (si un résumé $must$ est applicable). Par construction, il n'est pas
+possible que les deux résumés soient applicables.\\
+
+Positionnement de \textsc{Smash} \cite{SMASH} par rapport aux autres outils de
+Microsoft :
+\begin{shaded}
+`` The \textsc{Smash} \cite{SMASH} algorithm generalizes and extends several
+existing algorithms. \textsc{Slam} \cite{SLAM} performs a compositional $may$
+analysis using predicate abstraction and partition refinement, but does not
+perform a $must$ analysis. \textsc{Smart} \cite{SMART} performs a compositional
+$must$ analysis, extending the non-compositional $must$ analysis of
+\textsc{Dart} \cite{DART}, but does not perform a $may$ analysis.
+\textsc{Synergy} \cite{SYNERGY} combines \textsc{Slam} \cite{SLAM} and
+\textsc{Dart} \cite{DART} for intraprocedural analysis only. \textsc{Dash}
+\cite{DASH} performs an interprocedural $may-must$ analysis, extending the
+intraprocedural \textsc{Synergy} \cite{SYNERGY} algorithm, but is
+non-compositional, i.e., it does not memoize (cache) intermediate results in the
+form of reusable summaries. ''
+\end{shaded}
+
+La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
+
+
+
+%% GRAPHIC SUMMARY
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    % SLAM
+    \node at (0, 5) {\textsc{Slam}};
+    \node at (0, 4.5) {$may$};
+    \node[draw,ellipse,line width=.25mm,minimum width=1.5cm,minimum height=2cm]
+    at (0, 4.75) {};
+
+    % DART
+    \node at (7, 5) {\textsc{Dart}};
+    \node at (7, 4.5) {$must$ $\lnot$comp};
+    \node[draw,ellipse,line width=.25mm,minimum width=2.5cm,minimum height=2cm]
+    at (7, 4.75) {};
+
+    % SMART
+    \node at (10, 5) {\textsc{Smart}};
+    \node at (10, 4.5) {$must$ comp};
+    \node[draw,ellipse,line width=.25mm,minimum width=6cm,minimum height=6cm]
+    at (8.5, 3.75) {};
+
+    % SYNERGY
+    \node at (3, 5) {\textsc{Synergy}};
+    \node at (3, 4.5) {$may+must$ intra-proc};
+    \node[draw,ellipse,line width=.25mm,minimum width=9cm,minimum height=4cm]
+    at (3.75, 4.75) {};
+
+    % DASH
+    \node at (3, 2.5) {\textsc{Dash} + \textsc{Yogi}};
+    \node at (3, 2) {$may+must$ inter-proc $\lnot$comp};
+    \node[draw,ellipse,line width=.25mm,minimum width=9cm,minimum height=8cm]
+    at (3.75, 4.75) {};
+
+    % SMASH
+    \node at (4, 0.5) {\textsc{Smash}};
+    \node at (4, 0) {$may+must$ inter-proc comp};
+    \node[draw,ellipse,line width=.25mm,minimum width=12.5cm,
+      minimum height=12cm] at (5.25, 3.75) {};
+  \end{tikzpicture}
+  \caption{Résumé des outils de Microsoft}
+  \label{fig:microsoft-summary}
+\end{figure}
+
+
+
+
+
+\section{Analyses statique et dynamique pour la génération d'invariants}
+
+Cette méthode \cite{fromTestsToProofs} propose une solution au problème du
+passage à l'échelle de la génération d'invariants (de programmes impératifs) par
+résolution de contraintes. Les invariants arithmétiques linéaires sont générés
+d'après les informations obtenues par interprétation abstraite du programme, par
+exécution concrète et par exécution symbolique du programme. Ces informations
+permettent de générer des contraintes qui vont permettre au solveur de
+contraintes de simplifier le système de contraintes et de réduire l'espace de
+recherche.
+
+\section{\textsc{Cegar} : Raffinement d'abstraction guidé par des
+  contre-exemples}
+
+Le raffinement d'abstraction guidé par des contre-exemples \cite{CEGAR} associe
+l’abstraction par prédicats et le model-checking : une abstraction du programme
+est générée à partir d’un ensemble de prédicats et invariants. Si le
+model-checking prouve la correction du système abstrait, alors le système
+concret l'est également. Si le model-checking ne peut pas établir qu'une
+propriété est satisfaite, il faut déterminer si elle est présente dans le
+système concret. Si c'est le cas, un bug a été trouvé. Sinon il s'agit d'un
+contre-exemple. De nouveaux prédicats vont être créés pour raffiner
+l'abstraction afin que ce contre-exemple soit absent de l'abstraction, et ainsi
+de suite. Ce processus peut ne pas terminer. Plusieurs outils de vérification se
+basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
+\textsc{Magic} \cite{MAGIC} et \textsc{Slam} \cite{SLAM}.\\
+
+Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
+générée peut donc mettre un certain temps avant de converger vers une forme
+acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
+raffinement de l'abstraction : \textsc{Cegaar} \cite{CEGAAR}. Cette technique
+élimine une infinité de contre-exemples (traces infaisables) de la forme
+$\alpha . \lambda^* . \beta$ en une seule étape, où $\lambda$ correspond à une
+ou plusieurs exécutions d'une boucle.
+
+\section{\textsc{DSD-Crasher}}
+
+L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une génération
+d'invariants par génération de tests et des techniques d'apprentissage
+\cite{discover-invariants} et une analyse statique signalant des alarmes qui
+seront confirmées par un générateur de tests \cite{JCrasher}. Les invariants
+détectés permettent de guider la classification d'alarmes et la génération de
+tests, ce qui rend l'outil très dépendant de leur qualité.
+

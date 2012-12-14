@@ -1,10 +1,10 @@
 
 BIB=biblio.bib
-SCHEMES=
+SCHEMES=SANTE_slicing.tex SANTE_slicing_advanced.tex
 
 all: these.pdf
 
-these.dvi: these.tex $(BIB) $(SCHEMES) existant.tex
+these.dvi: these.tex $(BIB) $(SCHEMES) existant.tex combinaisons_methodes.tex memory_model.tex precondition.tex
 	latex $^
 	bibtex these
 	latex $^
