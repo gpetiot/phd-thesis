@@ -20,27 +20,46 @@ de guider l'exécution concolique du programme par \textsc{PathCrawler}
 \cite{PathCrawler}.\\
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
-\textsc{DyTa} de calculer les points de contrôle pour lesquels aucune branche ne
-permet d'atteindre une instruction potentiellement dangereuse. La génération
+\textsc{DyTa} de calculer les points de contrôle à partir desquels les alarmes
+(instructions potentiellement dangereuses) sont inatteignables. La génération
 dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
 cette dernière guide l'exploration pour la génération dynamique de tests.
 
 \section{Vérification collaborative et test}
 
-Cette méthode \cite{collaborative-verification} combine une ou plusieurs
-analyses statiques de programmes C\# et une génération de test par exécution
-concolique. Le langage de contrats pour le code .Net est étendu afin d'exprimer
-explicitement les compromis faits par les analyseurs statiques (\textsc{Dafny}
-\cite{Dafny} par exemple) et les résultats de leurs analyses. Cette extension du
-langage de spécification a pour objectif de simplifier la collaboration de
-différents analyseurs statiques, à l'instar du langage de spécification
-\textsc{Acsl} \cite{ACSL} pour \textsc{Frama-C} \cite{Frama-C}.\\
+Cette méthode \cite{collaborative-verification} part du constat que la plupart
+des outils de vérifications statiques (outils utilisant simplement des
+heuristiques, outils d'interprétation abstraite, model-checkers, ou outils de
+preuve) font des compromis afin d'améliorer les performances, de réduire le
+nombre de faux positifs ou de limiter l'effort à fournir pour annoter le
+programme. Cela se traduit par la supposition d'une propriété tout au long de
+l'analyse dy programme (par exemple qu'un certains type d'erreurs ne peut pas
+se produire), cette propriété n'est pas vérifiée par l'analyseur. Ceci
+implique que de tels analyseurs ne peuvent garantir l'absence d'erreurs dans un
+programme. Si un analyseur fait un compromis en supposant une propriété, il
+faut utiliser un autre analyseur capable de valider cette propriété.\\
 
-La spécification générée est ensuite utilisée par \textsc{Pex} \cite{PEX}
-pour générer des cas de test par exécution concolique mettant en évidence les
-erreurs soupçonnées par l'analyse statique. Cette collaboration de l'analyse
-statique et du test est comparable à \textsc{DyTa} \cite{DyTa} et \textsc{Sante}
-\cite{SANTE}.
+Cette méthode propose d'exprimer les compromis dans un langage de contrats,
+afin de faciliter la collaboration entre plusieurs outils d'analyse statique
+et permettant de décrire le fait qu'un assertion ait été complètement vérifiée
+par un analyseur ou partiellement vérifiée sous certaines hypothèses.\\
+
+Pour faciliter la vérification statique du programme, l'utilisateur doit au
+préalable ajouter des annotations (invariants de boucle par exemple). Les
+propriétés qui n'ont pas été vérifiées statiquement sont validées par des tests
+unitaires. Le programme est instrumenté afin de rajouter des vérifications à
+l'exécution pour guider la génération de contre-exemples. \textsc{Pex}
+\cite{PEX} est utilisé pour générer des cas de test par exécution concolique,
+mettant en évidence des contre-exemples. L'utilisateur peut décider de
+privilégier l'analyse statique ou le test selon qu'il spécifie ou non son
+programme.\\
+
+Cette combinaison d'analyse statique, d'une instrumentation et du test est
+comparable à \textsc{Sante} \cite{SANTE}, bien qu'il manque l'étape de slicing
+qui permet à \textsc{Sante} d'économiser du temps sur l'analyse dynamique. En
+revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
+statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
+possible avec \textsc{Sante}.
 
 \section{Vérification de propriétés décrites par des automates finis}
 
@@ -48,18 +67,23 @@ Cette méthode \cite{checking-prop-state-machines} combine une instrumentation d
 code source, une étape de {\em slicing} et une exécution symbolique.
 L'instrumentation rajoute des instructions simulant le comportement de
 l'automate fini correspondant au programme, dont les états correspondent aux
-propriétés du programme à vérifier. Le {\em slicing} est appliqué pour ne
-conserver que le code relatif aux états de l'automate. L'exécution symbolique du
-programme par \textsc{Klee} \cite{KLEE} va permettre de mettre en évidence des
-violations de ces propriétés.\\
+propriétés du programme à vérifier.
+Le {\em slicing} est appliqué pour réduire la taille du programme, on ne
+conserve que le code relatif aux états d'erreur de l'automate. Le programme
+simplifié doit être équivalent au programme instrumenté en ce qui concerne
+l'atteignabilité des états d'erreur de l'automate.
+L'exécution symbolique du programme par \textsc{Klee} \cite{KLEE} va permettre
+de mettre en évidence des contre-exemples pour ces propriétés.\\
 
-L'utilisation du {\em slicing} afin de réduire la portion de code analysée par
-l'exécution symbolique est similaire à \textsc{Sante} \cite{SANTE}. D'autre
-part, les auteurs de cette méthode développent un framework modulaire d'analyse
-statique de programmes C : \textsc{Stanse} \cite{STANSE}, dont l'intérêt est :
-{\em`` there is no other open-source framework with comparable applicability and
-efficiency ''}. Ils ne sont visiblement pas au courant de l'existence de
-\textsc{Frama-C} \cite{Frama-C}.
+L'utilisation du {\em slicing} afin de réduire la portion de code analysée
+(et donc le nombre de chemins d'exécution) par l'exécution symbolique est
+similaire à \textsc{Sante} \cite{SANTE}. En revanche, cette méthode ne semble
+pas applicable quel que soit le type d'erreur.
+\cite{checking-prop-state-machines} prend l'exemple de verrous à poser sur des
+variables du programme. L'instrumentation repère des motifs bien précis dans le
+programme et le code généré est spécifique à ce type d'erreur. Contrairement à
+\textsc{Sante}, cette méthode n'applique pas d'analyse statique plus générale
+(pouvant lever différents types d'alarmes) avant l'instrumentation.
 
 \section{Localisation d'erreurs par slicing guidé par la trace d'exécution}
 
