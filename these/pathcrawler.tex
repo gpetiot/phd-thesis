@@ -1,0 +1,66 @@
+
+\chapter{\textsc{PathCrawler}}
+
+
+\textsc{PathCrawler} \cite{PathCrawler} est un outil de génération de tests
+structurels pour les programmes C, accessible sous la forme d'un service web :
+\textsc{PathCrawler Online} \cite{PathCrawlerOnline}.\\
+
+Étant donné un programme C sous test $p$ et une pré-condition sur ses entrées,
+il génère des cas de test respectant un critère de couverture de test. Le
+critère \emph{tous les chemins} impose une couverture de tous les chemins
+faisables de $p$. L'exploration exhaustive de tous les chemins étant en pratique
+irréalisable sur des programmes réels, le critère \emph{tous les k-chemins} a
+été défini, il limite l'exploration aux chemins qui ont au plus $k$ itérations
+consécutives de chaque boucle.\\
+
+\textsc{PathCrawler} commence par construire une version instrumentée de $p$
+permettant de tracer l'exécution de chaque cas de test, puis il génère les
+contraintes représentant la sémantique de chaque instruction de $p$. La
+prochaine étape est la génération et la résolution de contraintes pour produire
+les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
+couverture. La résolution de contraintes s'effectue à l'aide
+d'\textsc{ECLiPSe Prolog} \cite{ECLiPSe}, un environnement de programmation en
+logique par contraintes basé sur Prolog.\\
+
+Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
+l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
+de $p$ en suivant le chemin $\pi$.\\
+ 
+La méthode de génération de test est composée des étapes suivantes :
+
+\begin{itemize}
+\item[$(\mathcal{G}_1)$]
+Création d'une variable logique pour chaque entrée.
+Prise en compte des contraintes de la pré-condition.
+Le préfixe de chemin initial $\pi$ est vide.
+Aller à $(\mathcal{G}_2)$.
+
+\item[$(\mathcal{G}_2)$]
+Exécuter symboliquement le chemin $\pi$ : ajout des contraintes et
+mise à jour de la mémoire en fonction des instructions de $\pi$.
+Si certaines contraintes sont insatisfiables, aller à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_3)$.
+
+\item[$(\mathcal{G}_3)$]
+Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
+les contraintes du chemin courant. Si les contraintes sont insatisfiables, aller
+à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_4)$.
+
+\item[$(\mathcal{G}_4)$]
+Exécuter le programme avec trace sur le cas de test $t$ généré pour obtenir
+le chemin d'exécution, qui doit commencer par $\pi$.
+Aller à $(\mathcal{G}_5)$.
+
+\item[$(\mathcal{G}_5)$]
+Calculer le prochain chemin partiel $\pi$ à couvrir. Un parcours en profondeur
+détermine la dernière décision $d$ pour laquelle il reste une branche à
+explorer. S'il n'existe pas une telle décision, l'algorithme s'arrête. Sinon,
+$\pi$ est recalculé et contient maintenant le chemin partiel précédent dans
+lequel les contraintes correspondant à $d$ ont été niées, et retour à l'étape
+$(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
+(en considérant que le solveur de contraintes peut trouver une solution dans un
+temps raisonnable) et que seulement le plus court des préfixes infaisables de
+chaque chemin infaisable est exploré.
+\end{itemize}

@@ -1,0 +1,142 @@
+
+\chapter{\textsc{Frama-C}}
+
+
+\textsc{Frama-C} \cite{Frama-C} est une plate-forme dédiée à l'analyse statique
+des programmes C, conjointement dévelopée par INRIA et le CEA LIST. Son
+architecture (Fig.~\ref{fig:archi}) comporte un noyau et un écosystème de
+greffons, rendant l’outil extensible. Les greffons peuvent échanger des
+informations et utiliser les  services fournis par le noyau, permettant ainsi
+une collaboration entre différentes analyses.\\
+
+
+\newcommand{\lang}[1]{\textsf{\small #1}\xspace}
+\newcommand{\cil}{\lang{CIL}}
+\newcommand{\C}{\lang{C}}
+\newcommand{\ACSL}{\lang{ACSL}}
+\newcommand{\JML}{\lang{JML}}
+\newcommand{\framac}{\lang{Frama-C}}
+\newcommand{\pathcrawler}{\lang{PathCrawler}}
+\newcommand{\colibri}{\lang{Colibri}}
+
+
+\begin{figure}[h]
+  \begin{center}
+  \tikzstyle{service}=
+            [rounded corners,rectangle,draw,inner sep=2mm,fill=gray!40]
+  \pgfdeclarelayer{db-background}
+  \pgfdeclarelayer{background}
+  \pgfsetlayers{background,db-background,main}
+  \scalebox{0.75}{
+    \begin{tikzpicture}
+      \node at (0,5.5) { \large{\textbf{Plug-ins}} };
+      \node [matrix of nodes,rectangle,draw,column sep=4mm,inner sep=2.5mm] 
+      (analyzers) at (8,5.5)
+            {
+              \node [service] (a1) at (0,0) { Analyzer 1 }; \pgfmatrixnextcell
+              \node [service] (a2) at (0,0) { Analyzer 2 }; \pgfmatrixnextcell
+              \node [service] (a3) at (0,0) { Analyzer 3 }; \pgfmatrixnextcell
+              \node [service] (a5) at (0,0) { \vphantom{Analyzer} \ldots }; \\
+            };
+            \node[inner sep=0.4mm] (db-plugins) at (8,3.7) {Plug-ins Database };
+            \node[] (db-kernel) at (db-plugins) {};
+            \begin{pgfonlayer}{db-background}
+              \node[service,ellipse,fit=(db-plugins)
+                (db-kernel),inner sep=1.2mm] (db) {};
+            \end{pgfonlayer}
+            \node at (0,2.35) { \large{\textbf{Kernel Services}} };
+            \begin{pgfonlayer}{background}
+              \node [matrix of nodes,rectangle,draw,row sep=4mm,inner sep=2mm] 
+              (services) at  (8,2.35)
+                    {
+                      \node [inner sep=6mm] at (0,0) {};
+                      \node [service] (message) at (0,-0.3) { Message };
+                      \pgfmatrixnextcell
+                      \node [service] (printer) at (0,-0.3) { Printer };
+                      \pgfmatrixnextcell
+                      \node [service] (status) at (0,-0.3) { Property Status };
+                      \pgfmatrixnextcell \\
+                      \node [service] (journal) at (1,0) { Journal };
+                      \pgfmatrixnextcell
+                      \node [service] (parameter) at (1,0) { Parameter };
+                      \pgfmatrixnextcell
+                      \node [service] (project) at (0.1,0) { Project };
+                      \pgfmatrixnextcell 
+                      \node [service] (others) at (0.1,0)
+                            { \vphantom{Project} \dots}; \pgfmatrixnextcell\\
+                    };
+      \end{pgfonlayer}
+            \node at (0,-0.2) { \large{\textbf{(Modified) \cil}} };
+            \node [service,diamond,aspect=3,inner sep=1mm] (ast) at (8,-0.2)
+                  { C + \textsc{Acsl} AST };
+            \path [->,thick] (5,3.73) edge[bend left=30] (5,4.87);
+            \path [->,thick] (11.5,3.73) edge[bend right=30] (11.5,4.87);
+            \path [->,thick] (analyzers) edge (db);
+            \path [<->,thick] (ast) edge (services);
+    \end{tikzpicture}
+  }
+  \end{center}
+  \caption{Architecture de \textsc{Frama-C}}\label{fig:archi}
+\end{figure}
+
+
+\textsc{Frama-C} est basé sur CIL \cite{CIL}, une bibliothèque qui normalise des
+programmes C (ISO C99) en opérant des modifications syntaxiques : normalisation
+des boucles en utilisant la structure ${\tt while}$, unique ${\tt return}$ pour
+chaque fonction, etc. \textsc{Frama-C} étend CIL pour supporter des annotations
+dédiées portant sur le code source, exprimées dans le langage \textsc{Acsl}.
+\textsc{Acsl} \cite{ACSL} est un langage formel de spécification
+comportementale \cite{BISL}, inspiré de JML \cite{JML}, pouvant exprimer des
+propriétés fonctionnelles de programmes C : pré-conditions, post-conditions,
+invariants, etc.\\
+
+En effet, la spécification d'une fonction comprend les pré-conditions requises
+(exprimées par une clause ${\tt requires}$) lors de l'appel et les
+post-conditions assurées (${\tt ensures}$) lors du retour. Parmi ces
+post-conditions, une clause indique quels sont les emplacements mémoire qui
+peuvent être affectés (${\tt assigns}$) par la fonction.\\
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+/*@ requires \valid(a) && \valid(b);
+    requires \separated(a,b);
+    assigns *a, *b;
+    ensures *a == \at(*b,Pre);
+    ensures *b == \at(*a,Pre); */
+void swap(int* a, int* b);
+\end{lstlisting}
+\caption{Exemple de spécification \textsc{Acsl}}\label{fig:acsl-spec}
+\end{figure}
+
+
+Considérons par exemple une spécification fournie pour une fonction $swap$
+(Fig.~\ref{fig:acsl-spec}). La première pré-condition établit que les deux
+arguments doivent être des pointeurs valides, autrement dit, le déréférencement
+de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
+pré-condition impose que les emplacements mémoire occupés par chacune de ces
+variables soient disjoints. En plus de ${\tt \backslash valid}$ et
+${\tt \backslash separated}$, \textsc{Acsl} fournit de nombreux prédicats et
+fonctions afin de décrire les états de la mémoire. ${\tt \backslash at(e,l)}$
+fait référence à la valeur de l'expression $e$ à l'état de la mémoire au label
+$l$. $Pre$ est un label prédéfini qui fait référence à l'état de la mémoire
+avant l'exécution de la fonction. Ainsi, les post-conditions (${\tt ensures}$)
+signifient qu'à la fin de la fonction, $*a$ aura la valeur que $*b$ avait au
+début de la fonction, et réciproquement.\\
+
+
+\textsc{Acsl} offre aussi la possibilité d'écrire des annotations dans le code
+source, permettant d'exprimer des propriétés devant être vraies à un point donné
+du programme : les assertions (${\tt assert}$).
+Il est également possible d'exprimer des propriétés devant être vraies avant une
+boucle et après chaque itération de cette boucle : les invariants de boucle
+(${\tt loop\ invariant}$).\\
+
+
+Les annotations du langage \textsc{Acsl} sont écrites en utilisant la logique
+du premier ordre, et il est possible de définir ses propres fonctions et
+prédicats.
+Les greffons peuvent valider ou invalider les propriétés \textsc{Acsl} et
+générer des annotations \textsc{Acsl}, les annotations sont donc un moyen
+d'échanger des informations entre les différentes analyses opérées par les
+greffons.
