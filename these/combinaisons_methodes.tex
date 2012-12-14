@@ -108,13 +108,12 @@ raffinement des abstractions du programme est basé sur une abstraction par
 prédicat et la découverte des prédicats se fait par interpolation. C'est une
 implémentation de la méthode \textsc{Cegar} \cite{CEGAR} tout comme
 \textsc{Slam} \cite{SLAM} et \textsc{Magic} \cite{MAGIC}. La génération des cas
-de test se fait par exécution symbolique. Le model-checking est incrémental :
-les résultats partiels sont réutilisés afin de pouvoir passer à l'échelle.\\
+de test se fait par exécution symbolique.\\
 
 \textsc{Blast} ne traite ni les débordements arithmétiques ni les opérations
 bit-à-bit, et considère que toutes les opérations arithmétiques sur les
 pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
-propriétés ne contient pas de quantifieurs, contrairement à \textsc{Acsl}
+propriétés ne contient pas de quantificateurs, contrairement à \textsc{Acsl}
 \cite{ACSL}.
 
 \section{\textsc{Smart}}
@@ -125,9 +124,9 @@ l'explosion du nombre de chemins, il va calculer à la demande des résumés de
 fonction qui sont des pré-conditions et post-conditions pour chaque fonction
 (contraintes sur les variables en entrée et en sortie). Ces résumés vont être
 réutilisés si possible afin d'éviter de ré-exécuter la fonction correspondante.
-La génération de ces résumés est présentée comme se faisant par ``analyse
-statique interprocédurale'' mais se rattacherait plutôt à une analyse dynamique
-car utilisant une exécution symbolique (et résolution de contraintes).
+La génération automatique de ces résumés est présentée comme se faisant par
+``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
+dynamique car utilisant une exécution symbolique (et résolution de contraintes).
 
 \section{\textsc{Synergy}, \textsc{Dash} et \textsc{Yogi}}
 
