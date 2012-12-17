@@ -193,7 +193,7 @@ forme de résumés réutilisables.
 \textsc{Slam} \cite{SLAM} utilise une abstraction par prédicat et un raffinement
 de partition (implémentation de l'algorithme \textsc{Cegar} \cite{CEGAR}) pour
 effectuer une analyse statique compositionnelle mais n'effectue pas d'analyse
-dynamique.\textsc{Smart} \cite{SMART} exécute une analyse dynamique
+dynamique. \textsc{Smart} \cite{SMART} exécute une analyse dynamique
 compositionnelle. C'est une extension de l'algorithme d'analyse dynamique non
 compositionnelle de \textsc{Dart} \cite{DART}, mais n'effectue pas d'analyse
 statique. \textsc{Synergy} \cite{SYNERGY} combine \textsc{Slam} \cite{SLAM} et
@@ -298,10 +298,14 @@ ou plusieurs exécutions d'une boucle.
 
 \section{\textsc{DSD-Crasher}}
 
-L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une génération
-d'invariants par génération de tests et des techniques d'apprentissage
-\cite{discover-invariants} et une analyse statique signalant des alarmes qui
-seront confirmées par un générateur de tests \cite{JCrasher}. Les invariants
-détectés permettent de guider la classification d'alarmes et la génération de
-tests, ce qui rend l'outil très dépendant de leur qualité.
+L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une première analyse
+dynamique qui va générer des invariants probables (inférence de la
+spécification) \cite{discover-invariants}, une analyse statique qui va émettre
+des alarmes concernant un non-respect des invariants, et une seconde analyse
+dynamique qui va tenter de confirmer ces alarmes par une génération de tests
+\cite{JCrasher}.\\
 
+La première analyse dynamique utilise une génération de tests et des techniques
+d'apprentissage pour générer des invariants. Ces invariants vont guider la
+classification des alarmes et la génération de tests, ce qui rend l'outil très
+dépendant leur qualité.
