@@ -166,35 +166,44 @@ similaires.
 
 Cet outil \cite{SMASH} combine une abstraction par prédicats et une génération
 dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
-des informations de type $may$ (vraies pour toutes les exécutions, permettant de
-prouver l'absence d'erreurs) et un résumé des informations de type $must$
-(vraies pour quelques exécutions uniquement, permettant de prouver l'existence
-d'erreurs) sont calculés à la demande. L'analyse statique ($may$) et l'analyse
-dynamique ($must$) se font simultanément et utilisent toutes deux les résumés
-$may$ ($\lnot may$ pour des raisons techniques) et les résumés $must$.\\
+est calculé par analyse statique (vrai pour toutes les exécutions, permettant
+de prouver l'absence d'erreurs, c'est une sur-approximation) et un autre résumé
+est calculé par analyse dynamique (vrai pour quelques exécutions uniquement,
+permettant de montrer l'existence d'erreurs, c'est une sous-approximation). Ces
+résumés sont calculés à la demande et seront utilisés aussi bien par l'analyse
+statique que par l'analyse dynamique (les deux analyses s'exécutent
+simultanément).\\
 
-Les résumés $\lnot may$ et $must$ sont progressivement raffinés pour chaque
-fonction, afin de prouver qu'une propriété n'est jamais violée (si un résumé
-$\lnot may$ est applicable), ou de mettre en évidence une exécution violant une
-propriété (si un résumé $must$ est applicable). Par construction, il n'est pas
+Ces résumés sont progressivement raffinés pour chaque fonction, afin de prouver
+qu'une propriété n'est jamais violée (si un résumé statique est applicable), ou
+de mettre en évidence une exécution violant une propriété (si un résumé
+dynamique est applicable). Par construction, il n'est pas
 possible que les deux résumés soient applicables.\\
 
-Positionnement de \textsc{Smash} \cite{SMASH} par rapport aux autres outils de
-Microsoft :
+
 \begin{shaded}
-`` The \textsc{Smash} \cite{SMASH} algorithm generalizes and extends several
-existing algorithms. \textsc{Slam} \cite{SLAM} performs a compositional $may$
-analysis using predicate abstraction and partition refinement, but does not
-perform a $must$ analysis. \textsc{Smart} \cite{SMART} performs a compositional
-$must$ analysis, extending the non-compositional $must$ analysis of
-\textsc{Dart} \cite{DART}, but does not perform a $may$ analysis.
-\textsc{Synergy} \cite{SYNERGY} combines \textsc{Slam} \cite{SLAM} and
-\textsc{Dart} \cite{DART} for intraprocedural analysis only. \textsc{Dash}
-\cite{DASH} performs an interprocedural $may-must$ analysis, extending the
-intraprocedural \textsc{Synergy} \cite{SYNERGY} algorithm, but is
-non-compositional, i.e., it does not memoize (cache) intermediate results in the
-form of reusable summaries. ''
+Analyse compositionnelle : mémoization des résultats intermédiaires sous la
+forme de résumés réutilisables.
 \end{shaded}
+
+
+\subsubsection{Résumé des outils Microsoft}
+
+
+\textsc{Slam} \cite{SLAM} utilise une abstraction par prédicat et un raffinement
+de partition (implémentation de l'algorithme \textsc{Cegar} \cite{CEGAR}) pour
+effectuer une analyse statique compositionnelle mais n'effectue pas d'analyse
+dynamique.\textsc{Smart} \cite{SMART} exécute une analyse dynamique
+compositionnelle. C'est une extension de l'algorithme d'analyse dynamique non
+compositionnelle de \textsc{Dart} \cite{DART}, mais n'effectue pas d'analyse
+statique. \textsc{Synergy} \cite{SYNERGY} combine \textsc{Slam} \cite{SLAM} et
+\textsc{Dart} \cite{DART} (\textsc{Cegar} compositionnel + test non
+compositionnel). L'algorithme est intra-procédural. \textsc{Dash} \cite{DASH}
+étend l'algorithme \textsc{Synergy}, il est inter-procédural mais non
+compositionnel. \textsc{Smash} \cite{SMASH} est la version compositionelle de
+\textsc{Dash}.
+
+
 
 La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
 
@@ -266,15 +275,18 @@ recherche.
 Le raffinement d'abstraction guidé par des contre-exemples \cite{CEGAR} associe
 l’abstraction par prédicats et le model-checking : une abstraction du programme
 est générée à partir d’un ensemble de prédicats et invariants. Si le
-model-checking prouve la correction du système abstrait, alors le système
-concret l'est également. Si le model-checking ne peut pas établir qu'une
-propriété est satisfaite, il faut déterminer si elle est présente dans le
-système concret. Si c'est le cas, un bug a été trouvé. Sinon il s'agit d'un
-contre-exemple. De nouveaux prédicats vont être créés pour raffiner
-l'abstraction afin que ce contre-exemple soit absent de l'abstraction, et ainsi
-de suite. Ce processus peut ne pas terminer. Plusieurs outils de vérification se
-basent sur cette méthode, parmi lesquels \textsc{Blast} \cite{BLAST},
-\textsc{Magic} \cite{MAGIC} et \textsc{Slam} \cite{SLAM}.\\
+model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
+alors le modèle concret est correct (pas d'erreurs de sûreté ou de liveness).
+Si le model-checking a trouvé un contre-exemple pour le modèle abstrait il faut
+déterminer s'il correspond à un contre-exemple réel dans le système concret.
+Pour cela, l'algorithme détermine s'il existe une trace d'exécution concrète
+correspondant à la trace d'exécution abstraite aboutissant au contre-exemple.
+Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
+seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
+absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
+terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
+lesquels \textsc{Blast} \cite{BLAST}, \textsc{Magic} \cite{MAGIC} et
+\textsc{Slam} \cite{SLAM}.\\
 
 Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
 générée peut donc mettre un certain temps avant de converger vers une forme
