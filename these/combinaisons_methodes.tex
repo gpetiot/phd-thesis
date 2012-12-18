@@ -209,47 +209,29 @@ La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
 
 
 
-%% GRAPHIC SUMMARY
-
 \begin{figure}
   \centering
-  \begin{tikzpicture}
-    % SLAM
-    \node at (0, 5) {\textsc{Slam}};
-    \node at (0, 4.5) {$may$};
-    \node[draw,ellipse,line width=.25mm,minimum width=1.5cm,minimum height=2cm]
-    at (0, 4.75) {};
-
-    % DART
-    \node at (7, 5) {\textsc{Dart}};
-    \node at (7, 4.5) {$must$ $\lnot$comp};
-    \node[draw,ellipse,line width=.25mm,minimum width=2.5cm,minimum height=2cm]
-    at (7, 4.75) {};
-
-    % SMART
-    \node at (10, 5) {\textsc{Smart}};
-    \node at (10, 4.5) {$must$ comp};
-    \node[draw,ellipse,line width=.25mm,minimum width=6cm,minimum height=6cm]
-    at (8.5, 3.75) {};
-
-    % SYNERGY
-    \node at (3, 5) {\textsc{Synergy}};
-    \node at (3, 4.5) {$may+must$ intra-proc};
-    \node[draw,ellipse,line width=.25mm,minimum width=9cm,minimum height=4cm]
-    at (3.75, 4.75) {};
-
-    % DASH
-    \node at (3, 2.5) {\textsc{Dash} + \textsc{Yogi}};
-    \node at (3, 2) {$may+must$ inter-proc $\lnot$comp};
-    \node[draw,ellipse,line width=.25mm,minimum width=9cm,minimum height=8cm]
-    at (3.75, 4.75) {};
-
-    % SMASH
-    \node at (4, 0.5) {\textsc{Smash}};
-    \node at (4, 0) {$may+must$ inter-proc comp};
-    \node[draw,ellipse,line width=.25mm,minimum width=12.5cm,
-      minimum height=12cm] at (5.25, 3.75) {};
-  \end{tikzpicture}
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \multirow{3}{*}{Outils} & \multicolumn{3}{c|}{Analyse statique}
+    & \multicolumn{3}{c|}{Analyse dynamique} \\
+    & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc}
+    & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc} \\
+    & & non-compo & compo & & non-compo & compo \\
+    \hline
+    \textsc{Slam} \cite{SLAM} & & & $\surd$ & & & \\
+    \hline
+    \textsc{Dart} \cite{DART} & & & & & $\surd$ & \\
+    \hline
+    \textsc{Smart} \cite{SMART} & & & & & & $\surd$ \\
+    \hline
+    \textsc{Synergy} \cite{SYNERGY} & $\surd$ & & & $\surd$ & & \\
+    \hline
+    \textsc{Dash} \cite{DASH} & & $\surd$ & & & $\surd$ & \\
+    \hline
+    \textsc{Smash} \cite{SMASH} & & & $\surd$ & & & $\surd$ \\
+    \hline
+  \end{tabular}
   \caption{Résumé des outils de Microsoft}
   \label{fig:microsoft-summary}
 \end{figure}
@@ -296,16 +278,23 @@ raffinement de l'abstraction : \textsc{Cegaar} \cite{CEGAAR}. Cette technique
 $\alpha . \lambda^* . \beta$ en une seule étape, où $\lambda$ correspond à une
 ou plusieurs exécutions d'une boucle.
 
-\section{\textsc{DSD-Crasher}}
+\section{\textsc{DSD-Crasher} et \textsc{Check'n'Crash}}
 
 L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une première analyse
-dynamique qui va générer des invariants probables (inférence de la
-spécification) \cite{discover-invariants}, une analyse statique qui va émettre
-des alarmes concernant un non-respect des invariants, et une seconde analyse
-dynamique qui va tenter de confirmer ces alarmes par une génération de tests
-\cite{JCrasher}.\\
+dynamique, une analyse statique et une seconde analyse dynamique. La première
+analyse dynamique utilise une génération de tests et des techniques
+d'apprentissage pour générer des invariants probables (inférence de la
+spécification par \textsc{Daikon} \cite{discover-invariants}).\\
 
-La première analyse dynamique utilise une génération de tests et des techniques
-d'apprentissage pour générer des invariants. Ces invariants vont guider la
-classification des alarmes et la génération de tests, ce qui rend l'outil très
-dépendant leur qualité.
+Les deux dernières étapes sont celles de l'outil \textsc{Check'n'Crash}
+\cite{ChecknCrash}. L'analyse statique (résolution de contraintes par
+\textsc{ESC/Java} \cite{ESC/Java}) va émettre des alarmes concernant le
+non-respect des invariants, et la seconde analyse dynamique va tenter de
+confirmer ces alarmes par une génération de tests (\textsc{JCrasher}
+\cite{JCrasher}). La classification des alarmes et la génération de tests sont
+très dépendantes de la qualité des invariants générés par \textsc{Daikon}.\\
+
+Cette méthode se distingue de \textsc{Sante} \cite{SANTE} par son analyse
+dynamique préliminaire qui détecte des invariants afin de guider l'analyse
+statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
+d'augmenter le taux de classification des alarmes par l'analyse dynamique.
