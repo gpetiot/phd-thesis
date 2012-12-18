@@ -181,10 +181,10 @@ dynamique est applicable). Par construction, il n'est pas
 possible que les deux résumés soient applicables.\\
 
 
-\begin{shaded}
+\begin{definition}
 Analyse compositionnelle : mémoization des résultats intermédiaires sous la
 forme de résumés réutilisables.
-\end{shaded}
+\end{definition}
 
 
 \subsubsection{Résumé des outils Microsoft}
@@ -287,12 +287,12 @@ d'apprentissage pour générer des invariants probables (inférence de la
 spécification par \textsc{Daikon} \cite{discover-invariants}).\\
 
 Les deux dernières étapes sont celles de l'outil \textsc{Check'n'Crash}
-\cite{ChecknCrash}. L'analyse statique (résolution de contraintes par
-\textsc{ESC/Java} \cite{ESC/Java}) va émettre des alarmes concernant le
-non-respect des invariants, et la seconde analyse dynamique va tenter de
-confirmer ces alarmes par une génération de tests (\textsc{JCrasher}
-\cite{JCrasher}). La classification des alarmes et la génération de tests sont
-très dépendantes de la qualité des invariants générés par \textsc{Daikon}.\\
+\cite{ChecknCrash}. L'analyse statique (\textsc{ESC/Java} \cite{ESC/Java}) va
+émettre des alarmes concernant le non-respect des invariants, et la seconde
+analyse dynamique va tenter de confirmer ces alarmes par résolution de
+contraintes et génération de tests (\textsc{JCrasher} \cite{JCrasher}). La
+classification des alarmes et la génération de tests sont très dépendantes de
+la qualité des invariants générés par \textsc{Daikon}.\\
 
 Cette méthode se distingue de \textsc{Sante} \cite{SANTE} par son analyse
 dynamique préliminaire qui détecte des invariants afin de guider l'analyse

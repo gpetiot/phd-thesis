@@ -508,7 +508,7 @@ dynamique génère des tests confirmant ou infirmant ces alarmes. Sur des
 programmes de grande taille, l'analyse dynamique peut manquer de temps pour
 classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
 possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
-testés et donc le temps nécessaire à leur analyse.
+testés et donc le temps nécessaire à leur analyse.\\
 
 Le fonctionnement général de la méthode est illustré par la
 Fig.~\ref{figSlicing} ~\textbf{a}. Cette méthode utilise l'analyse de valeurs
@@ -564,10 +564,10 @@ mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
 \input{SANTE_slicing_advanced.tex}
 
 
-Cette option tente de corriger les inconvénients de {\em all} et de {\em each}
-et propose de générer une couverture minimale des alarmes par {\em slicing}, de
-manière à regrouper dans un même ensemble les alarmes ayant une relation de
-dépendance \cite{SANTE}.
+L'option {\em min} (Fig.~\ref{figSlicingAdvanced} ~\textbf{a}) tente de corriger
+les inconvénients de {\em all} et de {\em each} et propose de générer une
+couverture minimale des alarmes par {\em slicing}, de manière à regrouper dans
+un même ensemble les alarmes ayant une relation de dépendance \cite{SANTE}.
 Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
 dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
 $a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
@@ -601,50 +601,22 @@ On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
 cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
 cas de {\em each}.\\
 
-
-Dans notre implémentation, nous définissons une fonction calculant pour chaque
-alarme, les alarmes sur lesquelles elle a un impact.
-Sur notre exemple, $impacted\_stmts(\{a_1; a_2; a_3; a_4; a_5\}) =
-\{\{a_2; a_3; a_4; a_5\}; \{\}; \{a_4; a_5\}; \{a_5\}; \{\}\}$.
-
-Cette fonction nous permet de déterminer les ``alarmes finales'', qui n'ont
-d'impact sur aucune autre alarme, mais peuvent avoir des dépendances mutuelles
-avec d'autres alarmes finales.
-Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
-mutuelles).\\
-
-Cette notion d'alarmes finales nous permet de définir une couverture minimale
-des alarmes, car selon \cite{SANTE}, chaque ensemble de la couverture contient
-une classe d'équivalence d'alarmes finales et leurs dépendances.
-Deux alarmes finales sont dans la même classe d'équivalence si elles ont des
-dépendances mutuelles.
-Sur notre exemple, $min\_cover(\{a_1; a_2; a_3; a_4; a_5\}) =
-\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$.\\
-
-Les listes obtenues par ce calcul de couverture minimale vont ensuite paramétrer
-les différents {\em slicings}, on obtient un programme simplifié par liste,
-paramétré par les différentes alarmes de chaque liste. \textsc{PathCrawler} est
-ensuite exécuté sur chaque programme simplifié. Les résultats récupérés
-permettent d'obtenir un diagnostic partiel sur chacune des alarmes du programme
-simplifié. Ces diagnostics partiels sont ensuite fusionnés au sein d'une table
-d'association, on obtient donc un diagnostic global sur chaque alarme.\\
-
-Notre contribution inclut l'implémentation du calcul de la couverture minimale
-et des alarmes finales, l'analyse des résultats de \textsc{PathCrawler}, la
-fusion des diagnostics et la notification des résultats sur les alarmes à
-\textsc{Frama-C}, qui peut les récupérer pour la consolidation du statut de
-validité des propriétés du programme \cite{property-status}.\\
-
-
 Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
 {\em min} hérite de l'inconvénient de l'option {\em all} : les alarmes les plus
 complexes à classifier pénalisent les autres, qui peuvent ne pas être
 diagnostiquées dans le temps imparti.\\
 
-Pour corriger ce défaut, l'option {\em smart} va appliquer {\em min}
-itérativement en diminuant l'ensemble des alarmes considérées à chaque
-itération. Les alarmes supprimées seront des alarmes classifiées ou des alarmes
-finales.\\
+Pour corriger ce défaut, l'option {\em smart} (Fig.~\ref{figSlicingAdvanced}
+~\textbf{b}) est définie. Elle consiste à appliquer {\em min} itérativement en
+diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
+supprimées seront des alarmes classifiées ou des alarmes finales.
+
+\begin{definition}
+Une alarme finale est une alarme dont aucune autre alarme de dépend mais
+pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
+Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
+mutuelles).
+\end{definition}
 
 De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
 l'ensemble des alarmes privé des alarmes finales) produira un programme

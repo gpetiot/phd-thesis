@@ -1,6 +1,12 @@
 
 \chapter{Précondition unique pour l'analyse statique et l'analyse dynamique}
 
+Ce travail est nécessaire afin de poursuivre l'intégration de
+\textsc{PathCrawler} \cite{PathCrawler} dans \textsc{Frama-C} \cite{Frama-C}.
+Cela évite à l'utilisateur de devoir spécifier son programme avec deux
+préconditions différentes et facilite la mise en \oe{}uvre des différentes
+combinaisons d'analyse statique et dynamique au sein de la plate-forme.
+
 \section{Fonction sous test}
 
 
@@ -29,7 +35,7 @@ int f (§$\dots$§);
 
 La fonction sous test a une liste non vide de behaviors, qui comprend un
 behavior par défaut. Chaque comportement contient des clauses assumes, requires
-et ensures.
+et ensures.\\
 
 La pré-condition de la fonction est :
 
@@ -40,12 +46,12 @@ La post-condition de la fonction est :
 
 $\bigwedge_i [ (\bigwedge^\alpha A_i^\alpha) \Longrightarrow
 (\bigwedge^\alpha R_i^\alpha) \Longrightarrow
-(\bigwedge^\alpha E_i^\alpha) ]$
+(\bigwedge^\alpha E_i^\alpha) ]$\\
 
 La spécification peut préciser une liste de clauses complete behaviors.
 Pour chacune de ces clauses, une liste de behaviors est fournie, l'union de ces
 behaviors doit couvrir toutes les exécutions : chaque exécution de la fonction
-doit être incluse dans au moins un des behaviors de chaque clause.
+doit être incluse dans au moins un des behaviors de chaque clause.\\
 
 Une liste de clauses disjoint behaviors peut aussi être précisée. Pour chacune
 de ces clauses, une liste de behaviors est fournie, les behaviors de cette liste
@@ -79,17 +85,70 @@ int foo (§$\dots$§, int behaviors[§$N$§]) {
 On définit une nouvelle fonction qui servira de point d'entrée au programme.
 L'argument supplémentaire de cette fonction est un tableau de booléens tel
 que $behaviors[i]$ vaut 1 si le behavior $B_i$ s'applique, 0 sinon. Ce tableau
-est contraint dans la fonction de précondition.
+est contraint dans la fonction de précondition.\\
 
 Pour chacun des behaviors, on teste si le behavior s'applique (la précondition
 aura déjà mis en relation le contenu du tableau behaviors avec les différentes
 clauses assumes et requires). Si le behavior s'applique, on essaie de trouver un
 contre-exemple pour chacune des clauses ensures. Des branches artificielles sont
-créées menant à {\tt pathcrawler\_assert\_exception}.
+créées menant à {\tt pathcrawler\_assert\_exception}.\\
 
+Cette instrumentation est nécessaire uniquement si on souhaite trouver un
+contre-exemple sur la post-condition, ce qui s'apparente à du test fonctionnel.
 
 \section{Précondition}
 
+
+Dans le cas où seul le behavior par défaut est utilisé, si aucune clause
+requires ne contient de quantificateur ${\tt \backslash exists}$, et si on
+reconnaît un motif particulier, on est en mesure de générer la précondition au
+format Prolog.\\
+
+\subsection{Quantificateur ${\tt \backslash forall}$}
+
+${\tt \backslash forall\ int\ x; a <= x ==> e > f;}$
+\begin{lstlisting}
+quantif_preconds('f', [
+  uq_cond(    
+    [X],
+    [cond(supegal(X,'a',pre)],
+    sup, 'e', 'f'
+)]).
+\end{lstlisting}
+
+${\tt \backslash forall\ int\ x; a <= x <= b ==> e>f;}$
+\begin{lstlisting}
+quantif_preconds('f', [
+ uq_cond(
+   [X],
+   [cond(supegal(X,'a',pre),
+    cond(supegal('b',X,pre))],
+   sup, 'e', 'f'
+)]).
+\end{lstlisting}
+
+${\tt \backslash forall\ int\ x, y; a < x < y < b ==> t[x] < t[y];}$
+\begin{lstlisting}
+quantif_preconds('f',[
+  uq_cond(
+    [X,Y],
+    [cond(inf('a',X,pre),
+     cond(inf(X,Y,pre),
+     cond(inf(Y,'b',pre))],
+    inf,cont('t',X),cont('t',Y)
+)]).
+\end{lstlisting}
+
+\subsection{${\tt \backslash valid}$ et ${\tt \backslash valid\_read}$}
+
+${\tt \backslash valid(t+(a..b));}$ et ${\tt \backslash valid\_read(t+(a..b));}$
+\begin{lstlisting}
+unquantif_preconds('f',
+  [cond(sup, dim('t'), 'b', pre)]).
+\end{lstlisting}~\\
+
+
+Dans tous les autres cas, il faudra générer la précondition au format C.\\
 
 \begin{figure}[h]
   \begin{lstlisting}
@@ -147,9 +206,10 @@ int oracle_foo (§$\dots$§, int Pre_behaviors[§$N$§], int behaviors[§$N$§],
   \caption{Oracle}
 \end{figure}
 
-Pour chaque clause complete behaviors, on compte le nombre de behaviors
-activés, il est censé être strictement positif. Verdict failure s'il est nul.
+Pour chaque clause complete behaviors, on compte le nombre de behaviors activés,
+il est censé être strictement positif. Verdict failure s'il est nul. Pour chaque
+clause disjoint behaviors, on compte le nombre de behaviors activés, il est
+censé être égal à 0 ou 1. Verdict failure s'il est strictement supérieur à 1.\\
 
-Pour chaque clause disjoint behaviors, on compte le nombre de behaviors
-activés, il est censé être égal à 0 ou 1. Verdict failure s'il est strictement
-supérieur à 1.
+Cette instrumentation est nécessaire uniquement si on cherche à valider les
+propriétés sur les clauses complete behaviors et disjoint behaviors.
