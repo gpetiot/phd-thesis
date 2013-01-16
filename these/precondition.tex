@@ -101,54 +101,28 @@ contre-exemple sur la post-condition, ce qui s'apparente à du test fonctionnel.
 
 Dans le cas où seul le behavior par défaut est utilisé, on essaie de traduire
 les clauses requires en précondition Prolog. Si la traduction échoue car un des
-termes n'est pas représentable en Prolog (quantificateur
-${\tt \backslash exists}$ par exemple), on génèrera la précondition C.\\
-
-\subsection{Quantificateur ${\tt \backslash forall}$}
-
-${\tt \backslash forall\ int\ x; a <= x ==> e > f;}$
-\begin{lstlisting}
-quantif_preconds('f', [
-  uq_cond(    
-    [X],
-    [cond(supegal(X,'a',pre)],
-    sup, 'e', 'f'
-)]).
-\end{lstlisting}
-
-${\tt \backslash forall\ int\ x; a <= x <= b ==> e>f;}$
-\begin{lstlisting}
-quantif_preconds('f', [
- uq_cond(
-   [X],
-   [cond(supegal(X,'a',pre),
-    cond(supegal('b',X,pre))],
-   sup, 'e', 'f'
-)]).
-\end{lstlisting}
-
-${\tt \backslash forall\ int\ x, y; a < x < y < b ==> t[x] < t[y];}$
-\begin{lstlisting}
-quantif_preconds('f',[
-  uq_cond(
-    [X,Y],
-    [cond(inf('a',X,pre),
-     cond(inf(X,Y,pre),
-     cond(inf(Y,'b',pre))],
-    inf,cont('t',X),cont('t',Y)
-)]).
-\end{lstlisting}
-
-\subsection{${\tt \backslash valid}$ et ${\tt \backslash valid\_read}$}
-
-${\tt \backslash valid(t+(a..b));}$
-
-${\tt \backslash valid\_read(t+(a..b));}$
-\begin{lstlisting}
-unquantif_preconds('f', [cond(sup, dim('t'), 'b', pre)]).
-\end{lstlisting}~\\
+termes n'est pas représentable dans le langage de préconditon de
+\textsc{PathCrawler} (disjonction par exemple), on génèrera la précondition C.\\
 
 
+\begin{figure}
+  \centering
+  \begin{tabular}{|c|c|}
+    \hline
+    Précondition \textsc{Acsl} & Précondition \textsc{PathCrawler}\\
+    \hline
+    ${\tt \backslash valid (t)}$ & ${\tt dim('t') = 1}$\\
+    \hline
+    ${\tt \backslash valid (t+(0..N))}$ & ${\tt dim('t') = N+1}$\\
+    \hline
+    ${\tt X \leq Y}$ & ${\tt X \leq Y}$\\
+    \hline
+    ${\tt X < Y}$ & ${\tt X < Y}$\\
+    \hline
+  \end{tabular}
+  \caption{Motifs traités}
+\end{figure}~\\
+  
 Dans tous les autres cas, il faudra générer la précondition au format C.\\
 
 \begin{figure}[h]
