@@ -298,3 +298,35 @@ Cette méthode se distingue de \textsc{Sante} \cite{SANTE} par son analyse
 dynamique préliminaire qui détecte des invariants afin de guider l'analyse
 statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
 d'augmenter le taux de classification des alarmes par l'analyse dynamique.
+
+\section{Génération de données de test par algorithme génétique}
+
+\cite{search-based-testing-of-NPE} propose une méthode de génération de données
+de test mettant en évidence des {\em Null Pointer Exceptions} de Java. Tout
+d'abord une analyse inter-procédurale du flot de contrôle et du flôt de données
+collecte les chemins menant aux exceptions. Cette analyse se fait en arrière, en
+partant des exceptions, propageant les contraintes sur les entrées dans le CFG.
+Les entrées de test sont ensuite générées par un algorithme génétique, dans le
+but de couvrir ces chemins. Les individus (des entrées potentielles), dont le
+type de donnée peut être complexe, sont encodés sous forme XML.\\
+
+Cette méthode a été comparée avec d'autres façons de générer des données de
+test \cite{DbZ-exception-raising-via-branch-coverage}, leurs expérimentations
+ont montré qu'elle était plus efficace que d'autres stratégies de recherche
+optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
+efficace que la programmation par contraintes (en terme de temps d'exécution). 
+
+\section{Génération de tests unitaires à partir de preuves formelles}
+
+\cite{generating-unit-tests-from-formal-proofs} présente une méthode de
+génération automatique de tests unitaires pour \textsc{Java Card} à partir d'une
+tentative de preuve formelle du système, qui doit être au préalable annoté en
+utilisant le langage de spécification \textsc{JML} \cite{JML}.\\
+
+L'information contenue dans la preuve (même partielle) est utilisée
+pour extraire des données de test à partir des conditions de chemins. Les
+oracles sont générés à partir des postconditions. En revanche, il n'y a aucune
+garantie sur le critère de couverture des chemins par les tests générés,
+celle-ci dépend de la qualité de la spécification du code (présence des
+invariants de boucle, etc.).
+
