@@ -1,0 +1,75 @@
+
+\chapter{Intégration de \textsc{PathCrawler} dans \textsc{Frama-C}}
+
+Ce travail est nécessaire afin de poursuivre l'intégration de
+\textsc{PathCrawler} \cite{PathCrawler} dans \textsc{Frama-C} \cite{Frama-C}.
+Cela évite à l'utilisateur de devoir spécifier son programme avec deux
+préconditions différentes et facilite la mise en \oe{}uvre des différentes
+combinaisons d'analyse statique et dynamique au sein de la plate-forme.
+
+
+On considère un programme C contenant des annotations ACSL insérées par l'utilisateur ou par un greffon (Value, RTE, ...). Les différentes étapes sont :
+\begin{enumerate}
+  \item traduction des annotations ACSL en C, tel qu'une fonction particulière
+    (par défaut une assertion) est appelée si l'annotation correspondante n'est
+    pas valide à l'exécution;
+  \item seconde étape de traduction : modifications mineures du code C généré
+    pour que celui-ci soit traitable par PathCrawler. En particulier, il faut
+    mettre la pré-condition dans une fonction séparée ayant un nom spécifique,
+    idem pour la post-condition qui doit en plus se trouver dans un fichier
+    séparé ayant lui aussi un nom particulier. PathCrawler utilise aussi son
+    propre jeu de macros d'asserts, qu'on utilisera à la place des asserts
+    générés par E-ACSL. On supprimera les appels aux fonctions de
+    monitoring des accès mémoire, car on ne veut pas que PathCrawler essaie de
+    couvrir tous les chemins pour ces fonctions. Enfin, les appels à
+    $\backslash$valid seront remplacés par des appels à pathcrawler\_dimension,
+    mais les restrictions actuelles de PathCrawler font que cela ne fonctionnera
+    que si le pointeur passé en argument est une adresse de base et un paramètre
+    de la fonction;
+  \item appel de PathCrawler avec la stratégie de converture ``tous les
+    chemins'', un socket est ouvert entre PathCrawler et le greffon. Les
+    informations transmises sont : verdict des cas de test, identifiants des
+    assertions violées, cas de test violant ces assertions, nombre de cas de
+    test générés. Ces informations permettent au greffon de mettre à jour le
+    statut de chaque annotation dans Frama-C;
+  \item la mise à jour de ces statuts peut permettre de faire avancer une
+    analyse effectuée par un autre greffon (WP ou Value).
+\end{enumerate}~\\
+
+Les constructions suivantes ne sont pas encore prises en charge par E-ACSL :
+\begin{itemize}
+\item loop invariant
+\item loop variant
+\item loop assigns
+\item assigns
+\item notation ``range'' : X..Y
+\end{itemize}
+
+\section{Transformations de code pour prise en charge pré- et post-condition}
+
+\subsection{Transformations de code pour la pré-condition}
+\begin{itemize}
+\item type de retour de la fonction devient ${\tt int}$
+\item remplacer les ${\tt e\_acsl\_assert(X)}$ par 
+  ${\tt if(!X) return 0;}$ avant l'appel à la fonction sous test
+\item supprimer l'appel à la fonction sous test
+\item supprimer tous les statements différents du return après l'appel à la
+  fonction sous test
+\item ${\tt return 1;}$ à la fin
+\end{itemize}
+
+\subsection{Transformations de code pour la post-condition}
+\begin{itemize}
+\item type de retour de la fonction devient ${\tt void}$
+\item dupliquer les variables formelles de type pointeur ou tableau :
+  ${\tt ..., int* Pre\_x, int* x, ...}$
+\item ajouter une formelle du type de valeur de retour de la fonction sous test,
+  nommée ${\tt \_\_retres}$
+\item supprimer les ${\tt e\_acsl\_assert}$ avant appel à la fonction sous test
+\item supprimer appel à la fonction sous test
+\item remplacer les ${\tt e\_acsl\_assert(X)}$ par
+  ${\tt if(!X) \{pathcrawler\_verdict\_failure(); return;\}}$ après l'appel à la
+  fonction sous test
+\item ajouter ${\tt pathcrawler\_verdict\_success(); return;}$ à la fin
+\end{itemize}
+
