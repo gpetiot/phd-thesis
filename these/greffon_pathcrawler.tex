@@ -73,3 +73,36 @@ Les constructions suivantes ne sont pas encore prises en charge par E-ACSL :
 \item ajouter ${\tt pathcrawler\_verdict\_success(); return;}$ à la fin
 \end{itemize}
 
+
+\section{TODO: traduction des invariants et variants}
+
+\begin{figure}[h]
+  \begin{lstlisting}
+§\highl{{\tt if(!X)}}§
+  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // established
+/*@ loop invariant X; */
+while(...) {
+  ...
+  §\highl{{\tt if(!X)}}§
+    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // preserved
+}
+  \end{lstlisting}
+  \caption{Invariant}
+\end{figure}
+
+\begin{figure}[h]
+  \begin{lstlisting}
+§\highl{{\tt int old\_X;}}§
+§\highl{{\tt if(X < 0)}}§
+  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // positive
+/*@ loop variant X; */
+while(...) {
+  §\highl{{\tt old\_X = X;}}§
+  ...
+  §\highl{{\tt if(X >= old\_X)}}§
+    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // decreasing
+}
+  \end{lstlisting}
+  \caption{Variant}
+\end{figure}
+

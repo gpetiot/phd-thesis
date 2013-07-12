@@ -1,2 +1,48 @@
 
 \chapter{Modèle mémoire pour la validation d'assertion à l'exécution}
+
+\section{Introduction}
+introduction + related work (Valgrind, AddressSanitizer, ...)
+
+\begin{description}
+\item[Validation à l'exécution] \hfill \\
+  {\em Runtime Assertion Checking}\\
+\item[\textsc{Executable-acsl}] \hfill \\
+\item[Gestion de la mémoire en C] \hfill \\
+  {\em Memory safety}\\
+\end{description}
+
+
+\section{Informations relatives à la validité et à l'initialisation}
+sous-section 3.2 de l'article RV2013
+
+détail des prédicats E-ACSL gérés
+
+{\color{red}schéma pour expliquer chaque prédicat}
+
+présentation formelle des fonctions de la bibliothèque
+
+\section{Stockage efficace des informations}
+section 4 de l'article RV2013
+
+utilisation des Patricia tries, possibilité d'utiliser autre chose
+
+{\color{red}mettre quelques schémas}
+
+\section{Enregistrements et requêtes efficaces}
+section 5 de l'article RV2013
+
+calcul du plus grand préfixe commun
+
+\section{Analyse {\em Dataflow}}
+{\color{red}développé par Julien, ai-je le droit d'en parler ici ?}
+
+
+\section{Expérimentations}
+comparaison des temps d'exécution suivant les implémentations du store
+
+evaluation de l'efficacité sur les mutants générés
+
+\section{Conclusion}
+conclusion + future work + application dans le greffon PathCrawler (transition
+avec le chapitre suivant)

@@ -1,60 +1,6 @@
 
 \chapter{Génération de contre-exemples d'après les échecs de preuve}
 
-\section{Preuve d'invariant}
 
-\subsection{Invariant établi}
 
-\begin{figure}[h]
-  \begin{lstlisting}
-§\highl{{\tt if(!X)}}§
-  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§
-/*@ loop invariant X; */
-while(...) { ... }
-  \end{lstlisting}
-  \caption{Invariant établi}
-\end{figure}
 
-\subsection{Invariant préservé}
-
-\begin{figure}[h]
-  \begin{lstlisting}
-/*@ loop invariant X; */
-while(...) {
-  ...
-  §\highl{{\tt if(!X)}}§
-    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§
-}
-  \end{lstlisting}
-  \caption{Invariant préservé}
-\end{figure}
-
-\section{Preuve de variant}
-
-\subsection{Variant positif}
-
-\begin{figure}[h]
-  \begin{lstlisting}
-§\highl{{\tt if(X < 0)}}§
-  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§
-/*@ loop variant X; */
-while(...) { ... }
-  \end{lstlisting}
-  \caption{Variant positif}
-\end{figure}
-
-\subsection{Variant décroissant}
-
-\begin{figure}[h]
-  \begin{lstlisting}
-§\highl{{\tt int old\_X;}}§
-/*@ loop variant X; */
-while(...) {
-  §\highl{{\tt old\_X = X;}}§
-  ...
-  §\highl{{\tt if(X >= old\_X)}}§
-    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§
-}
-  \end{lstlisting}
-  \caption{Variant décroissant}
-\end{figure}
