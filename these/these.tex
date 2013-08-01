@@ -33,6 +33,14 @@
 \usepackage{tikz}
 \usetikzlibrary{matrix,shapes,shapes.multipart,backgrounds,calc,fit}
 
+\tikzstyle{leaf}=[rounded corners,rectangle,inner sep=1mm,fill=gray!30]
+\tikzstyle{memcell}=[minimum width=1cm,minimum height=1.5em,outer sep=0pt,
+  draw=black,semithick]
+\tikzstyle{empty}=[]
+\tikzstyle{full}=[fill=blue!20]
+\tikzstyle{init}=[fill=green!20]
+\tikzstyle{uninit}=[fill=white]
+
 \definecolor{shadecolor}{gray}{0.9}
 
 \newcommand{\ordering}{\ensuremath{\lesssim}} 
@@ -82,6 +90,7 @@
 \def\lstsmallmath{\leavevmode\ifmmode \scriptstyle \else  \fi}
 \def\lstsmallmathend{\leavevmode\ifmmode  \else  \fi}
 \lstset {
+  backgroundcolor=\color{gray!20},
   escapechar=§,
   %frame=shadowbox,
   %rulesepcolor=\color{black},
@@ -102,12 +111,17 @@
   emphstyle=\textbf
 }
 
-
 \captionsetup[lstlisting]{
   singlelinecheck=false,
   margin=40pt,
   font={bf,footnotesize}
 }
+
+
+
+
+
+
 
 \newcommand{\highl}{\colorbox{gray!30}}
 

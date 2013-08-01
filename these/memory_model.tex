@@ -1,47 +1,368 @@
 
 \chapter{Modèle mémoire pour la validation d'assertion à l'exécution}
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 \section{Introduction}
 introduction + related work (Valgrind, AddressSanitizer, ...)
 
-\begin{description}
-\item[Validation à l'exécution] \hfill \\
-  {\em Runtime Assertion Checking}\\
-\item[\textsc{Executable-acsl}] \hfill \\
-\item[Gestion de la mémoire en C] \hfill \\
-  {\em Memory safety}\\
-\end{description}
+\subsection{Validation à l'exécution}
+
+{\em Runtime Assertion Checking}
+
+\subsection{Gestion de la mémoire en C}
+
+{\em Memory safety}
+
+\subsection{\textsc{Executable-acsl} (\textsc{e-acsl})}
+
+{\textsc e-acsl} est un sous-ensemble ``exécutable'' du langage \textsc{acsl}
+implémenté dans \textsc{Frama-C}. Contrairement à \textsc{e-acsl}, chaque
+spécification \textsc{e-acsl} est exécutable : elle peut être évaluée à
+l'exécution.\\
+
+Le travail présenté dans ce chapitre s'appuie sur et étend \textsc{e-acsl2c}
+\footnote{http://frama-c.com/eacsl.html}, un greffon de \textsc{Frama-C}. Ce
+dernier traduit automatiquement un programme C annoté en un autre programme dont
+l'exécution échouera si une annotation n'est pas valide. Si aucune annotation
+n'est violée, le comportement du nouveau programme est exactement le même que
+celui du programme d'origine.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 
 \section{Informations relatives à la validité et à l'initialisation}
-sous-section 3.2 de l'article RV2013
 
-détail des prédicats E-ACSL gérés
 
-{\color{red}schéma pour expliquer chaque prédicat}
+Détaillons les annotations \textsc{acsl} que nous souhaitons prendre en compte.
+Elles sont au nombre de 6 : ${\tt \backslash base\_addr}$,
+${\tt \backslash block\_length}$, ${\tt \backslash offset}$,
+${\tt \backslash valid}$, ${\tt \backslash valid\_read}$ et
+${\tt \backslash initialized}$.
 
-présentation formelle des fonctions de la bibliothèque
+\subsection{Adresse de base d'un bloc}
 
-\section{Stockage efficace des informations}
-section 4 de l'article RV2013
+${\tt \backslash base\_addr\{L\}(p)}$ retourne l'adresse de base du bloc alloué
+qui contient, au label $L$, le pointeur $p$. La Fig.~\ref{fig:base-addr}
+illustre ${\tt \backslash base\_addr(p)}$. La Fig.~\ref{fig:base-addr-example}
+illustre l'utilisation de ${\tt \backslash base\_addr}$, l'annotation de ce
+programme est vraie.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south)+(-2,-1) node (basep) {${\tt \backslash base\_addr(p)}$};
+      
+      \draw [->,line width=1.2pt] (basep) -- (C.south west);
+      \draw [->,line width=1.2pt] (p) -- (C);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Adresse de base d'un bloc}
+  \label{fig:base-addr}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main() {
+  int *p = malloc(3*sizeof(int));
+  //@ assert \base_addr(p+2) == p;
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation de ${\tt \backslash base\_addr}$}
+\label{fig:base-addr-example}
+\end{figure}
+
+
+
+\subsection{Longueur d'un bloc}
+
+${\tt \backslash block\_length\{L\}(p)}$ retourne la longueur (en octets) du
+bloc alloué qui contient, au label $L$, le porinteur $p$. La
+Fig.~\ref{fig:block-length} illustre ${\tt \backslash block\_length(p)}$. La
+Fig.~\ref{fig:block-length-example} illustre l'utilisation de
+${\tt \backslash block\_length}$, l'annotation de ce programme est vraie.
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south west)+(0,-1) node (p) {${\tt p}$};
+      
+      \draw [->,line width=1.2pt] (p) -- (C.south west);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south east)
+      node [midway,below] {${\tt \backslash block\_length(p)}$};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Longueur d'un bloc}
+  \label{fig:block-length}
+\end{figure}
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main() {
+  int *p = malloc(3*sizeof(int));
+  //@ assert \block_length(p) == 3*sizeof(int);
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation de ${\tt \backslash block\_length}$}
+\label{fig:block-length-example}
+\end{figure}
+
+
+
+\subsection{Offset d'un pointeur dans un bloc}
+
+${\tt \backslash offset\{L\}(p)}$ retourne le décalage entre $p$ et son adresse
+de base. La Fig.~\ref{fig:offset} illustre ${\tt \backslash offset(p)}$.
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south)
+      node [midway,below] {${\tt \backslash offset(p)}$};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Offset d'un pointeur dans un bloc}
+  \label{fig:offset}
+\end{figure}
+
+
+
+
+\subsection{Validité d'un bloc}
+
+${\tt \backslash valid\{L\}(p)}$ (respectivement
+${\tt \backslash valid\_read\{L\}(p)}$) est vrai si le déréférencement de $p$
+au label $L$ est autorisé en lecture et en écriture (resp. au moins en lecture).
+
+${\tt \backslash valid\{L\}(p)}$ implique ${\tt \backslash valid\_read\{L\}(p)}$
+mais l'inverse n'est pas vrai.
+
+La Fig.~\ref{fig:valid} illustre le prédicat ${\tt \backslash valid}$.
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south)+(0,-1.5) node {${\tt \backslash valid(p)}$};
+      \path (D.south)+(0,-1) node (q) {${\tt q}$};
+      \path (D.south)+(0,-1.5) node {${\tt \lnot \backslash valid(q)}$};
+      
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [->,line width=1.2pt] (q) -- (D);
+      
+    \end{tikzpicture}
+  \end{center}
+  \caption{Validité d'un bloc}
+  \label{fig:valid}
+\end{figure}
+
+
+La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
+${\tt \backslash valid}$. Dans ce programme toutes les assertions de validité
+sont vraies.
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main(void) {
+  int *a, *b;
+  /*@ assert ! \valid(a) && ! \valid(b); */
+  a = malloc(sizeof(int));
+  b = a;
+  /*@ assert \valid(a) && \valid(b); */
+  free(b);
+  /*@ assert ! \valid(a) && ! \valid(b); */
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation du prédicat ${\tt \backslash valid}$}
+\label{fig:valid-example}
+\end{figure}
+
+
+
+
+\subsection{Initialisation des octets d'un bloc}
+
+${\tt \backslash initialized\{L\}(p)}$ est un prédicat prenant un pointeur $p$
+sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
+initialisée au label $L$.
+
+La Fig.~\ref{fig:initialized} illustre le prédicat
+${\tt \backslash initialized}$.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {
+              \begin{tikzpicture}[>=latex,font=\sffamily]
+                \node [memcell,init] at (0,0) (c1) {c1};
+                \node [anchor=west,memcell,init] at (c1.east) (c2) {c2};
+                \node [anchor=west,memcell,uninit] at (c2.east) (c3) {c3};
+              \end{tikzpicture}
+            };
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+
+      \path (C.south)+(-1,-1) node (p) {${\tt p}$};
+      \path (C.south)+(-2,-1.5) node {${\tt \backslash initialized(p)}$};
+      \path (C.south)+(1,-1) node (q) {${\tt q}$};
+      \path (C.south)+(2,-1.5) node {${\tt \lnot \backslash initialized(q)}$};
+      
+      \draw [->,line width=1.2pt] (p) -- (p)+(0,.5);
+      \draw [->,line width=1.2pt] (q) -- (q)+(0,.5);
+      
+    \end{tikzpicture}
+  \end{center}
+  \caption{Initialisation des octets d'un bloc}
+  \label{fig:initialized}
+\end{figure}
+
+
+
+~\\
+Pour pouvoir traiter ces annotations \textsc{acsl}, nous devons donc conserver
+pour chaque bloc les informations suivantes :
+\begin{itemize}
+\item l'adresse de base
+\item le nombre d'octets occupés
+\item le nombre d'octets initialisés
+\item l'initialisation de chaque octet (un bit par octet, sauf si aucun ou tous
+  les octets sont initialisés)
+\item un booléen indiquant si le bloc est en lecture seule (par exemple si c'est
+  une chaîne littérale)
+\item un booléen indiquant s'il y a eu un accès au bloc hors bornes
+\end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Enregistrements et requêtes efficaces}
 
 utilisation des Patricia tries, possibilité d'utiliser autre chose
 
-{\color{red}mettre quelques schémas}
-
-\section{Enregistrements et requêtes efficaces}
-section 5 de l'article RV2013
-
 calcul du plus grand préfixe commun
 
-\section{Analyse {\em Dataflow}}
-{\color{red}développé par Julien, ai-je le droit d'en parler ici ?}
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{ccc}
+      \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
+          style={font=\scriptsize}]
+        \node {\texttt{0010\,****}}
+        child { node[leaf] {\texttt{0010\,0110}} }
+        child { node {\texttt{0010\,1***}}
+          child { node[leaf] {\texttt{0010\,1001}} }
+          child { node[leaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-1.7,0) {\textbf{a)}};
+      \end{tikzpicture}
+& 
+      \hspace{1mm} 
+&
+      \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=15mm},
+          sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
+        \node {\texttt{0010\,****}}
+        child { node {\texttt{0010\,011*}}
+          child { node[leaf] {\texttt{0010\,0110}} }
+          child { node[leaf] {\texttt{0010\,0111}} }
+        }
+        child { node {\texttt{0010\,1***}}
+          child { node[leaf] {\texttt{0010\,1001}} }
+          child { node[leaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-3.4,0) {\textbf{b)}};
+     \end{tikzpicture}   
+    \end{tabular}
+  \end{center}
+  \vspace{-3mm}
+  \caption{Example of a Patricia trie \textbf{a)} before,
+    and \textbf{b)} after inserting \texttt{0010\,0111}}
+  \vspace{-3mm}
+  \label{fig:PatriciaTrie}
+\end{figure}
+
+\subsection{Recherche}
+
+schéma + algo
+
+\subsection{Ajout}
+
+schéma + algo
+
+\subsection{Suppression}
+
+schéma + algo
+
+
 
 
 \section{Expérimentations}
 comparaison des temps d'exécution suivant les implémentations du store
 
 evaluation de l'efficacité sur les mutants générés
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%ù
+
 
 \section{Conclusion}
 conclusion + future work + application dans le greffon PathCrawler (transition

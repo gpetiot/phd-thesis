@@ -78,13 +78,13 @@ Les constructions suivantes ne sont pas encore prises en charge par E-ACSL :
 
 \begin{figure}[h]
   \begin{lstlisting}
-§\highl{{\tt if(!X)}}§
-  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // established
+if(!X)
+  pathcrawler_assert_exception(...); // established
 /*@ loop invariant X; */
 while(...) {
   ...
-  §\highl{{\tt if(!X)}}§
-    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // preserved
+  if(!X)
+    pathcrawler_assert_exception(...); // preserved
 }
   \end{lstlisting}
   \caption{Invariant}
@@ -92,15 +92,15 @@ while(...) {
 
 \begin{figure}[h]
   \begin{lstlisting}
-§\highl{{\tt int old\_X;}}§
-§\highl{{\tt if(X < 0)}}§
-  §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // positive
+int old_X;
+if(X < 0)
+  pathcrawler_assert_exception(...); // positive
 /*@ loop variant X; */
 while(...) {
-  §\highl{{\tt old\_X = X;}}§
+  old_X = X;
   ...
-  §\highl{{\tt if(X >= old\_X)}}§
-    §\highl{{\tt pathcrawler\_assert\_exception(...);}}§ // decreasing
+  if(X >= old_X)
+    pathcrawler_assert_exception(...); // decreasing
 }
   \end{lstlisting}
   \caption{Variant}
