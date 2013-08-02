@@ -26,10 +26,12 @@
 \usepackage{hyperref}
 \usepackage{url}
 \usepackage{etex}
+\usepackage{pstricks}
 \usepackage{pstricks-add}
 \usepackage{wrapfig}
 \usepackage{paralist}
 \usepackage[nounderscore]{syntax}
+\usepackage{lscape}
 \usepackage{tikz}
 \usetikzlibrary{matrix,shapes,shapes.multipart,backgrounds,calc,fit}
 
@@ -42,6 +44,18 @@
 \tikzstyle{uninit}=[fill=white]
 
 \definecolor{shadecolor}{gray}{0.9}
+
+
+
+\def\danger{\begingroup
+\psset{unit=1ex}%
+\begin{pspicture}(0,0)(3,3)
+\pspolygon[linearc=0.2,linewidth=0.12,linecolor=red](0,0)(1.5,2.6)(3,0)
+\psellipse*(1.5,1.33)(0.14,0.75)\pscircle*(1.5,0.3){0.15}\end{pspicture}
+\endgroup}
+
+
+
 
 \newcommand{\ordering}{\ensuremath{\lesssim}} 
 \newcommand{\equival}{\ensuremath{\approx}}
