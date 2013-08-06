@@ -6,30 +6,39 @@
 
 
 \section{Introduction}
-introduction + related work (Valgrind, AddressSanitizer, ...)
 
-\subsection{Validation à l'exécution}
 
-{\em Runtime Assertion Checking}
+Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
+programmes C, dévelopée pour la vérification d'assertions à l'exécution
+({\em runtime assertion checking} \cite{TODO}) dans \textsc{Frama-C}
+\cite{Frama-C}.
+Cette solution inclut un langage de spécification exécutable, \textsc{e-acsl},
+et un traducteur, \textsc{e-acsl2c}\footnote{http://frama-c.com/eacsl.html}.
+Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
+de spécification \textsc{e-acsl}.
 
-\subsection{Gestion de la mémoire en C}
+\subsection{\textsc{Executable-acsl}}
 
-{\em Memory safety}
-
-\subsection{\textsc{Executable-acsl} (\textsc{e-acsl})}
-
-{\textsc e-acsl} est un sous-ensemble ``exécutable'' du langage \textsc{acsl}
-implémenté dans \textsc{Frama-C}. Contrairement à \textsc{e-acsl}, chaque
+\textsc{e-acsl} est un sous-ensemble ``exécutable'' du langage \textsc{acsl}
+implémenté dans \textsc{Frama-C}. Contrairement à \textsc{acsl}, chaque
 spécification \textsc{e-acsl} est exécutable : elle peut être évaluée à
-l'exécution.\\
+l'exécution.
 
-Le travail présenté dans ce chapitre s'appuie sur et étend \textsc{e-acsl2c}
-\footnote{http://frama-c.com/eacsl.html}, un greffon de \textsc{Frama-C}. Ce
-dernier traduit automatiquement un programme C annoté en un autre programme dont
-l'exécution échouera si une annotation n'est pas valide. Si aucune annotation
-n'est violée, le comportement du nouveau programme est exactement le même que
-celui du programme d'origine.
+\subsection{Bibliothèque de monitoring de la mémoire}
 
+Afin de supporter les annotations relatives au modèle mémoire (validité d'un
+pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
+monitorer les opérations effectuées en mémoire par le programme. Pour ce faire,
+nous avons développé une bibliothèque C permettant d'enregistrer et de récupérer
+les informations de validité et d'initialisation d'un programme. Les appels aux
+fonctions de cette bibiliothèque C sont automatiquement ajoutés aux emplacements
+adéquats dans le code source du programme par \textsc{e-acsl2c} durant la
+traduction de la spécification \textsc{e-acsl} en C.
+
+\textsc{e-acsl2c} est un greffon de \textsc{Frama-C} qui traduit automatiquement
+un programme C annoté en un autre programme dont l'exécution échouera si une
+annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
+du nouveau programme est exactement le même que celui du programme d'origine.
 
 
 
@@ -105,13 +114,11 @@ bloc alloué qui contient, au label $L$, le porinteur $p$.
     \begin{tikzpicture}[>=latex,font=\sffamily]
       \node [memcell] at (0,0) (A) {};
       \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
-            {$bloc_2$};
+      \node [anchor=west,memcell,full,minimum width=4cm]at(B.east)(C){$bloc_2$};
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
       \path (C.south west)+(0,-1) node (p) {${\tt p}$};
-      
       \draw [->,line width=1.2pt] (p) -- (C.south west);
       \draw [|<->|,line width=1.2pt]
       (C.south west) -- (C.south east)
@@ -143,8 +150,8 @@ ${\tt \backslash block\_length}$, l'annotation de ce programme est vraie.
 
 \subsection{Offset d'un pointeur dans un bloc}
 
-${\tt \backslash offset\{L\}(p)}$ retourne le décalage entre $p$ et son adresse
-de base.
+${\tt \backslash offset\{L\}(p)}$ retourne le décalage (en octets) entre $p$ et
+son adresse de base.
 
 
 \begin{figure}[h]
