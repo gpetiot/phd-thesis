@@ -10,7 +10,7 @@
 
 Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
 programmes C, dévelopée pour la vérification d'assertions à l'exécution
-({\em runtime assertion checking} \cite{TODO}) dans \textsc{Frama-C}
+({\em runtime assertion checking} \cite{RAC}) dans \textsc{Frama-C}
 \cite{Frama-C}.
 Cette solution inclut un langage de spécification exécutable, \textsc{e-acsl},
 et un traducteur, \textsc{e-acsl2c}\footnote{http://frama-c.com/eacsl.html}.
@@ -375,13 +375,13 @@ Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 6
 bits) ou des préfixes d'adresses. Chaque feuille contient les données relatives
 à un bloc en mémoire (voir section précédente pour le détail des informations
 stockées). Le routage de la racine jusqu'à une feuille particulière se fait
-grâce aux noeuds internes, chacun d'eux contient le plus grand préfixe commun
+grâce aux n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun
 de l'adresse de base de ses deux fils. La Fig.~\ref{fig:insertion-Patricia-trie}
 a illustre un Patricia trie (sur des adresses 8-bits pour des raisons de
 simplicité).
 
 Il contient 3 blocs dans ses feuilles (seules les adresses de base apparaissent
-sur le schéma), et 2 préfixes stockés dans les noeuds internes. Le symbole
+sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes. Le symbole
 ``{\tt *}'' signifie que la valeur du bit à cette position n'a pas d'importance.
 
 La complexité théorique au pire cas d'un accès dans un Patricia trie dans notre
@@ -449,7 +449,7 @@ maintenant en une recherche dichotomique dans un tableau pré-calculé qui
 contient tous les préfixes possibles. Les transitions entre les étapes de la
 recherche se font en utilisant des indices pré-calculés, de manière à obtenir
 le prochain masque à essayer. La Fig.~\ref{fig:prefix} illustre cette
-implémentation du calcul sur des mots de 8 bits pour l'exemple. Les masques sont
+implémentation du calcul sur des mots de 8 bits. Les masques sont
 stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
 masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.
 ligne 5). Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
@@ -469,7 +469,8 @@ Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égal
 au pointeur passé en paramètre. On suppose que l'algorithme n'est utilisé que
 lorsqu'un tel bloc existe.
 
-Tant qu'on n'est pas sur une feuille -- on est donc sur un noeud ayant deux fils
+Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
+fils
 -- on se dirige vers le fils ayant le plus grand préfixe commun avac l'adresse
 passée en paramètre de l'algorithme. Quand on arrive sur une feuille, cette
 dernière contient donc forcément l'adresse que l'on cherchait.
@@ -485,11 +486,12 @@ d'un bloc.
 
 Cet algorithme est similaire à celui de la recherche exacte, au détail près
 qu'il faut vérifier la formule de l'encadrement de $ptr$ par $B$ quand on arrive
-sur une feuille. On utilise une pile contenant les noeuds à partir desquels il
+sur une feuille. On utilise une pile contenant les n\oe{}uds à partir desquels
+il
 faut reprendre le parcours si la recherche n'aboutit pas. Quand on explore le
 fils droit, on empile le fils gauche. Quand on arrive sur une feuille, on
 vérifie l'encadrement, s'il est vérifié on a trouvé le bloc qu'on cherchait,
-sinon on utilise le dernier noeud empilé (et on le dépile) s'il existe, sinon
+sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe, sinon
 on retourne $null$.
 
 \subsection{Ajout}
@@ -535,25 +537,28 @@ on retourne $null$.
 
 
 L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
-vide, l'élément est ajouté à la racine. Sinon, on recherche le noeud $x$ le plus
-similaire au noeud à insérer. Celui-ci sera son frère dans la nouvelle
-configuration de l'arbre. Nous créons ensuite le noeud correspondant au père. Le
+vide, l'élément est ajouté à la racine. Sinon, on recherche le n\oe{}ud $x$ le
+plus
+similaire au n\oe{}ud à insérer. Celui-ci sera son frère dans la nouvelle
+configuration de l'arbre. Nous créons ensuite le n\oe{}ud correspondant au père.
+Le
 plus grand préfixe commun des deux fils est calculé pour le père, et les fils
 sont ordonnés en fonction de leur adresse (le plus petit à gauche). Puis le
 père est inséré dans l'arbre à l'ancien emplacement de $x$. Les champs de $x$ et
 de l'ancien père de $x$ (s'il existe) sont également mis à jour pour maintenir
 la cohérence de l'arbre. La Fig.~\ref{fig:insertion-Patricia-trie} illustre
 l'insertion de l'adresse \texttt{0010\,0111} dans un arbre. L'algorithme a
-déterminé que le noeud le plus similaire serait \texttt{0010\,0110}, et crée le
-père correspondant : \texttt{0010\,011*}.
+déterminé que le n\oe{}ud le plus similaire serait \texttt{0010\,0110}, et crée
+le père correspondant : \texttt{0010\,011*}.
 
 
-\subsubsection{Recherche du noeud le plus similaire}
+\subsubsection{Recherche du n\oe{}ud le plus similaire}
 
 Dès qu'on arrive sur une feuille on la renvoie. Sinon on calcule le plus grand
 préfixe commun de l'adresse passée en paramètre avec le fils gauche, de même
 avec le fils droit. Si l'un des préfixes est strictement supérieur à l'autre
-on se dirige vers la branche correspondante, sinon on renvoie le noeud courant.
+on se dirige vers la branche correspondante, sinon on renvoie le n\oe{}ud
+courant.
 
 
 
@@ -604,7 +609,8 @@ et un père. $x$ et son père sont supprimés, et $y$ remonte d'un niveau (et pr
 donc la place du père). Enfin, les champs du nouveau père de $y$ sont mis à jour
 pour maintenir la cohérence de l'arbre (le plus grand préfixe commun est
 recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
-de l'adresse \texttt{0010\,0111} dans un Patricia trie. Ce noeud ainsi que son
+de l'adresse \texttt{0010\,0111} dans un Patricia trie. Ce n\oe{}ud ainsi que
+son
 père \texttt{0010\,011*} sont supprimés, et \texttt{0010\,0110} est remonté d'un
 niveau.
 
@@ -700,11 +706,32 @@ commun, sb est le nombre d'insertion dans le $store$, Pt correspond à
 l'implémentation par Patricia tries, St correspond à l'implémentation par Splay
 trees. L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations
 sans (resp. avec) application d'une analyse statique $Dataflow$ permettant de
-n'instrumenter que ce qui est nécessaire \cite{TODO}. L'indice $_1$ (resp. $_2$)
+n'instrumenter que ce qui est nécessaire (section 6 de \cite{RV2013}). L'indice
+$_1$ (resp. $_2$)
 correspond à l'implémentation non optimisée (resp. optimisée) du calcul du
 plus grand préfixe commun pour l'implémentation utilisant les Patricia tries.
+Le temps d'analyse du programme avec \textsc{Valgrind} \cite{Valgrind} est
+indiqué dans la dernière colonne.
 
-{\color{red} analyse des résultats, confirmation des hypothèses ?}
+Nous remarquons que le temps d'exécution de \textsc{Valgrind} n'est pas
+comparable avec celui de notre solution, cela s'explique simplement par le fait
+que celui-ci ne prend pas en compte la spécification \textsc{acsl}, et se
+contente de vérifier des propriétés comme l'absence d'erreur de segmentation ou
+l'absence de fuite de mémoire. En revanche, notre démarche vise à supporter au
+maximum les annotations \textsc{acsl}, ce qui nécessite un monitoring plus
+lourd.
+
+Nos expérimentations, présentées dans la Fig.~\ref{fig:mmodel-exp}, confirment
+nos hypothèses, à savoir :
+\begin{itemize}
+\item le Patricia trie est la structure de données la plus appropriée pour
+  l'implémentation du $store$;
+\item notre optimisation du calcul du plus grand préfixe commun par recherche
+  dichotomique et utilisation d'indices pré-calculés entraîne un vrai gain de
+  performance;
+\item l'utilisation d'une analyse statique visant à réduire l'instrumentation
+  du programme permet de réduire le temps d'exécution de manière efficace.
+\end{itemize}
 
 
 \begin{landscape}
