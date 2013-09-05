@@ -74,35 +74,4 @@ Les constructions suivantes ne sont pas encore prises en charge par E-ACSL :
 \end{itemize}
 
 
-\section{TODO: traduction des invariants et variants}
-
-\begin{figure}[h]
-  \begin{lstlisting}
-if(!X)
-  pathcrawler_assert_exception(...); // established
-/*@ loop invariant X; */
-while(...) {
-  ...
-  if(!X)
-    pathcrawler_assert_exception(...); // preserved
-}
-  \end{lstlisting}
-  \caption{Invariant}
-\end{figure}
-
-\begin{figure}[h]
-  \begin{lstlisting}
-int old_X;
-if(X < 0)
-  pathcrawler_assert_exception(...); // positive
-/*@ loop variant X; */
-while(...) {
-  old_X = X;
-  ...
-  if(X >= old_X)
-    pathcrawler_assert_exception(...); // decreasing
-}
-  \end{lstlisting}
-  \caption{Variant}
-\end{figure}
 
