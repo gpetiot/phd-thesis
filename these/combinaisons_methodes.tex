@@ -1,3 +1,30 @@
 
 \chapter{Combinaisons de méthodes statiques et dynamiques dans Frama-C}
 
+\begin{definition}{Hard Testing}\hfill \\
+  Utilisation d'un générateur de tests afin de forcer l'exécution des chemins
+  menant à une erreur. Le programme à tester est instrumenté de manière à
+  générer ces chemins d'erreur. Pour une assertion \texttt{assert X} ou une
+  post-condition \texttt{ensures X}, on génère
+  une conditionnelle \texttt{if(X)}, afin de forcer l'exploration des branches
+  \texttt{X = true} et \texttt{X = false}. C'est ce qu'on appellera ``forcer
+  l'erreur par le test''. S'il existe un contre-exemple pour une propriété,
+  nous serons en mesure de trouver des entrées concrètes permettant d'emprunter
+  un chemin d'exécution menant à cette erreur. Ainsi, si aucun contre-exemple
+  n'est trouvé pour une propriété donnée (sous réserve d'un parcours sans erreur
+  de tous les chemins), alors il n'en existe pas et la propriété peut etre
+  considérée valide.
+\end{definition}
+
+\begin{definition}{Soft Testing}\hfill \\
+  Utilisation d'un générateur de tests afin de simplement constater l'erreur,
+  et non la forcer, par opposition au Hard Testing.
+  On ne génère pas de chemins supplémentaires pour forcer le parcours
+  des chemins d'erreur, à la place, l'instrumentation reporte les vérifications
+  dans l'oracle de la fonction sous test. Le fait de reporter ces vérifications
+  distingue cette approche du monitoring. Cette approche est moins couteuse que
+  le hard testing en raison du nombre plus faible de chemins à explorer,
+  néanmoins nous n'avons pas la certitude de trouver des contre-exemples aux
+  propriétés s'ils existent, et donc, ne pouvons pas valider les propriétés
+  pour lesquelles aucun contre-exemple n'a été trouvé.
+\end{definition}
