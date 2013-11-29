@@ -26,5 +26,112 @@
   le hard testing en raison du nombre plus faible de chemins à explorer,
   néanmoins nous n'avons pas la certitude de trouver des contre-exemples aux
   propriétés s'ils existent, et donc, ne pouvons pas valider les propriétés
-  pour lesquelles aucun contre-exemple n'a été trouvé.
+  pour lesquelles aucun contre-exemple n'a été trouvé. Le {\em Soft Testing}
+  n'est pas complet et n'offre donc pas une garantie égale au
+  {\em Hard Testing}.
 \end{definition}
+
+\begin{definition}{Preuve partielle}\hfill \\
+  Preuve pour laquelle on a renforcé la pré-condition par une clause
+  \texttt{typically} (instanciation des variables d'entrée ou réduction de leur
+  domaine de définition).
+\end{definition}
+
+\begin{definition}{Preuve totale}\hfill \\
+  Preuve pour laquelle on ne renforce pas la pré-condition par la clause
+  \texttt{typically}. Si de telles clauses sont présentes, on les ignore. Une
+  telle preuve offre une garantie plus forte qu'une preuve partielle.
+\end{definition}
+
+\begin{definition}{Partial Hard Testing}\hfill \\
+  Utilisation du {\em Hard Testing} avec renforcement de la pré-condition afin
+  d'obtenir une preuve partielle.
+\end{definition}
+
+\begin{definition}{Total Hard Testing}\hfill \\
+  Utilisation du {\em Hard Testing} sans renforcement de la pré-condition afin
+  d'obtenir une preuve totale.
+\end{definition}
+
+On ne fait pas de distinction total/partiel pour le {\em Soft Testing} puisqu'il
+n'offre aucune garantie en terme de validité des propriétés, que la
+pré-condition soit renforcée ou non.
+
+
+
+\section{Obtenir la meme garantie avec le test et la vérification déductive}
+
+\subsection{Tentative de Preuve totale $\rightarrow$ Total Hard Testing}
+
+En cas d'échec d'une preuve totale avec un greffon de preuve, nous pouvons
+utiliser un générateur de tests en mode {\em Hard Testing}. Si, pour une
+propriété donnée, aucun contre-exemple n'a été trouvé et tous les chemins
+d'exécution ont été couverts sans qu'aucune erreur ne se soit produite, alors
+cette propriété peut etre validée. La validation de cette propriété par le
+générateur de tests offre la meme garantie qu'un greffon de vérification
+déductive : on obtient une preuve totale pour cette propriété.
+Cette combinaison permet d'obtenir des contre-exemples ou une preuve totale par
+le test après un échec de preuve totale par vérification déductive.
+
+\subsection{Tentative de Preuve partielle $\rightarrow$ Partial Hard Testing}
+
+Après un échec d'une preuve partielle, nous pouvons utiliser le {\em Hard
+Testing}. Si aucun contre-exemple n'a été trouvé pour une propriété donnée et
+si tous les chemins d'exécution ont été couverts sans qu'aucune erreur ne se
+soit produite, alors on obtient une preuve partielle pour cette propriété.
+Cette combinaison permet d'obtenir des contre-exemples ou une preuve partielle
+par le test après un échec de preuve partielle par vérification déductive.
+
+
+
+
+\section{Obtenir une garantie plus forte avec le test}
+
+\subsection{Tentative de Preuve partielle $\rightarrow$ Total Hard Testing}
+
+Après un échec de preuve pour laquelle la pré-condition a été renforcée, il est
+possible d'utiliser le {\em Hard Testing} sans renforcement de la pré-condition.
+Ainsi, si aucun contre-exemple n'a été trouvé et si tous les chemins d'exécution
+ont été couverts sans qu'aucune erreur ne se soit produite, alors on obtient une
+preuve totale pour les propriétés concernées. Cette combinaison permet d'obtenir
+des contre-exemples ou une preuve totale par le test après un échec de preuve
+partielle par vérification déductive.
+
+
+
+
+\section{Obtenir une garantie plus faible avec le test}
+
+\subsection{Tentative de Preuve totale $\rightarrow$ Partial Hard Testing}
+
+Après un échec de preuve pour laquelle la pré-condition n'a pas été renforcée,
+il est possible d'utiliser le {\em Hard Testing} avec un renforcement de la
+pré-condition. Ainsi, si aucun contre-exemple n'a été trouvé et si tous les
+chemins d'exécution ont été couverts sans qu'aucune erreur ne se soit produite,
+alors on obtient une preuve partielle pour les propriétés concernées. Cette
+combinaison permet d'obtenir des contre-exemples ou une preuve partielle par le
+test après un échec de preuve totale par vérification déductive.
+
+
+
+
+\section{Obtenir une garantie nulle avec le test}
+
+\subsection{Tentative de Preuve totale $\rightarrow$ Soft Testing}
+
+Si nous utilisons un générateur de tests en mode {\em Soft Testing} après un
+échec de preuve par un greffon de vérification déductive, nous aurons moins de
+chance d'activer les chemins menant à des contre-exemples des propriétés à
+prouver. Et si aucun contre-exemple n'a été trouvé et tous les chemins
+d'exécution ont été couverts sans qu'aucune erreur ne se soit produite, nous
+ne pouvons pas considérer la propriété comme valide. Cette combinaison permet
+uniquement de trouver des contre-exemples après un échec de preuve totale.
+
+\subsection{Tentative de Preuve partielle $\rightarrow$ Soft Testing}
+
+Après un échec d'une preuve partielle, nous pouvons utiliser le {\em Soft
+Testing}. Si aucun contre-exemple n'a été trouvé pour une propriété donnée et si
+tous les chemins d'exécution ont été couverts sans qu'aucune erreur ne se soit
+produite, nous ne pouvons rien conclure sur cette propriété.
+Cette combinaison permet uniquement de trouver des contre-exemples après un
+échec de preuve partielle.
