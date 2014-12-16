@@ -1,0 +1,92 @@
+\lstloadlanguages{C}
+
+% Warnings: 
+% - Do not use other quantified variables than i, j and k
+% - Do not add 
+\lstdefinelanguage{pretty-ACSL}{%
+  escapechar={},
+  literate=
+   {==}{{$==$}}2
+   {==>}{{$\Rightarrow\ $}}1
+   %{integer\ i}{{i$\,\in \mathbb{Z}\,$}}4
+   %{integer\ j}{{j$\,\in \mathbb{Z}\,$}}4
+   %{integer\ k}{{k$\,\in \mathbb{Z}\,$}}4
+   %{integer\ m}{{m$\,\in \mathbb{Z}\,$}}4
+   %{integer\ l}{{l$\,\in \mathbb{Z}\,$}}4
+   %{\\sum(x,\ y,\ \\lambda\ integer\ k;\ t(k))}{{$\sum_{k=x}^y t_k$}}2
+   %{\\product(x,\ y,\ \\lambda\ integer\ k;\ t(k))}{{$\prod_{k=x}^y t_k$}}2
+   %{\\numof(x,\ y,\ \\lambda\ integer\ k;\ t(k))}{{$\#_{k=x}^y t_k$}}2
+   %{\\min(x,\ y,\ \\lambda\ integer\ k;\ t(k))}{{$MIN_{k=x}^y t_k$}}2
+   %{\\max(x,\ y,\ \\lambda\ integer\ k;\ t(k))}{{$MAX_{k=x}^y t_k$}}2
+   %{\\lambda\ integer\ i;}{{$\lambda i . $}}2
+   %{\\forall}{{$\forall$}}1
+   %{\\exists}{{$\exists$}}1
+   %{integer}{{$\mathbb{Z}$}}1
+   {real}{{$\mathbb{R}$}}1
+   {&&}{{$\wedge\ $}}1
+   {||}{{$\vee\ $}}1
+   {!=}{{$\neq$}}1
+   {<}{{$<$}}1
+   {<=}{{$\le$}}1
+   {>}{{$>$}}1
+   {>=}{{$\ge$}}1
+   {<==>}{{$\Leftrightarrow\ $}}1,
+  morekeywords={assert,assigns,assumes,axiom,axiomatic,behavior,behaviors,
+    boolean,breaks,complete,continues,data,decreases,disjoint,ensures,
+    exit_behavior,ghost,global,inductive,invariant,lemma,logic,loop,
+    model,predicate,reads,requires,sizeof,strong,struct,terminates,
+    type,union,variant,uchar,byte,typically,\\offset,\\result,\\old,\\at,\\valid,
+    \\separated,\\nothing,Pre,Old,\\true,\\false,\\fresh,\\min,\\max,\\numof,
+    \\sum,\\product,\\lambda,real,integer,postcondition,\\exists,\\forall},
+  alsoletter={\\},
+  morecomment=[l]{//}
+}
+\lstnewenvironment{pretty-codeACSL}{\lstset{language=pretty-ACSL,stepnumber=0}}{\smallskip}
+
+\lstdefinelanguage{ACSL}{%
+  escapechar={},
+  literate=,
+  morekeywords={assert,assigns,assumes,axiom,axiomatic,behavior,behaviors,
+    boolean,breaks,complete,continues,data,decreases,disjoint,ensures,
+    exit_behavior,ghost,global,inductive,invariant,lemma,logic,loop,
+    model,predicate,reads,requires,sizeof,strong,struct,terminates,postcond,precond,
+    type,union,variant,uchar,byte,typically,\\offset,\\result,\\old,\\at,\\valid,
+    \\separated,\\nothing,Pre,Old,\\true,\\false,\\fresh,\\min,\\max,\\numof,
+    \\sum,\\product,\\lambda,real,integer,postcondition,\\exists,\\forall},
+  alsoletter={\\},
+  morecomment=[l]{//}
+}
+\lstnewenvironment{codeACSL}{\lstset{language=ACSL,stepnumber=0}}{\smallskip}
+
+
+
+\lstdefinestyle{pretty-c}{language={[ANSI]C},%
+  alsolanguage=pretty-ACSL,%
+  %commentstyle=\lp@comment,%
+  moredelim={*[l]{//}},%
+  %moredelim={*[s]{/*}{*/}},%
+  %moredelim={**[s]{/*@}{*/}},%
+  deletecomment={[s]{/*}{*/}},
+  moredelim={*[l]{//@}},%
+}
+
+\lstdefinestyle{c}{language={[ANSI]C},%
+  alsolanguage=ACSL,%
+  %commentstyle=\lp@comment,%
+  moredelim={*[l]{//}},%
+  %moredelim={*[s]{/*}{*/}},%
+  %moredelim={**[s]{/*@}{*/}},%
+  deletecomment={[s]{/*}{*/}},
+  moredelim={*[l]{//@}},%
+}
+
+\lstset{language=C,
+  escapechar=§,
+  style=c,
+  basicstyle=\scriptsize\ttfamily,
+  numberstyle=\tiny,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  tab=\rightarrowfill,
+}

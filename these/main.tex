@@ -6,7 +6,7 @@
 \usepackage[frenchb]{babel}
 \usepackage[normalem]{ulem}
 \usepackage[nounderscore]{syntax}
-\usepackage{color,framed,amsthm,latexsym,amsmath,amssymb,framed,listings,
+\usepackage{color,amsthm,latexsym,amsmath,amssymb,framed,listings,
   courier,caption,array,multirow,booktabs,colortbl,
   hyperref,url,etex,pstricks,pstricks-add,wrapfig,paralist,lscape,tikz}
 \usetikzlibrary{matrix,shapes,shapes.multipart,backgrounds,calc,fit}
@@ -73,40 +73,7 @@
 \newcommand{\commentAG}[1]{\color{blue}((AG: {#1}))\color{black}} 
 
 
-\lstloadlanguages{C}
-
-\def\lstsmallmath{\leavevmode\ifmmode \scriptstyle \else  \fi}
-\def\lstsmallmathend{\leavevmode\ifmmode  \else  \fi}
-\lstset {
-  backgroundcolor=\color{gray!20},
-  escapechar=§,
-  %frame=shadowbox,
-  %rulesepcolor=\color{black},
-  showspaces=false,showtabs=false,tabsize=2,
-  numberstyle=\tiny,numbers=left,
-  basicstyle=\small\ttfamily,
-  stringstyle=\color{sh_string},
-  keywordstyle = \color{sh_keyword}\bfseries,
-  commentstyle=\color{sh_comment}\itshape,
-  captionpos=b,
-  xleftmargin=0.7cm,
-  aboveskip=0.7cm,
-  belowskip=0.5cm,
-  escapebegin={\lstsmallmath}, escapeend={\lstsmallmathend},
-  emph={%let,and,match,function,with,in,true,false,None,Some,fun,
-    %raise,type,method,module,end,rec,ref,val,list,array,try,
-    int,char,void,return,size\_t,unsigned,long,struct,if,then,else,typedef,
-    for,while,break,const,short,assert,continue,goto},
-  emphstyle=\textbf
-}
-
-\captionsetup[lstlisting]{
-  singlelinecheck=false,
-  margin=40pt,
-  font={bf,footnotesize}
-}
-
-\newcommand{\highl}{\colorbox{gray!30}}
+\input{style_listings}
 
 
 \declarethesis{Contribution à la Vérification de Programmes C par Combinaison
