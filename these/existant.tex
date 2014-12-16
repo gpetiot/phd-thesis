@@ -79,7 +79,6 @@ une collaboration entre différentes analyses.\\
 
 \newcommand{\lang}[1]{\textsf{\small #1}\xspace}
 \newcommand{\cil}{\lang{CIL}}
-\newcommand{\C}{\lang{C}}
 \newcommand{\ACSL}{\lang{ACSL}}
 \newcommand{\JML}{\lang{JML}}
 \newcommand{\framac}{\lang{Frama-C}}
@@ -634,7 +633,7 @@ Pour corriger ce défaut, l'option {\em smart} (Fig.~\ref{figSlicingAdvanced}
 diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
 supprimées seront des alarmes classifiées ou des alarmes finales.
 
-\begin{definition}
+\begin{definition}[Alarme finale]
 Une alarme finale est une alarme dont aucune autre alarme de dépend mais
 pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
 Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
@@ -835,9 +834,8 @@ dynamique est applicable). Par construction, il n'est pas
 possible que les deux résumés soient applicables.\\
 
 
-\begin{definition}
-Analyse compositionnelle : mémoization des résultats intermédiaires sous la
-forme de résumés réutilisables.
+\begin{definition}[Analyse compositionnelle]
+Mémoization des résultats intermédiaires sous la forme de résumés réutilisables.
 \end{definition}
 
 
