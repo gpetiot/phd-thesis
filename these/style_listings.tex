@@ -39,7 +39,6 @@
     \\separated,\\nothing,Pre,Old,\\true,\\false,\\fresh,\\min,\\max,\\numof,
     \\sum,\\product,\\lambda,real,integer,postcondition,\\exists,\\forall},
   alsoletter={\\},
-  morecomment=[l]{//}
 }
 \lstnewenvironment{pretty-codeACSL}{\lstset{language=pretty-ACSL,stepnumber=0}}{\smallskip}
 
@@ -54,7 +53,6 @@
     \\separated,\\nothing,Pre,Old,\\true,\\false,\\fresh,\\min,\\max,\\numof,
     \\sum,\\product,\\lambda,real,integer,postcondition,\\exists,\\forall},
   alsoletter={\\},
-  morecomment=[l]{//}
 }
 \lstnewenvironment{codeACSL}{\lstset{language=ACSL,stepnumber=0}}{\smallskip}
 
@@ -62,21 +60,11 @@
 
 \lstdefinestyle{pretty-c}{language={[ANSI]C},%
   alsolanguage=pretty-ACSL,%
-  %commentstyle=\lp@comment,%
-  moredelim={*[l]{//}},%
-  %moredelim={*[s]{/*}{*/}},%
-  %moredelim={**[s]{/*@}{*/}},%
-  deletecomment={[s]{/*}{*/}},
   moredelim={*[l]{//@}},%
 }
 
 \lstdefinestyle{c}{language={[ANSI]C},%
   alsolanguage=ACSL,%
-  %commentstyle=\lp@comment,%
-  moredelim={*[l]{//}},%
-  %moredelim={*[s]{/*}{*/}},%
-  %moredelim={**[s]{/*@}{*/}},%
-  deletecomment={[s]{/*}{*/}},
   moredelim={*[l]{//@}},%
 }
 
@@ -89,4 +77,7 @@
   stepnumber=1,
   numbersep=5pt,
   tab=\rightarrowfill,
+  commentstyle=\color{green!40!black}, % comment color
+  keywordstyle=\color{blue}, % keyword color
+  stringstyle=\color{red} %   string color
 }
