@@ -1,6 +1,6 @@
 
 BIB=biblio.bib
-SCHEMES=SANTE_slicing.tex SANTE_slicing_advanced.tex fig_frama_c.tex
+SCHEMES=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex fig_frama_c.tex
 
 all: main.pdf
 
