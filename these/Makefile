@@ -4,7 +4,7 @@ SCHEMES=SANTE_slicing.tex SANTE_slicing_advanced.tex
 
 all: these.pdf
 
-these.dvi: these.tex $(BIB) $(SCHEMES) existant.tex combinaisons_methodes.tex memory_model.tex integration_dyn.tex
+these.dvi: these.tex $(BIB) $(SCHEMES) existant.tex memory_model.tex stady.tex
 	latex $^
 	bibtex these
 	latex $^
