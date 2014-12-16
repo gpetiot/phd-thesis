@@ -2,16 +2,16 @@
 BIB=biblio.bib
 SCHEMES=SANTE_slicing.tex SANTE_slicing_advanced.tex
 
-all: these.pdf
+all: main.pdf
 
-these.dvi: these.tex $(BIB) $(SCHEMES) existant.tex memory_model.tex stady.tex
+main.dvi: main.tex $(BIB) $(SCHEMES) existant.tex memory_model.tex stady.tex
 	latex $^
-	bibtex these
+	bibtex main
 	latex $^
 	latex $^
 
-these.pdf: these.dvi
-	dvipdf these.dvi
+main.pdf: main.dvi
+	dvipdf main.dvi
 
 clean:
 	rm *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
