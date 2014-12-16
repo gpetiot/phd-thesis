@@ -11,7 +11,12 @@
   hyperref,url,etex,pstricks,pstricks-add,wrapfig,paralist,lscape,tikz}
 \usetikzlibrary{matrix,shapes,shapes.multipart,backgrounds,calc,fit}
 
-\tikzstyle{leaf}=[rounded corners,rectangle,inner sep=1mm,fill=gray!30]
+\tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
+\tikzstyle{pleaf}=[pnode,fill=gray!30]
+\tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
+\newcommand\ppnode[1]{\tikz{\node[pnode,ppcommon]{#1};}}
+\newcommand\ppleaf[1]{\tikz{\node[pleaf,ppcommon]{#1};}}
+
 \tikzstyle{memcell}=[minimum width=1cm,minimum height=1.5em,outer sep=0pt,
   draw=black,semithick]
 \tikzstyle{empty}=[]

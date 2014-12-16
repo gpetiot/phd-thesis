@@ -214,8 +214,7 @@ mais l'inverse n'est pas vrai.
     \begin{tikzpicture}[>=latex,font=\sffamily]
       \node [memcell] at (0,0) (A) {};
       \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
-            {$bloc_2$};
+      \node[anchor=west,memcell,full,minimum width=4cm] at(B.east)(C){$bloc_2$};
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
@@ -223,10 +222,8 @@ mais l'inverse n'est pas vrai.
       \path (C.south)+(0,-1.5) node {${\tt \backslash valid(p)}$};
       \path (D.south)+(0,-1) node (q) {${\tt q}$};
       \path (D.south)+(0,-1.5) node {${\tt \lnot \backslash valid(q)}$};
-      
       \draw [->,line width=1.2pt] (p) -- (C);
       \draw [->,line width=1.2pt] (q) -- (D);
-      
     \end{tikzpicture}
   \end{center}
   \caption{Validité d'un bloc}
@@ -273,26 +270,22 @@ initialisée au label $L$.
     \begin{tikzpicture}[>=latex,font=\sffamily]
       \node [memcell] at (0,0) (A) {};
       \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
-            {
-              \begin{tikzpicture}[>=latex,font=\sffamily]
-                \node [memcell,init] at (0,0) (c1) {c1};
-                \node [anchor=west,memcell,init] at (c1.east) (c2) {c2};
-                \node [anchor=west,memcell,uninit] at (c2.east) (c3) {c3};
-              \end{tikzpicture}
-            };
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
+        \begin{tikzpicture}[>=latex,font=\sffamily]
+          \node [memcell,init] at (0,0) (c1) {c1};
+          \node [anchor=west,memcell,init] at (c1.east) (c2) {c2};
+          \node [anchor=west,memcell,uninit] at (c2.east) (c3) {c3};
+        \end{tikzpicture}
+      };
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-
       \path (C.south)+(-1,-1) node (p) {${\tt p}$};
       \path (C.south)+(-2,-1.5) node {${\tt \backslash initialized(p)}$};
       \path (C.south)+(1,-1) node (q) {${\tt q}$};
       \path (C.south)+(2,-1.5) node {${\tt \lnot \backslash initialized(q)}$};
-      
       \draw [->,line width=1.2pt] (p) -- (p)+(0,.5);
       \draw [->,line width=1.2pt] (q) -- (q)+(0,.5);
-      
     \end{tikzpicture}
   \end{center}
   \caption{Initialisation des octets d'un bloc}
@@ -434,7 +427,8 @@ byte gtCommonPrefixMask(byte a, byte b) {
 Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
 d'une suite de $n$ ``1'', suivie d'une suite de ``0'', où $n$ est le nombre de
 bits communs entre A et B. Par exemple, le plus grand préfixe commun de
-A = \texttt{0110\,0111} et B = \texttt{0111\,1111} est P = \texttt{011*\,****}
+A = \ppleaf{\texttt{0110\,0111}} et B = \ppleaf{\texttt{0111\,1111}} est P = 
+\ppnode{\texttt{011*\,****}}
 et le masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
 
 Les calculs et comparaisons des préfixes ont été optimisés par un usage
@@ -502,11 +496,11 @@ on retourne $null$.
     \begin{tabular}{ccc}
       \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
           style={font=\scriptsize}]
-        \node {\texttt{0010\,****}}
-        child { node[leaf] {\texttt{0010\,0110}} }
-        child { node {\texttt{0010\,1***}}
-          child { node[leaf] {\texttt{0010\,1001}} }
-          child { node[leaf] {\texttt{0010\,1101}} }
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pleaf] {\texttt{0010\,0110}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
         };
         \node at (-1.7,0) {\textbf{a)}};
       \end{tikzpicture}
@@ -515,14 +509,14 @@ on retourne $null$.
 &
       \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
           sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
-        \node {\texttt{0010\,****}}
-        child { node {\texttt{0010\,011*}}
-          child { node[leaf] {\texttt{0010\,0110}} }
-          child { node[leaf] {\texttt{0010\,0111}} }
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pnode] {\texttt{0010\,011*}}
+          child { node[pleaf] {\texttt{0010\,0110}} }
+          child { node[pleaf] {\texttt{0010\,0111}} }
         }
-        child { node {\texttt{0010\,1***}}
-          child { node[leaf] {\texttt{0010\,1001}} }
-          child { node[leaf] {\texttt{0010\,1101}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
         };
         \node at (-3.4,0) {\textbf{b)}};
      \end{tikzpicture}   
@@ -547,9 +541,10 @@ sont ordonnés en fonction de leur adresse (le plus petit à gauche). Puis le
 père est inséré dans l'arbre à l'ancien emplacement de $x$. Les champs de $x$ et
 de l'ancien père de $x$ (s'il existe) sont également mis à jour pour maintenir
 la cohérence de l'arbre. La Fig.~\ref{fig:insertion-Patricia-trie} illustre
-l'insertion de l'adresse \texttt{0010\,0111} dans un arbre. L'algorithme a
-déterminé que le n\oe{}ud le plus similaire serait \texttt{0010\,0110}, et crée
-le père correspondant : \texttt{0010\,011*}.
+l'insertion de l'adresse \ppleaf{\texttt{0010\,0111}} dans un arbre.
+L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
+\ppleaf{\texttt{0010\,0110}}, et crée
+le père correspondant : \ppnode{\texttt{0010\,011*}}.
 
 
 \subsubsection{Recherche du n\oe{}ud le plus similaire}
@@ -570,14 +565,14 @@ courant.
     \begin{tabular}{ccc}
       \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
           sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
-        \node {\texttt{0010\,****}}
-        child { node {\texttt{0010\,011*}}
-          child { node[leaf] {\texttt{0010\,0110}} }
-          child { node[leaf] {\texttt{0010\,0111}} }
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pnode] {\texttt{0010\,011*}}
+          child { node[pleaf] {\texttt{0010\,0110}} }
+          child { node[pleaf] {\texttt{0010\,0111}} }
         }
-        child { node {\texttt{0010\,1***}}
-          child { node[leaf] {\texttt{0010\,1001}} }
-          child { node[leaf] {\texttt{0010\,1101}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
         };
         \node at (-3.4,0) {\textbf{a)}};
      \end{tikzpicture}   
@@ -586,11 +581,11 @@ courant.
 &
        \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
           style={font=\scriptsize}]
-        \node {\texttt{0010\,****}}
-        child { node[leaf] {\texttt{0010\,0110}} }
-        child { node {\texttt{0010\,1***}}
-          child { node[leaf] {\texttt{0010\,1001}} }
-          child { node[leaf] {\texttt{0010\,1101}} }
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pleaf] {\texttt{0010\,0110}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
         };
         \node at (-1.7,0) {\textbf{b)}};
       \end{tikzpicture}
@@ -609,10 +604,9 @@ et un père. $x$ et son père sont supprimés, et $y$ remonte d'un niveau (et pr
 donc la place du père). Enfin, les champs du nouveau père de $y$ sont mis à jour
 pour maintenir la cohérence de l'arbre (le plus grand préfixe commun est
 recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
-de l'adresse \texttt{0010\,0111} dans un Patricia trie. Ce n\oe{}ud ainsi que
-son
-père \texttt{0010\,011*} sont supprimés, et \texttt{0010\,0110} est remonté d'un
-niveau.
+de l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie. Ce n\oe{}ud
+ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
+\ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
 
 
 
