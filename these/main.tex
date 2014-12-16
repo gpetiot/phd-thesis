@@ -136,9 +136,36 @@
 \listoffigures
 
 
+\chapter{Contexte, Problématique, Motivations et Contributions}
+
+Liste des contributions :
+\begin{itemize}
+\item extension d'une méthode de génération de tests structurels de programmes C
+  à des programmes C annotés par le sous-ensemble du langage ACSL appelé E-ACSL
+\item développement d'une méthode de combinaison Test et Preuve
+\item proposition de scénarios types d'utilisation de cette méthode
+\item implémentation de la combinaison Test et preuve dans STADY
+\item expérimentations évaluant l'impact de la méthode
+\item stage E-ACSL
+\end{itemize}
+
 \include{existant}
 \include{memory_model}
 \include{stady}
+
+\chapter{Expérimentations et évaluation de la méthode}
+
+\begin{itemize}
+\item évaluer la capacité à trouver des erreurs dans le code par détection de
+  contre-exemples. On prend des codes faux engendrés par mutation, une
+  spécification juste et on mesure pour combien de codes faux on trouve des
+  contr-exemples.
+\item même chose en mutant les spécifications
+\item détection de sous-spécification (par mutation)
+\end{itemize}
+
+\chapter{Conclusion et Perspectives}
+
 %\appendix
 
 
