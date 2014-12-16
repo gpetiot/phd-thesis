@@ -1,0 +1,54 @@
+Plan de la thèse
+Titre provisoire proposé : "Contribution à la Vérification de Programmes C par Combinaison Tests et Preuves"
+1. Contexte, Problématique, motivations et contributions
+Liste des contributions :
+	- extension d'une méthode de génération de tests structurels de programmes C à
+	  des programmes C annotés par le sous-ensemble du langage ACSL appelé E-ACSL
+	- développement d'une méthode de combinaison Test et Preuve
+	- proposition de scénarios types d'utilisation de cette méthode
+	- implémentation de la combinaison Test et preuve dans STADY
+	- expérimentations évaluant l'impact de la méthode
+	- stage E-ACSL
+
+2. Etat de l'art
+	Spécification de programmes par annotation
+	Vérification à l'exécution par instrumentation
+	Vérification déductive, Test et leurs combinaisons
+
+3. Outils existants au CEA
+	Frama-C
+	PathCrawler
+
+3.5. Stage E-ACSL
+	Modèle Mémoire en C
+	Évaluation expérimentale
+
+4. Méthode combinant Tests et Preuves (TAP, SCAM et suite)
+	Introduction
+	Présentation de la méthode
+		- Présentation de scénarios types illustrés par des exemples
+	Règles d'instrumentation des programmes C à partir des spécifications E-ACSL
+	Preuve de correction de l'instrumentation
+	Choix d'instrumentation spécifiques de l'objectif Test
+	Difficultés et limites de l'instrumentation
+
+5. Implémentation - Présentation de STADY
+	Introduction
+	Rapprochement Frama-C et PathCrawler
+	Instrumentation de E-ACSL
+	Efficacité et amélioration
+
+6. Expérimentations et évaluation de la méthode
+	- évaluer la capacité à trouver des erreurs dans le code par détection de contre
+	  exemples. On prend des codes faux engendrés par mutation, une spécification juste et
+	  on mesure pour combien de codes faux on trouve des contre-exemples.
+	- même chose en mutant les spécifications
+	- détection de sous-spécification (par mutation)
+
+
+
+Mais comment évaluer ce qu'on annonce en conclusion ? :
+	- gain de temps de vérification (idée d'expérimenter en TP). 
+	- capacité à détecter des erreurs plus tôt dans le processus ?
+
+7. Conclusions et perspectives.
