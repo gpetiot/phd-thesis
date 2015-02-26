@@ -4,9 +4,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[frenchb]{babel}
-\usepackage[normalem]{ulem}
 \usepackage[nounderscore]{syntax}
-\usepackage{color,amsthm,latexsym,amsmath,amssymb,framed,listings,
+\usepackage{color,amsthm,latexsym,amsmath,amssymb,listings,
   courier,caption,array,multirow,booktabs,colortbl,
   hyperref,url,etex,pstricks,pstricks-add,wrapfig,paralist,lscape,tikz}
 \usetikzlibrary{matrix,shapes,shapes.multipart,backgrounds,calc,fit}
@@ -24,7 +23,6 @@
 \tikzstyle{init}=[fill=green!20]
 \tikzstyle{uninit}=[fill=white]
 
-\definecolor{shadecolor}{gray}{0.9}
 
 
 
@@ -36,47 +34,42 @@
 \endgroup}
 
 
+\newcommand{\tool}[1]{\textsc{\small #1}\xspace}
+
+\newcommand{\stady}{\tool{StaDy}}
+\newcommand{\framac}{\tool{Frama-C}}
+\newcommand{\pathcrawler}{\tool{PathCrawler}}
+\newcommand{\acsl}{\tool{acsl}}
+\newcommand{\eacsl}{\tool{e-acsl}}
+\newcommand{\Wp}{\tool{Wp}}
+\newcommand{\Value}{\tool{Value}}
+\newcommand{\sante}{\tool{sante}}
+\newcommand{\eacsltoc}{\tool{e-acsl2c}}
+\newcommand{\cil}{\tool{CIL}}
+\newcommand{\jml}{\tool{JML}}
+\newcommand{\colibri}{\tool{Colibri}}
 
 
-\newcommand{\ordering}{\ensuremath{\lesssim}} 
-\newcommand{\equival}{\ensuremath{\approx}}
-\newcommand{\todo}{\textbf{TODO}} 
-\newcommand{\SANTE}{\ensuremath{\mbox{\sc sante}}}
-\newcommand{\addErrorBranches}{\ensuremath{\mbox{\sc addErrorBranches}}}
-\newcommand{\PathCrawler}{\ensuremath{\textsc{Path\-Craw\-ler}}}
-\newcommand{\Framac}{\ensuremath{\textsc{Frama-C}}}
+\newcommand{\citeframac}{\cite{Frama-C}\xspace}
+\newcommand{\citepathcrawler}{\cite{PathCrawler}\xspace}
+\newcommand{\citevalue}{\cite{DBLP:conf/scam/CanetCM09}\xspace}
+\newcommand{\citeeacsl}{\cite{DBLP:conf/sac/DelahayeKS13}\xspace}
+\newcommand{\citesante}{\cite{DBLP:conf/sac/ChebaroKGJ12}\xspace}
+\newcommand{\citeeacsltoc}{\cite{DBLP:conf/rv/KosmatovPS13}\xspace}
+
 \newcommand{\SliceTest}{\ensuremath{\mbox{Slice\,\&\,Test}}}
 \newcommand{\dep}{\leadsto}
-\newcommand{\rest}{\!\downarrow\!}
-\newcommand{\refer}{\mathop{\rm ref}\nolimits}
-\newcommand{\Proj}{\mathop{\rm Proj}\nolimits}
-\newcommand{\card}{\mathop{\rm card}\nolimits}
-\newcommand{\labels}{\mathop{\textit{labels}}\nolimits}
-\newcommand{\leaves}{\mathop{\textit{ends}}\nolimits}
-\newcommand{\alarms}{\mathop{\textit{alarms}}\nolimits}  
-\newcommand{\slicing}{\mathop{\textit{slicing}}\nolimits}
-\newcommand{\error}{\textit{error}\xspace}
-\newcommand{\slice}{\mathop{\textit{slice}}\nolimits}
+\newcommand{\alarms}{\mathop{\textit{alarms}}\nolimits}
 
-\newcommand{\SA}{\textit{SA}}
-\newcommand{\DA}{\textit{DA}\xspace}
-\newcommand{\safe}{\textsf{safe}}
-\newcommand{\bug}{\textsf{bug}}
-\newcommand{\unknown}{\textsf{unknown}}
-\renewcommand{\ge}{\geqslant}
-\renewcommand{\geq}{\geqslant}
-\renewcommand{\le}{\leqslant}
-\renewcommand{\leq}{\leqslant}
-\newcommand{\trajsem}{\ensuremath{T}}
-\newcommand{\trajsemBDD}{\ensuremath{\overrightarrow{\mathcal{T}}}}
+
 \newtheorem{theorem}{Theorem}
 \newtheorem{proposition}[theorem]{Proposition}
 \newtheorem{lemma}[theorem]{Lemma}
-\newcommand{\commentNK}[1]{\color{red}((NK: {#1}))\color{black}} 
-\newcommand{\commentJJ}[1]{\color{orange}((JJ: {#1}))\color{black}} 
-\newcommand{\commentGP}[1]{\color{violet}((GP: {#1}))\color{black}}
-\newcommand{\commentAG}[1]{\color{blue}((AG: {#1}))\color{black}} 
 
+\newcommand{\commentAG}[1]{\colorbox{red}{{\color{white}((AG: {#1}))}}}
+\newcommand{\commentGP}[1]{\colorbox{violet}{{\color{white}((GP: {#1}))}}}
+\newcommand{\commentNK}[1]{\colorbox{blue}{{\color{white}((NK: {#1}))}}}
+\newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
 
 \input{style_listings}
 
@@ -870,13 +863,6 @@ informations et utiliser les  services fournis par le noyau, permettant ainsi
 une collaboration entre différentes analyses.
 
 
-\newcommand{\lang}[1]{\textsf{\small #1}\xspace}
-\newcommand{\cil}{\lang{CIL}}
-\newcommand{\ACSL}{\lang{ACSL}}
-\newcommand{\JML}{\lang{JML}}
-\newcommand{\framac}{\lang{Frama-C}}
-\newcommand{\pathcrawler}{\lang{PathCrawler}}
-\newcommand{\colibri}{\lang{Colibri}}
 
 
 \begin{figure}[h]
