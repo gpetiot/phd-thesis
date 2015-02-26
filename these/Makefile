@@ -4,7 +4,7 @@ SCHEMES=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex fig_frama_c.tex
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(SCHEMES) existant.tex memory_model.tex stady.tex style_listings.tex
+main.dvi: main.tex $(BIB) $(SCHEMES) style_listings.tex
 	latex $^
 	bibtex main
 	latex $^

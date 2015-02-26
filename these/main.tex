@@ -94,13 +94,929 @@
 
 \begin{document}
 
+
 \chapter*{Remerciements}
+
+TODO
+
 
 \tableofcontents
 \mainmatter
 
 
-\chapter{Contexte, Problématique, Motivations et Contributions}
+\chapter*{Introduction}
+
+TODO
+
+
+\part{Contexte et objectifs}
+
+
+\chapter{Vérification et validation de programmes}
+
+
+Le domaine de la vérification et de la validation regroupe un ensemble de
+techniques du cycle de développement des logiciels qui ont pour objectif de
+s'assurer de leur correction et de leur sûreté. Ces deux notions sont apparues
+dans les années soixante-dix avec les travaux de \bsc{Dijkstra} \cite{Dijkstra},
+\bsc{Floyd} \cite{Floyd} et \bsc{Hoare} \cite{Hoare}.
+
+La correction d'un logiciel représente le respect de l'implémentation par
+rapport aux spécifications. La sûreté d'un logiciel est liée à son absence
+d'erreurs à l'exécution.
+
+
+%% \section{Model-checking}
+%% \label{sec:model-checking}
+
+%% Le model-checking \cite{model-checking} permet de vérifier algorithmiquement si
+%% un modèle donné (le système ou une abstraction de ce système) satisfait une
+%% spécification, formulée en termes de logique temporelle \cite{LTL}. Un modèle
+%% est un ensemble d'états, de propriétés que vérifie chaque état, et de
+%% transitions entre ces états qui décrivent l'évolution du système.
+
+%% Le model-checking couvre l'ensemble des états du système et des transitions afin
+%% d'analyser toutes les exécutions possibles du système. Sur de grands systèmes,
+%% cette méthode est pénalisée par l'explosion combinatoire du nombre des états (et
+%% la complexité en temps ou en espace qui en résulte). Il est néanmoins possible
+%% de modéliser des algorithmes asynchrones répartis et des automates non
+%% déterministes, comme le fait notamment l'outil \textsc{Spin} \cite{SPIN}.
+
+%% La plateforme \textsc{Frama-C} du LSL intègre \textsc{Aoraï}, un greffon
+%% permettant d'annoter automatiquement le code source d'un programme C d'après
+%% une formule de logique temporelle linéaire, de sorte que les annotations sont
+%% vérifiées si le programme repecte la formule.
+
+
+\section{Analyse statique}
+\label{sec:AS}
+
+
+L'analyse statique \cite{static-analysis} examine le code source du programme
+sans l'exécuter. Elle raisonne sur tous les comportements qui pourraient
+survenir lors de l'exécution et permet donc de déduire des propriétés devant
+être vérifiées pour toutes ces exécutions, dans le but de prouver la correction
+du programme.
+
+En revanche, la vérification de programme étant en général indécidable
+\cite{undecidability}, il est souvent nécessaire d'utiliser des
+sur-approximations, ce qui implique que les résultats peuvent être moins précis
+que ce que l'on souhaite mais ils sont garantis pour toutes les exécutions.
+Ainsi, on peut établir des propriétés de sûreté ({\em safety}), où l’on cherche
+des invariants sur les valeurs des variables du programme (une plage de valeurs
+par exemple), afin d'exclure certains risques d'erreurs à l'exécution.
+
+Parmi les méthodes statiques sont distinguées : l'interprétation abstraite
+(section~\ref{sec:interpretation-abstraite}), l'abstraction à partir de
+prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de théorèmes
+(section~\ref{sec:preuve}).
+
+
+\subsection{Interprétation abstraite}
+\label{sec:interpretation-abstraite}
+
+L'interprétation abstraite \cite{abstract-interpretation} s'appuie sur les
+théories du point-fixe et des domaines pour introduire des sur-approximations
+des comportements d'un programme. Elle consiste à abstraire les domaines des
+variables par des domaines finis et beaucoup plus petits. Par exemple, le
+domaine des entiers pourrait être abstrait par un domaine de trois valeurs :
+$(-, 0, +)$. Appliquée à l’analyse de valeurs, elle consiste à calculer à
+chaque ligne du code une sur-approximation de l’ensemble des valeurs prises par
+chaque variable en cette ligne lors de toutes les exécutions du programme,
+permettant ainsi de détecter certaines erreurs comme les divisions par zéro ou
+les accès en dehors des bornes des tableaux.
+
+Pour contourner le problème d’indécidabilité, la théorie de l’interprétation
+abstraite construit une méthode qui, à la même question, répondra ``oui'',
+``non'' ou ``peut-être''. Si la méthode répond ``peut-être'', c’est qu’on n’a pu
+prouver ni l’un ni l’autre des deux premiers cas. C’est ce qu’on appelle une
+alarme : il est possible qu’une des exécutions du programme produise une erreur
+donnée, mais nous n’avons été capable ni de le confirmer ni de l’infirmer.
+L’erreur signalée par une alarme peut ne jamais apparaître à l’exécution, dans
+ce cas on l’appelle fausse alarme. On ne calcule donc pas la propriété exacte
+mais une abstraction de cette propriété, en imposant la contrainte de sûreté
+suivante : ``la propriété abstraite calculée ne doit oublier aucune exécution
+concrète''. L'abstraction est effectuée à partir de prédicats atomiques
+définissant des abstractions des domaines des variables.
+
+\textsc{PolySpace C Verifier} \cite{PolySpace} a été le premier outil commercial
+utilisant l'interprétation abstraite pour détecter les erreurs à l'exécution
+dans les programmes en C, C++ et Ada mais signale beaucoup de fausses alarmes.
+L'ENS a développé \textsc{Astrée} \cite{ASTREE}, spécifique au langage C et aux
+logiciels critiques. Le CEA LIST a développé \textsc{Fluctuat} \cite{Fluctuat},
+qui mesure précisément les approximations faites à l'exécution d'un programme C.
+\textsc{Frama-C} intègre un greffon d'interprétation abstraite : \textsc{Value}
+\cite{Value}.
+
+
+
+\subsection{Abstraction à partir de prédicats}
+\label{sec:abstraction-predicats}
+
+L'abstraction à partir de prédicats \cite{predicate-abstraction} est une
+technique permettant de générer automatiquement des abstractions de systèmes au
+nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
+ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
+sont des expressions booléennes sur les variables de $P$ et les constantes du
+langage.
+
+Chaque état concret de $P$ est mis en correspondance avec un état abstrait de
+l'abstraction de $P$, après évaluation par les prédicats de $E$. Un état
+abstrait est un $n$-upplet de valeurs booléennes correspondant à la
+satisfaisabilité des $n$ prédicats (au moyen d'un solveur SMT).
+
+Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et que la
+satisfaisabilité de ces prédicats à l'état concret $e$ est évaluée
+respectivement à $false, true, true$, alors dans l'abstraction générée, l'état
+$e$ correspond à l'état abstrait $(\lnot f_1, f_2, f_3)$.
+
+L'abstraction générée comporte un nombre fini d'états (au plus $2^n$) car il n'y
+a qu'un nombre fini de prédicats, le model-checking peut donc être appliqué à
+cette abstraction. Si une propriété de sûreté est vérifiée dans l'abstraction,
+elle l'est également dans le système concret.
+
+Cette technique est notamment utilisée par l'outil \textsc{Slam} \cite{SLAM} de
+Microsoft.
+
+
+\subsection{Preuve de théorèmes}
+\label{sec:preuve}
+
+La preuve de théorèmes utilise des fondements mathématiques et logiques
+\cite{Hoare} pour prouver des propriétés de programmes. Tout d'abord, le système
+est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
+de la plus faible précondition \cite{Dijkstra} est utilisé pour générer des
+formules appelées obligations de preuve, qui sont finalement soumises à un
+prouveur de théorèmes, qui applique différentes techniques de résolution.
+
+Contrairement au model-checking, la preuve de théorèmes a l'avantage d'être
+indépendante de la taille de l'espace des états, et peut donc s'appliquer sur
+des systèmes de grande taille. En contre-partie, cette technique requiert une
+expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
+par exemple) et guider le prouveur si nécessaire.
+
+Il existe des prouveurs automatiques tels que \textsc{Simplify}
+\cite{Simplify}, \textsc{Ergo} \cite{Ergo} et \textsc{Z3} \cite{Z3}; et des
+prouveurs interactifs, où la preuve est guidée par l'utilisateur, tels que
+\textsc{Coq} \cite{Coq}, \textsc{Isabelle} \cite{Isabelle}, et \textsc{Hol}
+\cite{HOL}. Certains de ces prouveurs ou assistants de preuve sont intégrés à
+d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
+\textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
+\textsc{Wp}, qui traitent des programmes dont le code contient des annotations
+\textsc{Acsl} \cite{ACSL}.
+
+
+\section{Analyse dynamique}
+\label{sec:AD}
+
+
+L’analyse dynamique est basée sur des techniques d’exécution du programme, de
+simulation \cite{simulation} d’un modèle ou d'exécution symbolique
+\cite{symbolic-execution}, regroupées sous le terme générique ``test''.
+
+Les tests peuvent s’appliquer tout au long du cycle de développement d’un
+logiciel. Les tests unitaires vérifient le bon fonctionnement des différentes
+entités d’un système, indépendamment les unes des autres. Les tests
+d'intégration vérifient la bonne communication entre ces entités. Les tests de
+validation s'assurent que les fonctionnalités correspondent au besoin de
+l’utilisateur final. Enfin, les tests de non-régression vérifient que l'ajout de
+nouvelles fonctionnalités ne détériore pas les anciennes fonctionnalités.
+
+En général, les techniques de test ne sont pas exhaustives et n'explorent qu'un
+sous-ensemble des chemins d'exécutions du programme, en conséquence, l’absence
+d’échecs lors du passage des tests n’est pas une garantie de bon fonctionnement
+du système. Néanmoins, selon les critères utilisés pour la génération des
+tests, et selon la couverture des chemins d'exécution fournie par les tests, un
+système ainsi validé peut acquérir un certain niveau de confiance.
+
+Les méthodes de test peuvent être classées en trois catégories : le test
+aléatoire, le test structurel (section~\ref{sec:test-structurel}) et le test
+fonctionnel (section~\ref{sec:test-fonctionnel}). Comme son nom l'indique, le
+test aléatoire consiste à générer des valeurs d'entrée du programme au hasard et
+ne sera pas détaillé dans cette thèse.
+
+
+
+\subsection{Exécution symbolique pour le test structurel}
+\label{sec:exec-sym}
+
+
+
+\subsubsection{Exécution symbolique augmentée}
+
+
+
+\subsection{Test structurel}
+\label{sec:test-structurel}
+
+Le test structurel, ou test ``boîte blanche'', est une technique de test qui
+fonde la détermination des différents cas de test sur une analyse de la
+structure du code source du programme étudié. On distingue deux types de tests
+structurels : le test orienté flot de contrôle et le test orienté flot de
+données.
+
+Le test orienté flot de données cherche à couvrir certaines relations entre la
+définition d’une variable et son utilisation, par exemple, on peut souhaiter
+couvrir toutes les lectures d'une variable suivant une écriture.
+
+Le test orienté flot de contrôle s’intéresse quant à lui à la structure du
+programme : l'ordre dans lequel les instructions sont exécutées. Il se base sur
+le graphe de flot de contrôle du programme : un graphe connexe orienté avec un
+unique n\oe{}ud d’entrée et un unique n\oe{}ud de sortie, dont les n\oe{}uds
+sont les blocs de base du programme et les arcs représentent les branchements
+(conditions). Une couverture structurelle de ce graphe est recherchée, selon un
+critère qui peut être par exemple ``toutes les instructions'',
+``toutes les branches'' (toutes les décisions), ``tous les chemins'' ou
+``tous les $k$-chemins''.
+
+L’exécution symbolique dynamique, ou exécution ``concolique'', associe
+l’exécution concrète du programme et l’exécution symbolique afin d’explorer les
+chemins du programme. L’exécution concrète sert à confirmer que le chemin
+parcouru est bien celui pour lequel le cas de test exécuté a été généré.
+
+Plusieurs outils se basent sur l'exécution concolique pour explorer un programme
+sous test, dont \textsc{Smart} \cite{SMART}, \textsc{Pex} \cite{PEX} et
+\textsc{Sage} \cite{SAGE} développés par Microsoft, \textsc{Cute} \cite{CUTE},
+\textsc{Klee} \cite{KLEE}, \textsc{Exe} \cite{EXE} et enfin
+\textsc{PathCrawler}, \cite{PathCrawler} développé au CEA LIST. Ces outils
+utilisent des solveurs de contraintes pour générer des cas de test permettant
+d'aboutir à une couverture souhaitée des exécutions du programme par les tests.
+
+
+\subsection{Test fonctionnel}
+\label{sec:test-fonctionnel}
+
+Le test fonctionnel, ou test ``boîte noire'', génère des jeux de test en
+fonction du comportement attendu du programme : un cas de test sera choisi pour
+chaque comportement particulier. Le test fonctionnel est utilisé pour vérifier
+la conformité des réactions du logiciel avec les attentes de l'utilisateur, sans
+connaissance du code source. Il existe de nombreuses techniques qui se
+différencient par la manière de choisir les données de test, parmi lesquelles :
+
+\begin{description}
+\item[le test de partition] \hfill \\
+les valeurs d’entrées du logiciel sont regroupées en classes d’équivalence, sur
+lesquelles le logiciel doit avoir le même comportement ({\em domain splitting}),
+une seule valeur aléatoire est choisie dans chaque classe de la partition;
+\item[le test aux limites] \hfill \\
+les données de test sont choisies aux bornes des domaines de définition des
+variables.
+\end{description}
+
+Le CEA LIST développe \textsc{GATeL} \cite{GATEL}, un outil de génération de
+tests fonctionnels qui se base sur une représentation symbolique des états du
+système : le programme, les invariants et les contraintes décrivant l'objectif
+de test sont exprimés dans le langage \textsc{Lustre} \cite{Lustre}. Cet outil
+offre la possibilité de réaliser des partitions de domaines.
+
+
+
+\subsection{Monitoring}
+\label{sec:monitoring}
+
+
+TODO
+
+
+\section{Combinaison d'analyses statiques et dynamiques}
+\label{sec:combinaison}
+
+Les méthodes statiques et les méthodes dynamiques ont des avantages et des
+inconvénients complémentaires : l'analyse statique étant complète mais
+imprécise, l'analyse dynamique étant précise mais incomplète. L’idée de les
+combiner pour associer leurs avantages et combattre leurs inconvénients
+\cite{duality} est une voie de recherche active et fructueuse dans le domaine de
+la vérification de programmes.
+
+
+\subsection{\textsc{Static ANalysis and TEst}}
+
+La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
+\textsc{Frama-C}, combine l'interprétation abstraite, le {\em slicing} et la
+génération de tests structurels avec \textsc{PathCrawler}. L’analyse statique
+signale les instructions risquant de provoquer des erreurs à l’exécution par des
+alarmes, dont certaines peuvent être de fausses alarmes, puis l’analyse
+dynamique génère des tests confirmant ou infirmant ces alarmes. Sur des
+programmes de grande taille, l'analyse dynamique peut manquer de temps pour
+classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
+possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
+testés et donc le temps nécessaire à leur analyse.
+
+Le fonctionnement général de la méthode est illustré par la
+Fig.~\ref{figSlicing} ~\textbf{a}. Cette méthode utilise l'analyse de valeurs
+(interprétation abstraite) afin de sélectionner les instructions pour lesquelles
+le risque d'une erreur à l'exécution n'est pas écarté (nous les appellerons
+``alarmes'' par la suite), par exemple une division par zéro ou un accès
+invalide à la mémoire.
+
+Ces alarmes vont être validées par des tests. Nous utilisons
+\textsc{PathCrawler} \cite{PathCrawler}, un outil de génération de tests
+structurels, pour tenter de mettre en évidence un cas de test pour lequel le
+chemin d'exécution passe par cette alarme, et provoque une erreur.
+
+Pour diminuer le coût de la génération de tests, nous simplifions
+syntaxiquement les programmes qui lui seront soumis pour ne garder que les
+instructions dont dépend l'alarme considérée, on appelle cette opération
+{\em slicing} \cite{slicing}. Nous obtenons ainsi des programmes plus simples,
+tels que si une alarme est présente dans le programme d'origine, elle l'est
+également dans les programmes simplifiés si le {\em slicing} a été paramétré
+pour conserver les instructions dont dépend cette alarme. Et si elle provoque
+une erreur dans le programme d'origine, alors il en sera de même dans les
+programmes simplifiés, avec les mêmes entrées. L'utilisation du {\em slicing}
+peut être paramétrée par différentes options, qui seront détaillées plus bas.
+
+La première phase de la méthode (l'interprétation abstraite) peut donc assurer
+que certaines instructions ne provoqueront pas d'erreur à l'exécution, tandis
+que la seconde phase permet de confirmer que certaines alarmes produisent
+effectivement une erreur à l'exécution. Et la mise en commun des résultats des
+deux phases permet de classifier davantage d'alarmes dans l'une ou l'autre de
+ces deux catégories que chacune des deux méthodes prise séparément. La preuve de
+la correction de cette méthode et le résultat des analyses comparées sont
+détaillés dans \cite{TheseOmar} et \cite{SANTE} et ne seront pas répétés ici.
+
+\input{fig_SANTE_slicing.tex}
+
+L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
+simplifié et est soumis en l'état à \textsc{PathCrawler}.
+
+L'option {\em all} (Fig.~\ref{figSlicing} ~\textbf{b}) génère un seul programme
+simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
+option ne tire pas profit du fait que certaines alarmes peuvent être
+indépendantes (et peuvent donc être soumises séparément), la complexité du
+programme soumis à \textsc{PathCrawler} peut l'empêcher de générer des cas de
+test pour toutes les alarmes dans le temps qui lui est imparti.
+
+L'option {\em each} (Fig.~\ref{figSlicing} ~\textbf{c}) tente de corriger ce
+défaut, elle génère un programme simplifié par alarme et invoque
+\textsc{PathCrawler} autant de fois. Ainsi, les alarmes les plus simples ne sont
+pas pénalisées par les plus complexes. Néanmoins, en cas de dépendances
+mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
+\textsc{PathCrawler}, ce qui est une perte de temps.
+
+\input{fig_SANTE_slicing_advanced.tex}
+
+
+L'option {\em min} (Fig.~\ref{figSlicingAdvanced} ~\textbf{a}) tente de corriger
+les inconvénients de {\em all} et de {\em each} et propose de générer une
+couverture minimale des alarmes par {\em slicing}, de manière à regrouper dans
+un même ensemble les alarmes ayant une relation de dépendance \cite{SANTE}.
+Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
+dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
+$a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
+Dans cet exemple, la couverture minimale est constituée des deux ensembles
+couvrants $\{a_1; a_2\}$ et $\{a_1; a_3; a_4; a_5\}$.
+
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \node(s) at (0,1) {$a_1$};
+    \node(t) at (1,0) {$a_2$};
+    \node(q) at (1,1) {$a_3$};
+    \node(d) at (2,1) {$a_4$};
+    \node(v) at (3,1) {$a_5$};
+    \path[->,thick] (s) edge (q);
+    \path[->,thick] (q) edge (d);
+    \path[->,thick] (d) edge (v);
+    \path[->,thick] (s) edge (t);
+  \end{tikzpicture}
+  \caption{Graphe de dépendances des alarmes}
+  \label{fig:deps}
+\end{figure}
+
+
+Chacun de ces ensembles sera utilisé pour générer un programme simplifié ne
+contenant que des alarmes ayant une relation de dépendance, évitant ainsi
+d'avoir plusieurs programmes identiques en cas de dépendances mutuelles (et
+réduisant le nombre d'appels à \textsc{PathCrawler}).
+On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
+cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
+cas de {\em each}.
+
+Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
+{\em min} hérite de l'inconvénient de l'option {\em all} : les alarmes les plus
+complexes à classifier pénalisent les autres, qui peuvent ne pas être
+diagnostiquées dans le temps imparti.
+
+Pour corriger ce défaut, l'option {\em smart} (Fig.~\ref{figSlicingAdvanced}
+~\textbf{b}) est définie. Elle consiste à appliquer {\em min} itérativement en
+diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
+supprimées seront des alarmes classifiées ou des alarmes finales.
+
+\begin{definition}[Alarme finale]
+Une alarme finale est une alarme dont aucune autre alarme de dépend mais
+pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
+Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
+mutuelles).
+\end{definition}
+
+De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
+l'ensemble des alarmes privé des alarmes finales) produira un programme
+simplifié plus petit. Ainsi, les alarmes qui n'ont pas été diagnostiquées à
+l'itération précédente auront une chance supplémentaire de l'être, et ainsi de
+suite jusqu'à ce que toutes les alarmes soient diagnostiquées ou que l'ensemble
+considéré soit vide.
+
+Sur l'exemple considéré plus haut, la première itération génère la
+couverture minimale $\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$. S'il reste des
+alarmes non diagnostiquées, les alarmes finales ($a_2$ et $a_5$) et les alarmes
+diagnostiquées ne seront plus considérées. L'itération suivante génère la
+couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
+
+
+\subsection{\textsc{DyTa}}
+
+\textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse statique et
+une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
+utilisé pour spécifier des pré/post-conditions et des invariants de programmes
+C\#, il identifie également les bugs potentiels (violations de contrat) par
+interprétation abstraite.
+
+\textsc{DyTa} instrumente ensuite le programme pour rajouter des instructions
+assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
+aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
+également des points de contrôle à l'endroit des instructions signalées par
+l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
+par \textsc{Pex} \cite{PEX}. Cette étape est semblable à l'instrumentation
+opérée par \textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin
+de guider l'exécution concolique du programme par \textsc{PathCrawler}
+\cite{PathCrawler}.
+
+L'analyse statique du graphe du flot de contrôle du programme permet à
+\textsc{DyTa} de calculer les points de contrôle à partir desquels les alarmes
+(instructions potentiellement dangereuses) sont inatteignables. La génération
+dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
+cette dernière guide l'exploration pour la génération dynamique de tests.
+
+\subsection{Vérification collaborative et test}
+
+Cette méthode \cite{collaborative-verification} part du constat que la plupart
+des outils de vérifications statiques (outils utilisant simplement des
+heuristiques, outils d'interprétation abstraite, model-checkers, ou outils de
+preuve) font des compromis afin d'améliorer les performances, de réduire le
+nombre de faux positifs ou de limiter l'effort à fournir pour annoter le
+programme. Cela se traduit par la supposition d'une propriété tout au long de
+l'analyse dy programme (par exemple qu'un certains type d'erreurs ne peut pas
+se produire), cette propriété n'est pas vérifiée par l'analyseur. Ceci
+implique que de tels analyseurs ne peuvent garantir l'absence d'erreurs dans un
+programme. Si un analyseur fait un compromis en supposant une propriété, il
+faut utiliser un autre analyseur capable de valider cette propriété.
+
+Cette méthode propose d'exprimer les compromis dans un langage de contrats,
+afin de faciliter la collaboration entre plusieurs outils d'analyse statique
+et permettant de décrire le fait qu'un assertion ait été complètement vérifiée
+par un analyseur ou partiellement vérifiée sous certaines hypothèses.
+
+Pour faciliter la vérification statique du programme, l'utilisateur doit au
+préalable ajouter des annotations (invariants de boucle par exemple). Les
+propriétés qui n'ont pas été vérifiées statiquement sont validées par des tests
+unitaires. Le programme est instrumenté afin de rajouter des vérifications à
+l'exécution pour guider la génération de contre-exemples. \textsc{Pex}
+\cite{PEX} est utilisé pour générer des cas de test par exécution concolique,
+mettant en évidence des contre-exemples. L'utilisateur peut décider de
+privilégier l'analyse statique ou le test selon qu'il spécifie ou non son
+programme.
+
+Cette combinaison d'analyse statique, d'une instrumentation et du test est
+comparable à \textsc{Sante} \cite{SANTE}, bien qu'il manque l'étape de slicing
+qui permet à \textsc{Sante} d'économiser du temps sur l'analyse dynamique. En
+revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
+statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
+possible avec \textsc{Sante}.
+
+\subsection{Vérification de propriétés décrites par des automates finis}
+
+Cette méthode \cite{checking-prop-state-machines} combine une instrumentation du
+code source, une étape de {\em slicing} et une exécution symbolique.
+L'instrumentation rajoute des instructions simulant le comportement de
+l'automate fini correspondant au programme, dont les états correspondent aux
+propriétés du programme à vérifier.
+Le {\em slicing} est appliqué pour réduire la taille du programme, on ne
+conserve que le code relatif aux états d'erreur de l'automate. Le programme
+simplifié doit être équivalent au programme instrumenté en ce qui concerne
+l'atteignabilité des états d'erreur de l'automate.
+L'exécution symbolique du programme par \textsc{Klee} \cite{KLEE} va permettre
+de mettre en évidence des contre-exemples pour ces propriétés.
+
+L'utilisation du {\em slicing} afin de réduire la portion de code analysée
+(et donc le nombre de chemins d'exécution) par l'exécution symbolique est
+similaire à \textsc{Sante} \cite{SANTE}. En revanche, cette méthode ne semble
+pas applicable quel que soit le type d'erreur.
+\cite{checking-prop-state-machines} prend l'exemple de verrous à poser sur des
+variables du programme. L'instrumentation repère des motifs bien précis dans le
+programme et le code généré est spécifique à ce type d'erreur. Contrairement à
+\textsc{Sante}, cette méthode n'applique pas d'analyse statique plus générale
+(pouvant lever différents types d'alarmes) avant l'instrumentation.
+
+\subsection{Localisation d'erreurs par slicing guidé par la trace d'exécution}
+
+Cette méthode \cite{fault-localization} utilise un {\em slicing} arrière à
+partir d'une instruction de déréférencement produisant une {\em Null Pointer
+Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
+fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
+statique des pointeurs est ensuite opérée sur le programme slicé afin de
+déterminer si chacun des pointeurs peut être ${\tt NULL}$. Puis une analyse
+d'alias est opérée afin d'augmenter la précision de l'analyse statique.
+
+Contrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
+analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
+une analyse dynamique; cette méthode commence par une analyse dynamique, dont
+le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
+
+\subsection{\textsc{Blast}}
+
+Cet outil \cite{BLAST} vérifie les propriétés temporelles de sûreté d'un
+programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
+raffinement des abstractions du programme est basé sur une abstraction par
+prédicat et la découverte des prédicats se fait par interpolation. C'est une
+implémentation de la méthode \textsc{Cegar} \cite{CEGAR} tout comme
+\textsc{Slam} \cite{SLAM} et \textsc{Magic} \cite{MAGIC}. La génération des cas
+de test se fait par exécution symbolique.
+
+\textsc{Blast} ne traite ni les débordements arithmétiques ni les opérations
+bit-à-bit, et considère que toutes les opérations arithmétiques sur les
+pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
+propriétés ne contient pas de quantificateurs, contrairement à \textsc{Acsl}
+\cite{ACSL}.
+
+\subsection{\textsc{Smart}}
+
+Cet outil \cite{SMART} (basé sur son prédécesseur \textsc{Dart} \cite{DART})
+génère des tests par exécution concolique. Pour résoudre le problème de
+l'explosion du nombre de chemins, il va calculer à la demande des résumés de
+fonction qui sont des pré-conditions et post-conditions pour chaque fonction
+(contraintes sur les variables en entrée et en sortie). Ces résumés vont être
+réutilisés si possible afin d'éviter de ré-exécuter la fonction correspondante.
+La génération automatique de ces résumés est présentée comme se faisant par
+``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
+dynamique car utilisant une exécution symbolique (et résolution de contraintes).
+
+\subsection{\textsc{Synergy}, \textsc{Dash} et \textsc{Yogi}}
+
+\textsc{Synergy} \cite{SYNERGY} est un algorithme combinant du test (essayer
+d'atteindre un état d'erreur) et une abstraction (trouver une abstraction
+suffisamment précise montrant qu'aucun chemin ne peut atteindre un état
+d'erreur). La sous-approximation du test et la sur-approximation de
+l'abstraction sont raffinées de manière itérative. L'abstraction est utilisée
+pour guider la génération de tests. Les tests sont utilisés pour décider
+{\em où} raffiner l'abstraction.
+
+Les états de l'abstraction, les régions, sont des classes d'équivalence des
+états du programme concret. S'il n'existe aucun chemin de la région initiale
+vers une région d'erreur, alors il n'existe aucune suite de transitions
+concrètes menant d'un état initial concret à un état d'erreur concret.
+
+\textsc{Dash} \cite{DASH} est une évolution de \textsc{Synergy}, prenant en
+compte les appels de procédure et les pointeurs (contrairement à
+\textsc{Synergy}). \textsc{Dash} raffine l'abstraction en utilisant uniquement
+les relations d'alias mises en évidence par les tests. La génération de tests
+guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
+la raffiner. Cet algorithme est implémenté dans l'outil \textsc{Yogi}
+\cite{YOGI}.
+
+\subsection{\textsc{Sage}}
+
+Cet outil \cite{SAGE} utilise une analyse dynamique uniquement afin de générer
+des tests pour des programmes au format binaire x86. Il combine une exécution
+symbolique à du {\em fuzz testing}. Une première exécution avec des entrées
+valides permet de récupérer une trace d'exécution du programme. L'exécution
+symbolique de cette trace permet de collecter les contraintes du chemin
+d'exécution. De nouveaux chemins sont générés par négation des contraintes,
+à la manière de \textsc{PathCrawler} \cite{PathCrawler} et autres outils
+similaires.
+
+\subsection{\textsc{Smash}}
+
+Cet outil \cite{SMASH} combine une abstraction par prédicats et une génération
+dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
+est calculé par analyse statique (vrai pour toutes les exécutions, permettant
+de prouver l'absence d'erreurs, c'est une sur-approximation) et un autre résumé
+est calculé par analyse dynamique (vrai pour quelques exécutions uniquement,
+permettant de montrer l'existence d'erreurs, c'est une sous-approximation). Ces
+résumés sont calculés à la demande et seront utilisés aussi bien par l'analyse
+statique que par l'analyse dynamique (les deux analyses s'exécutent
+simultanément).
+
+Ces résumés sont progressivement raffinés pour chaque fonction, afin de prouver
+qu'une propriété n'est jamais violée (si un résumé statique est applicable), ou
+de mettre en évidence une exécution violant une propriété (si un résumé
+dynamique est applicable). Par construction, il n'est pas
+possible que les deux résumés soient applicables.
+
+
+\begin{definition}[Analyse compositionnelle]
+Mémoization des résultats intermédiaires sous la forme de résumés réutilisables.
+\end{definition}
+
+
+\subsubsection{Résumé des outils Microsoft}
+
+
+\textsc{Slam} \cite{SLAM} utilise une abstraction par prédicat et un raffinement
+de partition (implémentation de l'algorithme \textsc{Cegar} \cite{CEGAR}) pour
+effectuer une analyse statique compositionnelle mais n'effectue pas d'analyse
+dynamique. \textsc{Smart} \cite{SMART} exécute une analyse dynamique
+compositionnelle. C'est une extension de l'algorithme d'analyse dynamique non
+compositionnelle de \textsc{Dart} \cite{DART}, mais n'effectue pas d'analyse
+statique. \textsc{Synergy} \cite{SYNERGY} combine \textsc{Slam} \cite{SLAM} et
+\textsc{Dart} \cite{DART} (\textsc{Cegar} compositionnel + test non
+compositionnel). L'algorithme est intra-procédural. \textsc{Dash} \cite{DASH}
+étend l'algorithme \textsc{Synergy}, il est inter-procédural mais non
+compositionnel. \textsc{Smash} \cite{SMASH} est la version compositionelle de
+\textsc{Dash}.
+
+
+
+La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
+
+
+
+\begin{figure}
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    \multirow{3}{*}{Outils} & \multicolumn{3}{c|}{Analyse statique}
+    & \multicolumn{3}{c|}{Analyse dynamique} \\
+    & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc}
+    & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc} \\
+    & & non-compo & compo & & non-compo & compo \\
+    \hline
+    \textsc{Slam} \cite{SLAM} & & & $\surd$ & & & \\
+    \hline
+    \textsc{Dart} \cite{DART} & & & & & $\surd$ & \\
+    \hline
+    \textsc{Smart} \cite{SMART} & & & & & & $\surd$ \\
+    \hline
+    \textsc{Synergy} \cite{SYNERGY} & $\surd$ & & & $\surd$ & & \\
+    \hline
+    \textsc{Dash} \cite{DASH} & & $\surd$ & & & $\surd$ & \\
+    \hline
+    \textsc{Smash} \cite{SMASH} & & & $\surd$ & & & $\surd$ \\
+    \hline
+  \end{tabular}
+  \caption{Résumé des outils de Microsoft}
+  \label{fig:microsoft-summary}
+\end{figure}
+
+
+
+
+
+\subsection{Analyses statique et dynamique pour la génération d'invariants}
+
+Cette méthode \cite{fromTestsToProofs} propose une solution au problème du
+passage à l'échelle de la génération d'invariants (de programmes impératifs) par
+résolution de contraintes. Les invariants arithmétiques linéaires sont générés
+d'après les informations obtenues par interprétation abstraite du programme, par
+exécution concrète et par exécution symbolique du programme. Ces informations
+permettent de générer des contraintes qui vont permettre au solveur de
+contraintes de simplifier le système de contraintes et de réduire l'espace de
+recherche.
+
+\subsection{\textsc{Cegar} : Raffinement d'abstraction guidé par des
+  contre-exemples}
+
+Le raffinement d'abstraction guidé par des contre-exemples \cite{CEGAR} associe
+l’abstraction par prédicats et le model-checking : une abstraction du programme
+est générée à partir d’un ensemble de prédicats et invariants. Si le
+model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
+alors le modèle concret est correct (pas d'erreurs de sûreté ou de liveness).
+Si le model-checking a trouvé un contre-exemple pour le modèle abstrait il faut
+déterminer s'il correspond à un contre-exemple réel dans le système concret.
+Pour cela, l'algorithme détermine s'il existe une trace d'exécution concrète
+correspondant à la trace d'exécution abstraite aboutissant au contre-exemple.
+Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
+seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
+absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
+terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
+lesquels \textsc{Blast} \cite{BLAST}, \textsc{Magic} \cite{MAGIC} et
+\textsc{Slam} \cite{SLAM}.
+
+Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
+générée peut donc mettre un certain temps avant de converger vers une forme
+acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
+raffinement de l'abstraction : \textsc{Cegaar} \cite{CEGAAR}. Cette technique
+élimine une infinité de contre-exemples (traces infaisables) de la forme
+$\alpha . \lambda^* . \beta$ en une seule étape, où $\lambda$ correspond à une
+ou plusieurs exécutions d'une boucle.
+
+\subsection{\textsc{DSD-Crasher} et \textsc{Check'n'Crash}}
+
+L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une première analyse
+dynamique, une analyse statique et une seconde analyse dynamique. La première
+analyse dynamique utilise une génération de tests et des techniques
+d'apprentissage pour générer des invariants probables (inférence de la
+spécification par \textsc{Daikon} \cite{discover-invariants}).
+
+Les deux dernières étapes sont celles de l'outil \textsc{Check'n'Crash}
+\cite{ChecknCrash}. L'analyse statique (\textsc{ESC/Java} \cite{ESC/Java}) va
+émettre des alarmes concernant le non-respect des invariants, et la seconde
+analyse dynamique va tenter de confirmer ces alarmes par résolution de
+contraintes et génération de tests (\textsc{JCrasher} \cite{JCrasher}). La
+classification des alarmes et la génération de tests sont très dépendantes de
+la qualité des invariants générés par \textsc{Daikon}.
+
+Cette méthode se distingue de \textsc{Sante} \cite{SANTE} par son analyse
+dynamique préliminaire qui détecte des invariants afin de guider l'analyse
+statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
+d'augmenter le taux de classification des alarmes par l'analyse dynamique.
+
+\subsection{Génération de données de test par algorithme génétique}
+
+\cite{search-based-testing-of-NPE} propose une méthode de génération de données
+de test mettant en évidence des {\em Null Pointer Exceptions} de Java. Tout
+d'abord une analyse inter-procédurale du flot de contrôle et du flôt de données
+collecte les chemins menant aux exceptions. Cette analyse se fait en arrière, en
+partant des exceptions, propageant les contraintes sur les entrées dans le CFG.
+Les entrées de test sont ensuite générées par un algorithme génétique, dans le
+but de couvrir ces chemins. Les individus (des entrées potentielles), dont le
+type de donnée peut être complexe, sont encodés sous forme XML.
+
+Cette méthode a été comparée avec d'autres façons de générer des données de
+test \cite{DbZ-exception-raising-via-branch-coverage}, leurs expérimentations
+ont montré qu'elle était plus efficace que d'autres stratégies de recherche
+optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
+efficace que la programmation par contraintes (en terme de temps d'exécution). 
+
+\subsection{Génération de tests unitaires à partir de preuves formelles}
+
+\cite{generating-unit-tests-from-formal-proofs} présente une méthode de
+génération automatique de tests unitaires pour \textsc{Java Card} à partir d'une
+tentative de preuve formelle du système, qui doit être au préalable annoté en
+utilisant le langage de spécification \textsc{JML} \cite{JML}.
+
+L'information contenue dans la preuve (même partielle) est utilisée
+pour extraire des données de test à partir des conditions de chemins. Les
+oracles sont générés à partir des postconditions. En revanche, il n'y a aucune
+garantie sur le critère de couverture des chemins par les tests générés,
+celle-ci dépend de la qualité de la spécification du code (présence des
+invariants de boucle, etc.).
+
+
+\section{Langages de spécification}
+
+
+TODO
+
+
+\section{Frama-C}
+
+
+\textsc{Frama-C} \cite{Frama-C} est une plate-forme dédiée à l'analyse statique
+des programmes C, conjointement dévelopée par INRIA et le CEA LIST. Son
+architecture (Fig.~\ref{fig:archi}) comporte un noyau et un écosystème de
+greffons, rendant l’outil extensible. Les greffons peuvent échanger des
+informations et utiliser les  services fournis par le noyau, permettant ainsi
+une collaboration entre différentes analyses.
+
+
+\newcommand{\lang}[1]{\textsf{\small #1}\xspace}
+\newcommand{\cil}{\lang{CIL}}
+\newcommand{\ACSL}{\lang{ACSL}}
+\newcommand{\JML}{\lang{JML}}
+\newcommand{\framac}{\lang{Frama-C}}
+\newcommand{\pathcrawler}{\lang{PathCrawler}}
+\newcommand{\colibri}{\lang{Colibri}}
+
+
+\begin{figure}[h]
+  \begin{center}
+  \input{fig_frama_c}
+  \end{center}
+  \caption{Architecture de \textsc{Frama-C}}\label{fig:archi}
+\end{figure}
+
+
+\textsc{Frama-C} est basé sur CIL \cite{CIL}, une bibliothèque qui normalise des
+programmes C (ISO C99) en opérant des modifications syntaxiques : normalisation
+des boucles en utilisant la structure ${\tt while}$, unique ${\tt return}$ pour
+chaque fonction, etc. \textsc{Frama-C} étend CIL pour supporter des annotations
+dédiées portant sur le code source, exprimées dans le langage \textsc{Acsl}.
+\textsc{Acsl} \cite{ACSL} est un langage formel de spécification
+comportementale \cite{BISL}, inspiré de JML \cite{JML}, pouvant exprimer des
+propriétés fonctionnelles de programmes C : pré-conditions, post-conditions,
+invariants, etc.
+
+En effet, la spécification d'une fonction comprend les pré-conditions requises
+(exprimées par une clause ${\tt requires}$) lors de l'appel et les
+post-conditions assurées (${\tt ensures}$) lors du retour. Parmi ces
+post-conditions, une clause indique quels sont les emplacements mémoire qui
+peuvent être affectés (${\tt assigns}$) par la fonction.
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+/*@ requires \valid(a) && \valid(b);
+    requires \separated(a,b);
+    assigns *a, *b;
+    ensures *a == \at(*b,Pre);
+    ensures *b == \at(*a,Pre); */
+void swap(int* a, int* b);
+\end{lstlisting}
+\caption{Exemple de spécification \textsc{Acsl}}\label{fig:acsl-spec}
+\end{figure}
+
+
+Considérons par exemple une spécification fournie pour une fonction $swap$
+(Fig.~\ref{fig:acsl-spec}). La première pré-condition établit que les deux
+arguments doivent être des pointeurs valides, autrement dit, le déréférencement
+de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
+pré-condition impose que les emplacements mémoire occupés par chacune de ces
+variables soient disjoints. En plus de ${\tt \backslash valid}$ et
+${\tt \backslash separated}$, \textsc{Acsl} fournit de nombreux prédicats et
+fonctions afin de décrire les états de la mémoire. ${\tt \backslash at(e,l)}$
+fait référence à la valeur de l'expression $e$ à l'état de la mémoire au label
+$l$. $Pre$ est un label prédéfini qui fait référence à l'état de la mémoire
+avant l'exécution de la fonction. Ainsi, les post-conditions (${\tt ensures}$)
+signifient qu'à la fin de la fonction, $*a$ aura la valeur que $*b$ avait au
+début de la fonction, et réciproquement.
+
+
+\textsc{Acsl} offre aussi la possibilité d'écrire des annotations dans le code
+source, permettant d'exprimer des propriétés devant être vraies à un point donné
+du programme : les assertions (${\tt assert}$).
+Il est également possible d'exprimer des propriétés devant être vraies avant une
+boucle et après chaque itération de cette boucle : les invariants de boucle
+(${\tt loop\ invariant}$).
+
+
+Les annotations du langage \textsc{Acsl} sont écrites en utilisant la logique
+du premier ordre, et il est possible de définir ses propres fonctions et
+prédicats.
+Les greffons peuvent valider ou invalider les propriétés \textsc{Acsl} et
+générer des annotations \textsc{Acsl}, les annotations sont donc un moyen
+d'échanger des informations entre les différentes analyses opérées par les
+greffons.
+
+
+\section{PathCrawler}
+
+\textsc{PathCrawler} \cite{PathCrawler} est un outil de génération de tests
+structurels pour les programmes C, accessible sous la forme d'un service web :
+\textsc{PathCrawler Online} \cite{PathCrawlerOnline}.
+
+Étant donné un programme C sous test $p$ et une pré-condition sur ses entrées,
+il génère des cas de test respectant un critère de couverture de test. Le
+critère \emph{tous les chemins} impose une couverture de tous les chemins
+faisables de $p$. L'exploration exhaustive de tous les chemins étant en pratique
+irréalisable sur des programmes réels, le critère \emph{tous les k-chemins} a
+été défini, il limite l'exploration aux chemins qui ont au plus $k$ itérations
+consécutives de chaque boucle.
+
+\textsc{PathCrawler} commence par construire une version instrumentée de $p$
+permettant de tracer l'exécution de chaque cas de test, puis il génère les
+contraintes représentant la sémantique de chaque instruction de $p$. La
+prochaine étape est la génération et la résolution de contraintes pour produire
+les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
+couverture. La résolution de contraintes s'effectue à l'aide
+d'\textsc{ECLiPSe Prolog} \cite{ECLiPSe}, un environnement de programmation en
+logique par contraintes basé sur Prolog.
+
+Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
+l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
+de $p$ en suivant le chemin $\pi$.
+ 
+La méthode de génération de test est composée des étapes suivantes :
+
+\begin{itemize}
+\item[$(\mathcal{G}_1)$]
+Création d'une variable logique pour chaque entrée.
+Prise en compte des contraintes de la pré-condition.
+Le préfixe de chemin initial $\pi$ est vide.
+Aller à $(\mathcal{G}_2)$.
+
+\item[$(\mathcal{G}_2)$]
+Exécuter symboliquement le chemin $\pi$ : ajout des contraintes et
+mise à jour de la mémoire en fonction des instructions de $\pi$.
+Si certaines contraintes sont insatisfiables, aller à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_3)$.
+
+\item[$(\mathcal{G}_3)$]
+Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
+les contraintes du chemin courant. Si les contraintes sont insatisfiables, aller
+à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_4)$.
+
+\item[$(\mathcal{G}_4)$]
+Exécuter le programme avec trace sur le cas de test $t$ généré pour obtenir
+le chemin d'exécution, qui doit commencer par $\pi$.
+Aller à $(\mathcal{G}_5)$.
+
+\item[$(\mathcal{G}_5)$]
+Calculer le prochain chemin partiel $\pi$ à couvrir. Un parcours en profondeur
+détermine la dernière décision $d$ pour laquelle il reste une branche à
+explorer. S'il n'existe pas une telle décision, l'algorithme s'arrête. Sinon,
+$\pi$ est recalculé et contient maintenant le chemin partiel précédent dans
+lequel les contraintes correspondant à $d$ ont été niées, et retour à l'étape
+$(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
+(en considérant que le solveur de contraintes peut trouver une solution dans un
+temps raisonnable) et que seulement le plus court des préfixes infaisables de
+chaque chemin infaisable est exploré.
+\end{itemize}
+
+
+\chapter{Motivations et contributions}
+
 
 Liste des contributions :
 \begin{itemize}
@@ -113,11 +1029,907 @@ Liste des contributions :
 \item stage E-ACSL
 \end{itemize}
 
-\include{existant}
-\include{memory_model}
-\include{stady}
 
-\chapter{Conclusion et Perspectives}
+\part{Combinaisons statique-dynamique}
+
+
+\chapter{Existant en Preuve et Test}
+
+
+Problématique ciblée : Preuves, échecs de
+   preuve, raisons de ces échecs état de l'art sur la preuve de programmes
+         
+         test concolique, couverture
+
+
+\chapter{Scénatios de vérification}
+
+
+NCD
+CWD
+méthode globale
+
+
+\chapter{Annotations ACSL testables et exécutables}
+
+
+\chapter{Preuve de correction}
+
+
+\chapter{Modèle mémoire pour la validation d'assertions à l'exécution}
+
+
+\section{Introduction}
+
+
+Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
+programmes C, dévelopée pour la vérification d'assertions à l'exécution
+({\em runtime assertion checking} \cite{RAC}) dans \textsc{Frama-C}
+\cite{Frama-C}.
+Cette solution inclut un langage de spécification exécutable, \textsc{e-acsl},
+et un traducteur, \textsc{e-acsl2c}\footnote{http://frama-c.com/eacsl.html}.
+Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
+de spécification \textsc{e-acsl}.
+
+\subsection{\textsc{Executable-acsl}}
+
+\textsc{e-acsl} est un sous-ensemble ``exécutable'' du langage \textsc{acsl}
+implémenté dans \textsc{Frama-C}. Contrairement à \textsc{acsl}, chaque
+spécification \textsc{e-acsl} est exécutable : elle peut être évaluée à
+l'exécution.
+
+\subsection{Bibliothèque de monitoring de la mémoire}
+
+Afin de supporter les annotations relatives au modèle mémoire (validité d'un
+pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
+monitorer les opérations effectuées en mémoire par le programme. Pour ce faire,
+nous avons développé une bibliothèque C permettant d'enregistrer et de récupérer
+les informations de validité et d'initialisation d'un programme. Les appels aux
+fonctions de cette bibiliothèque C sont automatiquement ajoutés aux emplacements
+adéquats dans le code source du programme par \textsc{e-acsl2c} durant la
+traduction de la spécification \textsc{e-acsl} en C.
+
+\textsc{e-acsl2c} est un greffon de \textsc{Frama-C} qui traduit automatiquement
+un programme C annoté en un autre programme dont l'exécution échouera si une
+annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
+du nouveau programme est exactement le même que celui du programme d'origine.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Informations relatives à la validité et à l'initialisation}
+
+
+Détaillons les annotations \textsc{acsl} que nous souhaitons prendre en compte.
+Elles sont au nombre de 6 : ${\tt \backslash base\_addr}$,
+${\tt \backslash block\_length}$, ${\tt \backslash offset}$,
+${\tt \backslash valid}$, ${\tt \backslash valid\_read}$ et
+${\tt \backslash initialized}$.
+
+\subsection{Adresse de base d'un bloc}
+
+${\tt \backslash base\_addr\{L\}(p)}$ retourne l'adresse de base du bloc alloué
+qui contient, au label $L$, le pointeur $p$.
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south)+(-2,-1) node (basep) {${\tt \backslash base\_addr(p)}$};
+      
+      \draw [->,line width=1.2pt] (basep) -- (C.south west);
+      \draw [->,line width=1.2pt] (p) -- (C);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Adresse de base d'un bloc}
+  \label{fig:base-addr}
+\end{figure}
+
+La Fig.~\ref{fig:base-addr}
+illustre ${\tt \backslash base\_addr(p)}$.
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main() {
+  int *p = malloc(3*sizeof(int));
+  //@ assert \base_addr(p+2) == p;
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation de ${\tt \backslash base\_addr}$}
+\label{fig:base-addr-example}
+\end{figure}
+
+La Fig.~\ref{fig:base-addr-example}
+illustre l'utilisation de ${\tt \backslash base\_addr}$, l'annotation de ce
+programme est vraie.
+
+
+\subsection{Longueur d'un bloc}
+
+${\tt \backslash block\_length\{L\}(p)}$ retourne la longueur (en octets) du
+bloc alloué qui contient, au label $L$, le porinteur $p$. 
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm]at(B.east)(C){$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south west)+(0,-1) node (p) {${\tt p}$};
+      \draw [->,line width=1.2pt] (p) -- (C.south west);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south east)
+      node [midway,below] {${\tt \backslash block\_length(p)}$};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Longueur d'un bloc}
+  \label{fig:block-length}
+\end{figure}
+
+La Fig.~\ref{fig:block-length} illustre ${\tt \backslash block\_length(p)}$.
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main() {
+  int *p = malloc(3*sizeof(int));
+  //@ assert \block_length(p) == 3*sizeof(int);
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation de ${\tt \backslash block\_length}$}
+\label{fig:block-length-example}
+\end{figure}
+
+La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
+${\tt \backslash block\_length}$, l'annotation de ce programme est vraie.
+
+
+\subsection{Offset d'un pointeur dans un bloc}
+
+${\tt \backslash offset\{L\}(p)}$ retourne le décalage (en octets) entre $p$ et
+son adresse de base.
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south)
+      node [midway,below] {${\tt \backslash offset(p)}$};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Offset d'un pointeur dans un bloc}
+  \label{fig:offset}
+\end{figure}
+
+La Fig.~\ref{fig:offset} illustre ${\tt \backslash offset(p)}$.
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main() {
+  int *p = maloc(3*sizeof(int));
+  //@ assert \offset(p+2) == 2;
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation de ${\tt \backslash offset}$}
+\label{fig:offset-example}
+\end{figure}
+
+ La
+Fig.~\ref{fig:offset-example} illustre l'utilisation de
+${\tt \backslash offset}$, l'annotation de ce programme est vraie.
+
+
+\subsection{Validité d'un bloc}
+
+${\tt \backslash valid\{L\}(p)}$ (respectivement
+${\tt \backslash valid\_read\{L\}(p)}$) est vrai si le déréférencement de $p$
+au label $L$ est autorisé en lecture et en écriture (resp. au moins en lecture).
+
+${\tt \backslash valid\{L\}(p)}$ implique ${\tt \backslash valid\_read\{L\}(p)}$
+mais l'inverse n'est pas vrai.
+
+
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node[anchor=west,memcell,full,minimum width=4cm] at(B.east)(C){$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south)+(0,-1.5) node {${\tt \backslash valid(p)}$};
+      \path (D.south)+(0,-1) node (q) {${\tt q}$};
+      \path (D.south)+(0,-1.5) node {${\tt \lnot \backslash valid(q)}$};
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [->,line width=1.2pt] (q) -- (D);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Validité d'un bloc}
+  \label{fig:valid}
+\end{figure}
+
+La Fig.~\ref{fig:valid} illustre le prédicat ${\tt \backslash valid}$.
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main(void) {
+  int *a, *b;
+  //@ assert ! \valid(a);
+  //@ assert ! \valid(b);
+  a = malloc(sizeof(int));
+  b = a;
+  //@ assert \valid(a);
+  //@ assert \valid(b);
+  free(b);
+  //@ assert ! \valid(a);
+  //@ assert ! \valid(b);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation du prédicat ${\tt \backslash valid}$}
+\label{fig:valid-example}
+\end{figure}
+
+La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
+${\tt \backslash valid}$. Dans ce programme toutes les assertions de validité
+sont vraies.
+
+
+\subsection{Initialisation des octets d'un bloc}
+
+${\tt \backslash initialized\{L\}(p)}$ est un prédicat prenant un pointeur $p$
+sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
+initialisée au label $L$.
+
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
+        \begin{tikzpicture}[>=latex,font=\sffamily]
+          \node [memcell,init] at (0,0) (c1) {c1};
+          \node [anchor=west,memcell,init] at (c1.east) (c2) {c2};
+          \node [anchor=west,memcell,uninit] at (c2.east) (c3) {c3};
+        \end{tikzpicture}
+      };
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(-1,-1) node (p) {${\tt p}$};
+      \path (C.south)+(-2,-1.5) node {${\tt \backslash initialized(p)}$};
+      \path (C.south)+(1,-1) node (q) {${\tt q}$};
+      \path (C.south)+(2,-1.5) node {${\tt \lnot \backslash initialized(q)}$};
+      \draw [->,line width=1.2pt] (p) -- (p)+(0,.5);
+      \draw [->,line width=1.2pt] (q) -- (q)+(0,.5);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Initialisation des octets d'un bloc}
+  \label{fig:initialized}
+\end{figure}
+
+La Fig.~\ref{fig:initialized} illustre le prédicat
+${\tt \backslash initialized}$.
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+int main(void) {
+  int *p = malloc(3*sizeof(int));
+  p[0] = 0;
+  //@ assert \initialized(p+0);
+  //@ assert ! \initialized(p+1);
+  free(p);
+  return 0;
+}
+\end{lstlisting}
+\caption{Exemple d'utilisation du prédicat ${\tt \backslash initialized}$}
+\label{fig:initialized-example}
+\end{figure}
+
+La Fig.~\ref{fig:initialized-example} illustre
+l'utilisation du prédicat ${\tt \backslash initialized}$. Dans ce programme,
+toutes les assertions sont vraies.
+
+
+Pour pouvoir traiter ces annotations \textsc{acsl}, nous devons donc conserver
+pour chaque bloc les informations suivantes :
+\begin{itemize}
+\item l'adresse de base
+\item le nombre d'octets occupés
+\item le nombre d'octets initialisés
+\item l'initialisation de chaque octet (un bit par octet, sauf si aucun ou tous
+  les octets sont initialisés)
+\item un booléen indiquant si le bloc est en lecture seule (par exemple si c'est
+  une chaîne littérale)
+\item un booléen indiquant s'il y a eu un accès au bloc hors bornes
+\end{itemize}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+\section{Enregistrements et requêtes efficaces}
+
+
+\subsection{Patricia tries}
+
+Le code instrumenté pouvant accéder et modifier fréquemment les données du
+$store$, une implémentation efficace du requiert une structure de données
+offrant une bonne complexité en temps et en espace. Cette structure doit être
+triée : on peut avoir besoin d'accéder directement à un bloc à partir de son
+adresse de base, mais aussi à partir de n'importe quelle adresse contenue dans
+le bloc (donc accéder au bloc précédent). Par exemple, la fonction
+${\tt \_\_base\_addr(p)}$ utilisée pour le traitement de la construction
+\textsc{acsl} ${\tt \backslash base\_addr(p)}$ cherche l'adresse de base la plus
+proche et inférieure à $p$ (et enfin vérifie les bornes du bloc). Cette
+contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
+chaînées ne sont pas assez efficaces à cause de la complexité linéaire au pire
+cas. Les arbres binaires de recherche non équilibrés ont aussi une complexité
+linéaire au pire cas quand les données sont insérées dans un ordre strictement
+monotone, ce qui est souvent le cas. Enfin, le coût du rééquilibrage de l'arbre
+(pour un arbre binaire de recherche équilibré) serait amorti dans le cas où les
+modifications de la structure de l'arbre sont moins nombreuses que les accès
+simples; ce qui n'est pas nécessairement vrai sur les exemples de code que nous
+avons instrumentés avec \textsc{e-acsl2c}.
+
+Notre implémentation du $store$ se base sur un {\em Patricia trie}
+\cite{Patricia-tries} (appelé aussi {\em radix tree} ou ``arbre à préfixe
+compact'', cette structure est efficace même si l'abre n'est pas équilibré.
+Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
+bits) ou des préfixes d'adresses. Chaque feuille contient les données relatives
+à un bloc en mémoire (voir section précédente pour le détail des informations
+stockées). Le routage de la racine jusqu'à une feuille particulière se fait
+grâce aux n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun
+de l'adresse de base de ses deux fils. La Fig.~\ref{fig:insertion-Patricia-trie}
+a illustre un Patricia trie (sur des adresses 8-bits pour des raisons de
+simplicité).
+
+Il contient 3 blocs dans ses feuilles (seules les adresses de base apparaissent
+sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes. Le symbole
+``{\tt *}'' signifie que la valeur du bit à cette position n'a pas d'importance.
+
+La complexité théorique au pire cas d'un accès dans un Patricia trie dans notre
+cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire 32 ou 64
+bits). En pratique, un programme ne pouvant allouer des blocs que dans un
+espace mémoire limité, la profondeur de l'arbre est inférieure à cette borne.
+De plus, contrairement aux chaînes de caractères (la première application des
+Patricia tries), la comparaison des mots peut être implémentée très
+efficacement par des opérations bit-à-bit.
+
+Les données de chaque bloc n'occupent que quelques octets en mémoire, exception
+faite des données d'initialisation du bloc. Le statut d'initialisation de chaque
+octet est monitoré séparément
+(les champs de bits ne sont pas encore supportés). Dans le pire cas (bloc
+partiellement initialisé), chaque octet utilise un bit supplémentaire portant
+l'information sur son initialisation. Dans le cas où tous les octets (ou aucun)
+sont initialisés (on utilise un compteur d'octets initialisés), le tableau
+censé contenir les bits portant l'information d'initialisation est libéré, et
+cette information est donc portée uniquement par le compteur. De plus, nous
+utilisons une fonction spécifique dans le cas où tous les octets d'un bloc sont
+initialisés d'un coup, au lieu d'invoquer une fonction d'initialisation sur
+chaque octet du bloc.
+
+
+\subsection{Calcul du plus grand préfixe commun}
+
+
+\begin{figure}[h]
+\begin{lstlisting}
+typedef unsigned char byte;
+// index            0    1    2    3    4    5    6    7    8
+byte  masks[] = {0x00,0x80,0xC0,0xE0,0xF0,0xF8,0xFC,0xFE,0xFF};
+int longer [] = {   0,  -1,   3,  -3,   6,  -5,   7,   8,  -8};
+int shorter[] = {   0,   0,   1,  -2,   2,  -4,   5,  -6,  -7};
+byte gtCommonPrefixMask(byte a, byte b) {
+  byte nxor = ~(a ^ b);   // a bit = 1 iff this bit is equal in a and b
+  int i = 4;              // search starts in the middle of the word
+  while(i > 0)            // we stop when i<=0
+    if (nxor >= masks[i]) // first i bits equal,
+      i = longer[i];      // try a longer prefix 
+    else i = shorter[i];  // otherwise, try a shorter prefix 
+  return masks[-i];       // when i<=0, masks[-i] is the answer
+}
+\end{lstlisting}
+\caption{Calcul du plus grand préfixe commun}
+\label{fig:prefix}
+\end{figure}
+
+
+Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
+d'une suite de $n$ ``1'', suivie d'une suite de ``0'', où $n$ est le nombre de
+bits communs entre A et B. Par exemple, le plus grand préfixe commun de
+A = \ppleaf{\texttt{0110\,0111}} et B = \ppleaf{\texttt{0111\,1111}} est P = 
+\ppnode{\texttt{011*\,****}}
+et le masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
+
+Les calculs et comparaisons des préfixes ont été optimisés par un usage
+intensif des opérations bit-à-bit. Le calcul du plus grand préfixe commun a lui
+aussi été reconçu pour de meilleures performances. L'implémentation naïve
+initiale consistait en un parcours linéaire des mots mémoire de gauche à droite
+jusqu'à trouver des bits différents, de la même manière qu'on pourrait le faire 
+sur des chaînes de caractères.
+
+La version optimisée de ce calcul consiste
+maintenant en une recherche dichotomique dans un tableau pré-calculé qui
+contient tous les préfixes possibles. Les transitions entre les étapes de la
+recherche se font en utilisant des indices pré-calculés, de manière à obtenir
+le prochain masque à essayer. La Fig.~\ref{fig:prefix} illustre cette
+implémentation du calcul sur des mots de 8 bits. Les masques sont
+stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
+masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.
+ligne 5). Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
+et la fonction essaie i = 4, puis i = shorter[4] = 2, puis i = longer[2] = 3,
+puis i = longer[3] = -3, pour finalement retourner mask[3] = \texttt{0xE0}, qui
+est précisément \texttt{1110\,0000}.
+
+
+
+\subsection{Recherche}
+
+
+
+\subsubsection{Recherche exacte}
+
+Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
+au pointeur passé en paramètre. On suppose que l'algorithme n'est utilisé que
+lorsqu'un tel bloc existe.
+
+Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
+fils
+-- on se dirige vers le fils ayant le plus grand préfixe commun avac l'adresse
+passée en paramètre de l'algorithme. Quand on arrive sur une feuille, cette
+dernière contient donc forcément l'adresse que l'on cherchait.
+
+\subsubsection{Recheche du ``contenant''}
+
+Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
+paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$. Si un tel
+bloc n'existe pas, $null$ est renvoyé. Cet algorithme est utilisé pour des
+requêtes du type ${\tt \backslash valid}$ ou ${\tt \backslash initialized}$ où
+l'adresse passée en paramètre ne correspond pas forcément à l'adresse de base
+d'un bloc.
+
+Cet algorithme est similaire à celui de la recherche exacte, au détail près
+qu'il faut vérifier la formule de l'encadrement de $ptr$ par $B$ quand on arrive
+sur une feuille. On utilise une pile contenant les n\oe{}uds à partir desquels
+il
+faut reprendre le parcours si la recherche n'aboutit pas. Quand on explore le
+fils droit, on empile le fils gauche. Quand on arrive sur une feuille, on
+vérifie l'encadrement, s'il est vérifié on a trouvé le bloc qu'on cherchait,
+sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe, sinon
+on retourne $null$.
+
+\subsection{Ajout}
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{ccc}
+      \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
+          style={font=\scriptsize}]
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pleaf] {\texttt{0010\,0110}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-1.7,0) {\textbf{a)}};
+      \end{tikzpicture}
+& 
+      \hspace{1mm} 
+&
+      \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
+          sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pnode] {\texttt{0010\,011*}}
+          child { node[pleaf] {\texttt{0010\,0110}} }
+          child { node[pleaf] {\texttt{0010\,0111}} }
+        }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-3.4,0) {\textbf{b)}};
+     \end{tikzpicture}   
+    \end{tabular}
+  \end{center}
+  \vspace{-3mm}
+  \caption{Exemple de Patricia trie \textbf{a)} avant,
+    et \textbf{b)} après insertion de \texttt{0010\,0111}}
+  \vspace{-3mm}
+  \label{fig:insertion-Patricia-trie}
+\end{figure}
+
+
+L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
+vide, l'élément est ajouté à la racine. Sinon, on recherche le n\oe{}ud $x$ le
+plus
+similaire au n\oe{}ud à insérer. Celui-ci sera son frère dans la nouvelle
+configuration de l'arbre. Nous créons ensuite le n\oe{}ud correspondant au père.
+Le
+plus grand préfixe commun des deux fils est calculé pour le père, et les fils
+sont ordonnés en fonction de leur adresse (le plus petit à gauche). Puis le
+père est inséré dans l'arbre à l'ancien emplacement de $x$. Les champs de $x$ et
+de l'ancien père de $x$ (s'il existe) sont également mis à jour pour maintenir
+la cohérence de l'arbre. La Fig.~\ref{fig:insertion-Patricia-trie} illustre
+l'insertion de l'adresse \ppleaf{\texttt{0010\,0111}} dans un arbre.
+L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
+\ppleaf{\texttt{0010\,0110}}, et crée
+le père correspondant : \ppnode{\texttt{0010\,011*}}.
+
+
+\subsubsection{Recherche du n\oe{}ud le plus similaire}
+
+Dès qu'on arrive sur une feuille on la renvoie. Sinon on calcule le plus grand
+préfixe commun de l'adresse passée en paramètre avec le fils gauche, de même
+avec le fils droit. Si l'un des préfixes est strictement supérieur à l'autre
+on se dirige vers la branche correspondante, sinon on renvoie le n\oe{}ud
+courant.
+
+
+
+\subsection{Suppression}
+
+
+\begin{figure}[h]
+  \begin{center}
+    \begin{tabular}{ccc}
+      \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
+          sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pnode] {\texttt{0010\,011*}}
+          child { node[pleaf] {\texttt{0010\,0110}} }
+          child { node[pleaf] {\texttt{0010\,0111}} }
+        }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-3.4,0) {\textbf{a)}};
+     \end{tikzpicture}   
+& 
+      \hspace{1mm} 
+&
+       \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
+          style={font=\scriptsize}]
+        \node[pnode] {\texttt{0010\,****}}
+        child { node[pleaf] {\texttt{0010\,0110}} }
+        child { node[pnode] {\texttt{0010\,1***}}
+          child { node[pleaf] {\texttt{0010\,1001}} }
+          child { node[pleaf] {\texttt{0010\,1101}} }
+        };
+        \node at (-1.7,0) {\textbf{b)}};
+      \end{tikzpicture}
+    \end{tabular}
+  \end{center}
+  \vspace{-3mm}
+  \caption{Exemple de Patricia trie \textbf{a)} avant,
+    et \textbf{b)} après suppression de \texttt{0010\,0111}}
+  \vspace{-3mm}
+  \label{fig:suppression-Patricia-trie}
+\end{figure}
+
+La suppression d'une feuille $x$ du Patricia trie se déroule comme suit. Si cet
+élément est la racine, l'arbre devient vide. Sinon, Cette feuille a un frère $y$
+et un père. $x$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend
+donc la place du père). Enfin, les champs du nouveau père de $y$ sont mis à jour
+pour maintenir la cohérence de l'arbre (le plus grand préfixe commun est
+recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
+de l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie. Ce n\oe{}ud
+ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
+\ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
+
+\section{Conclusion}
+conclusion + future work + application dans le greffon PathCrawler (transition
+avec le chapitre suivant)
+
+
+\part{Outils et expérimentations}
+
+
+\begin{itemize}
+\item évaluer la capacité à trouver des erreurs dans le code par détection de
+  contre-exemples. On prend des codes faux engendrés par mutation, une
+  spécification juste et on mesure pour combien de codes faux on trouve des
+  contr-exemples.
+\item même chose en mutant les spécifications
+\item détection de sous-spécification (par mutation)
+\end{itemize}
+
+Mais comment évaluer ce qu'on annonce en conclusion ? :
+\begin{itemize}
+\item gain de temps de vérification (idée d'expérimenter en TP). 
+\item capacité à détecter des erreurs plus tôt dans le processus ?
+\end{itemize}
+
+
+\chapter{Greffon Statique-Dynamique (StaDy)}
+
+
+\section{Implémentation}
+
+
+\section{Expérimentations}
+
+
+\chapter{Modèle mémoire E-ACSL}
+
+
+\section{Implémentation}
+
+
+\section{Expérimentations}
+
+
+Pour évaluer notre solution, nous avons effectué plus de 300 exécutions sur
+plus de 30 programmes, obtenus à partir d'une dizaine d'exemples. Nous avons
+volontairement gardés des exemples plutôt courts (moins de 200 lignes de code)
+car ils ont dû être annotés en \textsc{acsl} manuellement.
+
+Nous avons mesuré le temps d'exécution du programme d'origine et du code
+instrumenté par \textsc{e-acsl2c} avec différentes options, afin d'évaluer les
+performances des différentes implémentations et optimisations. Des indicateurs
+comme le nombre de variables, d'allocations mémoires, d'enregistrements et de
+requêtes a également été enregistré.
+
+
+
+\begin{description}
+
+\item[Implémentation du store] \hfill \\
+Pour déterminer quelle implémentation du $store$ est la plus appropriée, nous
+avons comparé des implémentations utilisant : des Patricia tries, des listes
+chaînées, des arbres binaires de recherche non équilibrés et des Splay trees.
+
+Notre implémentation utilisant les Patricia tries est en moyenne 2500 fois plus
+rapide que l'implémentation à base de listes chaînées, 200 fois plus rapide que
+celle utilisant les arbres binaires de recherche, et 27 fois plus rapide que
+celle se basant sur les Splay trees.
+
+La version utilisant les Splay trees offre
+des performances comparables (ou légèrement meilleures, jusqu'à 3 fois) sur les
+exemples contenant de fréquents accès mémoire consécutifs au même bloc dans le
+$store$. En revanche, sur des examples où les accès méoire consécutifs ne se
+font pas sur le même bloc (une multiplication de matrices dans notre exemple),
+les performances sont beaucoup moins bonnes (jusqu'à 500 fois). Ceci est dû à
+la nature des Splay treees : le dernier élément accédé est remonté à la racine
+de l'arbre.
+
+\item[Calcul du plus grand préfixe commun] \hfill \\
+Nous avons comparé deux implémentations de ce calcul. La première utilise un
+parcours linéaire de l'adresse (bit-à-bit, de gauche à droite). La seconde
+est une recherche dichotomique du meilleur préfixe dans un tableau dont le
+contenu et les indices (indiquant le prochain élément à tester) sont
+pré-calculés. Cette seconde implémentation s'est révélée en moyenne 2.7 fois
+plus rapide que la première sur nos exemples.
+
+\item[Capacité de détection d'erreurs] \hfill \\
+Nous avons utilisé le ``test mutationnel'' pour évaluer la capacité de détection
+d'erreurs en utilisant la vérification d'assertion à l'exécution avec
+\textsc{Frama-C}. Nous avons considéré 5 exemples annotés et généré leurs
+{\em mutants} (en appliquant une {\em mutation} sur leur code source) et leur
+avons appliqué la vérification à l'exécution. Les mutations incluent :
+modifications d'opérateur arithmétique numérique, modifications d'opérateur
+arithmétique sur les pointeurs, modifications d'opérateur de comparaison et
+modifications d'opérateur logique ($land$ et $lor$).
+
+L'outil de génération de test \textsc{PathCrawler} \cite{PathCrawler} a été
+utilisé pour produire les cas de test. Chaque mutant a été instrumenté par
+\textsc{e-acsl2c} et exécuté sur chaque cas de test pour vérifier que la
+spécification était satisfaite à l'exécution. Les programmes d'origine passent
+toutes les vérifications à l'exécution. Lorsqu'une violation d'une annotation a
+été reportée pour au moins un cas de testn le mutant est considéré comme étant
+{\em tué}. La Fig.~\ref{fig:mutation-exp} illustre les résultats. Exception
+faite des mutants équivalents (lorsque la mutation produit un programme
+équivalent au programme d'origine), tous les mutants erronés ont été tués.
+
+\end{description}
+
+La Fig.~\ref{fig:mmodel-exp} contient les résultats des expérimentations
+comparant les différentes implémentations du $store$ et du calcul du plus grand
+préfixe commun. bS$_{10000}$ est une recherche binaire dans un tableaux de 10000
+éléments. iS$_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
+mM$_{n^2}$ est une multiplication de matrices $n \times n$. mI$_{n^2}$ contient
+des calculs matriciels (dont inversion et multiplication) sur des  matrices
+$n \times n$. qS$_n$ est un tri rapide sur un tableau de $n$ éléments.
+bbS$_{10000}$ est un tri à bulles sur un tableau à 10000 éléments. m$_{30000}$ est
+une fusion de deux listes chaînées de 10000 et 20000 éléments. Rbt$_{10000}$ est
+une insertion/suppression de 10000 éléments dans un arbre rouge et noir. mS$_n$
+est un tri fusion d'une liste chaînée de $n$ éléments. La ligne supplémentaire
+``+ RTE'' de chaque exemple correspond à une application préalable du greffon
+\textsc{Rte} qui génère des assertions qui sont vraies si le programme ne
+contient pas d'erreur à l'exécution.
+
+Les colonnes ont la signification suivante : \danger contient le nombre
+d'alarmes du programme,  $\emptyset$ contient le temps d'exécution du programme
+original, bst correspond à l'implémentation par arbres binaires de recherche,
+mask est le nombre de fois qu'est effectué le calcul du plus grand préfixe
+commun, sb est le nombre d'insertion dans le $store$, Pt correspond à
+l'implémentation par Patricia tries, St correspond à l'implémentation par Splay
+trees. L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations
+sans (resp. avec) application d'une analyse statique $Dataflow$ permettant de
+n'instrumenter que ce qui est nécessaire (section 6 de \cite{RV2013}). L'indice
+$_1$ (resp. $_2$)
+correspond à l'implémentation non optimisée (resp. optimisée) du calcul du
+plus grand préfixe commun pour l'implémentation utilisant les Patricia tries.
+Le temps d'analyse du programme avec \textsc{Valgrind} \cite{Valgrind} est
+indiqué dans la dernière colonne.
+
+Nous remarquons que le temps d'exécution de \textsc{Valgrind} n'est pas
+comparable avec celui de notre solution, cela s'explique simplement par le fait
+que celui-ci ne prend pas en compte la spécification \textsc{acsl}, et se
+contente de vérifier des propriétés comme l'absence d'erreur de segmentation ou
+l'absence de fuite de mémoire. En revanche, notre démarche vise à supporter au
+maximum les annotations \textsc{acsl}, ce qui nécessite un monitoring plus
+lourd.
+
+Nos expérimentations, présentées dans la Fig.~\ref{fig:mmodel-exp}, confirment
+nos hypothèses, à savoir :
+\begin{itemize}
+\item le Patricia trie est la structure de données la plus appropriée pour
+  l'implémentation du $store$;
+\item notre optimisation du calcul du plus grand préfixe commun par recherche
+  dichotomique et utilisation d'indices pré-calculés entraîne un vrai gain de
+  performance;
+\item l'utilisation d'une analyse statique visant à réduire l'instrumentation
+  du programme permet de réduire le temps d'exécution de manière efficace.
+\end{itemize}
+
+
+\begin{landscape}
+\begin{figure}[h]
+  \centering
+%\begin{tiny}
+  \begin{tabular}{|l|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c|}
+    \hline
+     & \danger & $\emptyset$ & list$^1$ & list$^2$ & bst$^1$ & bst$^2$ & Pt$_1^1$ & mask$^1$ & sb$^1$ & Pt$_2^1$ & Pt$_1^2$ & mask$^2$ & sb$^2$ & Pt$_2^2$ & St$^1$ & St$^2$ & valgrind \\
+    \hline
+    bS$_{10000}$ &22 &\multirow{2}{*}{.01} &1.10 &0.50 &1.14 &0.64 &1.55 &99 &16 &1.55 &0.57 &0 &1 &0.55 &1.39 &0.61 &\multirow{2}{*}{0.27}\\
++ RTE &41 &&1.10 &0.51 &1.14 &0.62 &1.59 &109 &16 &1.59 &0.53 &0 &1 &0.53 &1.39 &0.64 &\\
+    \hline
+    iS$_{10000}$ &5 &\multirow{2}{*}{.12} &2.29 &0.12 &1.83 &0.12 &2.89 &170k &20k &2.91 &0.12 &0 &0 &0.12 &2.46 &0.12 &\multirow{2}{*}{2.81}\\
++ RTE &24 &&3.52 &1.27 &2.89 &1.26 &3.99 &170k &20k &3.86 &1.25 &0 &0 &1.25 &3.46 &1.30 &\\
+    \hline
+    mM$_{100^2}$ &0 &\multirow{2}{*}{.01} &2.29 &0.73 &2.94 &1.15 &0.14 &17k &1k &0.14 &0.10 &5k &612 &0.09 &1.07 &0.98 &\multirow{2}{*}{0.34}\\
++ RTE &82 &&13.17 &10.66 &21.92 &17.39 &2.78 &18k &1k &3.00 &2.64 &5k &612 &2.82 &75.97 &73.62 &\\
+
+    \hline
+    mM$_{150^2}$ &0 &\multirow{2}{*}{.01} &13.23 &3.96 &15.65 &6.20 &0.54 &21k &2k &0.51 &0.36 &9k &912 &0.35 &5.86 &5.64 &\multirow{2}{*}{0.48}\\
++ RTE &82 &&72.36 &58.48 &110.70 &90.43 &10.77 &24k &2k &9.01 &8.57 &9k &912 &8.75 &403.50 &398.60 &\\
+    \hline
+    mI$_{100^2}$ &2 &\multirow{2}{*}{.01} &22.51 &0.10 &7.74 &0.13 &0.09 &68k &5k &0.08 &0.01 &7k &609 &0.01 &0.19 &0.10 &\multirow{2}{*}{0.35}\\
++ RTE &155 &&28.96 &4.22 &13.67 &5.48 &0.54 &73k &5k &0.55 &0.53 &7k &611 &0.47 &26.37 &26.16 &\\
+
+    \hline
+    mI$_{150^2}$ &2 &\multirow{2}{*}{.02} &130.04 &0.34 &40.35 &0.45 &0.28 &99k &8k &0.27 &0.02 &12k &909 &0.02 &0.68 &0.34 &\multirow{2}{*}{0.47}\\
++ RTE &155 &&153.30 &21.54 &73.55 &29.94 &2.00 &105k &8k &1.90 &1.42 &12k &911 &1.53 &146.15 &145.80 &\\
+
+    \hline
+    qS$_{1000}$ &15 &\multirow{2}{*}{.01} &12.70 &2.08 &1.76 &0.59 &0.33 &1M &92k &0.06 &0.13 &683k &39k &0.02 &0.02 &0.01 &\multirow{2}{*}{0.27}\\
++ RTE &32 &&12.38 &2.13 &1.64 &0.56 &0.38 &1M &92k &0.12 &0.14 &727k &39k &0.04 &0.03 &0.02 &\\
+
+    \hline
+    qS$_{2000}$ &15 &\multirow{2}{*}{.01} &85.99 &11.31 &8.39 &2.78 &0.71 &3M &198k &0.14 &0.28 &1M &84k &0.05 &0.03 &0.02 &\multirow{2}{*}{0.27}\\
++ RTE &32 &&81.65 &11.15 &7.72 &2.67 &1.13 &4M &198k &0.48 &0.36 &1M &84k &0.13 &0.05 &0.02 &\\
+    \hline
+    bbS$_{10000}$ &4 &\multirow{2}{*}{.22} &13.78 &1.02 &16.84 &1.67 &117.47 &499M &49M &22.36 &1.57 &30 &7 &1.54 &8.80 &1.67 &\multirow{2}{*}{3.36}\\
++ RTE &16 &&23.08 &4.64 &30.69 &7.16 &107.05 &599M &49M &32.58 &7.26 &29 &7 &6.90 &17.29 &7.21 &\\
+    \hline
+    m$_{30000}$ &2 &\multirow{2}{*}{.01} &412.10 &11.38 &176.35 &11.01 &1.11 &5M &420k &0.26 &0.30 &1M &60k &0.06 &0.08 &0.01 &\multirow{2}{*}{0.45}\\
++ RTE &49 &&451.58 &101.33 &219.12 &94.80 &1.15 &5M &420k &0.29 &0.47 &2M &130k &0.14 &0.10 &0.05 &\\
+
+    \hline
+    Rbt$_{10000}$ &0 &\multirow{2}{*}{.01} &47.39 &0.28 &48.44 &0.27 &0.32 &1M &159k &0.09 &0.03 &151k &10k &0.01 &0.59 &0.01 &\multirow{2}{*}{0.51}\\
++ RTE &270 &&120.02 &101.69 &165.77 &145.20 &0.47 &1M &159k &0.30 &0.39 &979k &119k &0.27 &18.82 &19.59 &\\
+    \hline
+mS$_{1000}$ &7 &\multirow{2}{*}{.01} &6.45 &0.34 &6.32 &0.11 &0.32 &1M &95k &0.07 &0.06 &331k &18k &0.01 &0.02 &0.01 &\multirow{2}{*}{0.27}\\
++ RTE &45 &&6.82 &1.35 &7.98 &0.38 &0.34 &1M &95k &0.10 &0.13 &701k &38k &0.04 &0.02 &0.01 &\\
+        \hline
+mS$_{5000}$ &7 &\multirow{2}{*}{.01} &362.87 &11.00 &218.01 &3.43 &2.28 &11M &562k &0.76 &0.43 &2M &106k &0.09 &0.14 &0.03 &\multirow{2}{*}{0.27}\\
++ RTE &45 &&371.40 &50.94 &290.88 &10.34 &2.46 &11M &562k &0.80 &0.83 &4M &218k &0.22 &0.16 &0.08 &\\
+
+    \hline
+mS$_{10000}$ &7 &\multirow{2}{*}{.01} &3624.01 &47.94 &1673.00 &16.10 &6.46 &23M &1M &2.75 &1.00 &5M &223k &0.21 &0.31 &0.08 &\multirow{2}{*}{0.27}\\
++ RTE &45 &&3406.43 &257.18 &2086.32 &46.22 &6.30 &23M &1M &2.66 &1.83 &9M &457k &0.51 &0.35 &0.18 &\\
+\hline
+mS$_{50000}$ &7 &\multirow{2}{*}{.01} &$\infty$ &3847.72 &$\infty$ &1100.93 &135.54 &146M &6M &111.22 &6.90 &33M &1M &1.65 &2.08 &0.58 &\multirow{2}{*}{0.63}\\
++ RTE &45 &&$\infty$ &25554.08 &$\infty$ &2781.90 &118.86 &145M &6M &95.74 &11.64 &54M &2M &3.37 &2.18 &1.15 &\\
+\hline
+mS$_{100000}$ &7 &\multirow{2}{*}{.01} &$\infty$ &$\infty$ &$\infty$ &$\infty$ &631.41 &296M &14M &559.93 &13.55 &70M &2M &3.35 &4.03 &1.15 &\multirow{2}{*}{0.27}\\
++ RTE &45 &&$\infty$ &$\infty$ &$\infty$ &$\infty$ &573.47 &308M &14M &513.85 &25.02 &116M &5M &7.63 &4.68 &2.50 &\\
+\hline
+  \end{tabular}
+%\end{tiny}
+  \caption{Comparaison des différentes implémentations du $store$}
+\end{figure}
+\label{fig:mmodel-exp}
+\end{landscape}
+
+
+
+
+
+
+\begin{figure}[t]
+  \centering
+  \begin{tabular}{|c|c|c|c|c|c|c|}
+    \hline
+    & alarmes & mutants & équivalents & tués & \% erronés tués \\
+    \hline
+    fibonacci & 19  & 27 & 2 & 25 & 100\% \\
+    \hline
+    bubbleSort & 15  & 44 & 2 & 42 & 100\% \\
+    \hline
+    insertionSort & 10  & 39 & 3 & 36 & 100\% \\
+    \hline
+    binarySearch & 7 & 38 & 1 & 37 & 100\% \\
+    \hline
+    merge & 5 & 92 & 5 & 87 & 100\% \\
+    \hline
+  \end{tabular}
+  \vspace{-2mm}
+  \caption{Capacité de détection d'erreurs}
+  \vspace{-2mm}
+  \label{fig:mutation-exp}
+\end{figure}
+
+
+\part{Conclusion}
+
+
+\chapter{Bilan}
+
+
+TODO
+
+
+\chapter{Perspectives}
+
+
+TODO
+
 
 
 \backmatter
