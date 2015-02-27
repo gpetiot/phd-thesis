@@ -1,10 +1,12 @@
-
+MLPOST_EXEC :=$(shell which mlpost)
+MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
-SCHEMES=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex fig_frama_c.tex
+MLFIG=frama_c_architecture.ml
+FIG=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps)
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(SCHEMES) style_listings.tex
+main.dvi: main.tex $(BIB) $(FIG) style_listings.tex
 	latex $^
 	bibtex main
 	latex $^
@@ -12,6 +14,20 @@ main.dvi: main.tex $(BIB) $(SCHEMES) style_listings.tex
 
 main.pdf: main.dvi
 	dvipdf main.dvi
+
+
+.SUFFIXES: .fig .pdf .eps .mll .ml .mps
+
+#MLPOST is a conditional variable.
+ifneq ($(MLPOST),)
+.ml.mps:
+	$(MLPOST) -pdf $<
+	$(RM) $(<:.ml=.cm*)
+
+else
+	$(info Warning: Mlpost is not installed so we use the one versionned.)
+endif
+
 
 clean:
 	rm *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
