@@ -1355,7 +1355,74 @@ pour chaque bloc les informations suivantes :
 
 
 
-\section{Enregistrements et requêtes efficaces}
+
+\section{Conclusion}
+conclusion + future work + application dans le greffon PathCrawler (transition
+avec le chapitre suivant)
+
+
+
+
+
+
+\part{Aide à la preuve par vérification dynamique des annotations}
+
+
+
+Problématique ciblée : Preuves, échecs de
+   preuve, raisons de ces échecs état de l'art sur la preuve de programmes
+         
+         test concolique, couverture
+
+
+\chapter{Scénarios de vérification}
+
+TODO
+
+\chapter{Génération de contre-exemples pour la preuve}
+
+TODO
+
+\section{Détection de non-conformité}
+\section{Détection de faiblesse de contrat}
+\section{Méthode globale}
+
+
+
+
+
+\part{Outils et expérimentations}
+
+
+\begin{itemize}
+\item évaluer la capacité à trouver des erreurs dans le code par détection de
+  contre-exemples. On prend des codes faux engendrés par mutation, une
+  spécification juste et on mesure pour combien de codes faux on trouve des
+  contr-exemples.
+\item même chose en mutant les spécifications
+\item détection de sous-spécification (par mutation)
+\end{itemize}
+
+Mais comment évaluer ce qu'on annonce en conclusion ? :
+\begin{itemize}
+\item gain de temps de vérification (idée d'expérimenter en TP). 
+\item capacité à détecter des erreurs plus tôt dans le processus ?
+\end{itemize}
+
+
+\chapter{Greffon Statique-Dynamique (StaDy)}
+
+
+\section{Implémentation}
+
+
+\section{Expérimentations}
+
+
+\chapter{Modèle mémoire E-ACSL}
+
+
+\section{Implémentation}
 
 
 \subsection{Patricia tries}
@@ -1475,7 +1542,7 @@ est précisément \texttt{1110\,0000}.
 
 
 
-\subsubsection{Recherche exacte}
+\subsubsection*{Recherche exacte}
 
 Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
 au pointeur passé en paramètre. On suppose que l'algorithme n'est utilisé que
@@ -1487,7 +1554,7 @@ fils
 passée en paramètre de l'algorithme. Quand on arrive sur une feuille, cette
 dernière contient donc forcément l'adresse que l'on cherchait.
 
-\subsubsection{Recheche du ``contenant''}
+\subsubsection*{Recheche du ``contenant''}
 
 Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
 paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$. Si un tel
@@ -1565,7 +1632,7 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 le père correspondant : \ppnode{\texttt{0010\,011*}}.
 
 
-\subsubsection{Recherche du n\oe{}ud le plus similaire}
+\subsubsection*{Recherche du n\oe{}ud le plus similaire}
 
 Dès qu'on arrive sur une feuille on la renvoie. Sinon on calcule le plus grand
 préfixe commun de l'adresse passée en paramètre avec le fils gauche, de même
@@ -1625,74 +1692,6 @@ recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
 de l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie. Ce n\oe{}ud
 ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 \ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
-
-\section{Conclusion}
-conclusion + future work + application dans le greffon PathCrawler (transition
-avec le chapitre suivant)
-
-
-
-
-
-
-\part{Aide à la preuve par vérification dynamique des annotations}
-
-
-
-Problématique ciblée : Preuves, échecs de
-   preuve, raisons de ces échecs état de l'art sur la preuve de programmes
-         
-         test concolique, couverture
-
-
-\chapter{Scénarios de vérification}
-
-TODO
-
-\chapter{Génération de contre-exemples pour la preuve}
-
-TODO
-
-\section{Détection de non-conformité}
-\section{Détection de faiblesse de contrat}
-\section{Méthode globale}
-
-
-
-
-
-\part{Outils et expérimentations}
-
-
-\begin{itemize}
-\item évaluer la capacité à trouver des erreurs dans le code par détection de
-  contre-exemples. On prend des codes faux engendrés par mutation, une
-  spécification juste et on mesure pour combien de codes faux on trouve des
-  contr-exemples.
-\item même chose en mutant les spécifications
-\item détection de sous-spécification (par mutation)
-\end{itemize}
-
-Mais comment évaluer ce qu'on annonce en conclusion ? :
-\begin{itemize}
-\item gain de temps de vérification (idée d'expérimenter en TP). 
-\item capacité à détecter des erreurs plus tôt dans le processus ?
-\end{itemize}
-
-
-\chapter{Greffon Statique-Dynamique (StaDy)}
-
-
-\section{Implémentation}
-
-
-\section{Expérimentations}
-
-
-\chapter{Modèle mémoire E-ACSL}
-
-
-\section{Implémentation}
 
 
 \section{Expérimentations}
