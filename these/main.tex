@@ -607,8 +607,9 @@ partir d'une instruction de déréférencement produisant une {\em Null Pointer
 Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
 fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
 statique des pointeurs est ensuite opérée sur le programme slicé afin de
-déterminer si chacun des pointeurs peut être ${\tt NULL}$. Puis une analyse
-d'alias est opérée afin d'augmenter la précision de l'analyse statique.
+déterminer si chacun des pointeurs peut être \lstinline[language=java]{null}.
+Puis une analyse d'alias est opérée afin d'augmenter la précision de l'analyse
+statique.
 
 Contrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
 analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
@@ -874,7 +875,8 @@ une collaboration entre différentes analyses.
 
 \textsc{Frama-C} est basé sur CIL \cite{CIL}, une bibliothèque qui normalise des
 programmes C (ISO C99) en opérant des modifications syntaxiques : normalisation
-des boucles en utilisant la structure ${\tt while}$, unique ${\tt return}$ pour
+des boucles en utilisant la structure \lstinline{while}, unique
+\lstinline{return} pour
 chaque fonction, etc. \textsc{Frama-C} étend CIL pour supporter des annotations
 dédiées portant sur le code source, exprimées dans le langage \textsc{Acsl}.
 \textsc{Acsl} \cite{ACSL} est un langage formel de spécification
@@ -883,10 +885,10 @@ propriétés fonctionnelles de programmes C : pré-conditions, post-conditions,
 invariants, etc.
 
 En effet, la spécification d'une fonction comprend les pré-conditions requises
-(exprimées par une clause ${\tt requires}$) lors de l'appel et les
-post-conditions assurées (${\tt ensures}$) lors du retour. Parmi ces
+(exprimées par une clause \lstinline{requires}) lors de l'appel et les
+post-conditions assurées (\lstinline{ensures}) lors du retour. Parmi ces
 post-conditions, une clause indique quels sont les emplacements mémoire qui
-peuvent être affectés (${\tt assigns}$) par la fonction.
+peuvent être affectés (\lstinline{assigns}) par la fonction.
 
 
 \begin{figure}[h]
@@ -902,27 +904,29 @@ void swap(int* a, int* b);
 \end{figure}
 
 
-Considérons par exemple une spécification fournie pour une fonction $swap$
+Considérons par exemple une spécification fournie pour une fonction
+\lstinline{swap}
 (Fig.~\ref{fig:acsl-spec}). La première pré-condition établit que les deux
 arguments doivent être des pointeurs valides, autrement dit, le déréférencement
 de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
 pré-condition impose que les emplacements mémoire occupés par chacune de ces
-variables soient disjoints. En plus de ${\tt \backslash valid}$ et
-${\tt \backslash separated}$, \textsc{Acsl} fournit de nombreux prédicats et
-fonctions afin de décrire les états de la mémoire. ${\tt \backslash at(e,l)}$
-fait référence à la valeur de l'expression $e$ à l'état de la mémoire au label
-$l$. $Pre$ est un label prédéfini qui fait référence à l'état de la mémoire
-avant l'exécution de la fonction. Ainsi, les post-conditions (${\tt ensures}$)
-signifient qu'à la fin de la fonction, $*a$ aura la valeur que $*b$ avait au
+variables soient disjoints. En plus de \lstinline{\valid} et
+\lstinline{\separated}, \textsc{Acsl} fournit de nombreux prédicats et
+fonctions afin de décrire les états de la mémoire. \lstinline{\at(e,l)}
+fait référence à la valeur de l'expression \lstinline{e} à l'état de la mémoire
+au label \lstinline{l}. \lstinline{Pre} est un label prédéfini qui fait
+référence à l'état de la mémoire avant l'exécution de la fonction. Ainsi, les
+post-conditions (\lstinline{ensures}) signifient qu'à la fin de la fonction,
+\lstinline{*a} aura la valeur que \lstinline{*b} avait au
 début de la fonction, et réciproquement.
 
 
 \textsc{Acsl} offre aussi la possibilité d'écrire des annotations dans le code
 source, permettant d'exprimer des propriétés devant être vraies à un point donné
-du programme : les assertions (${\tt assert}$).
+du programme : les assertions (\lstinline{assert}).
 Il est également possible d'exprimer des propriétés devant être vraies avant une
 boucle et après chaque itération de cette boucle : les invariants de boucle
-(${\tt loop\ invariant}$).
+(\lstinline{loop invariant}).
 
 
 Les annotations du langage \textsc{Acsl} sont écrites en utilisant la logique
@@ -1090,15 +1094,14 @@ du nouveau programme est exactement le même que celui du programme d'origine.
 
 
 Détaillons les annotations \textsc{acsl} que nous souhaitons prendre en compte.
-Elles sont au nombre de 6 : ${\tt \backslash base\_addr}$,
-${\tt \backslash block\_length}$, ${\tt \backslash offset}$,
-${\tt \backslash valid}$, ${\tt \backslash valid\_read}$ et
-${\tt \backslash initialized}$.
+Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block\_length},
+\lstinline{\offset}, \lstinline{\valid}, \lstinline{\valid_read} et
+\lstinline{\initialized}.
 
 \subsection{Adresse de base d'un bloc}
 
-${\tt \backslash base\_addr\{L\}(p)}$ retourne l'adresse de base du bloc alloué
-qui contient, au label $L$, le pointeur $p$.
+\lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
+qui contient, au label \lstinline{L}, le pointeur \lstinline{p}.
 
 \begin{figure}[h]
   \begin{center}
@@ -1110,8 +1113,8 @@ qui contient, au label $L$, le pointeur $p$.
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {${\tt p}$};
-      \path (C.south)+(-2,-1) node (basep) {${\tt \backslash base\_addr(p)}$};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
+      \path (C.south)+(-2,-1) node (basep) {\lstinline{\base_addr(p)}};
       
       \draw [->,line width=1.2pt] (basep) -- (C.south west);
       \draw [->,line width=1.2pt] (p) -- (C);
@@ -1121,8 +1124,7 @@ qui contient, au label $L$, le pointeur $p$.
   \label{fig:base-addr}
 \end{figure}
 
-La Fig.~\ref{fig:base-addr}
-illustre ${\tt \backslash base\_addr(p)}$.
+La Fig.~\ref{fig:base-addr} illustre \lstinline{\base_addr(p)}.
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1138,14 +1140,14 @@ int main() {
 \end{figure}
 
 La Fig.~\ref{fig:base-addr-example}
-illustre l'utilisation de ${\tt \backslash base\_addr}$, l'annotation de ce
+illustre l'utilisation de \lstinline{\base_addr}, l'annotation de ce
 programme est vraie.
 
 
 \subsection{Longueur d'un bloc}
 
-${\tt \backslash block\_length\{L\}(p)}$ retourne la longueur (en octets) du
-bloc alloué qui contient, au label $L$, le porinteur $p$. 
+\lstinline'\block_length{L}(p)' retourne la longueur (en octets) du
+bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}. 
 
 
 \begin{figure}[h]
@@ -1157,18 +1159,18 @@ bloc alloué qui contient, au label $L$, le porinteur $p$.
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south west)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south west)+(0,-1) node (p) {\lstinline{p}};
       \draw [->,line width=1.2pt] (p) -- (C.south west);
       \draw [|<->|,line width=1.2pt]
       (C.south west) -- (C.south east)
-      node [midway,below] {${\tt \backslash block\_length(p)}$};
+      node [midway,below] {\lstinline{\block_length(p)}};
     \end{tikzpicture}
   \end{center}
   \caption{Longueur d'un bloc}
   \label{fig:block-length}
 \end{figure}
 
-La Fig.~\ref{fig:block-length} illustre ${\tt \backslash block\_length(p)}$.
+La Fig.~\ref{fig:block-length} illustre \lstinline{\block_length(p)}.
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1184,13 +1186,13 @@ int main() {
 \end{figure}
 
 La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
-${\tt \backslash block\_length}$, l'annotation de ce programme est vraie.
+\lstinline{\block_length}, l'annotation de ce programme est vraie.
 
 
 \subsection{Offset d'un pointeur dans un bloc}
 
-${\tt \backslash offset\{L\}(p)}$ retourne le décalage (en octets) entre $p$ et
-son adresse de base.
+\lstinline'\offset{L}(p)' retourne le décalage (en octets), au label
+\lstinline{L}, entre \lstinline{p} et son adresse de base.
 
 
 \begin{figure}[h]
@@ -1203,19 +1205,19 @@ son adresse de base.
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {${\tt p}$};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
       
       \draw [->,line width=1.2pt] (p) -- (C);
       \draw [|<->|,line width=1.2pt]
       (C.south west) -- (C.south)
-      node [midway,below] {${\tt \backslash offset(p)}$};
+      node [midway,below] {\lstinline{\offset(p)}};
     \end{tikzpicture}
   \end{center}
   \caption{Offset d'un pointeur dans un bloc}
   \label{fig:offset}
 \end{figure}
 
-La Fig.~\ref{fig:offset} illustre ${\tt \backslash offset(p)}$.
+La Fig.~\ref{fig:offset} illustre \lstinline{\offset(p)}.
 
 
 \begin{figure}[h]
@@ -1233,16 +1235,16 @@ int main() {
 
  La
 Fig.~\ref{fig:offset-example} illustre l'utilisation de
-${\tt \backslash offset}$, l'annotation de ce programme est vraie.
+\lstinline{\offset}, l'annotation de ce programme est vraie.
 
 
 \subsection{Validité d'un bloc}
 
-${\tt \backslash valid\{L\}(p)}$ (respectivement
-${\tt \backslash valid\_read\{L\}(p)}$) est vrai si le déréférencement de $p$
-au label $L$ est autorisé en lecture et en écriture (resp. au moins en lecture).
+\lstinline'\valid{L}(p)' (respectivement \lstinline'\valid_read{L}(p)') est vrai
+si le déréférencement de \lstinline{p} au label \lstinline{L} est autorisé en
+lecture et en écriture (resp. au moins en lecture).
 
-${\tt \backslash valid\{L\}(p)}$ implique ${\tt \backslash valid\_read\{L\}(p)}$
+\lstinline'\valid{L}(p)' implique \lstinline'\valid_read{L}(p)'
 mais l'inverse n'est pas vrai.
 
 
@@ -1257,10 +1259,10 @@ mais l'inverse n'est pas vrai.
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {${\tt p}$};
-      \path (C.south)+(0,-1.5) node {${\tt \backslash valid(p)}$};
-      \path (D.south)+(0,-1) node (q) {${\tt q}$};
-      \path (D.south)+(0,-1.5) node {${\tt \lnot \backslash valid(q)}$};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
+      \path (C.south)+(0,-1.5) node {\lstinline{\valid(p)}};
+      \path (D.south)+(0,-1) node (q) {\lstinline{q}};
+      \path (D.south)+(0,-1.5) node {\lstinline{!\valid(q)}};
       \draw [->,line width=1.2pt] (p) -- (C);
       \draw [->,line width=1.2pt] (q) -- (D);
     \end{tikzpicture}
@@ -1269,7 +1271,7 @@ mais l'inverse n'est pas vrai.
   \label{fig:valid}
 \end{figure}
 
-La Fig.~\ref{fig:valid} illustre le prédicat ${\tt \backslash valid}$.
+La Fig.~\ref{fig:valid} illustre le prédicat \lstinline{\valid}.
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1292,15 +1294,15 @@ int main(void) {
 \end{figure}
 
 La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
-${\tt \backslash valid}$. Dans ce programme toutes les assertions de validité
+\lstinline{\valid}. Dans ce programme toutes les assertions de validité
 sont vraies.
 
 
 \subsection{Initialisation des octets d'un bloc}
 
-${\tt \backslash initialized\{L\}(p)}$ est un prédicat prenant un pointeur $p$
+\lstinline'\initialized{L}(p)' est un prédicat prenant un pointeur \lstinline{p}
 sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
-initialisée au label $L$.
+initialisée au label \lstinline{L}.
 
 
 
@@ -1319,10 +1321,10 @@ initialisée au label $L$.
       \node [anchor=west,memcell] at (C.east) (D) {};
       \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
       \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(-1,-1) node (p) {${\tt p}$};
-      \path (C.south)+(-2,-1.5) node {${\tt \backslash initialized(p)}$};
-      \path (C.south)+(1,-1) node (q) {${\tt q}$};
-      \path (C.south)+(2,-1.5) node {${\tt \lnot \backslash initialized(q)}$};
+      \path (C.south)+(-1,-1) node (p) {\lstinline{p}};
+      \path (C.south)+(-2,-1.5) node {\lstinline{\initialized(p)}};
+      \path (C.south)+(1,-1) node (q) {\lstinline{q}};
+      \path (C.south)+(2,-1.5) node {\lstinline{!\initialized(q)}};
       \draw [->,line width=1.2pt] (p) -- (p)+(0,.5);
       \draw [->,line width=1.2pt] (q) -- (q)+(0,.5);
     \end{tikzpicture}
@@ -1331,8 +1333,7 @@ initialisée au label $L$.
   \label{fig:initialized}
 \end{figure}
 
-La Fig.~\ref{fig:initialized} illustre le prédicat
-${\tt \backslash initialized}$.
+La Fig.~\ref{fig:initialized} illustre le prédicat \lstinline{\initialized}.
 
 
 \begin{figure}[h]
@@ -1351,7 +1352,7 @@ int main(void) {
 \end{figure}
 
 La Fig.~\ref{fig:initialized-example} illustre
-l'utilisation du prédicat ${\tt \backslash initialized}$. Dans ce programme,
+l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
 toutes les assertions sont vraies.
 
 
@@ -1386,10 +1387,10 @@ offrant une bonne complexité en temps et en espace. Cette structure doit être
 triée : on peut avoir besoin d'accéder directement à un bloc à partir de son
 adresse de base, mais aussi à partir de n'importe quelle adresse contenue dans
 le bloc (donc accéder au bloc précédent). Par exemple, la fonction
-${\tt \_\_base\_addr(p)}$ utilisée pour le traitement de la construction
-\textsc{acsl} ${\tt \backslash base\_addr(p)}$ cherche l'adresse de base la plus
-proche et inférieure à $p$ (et enfin vérifie les bornes du bloc). Cette
-contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
+\lstinline{__base_addr(p)} utilisée pour le traitement de la construction
+\textsc{acsl} \lstinline{\base_addr(p)} cherche l'adresse de base la plus
+proche et inférieure à \lstinline{p} (et enfin vérifie les bornes du bloc).
+Cette contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
 chaînées ne sont pas assez efficaces à cause de la complexité linéaire au pire
 cas. Les arbres binaires de recherche non équilibrés ont aussi une complexité
 linéaire au pire cas quand les données sont insérées dans un ordre strictement
@@ -1511,8 +1512,8 @@ dernière contient donc forcément l'adresse que l'on cherchait.
 
 Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
 paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$. Si un tel
-bloc n'existe pas, $null$ est renvoyé. Cet algorithme est utilisé pour des
-requêtes du type ${\tt \backslash valid}$ ou ${\tt \backslash initialized}$ où
+bloc n'existe pas, \lstinline{NULL} est renvoyé. Cet algorithme est utilisé pour
+des requêtes du type \lstinline{\valid} ou \lstinline{\initialized} où
 l'adresse passée en paramètre ne correspond pas forcément à l'adresse de base
 d'un bloc.
 
@@ -1524,7 +1525,7 @@ faut reprendre le parcours si la recherche n'aboutit pas. Quand on explore le
 fils droit, on empile le fils gauche. Quand on arrive sur une feuille, on
 vérifie l'encadrement, s'il est vérifié on a trouvé le bloc qu'on cherchait,
 sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe, sinon
-on retourne $null$.
+on retourne \lstinline{NULL}.
 
 \subsection{Ajout}
 
