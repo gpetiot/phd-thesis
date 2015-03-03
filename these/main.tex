@@ -118,26 +118,26 @@ rapport aux spécifications. La sûreté d'un logiciel est liée à son absence
 d'erreurs à l'exécution.
 
 
-%% \section{Model-checking}
-%% \label{sec:model-checking}
+\section{Model-checking}
+\label{sec:model-checking}
 
-%% Le model-checking \cite{model-checking} permet de vérifier algorithmiquement si
-%% un modèle donné (le système ou une abstraction de ce système) satisfait une
-%% spécification, formulée en termes de logique temporelle \cite{LTL}. Un modèle
-%% est un ensemble d'états, de propriétés que vérifie chaque état, et de
-%% transitions entre ces états qui décrivent l'évolution du système.
+Le model-checking \cite{model-checking} permet de vérifier algorithmiquement si
+un modèle donné (le système ou une abstraction de ce système) satisfait une
+spécification, formulée en termes de logique temporelle \cite{LTL}. Un modèle
+est un ensemble d'états, de propriétés que vérifie chaque état, et de
+transitions entre ces états qui décrivent l'évolution du système.
 
-%% Le model-checking couvre l'ensemble des états du système et des transitions afin
-%% d'analyser toutes les exécutions possibles du système. Sur de grands systèmes,
-%% cette méthode est pénalisée par l'explosion combinatoire du nombre des états (et
-%% la complexité en temps ou en espace qui en résulte). Il est néanmoins possible
-%% de modéliser des algorithmes asynchrones répartis et des automates non
-%% déterministes, comme le fait notamment l'outil \textsc{Spin} \cite{SPIN}.
+Le model-checking couvre l'ensemble des états du système et des transitions afin
+d'analyser toutes les exécutions possibles du système. Sur de grands systèmes,
+cette méthode est pénalisée par l'explosion combinatoire du nombre des états (et
+la complexité en temps ou en espace qui en résulte). Il est néanmoins possible
+de modéliser des algorithmes asynchrones répartis et des automates non
+déterministes, comme le fait notamment l'outil \textsc{Spin} \cite{SPIN}.
 
-%% La plateforme \textsc{Frama-C} du LSL intègre \textsc{Aoraï}, un greffon
-%% permettant d'annoter automatiquement le code source d'un programme C d'après
-%% une formule de logique temporelle linéaire, de sorte que les annotations sont
-%% vérifiées si le programme repecte la formule.
+La plateforme \textsc{Frama-C} du LSL intègre \textsc{Aoraï}, un greffon
+permettant d'annoter automatiquement le code source d'un programme C d'après
+une formule de logique temporelle linéaire, de sorte que les annotations sont
+vérifiées si le programme repecte la formule.
 
 
 \section{Analyse statique}
@@ -1086,10 +1086,6 @@ du nouveau programme est exactement le même que celui du programme d'origine.
 
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-
 \section{Informations relatives à la validité et à l'initialisation}
 
 
@@ -1369,10 +1365,6 @@ pour chaque bloc les informations suivantes :
 \item un booléen indiquant s'il y a eu un accès au bloc hors bornes
 \end{itemize}
 
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
 
