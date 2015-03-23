@@ -1,65 +1,5 @@
 
-@MISC{BISL,
-    author = {John Hatcliff and Gary T. Leavens and K. Rustan M. Leino and Peter Müller and Matthew Parkinson},
-    title = {Behavioral Interface Specification Languages},
-    year = {2009}
-}
-
-@incollection {property-status,
-   author = {Correnson, Loïc and Signoles, Julien},
-   affiliation = {Software Safety Lab., CEA LIST, PC 174, 91191 Gif-sur-Yvette, France},
-   title = {Combining Analyses for {C} Program Verification},
-   booktitle = {Formal Methods for Industrial Critical Systems},
-   series = {Lecture Notes in Computer Science},
-   editor = {Stoelinga, Mariëlle and Pinger, Ralf},
-   publisher = {Springer Berlin / Heidelberg},
-   isbn = {978-3-642-32468-0},
-   keyword = {Computer Science},
-   pages = {108-130},
-   volume = {7437},
-   url = {http://dx.doi.org/10.1007/978-3-642-32469-7_8},
-   year = {2012}
-}
-
-@article{ECLiPSe,
-  author    = {Joachim Schimpf and Kish Shen},
-  title     = {{ECLiPSe} - from {LP} to {CLP}},
-  journal   = {CoRR},
-  volume    = {abs/1012.4240},
-  year      = {2010},
-  ee        = {http://arxiv.org/abs/1012.4240},
-  bibsource = {DBLP, http://dblp.uni-trier.de}
-}
-
-@inproceedings{PathCrawler,
-  author    = {Bernard Botella and Micka{\"e}l Delahaye and St{\'e}phane {Hong Tuan Ha} and Nikolai Kosmatov and
-               Patricia Mouy and Muriel Roger and Nicky Williams},
-  title     = {Automating Structural Testing of {C} Programs: Experience with {PathCrawler}},
-  booktitle = {AST},
-  year      = {2009},
-  pages     = {70-78},
-  ee        = {http://dx.doi.org/10.1109/IWAST.2009.5069043},
-  bibsource = {DBLP, http://dblp.uni-trier.de},
-}
-
-@misc{PathCrawlerOnline,
-  title = {{PathCrawler Online}},
-  year = {2011},
-  howpublished = "\url{http://pathcrawler-online.com}" 
-}
-
-@inproceedings{Frama-C,
- author = {Cuoq, Pascal and Kirchner, Florent and Kosmatov, Nikolai and Prevosto, Virgile and Signoles, Julien and Yakobowski, Boris},
- title = {{Frama-C}: A Program Analysis Perspective},
- booktitle = {Proc. of the 10th International Conference on Software Engineering and Formal Methods},
- series = {SEFM '2012},
- month = {October},
- year = {2012},
- location = {Thessaloniki, Greece},
- note = {To appear}
-}
-
-@article{Dijkstra,
+@article{Dijkstra/75,
  author = {Dijkstra, Edsger W.},
  title = {Guarded commands, nondeterminacy and formal derivation of programs},
  journal = {Commun. ACM},
@@ -74,11 +14,10 @@
  doi = {http://doi.acm.org/10.1145/360933.360975},
  acmid = {360975},
  publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {case-construction, correctness proof, derivation of programs, nondeterminancy, program semantics, programming language semantics, programming languages, programming methodology, repetition, sequencing primitives, termination},
+ address = {New York, NY, USA}
 }
 
-@article{Floyd,
+@article{Floyd/63,
  author = {Floyd, Robert W.},
  title = {Syntactic Analysis and Operator Precedence},
  journal = {J. ACM},
@@ -96,7 +35,7 @@
  address = {New York, NY, USA},
 }
 
-@article{Hoare,
+@article{Hoare/69,
  author = {Hoare, C. A. R.},
  title = {An axiomatic basis for computer programming},
  journal = {Commun. ACM},
@@ -111,8 +50,139 @@
  doi = {http://doi.acm.org/10.1145/363235.363259},
  acmid = {363259},
  publisher = {ACM},
+ address = {New York, NY, USA}
+}
+
+@book{Arndt/10,
+  author = {J{\"o}rg Arndt},
+  title ={Matters Computational - Ideas, Algorithms, Source Code [The fxtbook]},
+  note = {Published electronically at http://www.jjj.de},
+  year      = {2010},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@article{Hatcliff/12,
+ author = {Hatcliff, John and Leavens, Gary T. and Leino, K. Rustan M. and M\"{u}ller, Peter and Parkinson, Matthew},
+ title = {Behavioral Interface Specification Languages},
+ journal = {ACM Comput. Surv.},
+ issue_date = {June 2012},
+ volume = {44},
+ number = {3},
+ month = jun,
+ year = {2012},
+ issn = {0360-0300},
+ pages = {16:1--16:58},
+ articleno = {16},
+ numpages = {58},
+ url = {http://doi.acm.org/10.1145/2187671.2187678},
+ doi = {10.1145/2187671.2187678},
+ acmid = {2187678},
+ publisher = {ACM},
  address = {New York, NY, USA},
- keywords = {axiomatic method, formal language definition, machine-independent programming, program documentation, programming language design, theory of programming' proofs of programs},
+}
+
+@incollection {Correnson/FMICS12,
+   author = {Correnson, Lo\"{\i}c and Signoles, Julien},
+   title = {Combining Analyses for {C} Program Verification},
+   series = {Lecture Notes in Computer Science},
+   editor = {Stoelinga, Mariëlle and Pinger, Ralf},
+   publisher = {Springer Berlin / Heidelberg},
+   isbn = {978-3-642-32468-0},
+   keyword = {Computer Science},
+   pages = {108-130},
+   volume = {7437},
+   url = {http://dx.doi.org/10.1007/978-3-642-32469-7_8},
+   booktitle = {FMICS},
+   year = {2012}
+}
+
+@Inproceedings {Barnett/CASSIS04,
+author       = {Mike Barnett and K. Rustan M. Leino and Wolfram Schulte},
+booktitle    = {CASSIS 2004, Construction and Analysis of Safe, Secure and Interoperable Smart
+                devices},
+pages        = {49-69},
+publisher    = {Springer},
+series       = {Lecture Notes in Computer Science},
+title        = {The Spec{\#} Programming System: An Overview},
+url          = {http://research.microsoft.com/apps/pubs/default.aspx?id=72985},
+volume       = {3362},
+year         = {2005},
+}
+
+@inproceedings{Correnson/NFM14,
+  author    = {Lo{\"{\i}}c Correnson},
+  title     = {Qed. Computing What Remains to Be Proved},
+  booktitle = {{NASA} Formal Methods - 6th International Symposium, {NFM} 2014, Houston,
+               TX, USA, April 29 - May 1, 2014. Proceedings},
+  pages     = {215--229},
+  year      = {2014},
+  url       = {http://dx.doi.org/10.1007/978-3-319-06200-6_17},
+  doi       = {10.1007/978-3-319-06200-6_17},
+  timestamp = {Fri, 25 Apr 2014 14:20:46 +0200},
+  biburl    = {http://dblp.uni-trier.de/rec/bib/conf/nfm/Correnson14},
+  bibsource = {dblp computer science bibliography, http://dblp.org}
+}
+
+@article{Schimpf/10,
+  author    = {Joachim Schimpf and Kish Shen},
+  title     = {{ECLiPSe} - from {LP} to {CLP}},
+  journal   = {CoRR},
+  volume    = {abs/1012.4240},
+  year      = {2010},
+  ee        = {http://arxiv.org/abs/1012.4240},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@inproceedings{Botella/AST09,
+  author    = {Bernard Botella and Micka{\"e}l Delahaye and St{\'e}phane {Hong Tuan Ha} and Nikolai Kosmatov and
+               Patricia Mouy and Muriel Roger and Nicky Williams},
+  title     = {Automating Structural Testing of {C} Programs: Experience with {PathCrawler}},
+  booktitle = {AST},
+  year      = {2009},
+  pages     = {70-78},
+  ee        = {http://dx.doi.org/10.1109/IWAST.2009.5069043},
+  bibsource = {DBLP, http://dblp.uni-trier.de},
+}
+
+@inproceedings{Delahaye/SAC13,
+  author    = {Micka{\"e}l Delahaye and Nikolai Kosmatov and Julien Signoles},
+  title     = {Common specification language for static and dynamic analysis
+               of {C} programs},
+  booktitle = {SAC},
+  year      = {2013},
+}
+
+@inproceedings{Delahaye/RV13,
+  author    = {Micka{\"e}l Delahaye and Nikolai Kosmatov},
+  title     = {A Late Treatment of C Precondition in Dynamic Symbolic Execution
+               Testing Tools},
+  booktitle = {RV},
+  year      = {2013},
+}
+
+@inproceedings{Chebaro/ICSSEA12,
+  author = {Omar Chebaro and Micka{\"e}l Delahaye and Nikolai Kosmatov},
+  title = {Testing Inexecutable Conditions on Input Pointers in {C} Programs
+   with {SANTE}},
+  booktitle = {ICSSEA},
+  year = {2012}
+}
+
+@misc{PathCrawlerOnline,
+  title = {{PathCrawler Online}},
+  year = {2011},
+  howpublished = "\url{http://pathcrawler-online.com}" 
+}
+
+@inproceedings{Cuoq/SEFM12,
+ author = {Cuoq, Pascal and Kirchner, Florent and Kosmatov, Nikolai and Prevosto, Virgile and Signoles, Julien and Yakobowski, Boris},
+ title = {{Frama-C}: A Program Analysis Perspective},
+ booktitle = {Proc. of the 10th International Conference on Software Engineering and Formal Methods},
+ series = {SEFM '2012},
+ month = {October},
+ year = {2012},
+ location = {Thessaloniki, Greece},
+ note = {To appear}
 }
 
 @misc{C99,
@@ -122,7 +192,7 @@
  year = {1999}
 }
 
-@inproceedings{duality,
+@inproceedings{Ernst/WODA03,
    author = {Michael D. Ernst},
    title = {Static and dynamic analysis: Synergy and duality},
    booktitle = {WODA 2003: ICSE Workshop on Dynamic Analysis},
@@ -132,7 +202,7 @@
    year = {2003}
 }
 
-@book{static-analysis,
+@book{Nielson/99,
  author = {Nielson, Flemming and Nielson, Hanne R. and Hankin, Chris},
  title = {Principles of Program Analysis},
  year = {1999},
@@ -141,7 +211,7 @@
  address = {Secaucus, NJ, USA},
 }
 
-@article{undecidability,
+@article{Landi/92,
  author = {Landi, William},
  title = {Undecidability of static analysis},
  journal = {ACM Lett. Program. Lang. Syst.},
@@ -156,11 +226,10 @@
  doi = {http://doi.acm.org/10.1145/161494.161501},
  acmid = {161501},
  publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {abstract interpretation, alias analysis, data flow analysis, halting problem, static analysis},
+ address = {New York, NY, USA}
 }
 
-@article{model-checking,
+@article{Clarke/86,
  author = {Clarke, E. M. and Emerson, E. A. and Sistla, A. P.},
  title = {Automatic verification of finite-state concurrent systems using temporal logic specifications},
  journal = {ACM Trans. Program. Lang. Syst.},
@@ -179,7 +248,7 @@
  address = {New York, NY, USA},
 }
 
-@inproceedings{LTL,
+@inproceedings{Clarke/82,
  author = {Clarke, Edmund M. and Emerson, E. Allen},
  title = {Design and Synthesis of Synchronization Skeletons Using Branching-Time Temporal Logic},
  booktitle = {Logic of Programs, Workshop},
@@ -193,7 +262,7 @@
  address = {London, UK},
 }
 
-@article{abstract-interpretation,
+@article{Cousot/92,
   author    = {Patrick Cousot and Radhia Cousot},
   title     = {Abstract Interpretation Frameworks},
   journal   = {J. Log. Comput.},
@@ -205,7 +274,14 @@
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@INPROCEEDINGS{predicate-abstraction,
+@inproceedings{Schiller/OOPSLA12,
+  author = {Todd W. Schiller and Michael D. Ernst},
+  title = {Reducing the Barriers to Writing Verified Specifications},
+  booktitle = {OOPSLA},
+  year = {2012}
+}
+
+@INPROCEEDINGS{Ball/01,
     author = {Thomas Ball and Rupak Majumdar and Todd Millstein and Sriram K. Rajamani},
     title = {Automatic predicate abstraction of {C} programs},
     booktitle = {IN PROC. ACM PLDI},
@@ -214,7 +290,7 @@
     publisher = {ACM Press}
 }
 
-@inproceedings{simulation,
+@inproceedings{Whitner/WSC89,
  author = {Whitner, R. B. and Balci, O.},
  title = {Guidelines for selecting and using simulation model verification techniques},
  booktitle = {Proceedings of the 21st conference on Winter simulation},
@@ -231,7 +307,7 @@
  address = {New York, NY, USA},
 }
 
-@article{symbolic-execution,
+@article{Clarke/76,
  author = {Clarke, L. A.},
  title = {A System to Generate Test Data and Symbolically Execute Programs},
  journal = {IEEE Trans. Softw. Eng.},
@@ -246,11 +322,10 @@
  doi = {10.1109/TSE.1976.233817},
  acmid = {1313532},
  publisher = {IEEE Press},
- address = {Piscataway, NJ, USA},
- keywords = {test data generation, Program validation, software reliability, symbolic execution},
+ address = {Piscataway, NJ, USA}
 }
 
-@article{slicing,
+@article{Korel/88,
   author    = {Bogdan Korel and Janusz W. Laski},
   title     = {Dynamic Program Slicing},
   journal   = {Inf. Process. Lett.},
@@ -262,7 +337,14 @@
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@article{PDG,
+@inproceedings{Boyapati/ISSTA02,
+  author = {Chandrasekhar Boyapati and Sarfraz Khurshid and Darko Marinov},
+  title = {{Korat}: Automated Testing Based on Java Predicates},
+  booktitle = {ISSTA},
+  year = {2002}
+}
+
+@article{Ottenstein/84,
  author = {Ottenstein, Karl J. and Ottenstein, Linda M.},
  title = {The program dependence graph in a software development environment},
  journal = {SIGPLAN Not.},
@@ -277,11 +359,10 @@
  doi = {http://doi.acm.org/10.1145/390011.808263},
  acmid = {808263},
  publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {Code optimization, Control flow, Data flow, Debugging, Internal program representation, Interpreter, Program slice, Software complexity metrics},
+ address = {New York, NY, USA}
 }
 
-@inproceedings{SDG,
+@inproceedings{Sinha/ICSE99,
  author = {Sinha, Saurabh and Harrold, Mary Jean and Rothermel, Gregg},
  title = {System-dependence-graph-based slicing of programs with arbitrary interprocedural control flow},
  booktitle = {Proceedings of the 21st international conference on Software engineering},
@@ -299,7 +380,7 @@
  keywords = {interprocedural slicing, program slicing, system dependence graph},
 }
 
-@article{SPIN,
+@article{Holzmann/97,
  author = {Holzmann, Gerard J.},
  title = {The Model Checker {SPIN}},
  journal = {IEEE Trans. Softw. Eng.},
@@ -314,11 +395,10 @@
  doi = {10.1109/32.588521},
  acmid = {260902},
  publisher = {IEEE Press},
- address = {Piscataway, NJ, USA},
- keywords = {Formal methods, program verification, design verification, model checking, distributed systems, concurrency.},
+ address = {Piscataway, NJ, USA}
 }
 
-@article{PolySpace,
+@article{Zitser/04,
  author = {Zitser, Misha and Lippmann, Richard and Leek, Tim},
  title = {Testing static analysis tools using exploitable buffer overflows from open source code},
  journal = {SIGSOFT Softw. Eng. Notes},
@@ -333,11 +413,10 @@
  doi = {http://doi.acm.org/10.1145/1041685.1029911},
  acmid = {1029911},
  publisher = {ACM},
- address = {New York, NY, USA},
- keywords = {buffer overflow, evaluation, exploit, false alarm, security, source code, static analysis, test detection},
+ address = {New York, NY, USA}
 }
 
-@inproceedings{ASTREE,
+@inproceedings{Cousot/ASIAN06,
  author = {Cousot, Patrick and Cousot, Radhia and Feret, J\'{e}r\^{o}me and Mauborgne, Laurent and Min\'{e}, Antoine and Monniaux, David and Rival, Xavier},
  title = {Combination of abstractions in the {ASTRÉE} static analyzer},
  booktitle = {Proceedings of the 11th Asian computing science conference on Advances in computer science: secure software and related issues},
@@ -353,7 +432,7 @@
  address = {Berlin, Heidelberg},
 }
 
-@inproceedings{Fluctuat,
+@inproceedings{Goubault/VMCAI11,
  author = {Goubault, Eric and Putot, Sylvie},
  title = {Static analysis of finite precision computations},
  booktitle = {Proceedings of the 12th international conference on Verification, model checking, and abstract interpretation},
@@ -369,7 +448,7 @@
  address = {Berlin, Heidelberg},
 }
 
-@article{Simplify,
+@article{Detlefs/05,
  author = {Detlefs, David and Nelson, Greg and Saxe, James B.},
  title = {{Simplify}: a theorem prover for program checking},
  journal = {J. ACM},
@@ -389,7 +468,7 @@
  keywords = {Theorem proving, decision procedures, program checking},
 }
 
-@inproceedings{Ergo,
+@inproceedings{Conchon/AFM07,
  author = {Conchon, Sylvain and Contejean, Evelyne and Kanig, Johannes and Lescuyer, St\'{e}phane},
  title = {Lightweight integration of the {Ergo} theorem prover inside a proof assistant},
  booktitle = {Proceedings of the second workshop on Automated formal methods},
@@ -406,7 +485,7 @@
  address = {New York, NY, USA},
 }
 
-@inproceedings{Z3,
+@inproceedings{DeMoura/TACAS08,
  author = {De Moura, Leonardo and Bj{\o}rner, Nikolaj},
  title = {{Z3}: an efficient {SMT} solver},
  booktitle = {Proceedings of the Theory and practice of software, 14th international conference on Tools and algorithms for the construction and analysis of systems},
@@ -422,7 +501,7 @@
  address = {Berlin, Heidelberg},
 }
 
-@book{Coq,
+@book{Casteran/04,
     hal_id = {hal-00344237},
     url = {http://hal.archives-ouvertes.fr/hal-00344237},
     title = {{Interactive theorem proving and program development. {Coq'Art}: The Calculus of inductive constructions.}},
@@ -436,7 +515,7 @@
     year = {2004},
 }
 
-@inproceedings{Isabelle,
+@inproceedings{Wenzel/TPHOL08,
 author={Makarius Wenzel and Lawrence C. Paulson and Tobias Nipkow},
 title={The Isabelle Framework},
 booktitle={Theorem Proving in Higher Order Logics (TPHOLs 2008)},
@@ -444,7 +523,7 @@ editor={Ait Mohamed and Munoz and Tahar},
 publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
 }
 
-@book{HOL,
+@book{Gordon/93,
  editor = {Gordon, M. J. C. and Melham, T. F.},
  title = {Introduction to {HOL}: a theorem proving environment for higher order logic},
  year = {1993},
@@ -453,16 +532,39 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {New York, NY, USA},
 }
 
-@INPROCEEDINGS{Boogie,
+@inproceedings{Tschannen/SEFM2011,
+ author = {Tschannen, Julian and Furia, Carlo A. and Nordio, Martin and
+           Meyer, Bertrand},
+ title = {Usable verification of object-oriented programs by combining static
+          and dynamic techniques},
+ booktitle = {SEFM},
+ year = {2011},
+}
+
+@incollection{Tschannen/14,
+  year={2014},
+  booktitle={Verified Software: Theories, Tools, Experiments},
+  title={Program Checking with Less Hassle},
+  author={Tschannen, Julian and Furia, Carlo A. and Nordio, Martin and Meyer, Bertrand}
+}
+
+@inproceedings{LeGoues/SEFM11,
+ author = {Le Goues, Claire and Leino, K. Rustan M. and Moskal, Michal},
+ title = {The Boogie verification debugger},
+ booktitle = {SEFM},
+ year = {2011},
+}
+
+@INPROCEEDINGS{Barnett/FMCO05,
     author = {Mike Barnett and {Bor-yuh} Evan Chang and Robert Deline and Bart Jacobs and K. Rustanm. Leino},
     title = {{Boogie}: A modular reusable verifier for object-oriented programs},
     booktitle = {Formal Methods for Components and Objects: 4th International Symposium, FMCO 2005, volume 4111 of Lecture Notes in Computer Science},
-    year = {2006},
+    year = {2005},
     pages = {364--387},
     publisher = {Springer}
 }
 
-@INPROCEEDINGS{ESC/Java,
+@INPROCEEDINGS{Cok/CASSIS04,
     author = {David R. Cok and Joseph R. Kiniry},
     title = {{ESC/Java2}: Uniting {ESC/Java} and {JML}: Progress and issues in building and using {ESC/Java2} and a report on a case study involving the use of {ESC/Java2} to verify portions of an Internet voting tally system},
     booktitle = {In Construction and Analysis of Safe, Secure and Interoperable Smart Devices: International Workshop, CASSIS 2004},
@@ -470,14 +572,52 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
     publisher = {Springer–Verlag}
 }
 
-@TECHREPORT{JML,
+@TECHREPORT{Leavens/99,
     author = {Gary T. Leavens and Albert L. Baker and Clyde Ruby},
     title = {Preliminary Design of {JML}: A Behavioral Interface Specification Language for {Java}},
     institution = {Department of Computer Science, Iowa State University},
     year = {1999}
 }
 
-@article{SMART,
+@INPROCEEDINGS{Beyer/ASE08, 
+  author={Beyer, D. and Henzinger, T.A. and Theoduloz, G.}, 
+  booktitle={ASE}, 
+  title={Program Analysis with Dynamic Precision Adjustment}, 
+  year={2008}
+}
+
+@misc{website:tacas-2014-sv-compet,
+      title = "TACAS 2014 Software Verification Competition",
+      year = "2014",
+      url = "https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/"
+}
+
+@inproceedings{Kosmatov/RV13,
+  author    = {Nikolai Kosmatov and Guillaume Petiot and Julien Signoles},
+  title     = {An Optimized Memory Monitoring for Runtime Assertion Checking
+               of {C} Programs},
+  booktitle = {RV},
+  year      = {2013},
+}
+
+@inproceedings{Petiot/TAP14,
+  author = {Guillaume Petiot and Nikolai Kosmatov and Alain Giorgetti and
+            Jacques Julliand},
+  title = {How Test Generation Helps Software Specification and Deductive
+           Verification in {Frama-C}},
+  booktitle = {TAP},
+  year = {2014}
+}
+
+@inproceedings{Petiot/SCAM14,
+  author = {Guillaume Petiot and Bernard Botella and Jacques Julliand and
+            Nikolai Kosmatov and Julien Signoles},
+  title = {Instrumentation of Annotated {C} Programs for Test Generation},
+  booktitle = {SCAM},
+  year = {2014}
+}
+
+@article{Godefroid/POPL07,
  author = {Godefroid, Patrice},
  title = {Compositional dynamic test generation},
  journal = {SIGPLAN Not.},
@@ -496,7 +636,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {automatic test generation, compositional program analysis, program verification, scalability, software testing},
 }
 
-@INPROCEEDINGS{CUTE,
+@INPROCEEDINGS{Sen/CAV06,
     author = {Koushik Sen and Gul Agha},
     title = {{CUTE} and {jCUTE}: Concolic unit testing and explicit path model-checking tools},
     booktitle = {In CAV},
@@ -505,7 +645,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
     publisher = {Springer}
 }
 
-@inproceedings{PEX,
+@inproceedings{Tillmann/TAP08,
  author = {Tillmann, Nikolai and De Halleux, Jonathan},
  title = {{Pex}: white box test generation for {.NET}},
  booktitle = {Proceedings of the 2nd international conference on Tests and proofs},
@@ -521,7 +661,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {Berlin, Heidelberg},
 }
 
-@article{EXE,
+@article{Cadar/08,
  author = {Cadar, Cristian and Ganesh, Vijay and Pawlowski, Peter M. and Dill, David L. and Engler, Dawson R.},
  title = {{EXE}: Automatically Generating Inputs of Death},
  journal = {ACM Trans. Inf. Syst. Secur.},
@@ -541,7 +681,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {attack generation, bug finding, constraint solving, dynamic analysis, symbolic execution, test case generation},
 }
 
-@inproceedings{KLEE,
+@inproceedings{Cadar/OSDI08,
   author    = {Cristian Cadar and Daniel Dunbar and Dawson R. Engler},
   title     = {{KLEE}: Unassisted and Automatic Generation of High-Coverage
                Tests for Complex Systems Programs},
@@ -552,7 +692,29 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@inproceedings{SAGE,
+@inproceedings{Back/TAP07,
+  author = {Ralph-Johan Back and Johannes Eriksson and Magnus Myreen},
+  title = {Testing and Verifying Invariant Based Programs
+    in the {SOCOS} Environment},
+  booktitle = {TAP},
+  year = {2007}
+}
+
+@inproceedings{Gladisch/TAP09,
+  author = {Christoph Gladisch},
+  title = {Could We Have Chosen a Better Loop Invariant or Method Contract?},
+  booktitle = {TAP},
+  year = {2009}
+}
+
+@inproceedings{Bayne/ICSE11,
+  author = {Michael Bayne and Richard Cook and Michael D. Ernst},
+  title = {Always-Available Static and Dynamic Feedback},
+  booktitle = {ICSE},
+  year = {2011}
+}
+
+@inproceedings{Godefroid/NDSS08,
   author    = {Patrice Godefroid and Michael Y. Levin and David A. Molnar},
   title     = {Automated Whitebox Fuzz Testing},
   booktitle = {NDSS},
@@ -561,7 +723,14 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@inproceedings{GATEL,
+@article{Brucker/FAC12,
+  title = {On theorem prover-based testing},
+  journal = {FAC},
+  author = {Brucker, Achim D. and Wolff, Burkhart},
+  year = {2012},
+}
+
+@inproceedings{Marre/ASE00,
  author = {Marre, Bruno and Arnould, Agnes},
  title = {Test Sequences Generation from {LUSTRE} Descriptions: {GATeL}},
  booktitle = {Proceedings of the 15th IEEE international conference on Automated software engineering},
@@ -575,7 +744,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {Washington, DC, USA},
 }
 
-@article{Lustre,
+@article{Halbwachs/91,
     author = {Halbwachs, N. and Caspi, P. and Raymond, P. and Pilaud, D.},
     citeulike-article-id = {349815},
     journal = {Proceedings of the IEEE},
@@ -590,7 +759,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
     year = {1991}
 }
 
-@article{SLAM,
+@article{Ball/11,
  author = {Ball, Thomas and Levin, Vladimir and Rajamani, Sriram K.},
  title = {A decade of software model checking with {SLAM}},
  journal = {Commun. ACM},
@@ -609,7 +778,14 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {New York, NY, USA},
 } 
 
-@article{CEGAR,
+@inproceedings{Claessen/TAP08,
+  author = {Koen Claessen and Hans Svensson},
+  title = {Finding Counter Examples in Induction Proofs},
+  booktitle = {TAP},
+  year = {2008}
+}
+
+@article{Clarke/03,
  author = {Clarke, Edmund and Grumberg, Orna and Jha, Somesh and Lu, Yuan and Veith, Helmut},
  title = {Counterexample-guided abstraction refinement for symbolic model checking},
  journal = {J. ACM},
@@ -628,7 +804,47 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {Abstraction, hardware verification, symbolic model checking, temporal logic},
 }
 
-@inproceedings{CEGAAR,
+@inproceedings{Kuncak/RV07,
+  author={Karen Zee and Viktor Kuncak and Michael Taylor and Martin Rinard},
+  title={Runtime Checking for Program Verification},
+  booktitle={RV},
+  year={2007}
+}
+
+@inproceedings{Leavens/AADEBUG05,
+  author={Yoonsik Cheon and Gary T. Leavens},
+  title={A Contextual Interpretation of Undefinedness for Runtime Assertion
+    Checking},
+  booktitle={AADEBUG},
+  year={2005}
+}
+
+@inproceedings{Leavens/FMCO03,
+  title = {How the design of {JML} accommodates both runtime assertion checking
+           and formal verification},
+  booktitle = {FMCO},
+  author = {Leavens, Gary T. and Cheon, Yoonsik and Clifton, Curtis and
+            Ruby, Clyde and Cok, David R.},
+  year = {2003},
+}
+
+@inproceedings{Kuncak/RV13,
+  author    = {Viktor Kuncak and Etienne Kneuss and Philippe Suter},
+  title     = {Executing Specifications Using Synthesis and Constraint
+               Solving},
+  booktitle = {RV},
+  year      = {2013},
+}
+
+@inproceedings{Polikarpova/RV13,
+  author    = {Nadia Polikarpova and Carlo A. Furia and Scott West},
+  title     = {To Run What No One Has Run Before: Executing an Intermediate
+               Verification Language},
+  booktitle = {RV},
+  year      = {2013},
+}
+
+@inproceedings{Hojjat/ATVA12,
   author    = {Hossein Hojjat and
                Radu Iosif and
                Filip Konecn{\'y} and
@@ -642,14 +858,14 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@ARTICLE{BLAST,
+@ARTICLE{Beyer/07,
     author = {Dirk Beyer and Thomas A. Henzinger and Ranjit Jhala and Rupak Majumdar},
     title = {The software model checker {BLAST}: Applications to software engineering},
     journal = {INT. J. SOFTW. TOOLS TECHNOL. TRANSFER},
     year = {2007}
 }
 
-@inproceedings{YOGI,
+@inproceedings{Nori/TACAS09,
  author = {Nori, Aditya V. and Rajamani, Sriram K. and Tetali, Saideep and Thakur, Aditya V.},
  title = {The {Yogi} Project: Software Property Checking via Static Analysis and Testing},
  booktitle = {Proceedings of the 15th International Conference on Tools and Algorithms for the Construction and Analysis of Systems: Held as Part of the Joint European Conferences on Theory and Practice of Software, ETAPS 2009,},
@@ -666,7 +882,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {Berlin, Heidelberg},
 }
 
-@inproceedings{MAGIC,
+@inproceedings{Sagar/ICSE03,
  author = {Chaki, Sagar and Clarke, Edmund and Groce, Alex and Jha, Somesh and Veith, Helmut},
  title = {Modular verification of software components in {C}},
  booktitle = {Proceedings of the 25th International Conference on Software Engineering},
@@ -682,7 +898,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {Washington, DC, USA},
 }
 
-@article{discover-invariants,
+@article{Ernst/01,
  author = {Ernst, Michael D. and Cockrell, Jake and Griswold, William G. and Notkin, David},
  title = {Dynamically Discovering Likely Program Invariants to Support Program Evolution},
  journal = {IEEE Trans. Softw. Eng.},
@@ -701,7 +917,15 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {Program invariants, formal specification, software evolution, dynamic analysis, execution traces, logical inference, pattern recognition.},
 }
 
-@inproceedings{ChecknCrash,
+@inproceedings{Ernst/TAP10,
+ author = {Ernst, Michael D.},
+ title = {How tests and proofs impede one another: the need for always-on
+          static and dynamic feedback},
+ booktitle = {TAP},
+ year = {2010},
+}
+
+@inproceedings{Csallner/ICSE05,
  author = {Csallner, Christoph and Smaragdakis, Yannis},
  title = {{Check 'n' Crash}: combining static checking and testing},
  booktitle = {Proceedings of the 27th international conference on Software engineering},
@@ -719,7 +943,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {automatic testing, dynamic analysis, extended static checking, static analysis, test case generation, usability},
 }
 
-@article{JCrasher,
+@article{Csallner/04,
  author = {Csallner, Christoph and Smaragdakis, Yannis},
  title = {{JCrasher}: an automatic robustness tester for {Java}},
  journal = {Softw. Pract. Exper.},
@@ -738,7 +962,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {java, random testing, software testing, state re-initialization, test case generation},
 }
 
-@article{DSD-Crasher,
+@article{Csallner/08,
  author = {Csallner, Christoph and Smaragdakis, Yannis and Xie, Tao},
  title = {{DSD-Crasher}: A hybrid analysis tool for bug finding},
  journal = {ACM Trans. Softw. Eng. Methodol.},
@@ -758,6 +982,13 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {Automatic testing, bug finding, dynamic analysis, dynamic invariant detection, extended static checking, false positives, static analysis, test case generation, usability},
 }
 
+@book{ACSLbyExample,
+  author    = {Burghardt, Jochen and Gerlach, Jens},
+  title     = {{ACSL} by Example},
+  note = {Published electronically at http://www.fokus.fraunhofer.de/download/acsl\_by\_example},
+  year      = {2015},
+}
+
 @MISC{ACSL,
     author = {Baudin, Patrick and Cuoq, Pascal and Filli\^{a}tre, Jean C. and March\'{e}, Claude and Monate, Benjamin and Moy, Yannick and Prevosto, Virgile},
     edition = {preliminary},
@@ -767,7 +998,13 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
     year = {2010}
 }
 
-@inproceedings{CIL,
+@manual{E-ACSL,
+  author =	 {Julien Signoles},
+  title =	 {E-ACSL: Executable ANSI/ISO C Specification Language},
+  note =	 {{URL}: http://frama-c.com/download/e-acsl/e-acsl.pdf}
+}
+
+@inproceedings{Necula/CC02,
  author = {Necula, George C. and McPeak, Scott and Rahul, Shree Prakash and Weimer, Westley},
  title = {{CIL}: Intermediate Language and Tools for Analysis and Transformation of {C} Programs},
  booktitle = {Proceedings of the 11th International Conference on Compiler Construction},
@@ -782,7 +1019,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  address = {London, UK},
 }
 
-@inproceedings{Value,
+@inproceedings{Canet/SCAM09,
  author = {Canet, G\'{e}raud and Cuoq, Pascal and Monate, Benjamin},
  title = {A Value Analysis for {C} Programs},
  booktitle = {Proceedings of the 2009 Ninth IEEE International Working Conference on Source Code Analysis and Manipulation},
@@ -799,7 +1036,7 @@ publisher={Springer},series={LNCS},volume=5170,pages={33-38},year=2008
  keywords = {tool demo, static analysis, abstract interpretation, C, software verification},
 }
 
-@inproceedings{SANTE,
+@inproceedings{Chebaro/SAC12,
 inhal = {no},
 domainehal = {INFO:INFO_SE, INFO:INFO_MO},
 equipe = {vesontio},
@@ -813,14 +1050,14 @@ month = mar,
 year = 2012
 }
 
-@misc{TheseOmar,
+@misc{Chebaro/11,
  author = {Omar Chebaro},
  title = {Classification de menaces d'erreurs par analyse statique, simplification syntaxique et test structurel de programmes -- Thèse de doctorat},
  institution = {Laboratoire d'Informatique de l'Université de Franche-Comté},
  year = {2011}
 }
 
-@article{Patricia-tries,
+@article{Szpankowski/90,
  author = {Szpankowski, Wojciech},
  title = {Patricia tries again revisited},
  journal = {J. ACM},
@@ -839,7 +1076,7 @@ year = 2012
  address = {New York, NY, USA},
 }
 
-@inproceedings{collaborative-verification,
+@inproceedings{Christakis/FM12,
   author    = {Maria Christakis and
                Peter M{\"u}ller and
                Valentin W{\"u}stholz},
@@ -849,6 +1086,22 @@ year = 2012
   pages     = {132-146},
   ee        = {http://dx.doi.org/10.1007/978-3-642-32759-9_13},
   bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@inproceedings{Slaby/TACAS2013,
+ author = {Slaby, Jiri and Strej\v{c}ek, Jan and Trt\'{\i}k, Marek},
+ title = {Symbiotic: synergy of instrumentation, slicing, and symbolic
+          execution},
+ booktitle = {TACAS},
+ year = {2013},
+}
+
+@inproceedings{Flanagan/PLDI2002,
+ author = {Flanagan, Cormac and Leino, K. Rustan M. and Lillibridge, Mark
+           and Nelson, Greg and Saxe, James B. and Stata, Raymie},
+ title = {Extended static checking for {Java}},
+ booktitle = {PLDI},
+ year = {2002},
 }
 
 @inproceedings{checking-prop-state-machines,
@@ -864,7 +1117,7 @@ year = 2012
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@inproceedings{Dafny,
+@inproceedings{Leino/VSTTE12,
   author    = {K. Rustan M. Leino},
   title     = {Developing Verified Programs with {Dafny}},
   booktitle = {VSTTE},
@@ -874,7 +1127,14 @@ year = 2012
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@inproceedings{DyTa,
+@inproceedings{Leino/FIDE14,
+  author    = {K. Rustan M. Leino and Valentin W{\"{u}}stholz},
+  title     = {The Dafny Integrated Development Environment},
+  booktitle = {F-IDE},
+  year      = {2014}
+}
+
+@inproceedings{Ge/ICSE11,
  author = {Ge, Xi and Taneja, Kunal and Xie, Tao and Tillmann, Nikolai},
  title = {{DyTa}: dynamic symbolic execution guided with static verification results},
  booktitle = {Proceedings of the 33rd International Conference on Software Engineering},
@@ -892,9 +1152,9 @@ year = 2012
  keywords = {defect detection, static analysis, testing},
 }
 
-@inproceedings{CodeContracts,
+@inproceedings{Logozzo/VMCAI11,
  author = {Logozzo, Francesco},
- title = {Practical verification for the working programmer with codecontracts and abstract interpretation},
+ title = {Practical verification for the working programmer with {CodeContracts} and abstract interpretation},
  booktitle = {Proceedings of the 12th international conference on Verification, model checking, and abstract interpretation},
  series = {VMCAI'11},
  year = {2011},
@@ -908,7 +1168,14 @@ year = 2012
  address = {Berlin, Heidelberg},
 }
 
-@INPROCEEDINGS{fault-localization,
+@inproceedings{Weiser/ICSE81,
+  author    = {Mark Weiser},
+  title     = {Program Slicing},
+  booktitle = {ICSE},
+  year      = {1981},
+}
+
+@INPROCEEDINGS{Jiang/QSIC12,
 author={Jiang, Shujuan and Li, Wei and Li, Haiyang and Zhang, Yanmei and Zhang, Hongchang and Liu, Yingqi},
 booktitle={Quality Software (QSIC), 2012 12th International Conference on}, title={Fault Localization for Null Pointer Exception Based on Stack Trace and Program Slicing},
 year={2012},
@@ -921,7 +1188,7 @@ doi={10.1109/QSIC.2012.36},
 ISSN={1550-6002},
 }
 
-@article{STANSE,
+@article{Obdrzalek/12,
   author    = {Jan Obdrz{\'a}lek and
                Jiri Slaby and
                Marek Trt\'{\i}k},
@@ -933,7 +1200,7 @@ ISSN={1550-6002},
   bibsource = {DBLP, http://dblp.uni-trier.de}
 }
 
-@inproceedings{SMASH,
+@inproceedings{Godefroid/POPL10,
  author = {Godefroid, Patrice and Nori, Aditya V. and Rajamani, Sriram K. and Tetali, Sai Deep},
  title = {Compositional may-must program analysis: unleashing the power of alternation},
  booktitle = {Proceedings of the 37th annual ACM SIGPLAN-SIGACT symposium on Principles of programming languages},
@@ -951,7 +1218,7 @@ ISSN={1550-6002},
  keywords = {abstraction refinement, directed testing, software model checking},
 }
 
-@inproceedings{DASH,
+@inproceedings{Beckman/ISSTA09,
   added-at = {2009-05-20T01:29:36.000+0200},
   author = {Beckman, Nels and Nori, Aditya V. and Rajamani, Sriram K. and Simmons, Robert J.},
   biburl = {http://www.bibsonomy.org/bibtex/27bfbd024e1bb4c2b6dc3160603cb929f/sriram0339},
@@ -967,7 +1234,7 @@ ISSN={1550-6002},
   year = 2008
 }
 
-@inproceedings{DART,
+@inproceedings{Godefroid/PLDI05,
  author = {Godefroid, Patrice and Klarlund, Nils and Sen, Koushik},
  title = {{DART}: directed automated random testing},
  booktitle = {Proceedings of the 2005 ACM SIGPLAN conference on Programming language design and implementation},
@@ -985,9 +1252,9 @@ ISSN={1550-6002},
  keywords = {automated test generation, interfaces, program verification, random testing, software testing},
 }
 
-@inproceedings{SYNERGY,
+@inproceedings{Gulavani/06,
  author = {Gulavani, Bhargav S. and Henzinger, Thomas A. and Kannan, Yamini and Nori, Aditya V. and Rajamani, Sriram K.},
- title = {SYNERGY: a new algorithm for property checking},
+ title = {{SYNERGY}: a new algorithm for property checking},
  booktitle = {Proceedings of the 14th ACM SIGSOFT international symposium on Foundations of software engineering},
  series = {SIGSOFT '06/FSE-14},
  year = {2006},
@@ -1003,7 +1270,7 @@ ISSN={1550-6002},
  keywords = {abstraction refinement, directed testing, software model checking, testing},
 }
 
-@inproceedings{fromTestsToProofs,
+@inproceedings{Gupta/TACAS09,
  author = {Gupta, Ashutosh and Majumdar, Rupak and Rybalchenko, Andrey},
  title = {From Tests to Proofs},
  booktitle = {Proceedings of the 15th International Conference on Tools and Algorithms for the Construction and Analysis of Systems: Held as Part of the Joint European Conferences on Theory and Practice of Software, ETAPS 2009,},
@@ -1020,7 +1287,7 @@ ISSN={1550-6002},
  address = {Berlin, Heidelberg},
 }
 
-@INPROCEEDINGS{search-based-testing-of-NPE,
+@INPROCEEDINGS{Romano/ICST11,
 author={Romano, D. and Di Penta, M. and Antoniol, G.},
 booktitle={Software Testing, Verification and Validation (ICST), 2011 IEEE Fourth International Conference on},
 title={An Approach for Search Based Testing of Null Pointer Exceptions},
@@ -1029,7 +1296,32 @@ pages={160-169},
 doi={10.1109/ICST.2011.49},
 }
 
-@inproceedings{DbZ-exception-raising-via-branch-coverage,
+@inproceedings{Ahn/TAP10,
+  author = {Ki Yung Ahn and Ewen Denney},
+  title = {Testing First-Order Logic Axioms in Program Verification},
+  booktitle = {TAP},
+  year = {2010}
+}
+
+@techreport{Petiot/HAL14,
+    hal_id = {hal-00992159},
+    year=2014,
+    url = {http://hal.archives-ouvertes.fr/hal-00992159},
+    title = {{StaDy: Deep Integration of Static and Dynamic Analysis in Frama-C}},
+    author = {Petiot, Guillaume and Kosmatov, Nikolai and Giorgetti, Alain and Julliand, Jacques},
+    language = {Anglais},
+    pdf = {http://hal.archives-ouvertes.fr/hal-00992159/PDF/PKGJ14rr.pdf},
+}
+
+@inproceedings{Gotlieb/ICST09,
+  author = {Arnaud Gotlieb},
+  title = {{Euclide}: A Constraint-Based Testing framework for critical {C}
+    programs},
+  booktitle = {ICST},
+  year = {2009}
+}
+
+@inproceedings{Bhattacharya/SSBSE11,
  author = {Bhattacharya, Neelesh and Sakti, Abdelilah and Antoniol, Giuliano and Gu{\'e}h{\'e}neuc, Yann-Ga\"{e}l and Pesant, Gilles},
  title = {Divide-by-zero exception raising via branch coverage},
  booktitle = {Proceedings of the Third international conference on Search based software engineering},
@@ -1046,7 +1338,7 @@ doi={10.1109/ICST.2011.49},
  keywords = {evolutionary testing, exception raising, test input data generation}
 }
 
-@INPROCEEDINGS{generating-unit-tests-from-formal-proofs,
+@INPROCEEDINGS{Engel/TAP07,
     author = {Christian Engel and Reiner Hähnle},
     title = {Generating unit tests from formal proofs},
     booktitle = {Proceedings, Testing and Proofs},
@@ -1054,7 +1346,7 @@ doi={10.1109/ICST.2011.49},
     publisher = {Springer}
 }
 
-@article{RAC,
+@article{Clarke/06,
  author = {Clarke, Lori A. and Rosenblum, David S.},
  title = {A historical perspective on runtime assertion checking in software development},
  journal = {SIGSOFT Softw. Eng. Notes},
@@ -1073,7 +1365,14 @@ doi={10.1109/ICST.2011.49},
  address = {New York, NY, USA},
 }
 
-@inproceedings{Valgrind,
+@inproceedings{Muller/FM11,
+  year={2011},
+  booktitle={FM},
+  title={Using Debuggers to Understand Failed Verification Attempts},
+  author={M\"{u}ller, Peter and Ruskiewicz, Joseph N.}
+}
+
+@inproceedings{Nethercote/PLDI07,
  author = {Nethercote, Nicholas and Seward, Julian},
  title = {Valgrind: a framework for heavyweight dynamic binary instrumentation},
  booktitle = {Proceedings of the 2007 ACM SIGPLAN conference on Programming language design and implementation},

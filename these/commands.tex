@@ -30,28 +30,6 @@
 \psellipse*(1.5,1.33)(0.14,0.75)\pscircle*(1.5,0.3){0.15}\end{pspicture}
 \endgroup}
 
-\newcommand{\tool}[1]{\textsc{\small #1}\xspace}
-
-\newcommand{\stady}{\tool{StaDy}}
-\newcommand{\framac}{\tool{Frama-C}}
-\newcommand{\pathcrawler}{\tool{PathCrawler}}
-\newcommand{\acsl}{\tool{acsl}}
-\newcommand{\eacsl}{\tool{e-acsl}}
-\newcommand{\Wp}{\tool{Wp}}
-\newcommand{\Value}{\tool{Value}}
-\newcommand{\sante}{\tool{sante}}
-\newcommand{\eacsltoc}{\tool{e-acsl2c}}
-\newcommand{\cil}{\tool{CIL}}
-\newcommand{\jml}{\tool{JML}}
-\newcommand{\colibri}{\tool{Colibri}}
-
-\newcommand{\citeframac}{\cite{Frama-C}\xspace}
-\newcommand{\citepathcrawler}{\cite{PathCrawler}\xspace}
-\newcommand{\citevalue}{\cite{DBLP:conf/scam/CanetCM09}\xspace}
-\newcommand{\citeeacsl}{\cite{DBLP:conf/sac/DelahayeKS13}\xspace}
-\newcommand{\citesante}{\cite{DBLP:conf/sac/ChebaroKGJ12}\xspace}
-\newcommand{\citeeacsltoc}{\cite{DBLP:conf/rv/KosmatovPS13}\xspace}
-
 \newcommand{\SliceTest}{\ensuremath{\mbox{Slice\,\&\,Test}}}
 \newcommand{\dep}{\leadsto}
 \newcommand{\alarms}{\mathop{\textit{alarms}}\nolimits}
@@ -72,3 +50,81 @@
 %\newcommand{\commentNK}[1]{\colorbox{blue}{{\color{white}((NK: {#1}))}}}
 \newcommand{\commentNK}[1]{{{\color{blue}((NK: {#1}))\color{black}}}}
 \newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\tool}[1]{\textsc{\small #1}\xspace}
+
+\newcommand{\stady}{\tool{StaDy}}
+  \newcommand{\citestadytap}{Petiot/TAP14}
+  \newcommand{\citestadyscam}{Petiot/SCAM14}
+  %\newcommand{\citestadysefl}{Petiot/SEFM15}
+\newcommand{\framac}{\tool{Frama-C}} \newcommand{\citeframac}{Cuoq/SEFM12}
+\newcommand{\pathcrawler}{\tool{PathCrawler}}
+  \newcommand{\citepathcrawler}{Botella/AST09}
+  \newcommand{\citepconline}{PathCrawlerOnline}
+\newcommand{\acsl}{\tool{acsl}} \newcommand{\citeacsl}{ACSL}
+\newcommand{\eacsl}{\tool{E-acsl}} \newcommand{\citeeacsl}{E-ACSL}
+\newcommand{\Wp}{\tool{Wp}} \newcommand{\citewp}{Correnson/NFM14}
+\newcommand{\Value}{\tool{Value}} \newcommand{\citevalue}{Canet/SCAM09}
+\newcommand{\sante}{\tool{Sante}} \newcommand{\citesante}{Chebaro/SAC12}
+\newcommand{\eacsltoc}{\tool{e-acsl2c}}\newcommand{\citeeacsltoc}{Kosmatov/RV13}
+\newcommand{\cil}{\tool{Cil}} \newcommand{\citecil}{Necula/CC02}
+\newcommand{\jml}{\tool{Jml}} \newcommand{\citejml}{Leavens/99}
+\newcommand{\colibri}{\tool{Colibri}}
+\newcommand{\gatel}{\tool{GATeL}} \newcommand{\citegatel}{Marre/ASE00}
+\newcommand{\eclipse}{\tool{ECLiPSe}} \newcommand{\citeeclipse}{Schimpf/10}
+\newcommand{\korat}{\tool{Korat}} \newcommand{\citekorat}{Boyapati/ISSTA02}
+\newcommand{\spin}{\tool{Spin}} \newcommand{\citespin}{Holzmann/97}
+\newcommand{\polyspace}{\tool{Polyspace}} \newcommand{\citepolispace}{Zitser/04}
+\newcommand{\astree}{\tool{Astree}} \newcommand{\citeastree}{Cousot/ASIAN06}
+\newcommand{\fluctuat}{\tool{Fluctuat}}
+  \newcommand{\citefluctuat}{Goubault/VMCAI11}
+\newcommand{\simplify}{\tool{Simplify}} \newcommand{\citesimplify}{Detlefs/05}
+\newcommand{\ergo}{\tool{Ergo}} \newcommand{\citeergo}{Conchon/AFM07}
+\newcommand{\zthree}{\tool{z3}} \newcommand{\citezthree}{DeMoura/TACAS08}
+\newcommand{\coq}{\tool{Coq}} \newcommand{\citecoq}{Casteran/04}
+\newcommand{\isabelle}{\tool{Isabelle}}
+  \newcommand{\citeisabelle}{Wenzel/TPHOL08}
+\newcommand{\hol}{\tool{Hol}} \newcommand{\citehol}{Gordon/93}
+\newcommand{\bvd}{\tool{Bvd}} \newcommand{\citebvd}{LeGoues/SEFM11}
+\newcommand{\boogie}{\tool{Boogie}} \newcommand{\citeboogie}{Barnett/FMCO05}
+\newcommand{\boogaloo}{\tool{Boogaloo}}
+  \newcommand{\citeboogaloo}{Polikarpova/RV13}
+\newcommand{\escjava}{\tool{Esc-Java}}
+  \newcommand{\citeescjava}{Flanagan/PLDI2002}
+\newcommand{\escjavatwo}{\tool{Esc-Java2}}
+  \newcommand{\citeescjavatwo}{Cok/CASSIS04}
+\newcommand{\cute}{\tool{Cute}} \newcommand{\citecute}{Sen/CAV06}
+\newcommand{\pex}{\tool{Pex}} \newcommand{\citepex}{Tillmann/TAP08}
+\newcommand{\exe}{\tool{Exe}} \newcommand{\citeexe}{Cadar/08}
+\newcommand{\klee}{\tool{Klee}} \newcommand{\citeklee}{Cadat/OSDI08}
+\newcommand{\socos}{\tool{Socos}} \newcommand{\citesocos}{Back/TAP07}
+\newcommand{\sage}{\tool{Sage}} \newcommand{\citesage}{Godefroid/NDSS08}
+\newcommand{\slam}{\tool{Slam}} \newcommand{\citeslam}{Ball/11}
+\newcommand{\cegar}{\tool{Cegar}} \newcommand{\citecegar}{Clarke/03}
+\newcommand{\cegaar}{\tool{Cegaar}} \newcommand{\citecegaar}{Hojjat/ATVA12}
+\newcommand{\blast}{\tool{Blast}} \newcommand{\citeblast}{Beyer/07}
+\newcommand{\yogi}{\tool{Yogi}} \newcommand{\citeyogi}{Nori/TACAS09}
+\newcommand{\checkncrash}{\tool{Check 'n' Crash}}
+  \newcommand{\citecheckncrash}{Csallner/ICSE05}
+\newcommand{\jcrasher}{\tool{Jcrasher}} \newcommand{\citejcrasher}{Csallner/04}
+\newcommand{\dsdcrasher}{\tool{DSD Crasher}}
+  \newcommand{\citedsdcrasher}{Csallner/08}
+\newcommand{\symbiotic}{\tool{Symbiotic}}
+  \newcommand{\citesymbiotic}{Slaby/TACAS2013}
+\newcommand{\dafny}{\tool{Dafny}} \newcommand{\citedafny}{Leino/FIDE14}
+\newcommand{\dyta}{\tool{dyTa}} \newcommand{\citedyta}{Ge/ICSE11}
+\newcommand{\codecontracts}{\tool{CodeContracts}}
+  \newcommand{\citecodecontract}{Logozzo/VMCAI11}
+\newcommand{\stanse}{\tool{Stanse}} \newcommand{\citestanse}{Obdrzalek/12}
+\newcommand{\Smash}{\tool{Smash}} \newcommand{\citesmash}{Godefroid/POPL10}
+\newcommand{\dash}{\tool{Dash}} \newcommand{\citedash}{Beckman/ISSTA09}
+\newcommand{\dart}{\tool{Dash}} \newcommand{\citedart}{Godefroid/PLDI05}
+\newcommand{\synergy}{\tool{Synergy}} \newcommand{\citesynergy}{Gulavani/06}
+\newcommand{\euclide}{\tool{Euclide}} \newcommand{\citeeuclide}{Gotlieb/ICST09}
+\newcommand{\valgrind}{\tool{Valgrind}}
+  \newcommand{\citevalgrind}{Nethercote/PLDI07}
+\newcommand{\specsharp}{\tool{Spec\#}}
+  \newcommand{\citespecsharp}{Barnett/CASSIS04}
