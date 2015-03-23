@@ -1,0 +1,74 @@
+
+\newcommand\ppnode[1]{\tikz{\node[pnode,ppcommon]{#1};}}
+\newcommand\ppleaf[1]{\tikz{\node[pleaf,ppcommon]{#1};}}
+
+\tikzstyle{memcell}=[minimum width=1cm,minimum height=1.5em,outer sep=0pt,
+  draw=black,semithick]
+\tikzstyle{empty}=[]
+\tikzstyle{full}=[fill=blue!20]
+\tikzstyle{init}=[fill=green!20]
+\tikzstyle{uninit}=[fill=white]
+
+\newcommand{\tikzinsert}[3]{%
+  \tikz[remember picture,overlay]\node[#3] (#1) {#2};}
+\tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
+\newcommand{\insertball}[1]{
+  \tikzinsert{}{#1}{ball,node distance=.5cm,xshift=.15cm,yshift=.1cm}~~~~}
+
+\newcommand{\ce}[1]{{\scriptsize{$\langle$}}#1{\scriptsize{$\rangle$}}}
+\newcommand{\fassert}{\lstinline'fassert'\xspace}
+\newcommand{\fassume}{\lstinline'fassume'\xspace}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\ok}{\cmark\xspace}
+\newcommand{\ko}{\xmark\xspace}
+
+\def\danger{\begingroup
+\psset{unit=1ex}%
+\begin{pspicture}(0,0)(3,3)
+\pspolygon[linearc=0.2,linewidth=0.12,linecolor=red](0,0)(1.5,2.6)(3,0)
+\psellipse*(1.5,1.33)(0.14,0.75)\pscircle*(1.5,0.3){0.15}\end{pspicture}
+\endgroup}
+
+\newcommand{\tool}[1]{\textsc{\small #1}\xspace}
+
+\newcommand{\stady}{\tool{StaDy}}
+\newcommand{\framac}{\tool{Frama-C}}
+\newcommand{\pathcrawler}{\tool{PathCrawler}}
+\newcommand{\acsl}{\tool{acsl}}
+\newcommand{\eacsl}{\tool{e-acsl}}
+\newcommand{\Wp}{\tool{Wp}}
+\newcommand{\Value}{\tool{Value}}
+\newcommand{\sante}{\tool{sante}}
+\newcommand{\eacsltoc}{\tool{e-acsl2c}}
+\newcommand{\cil}{\tool{CIL}}
+\newcommand{\jml}{\tool{JML}}
+\newcommand{\colibri}{\tool{Colibri}}
+
+\newcommand{\citeframac}{\cite{Frama-C}\xspace}
+\newcommand{\citepathcrawler}{\cite{PathCrawler}\xspace}
+\newcommand{\citevalue}{\cite{DBLP:conf/scam/CanetCM09}\xspace}
+\newcommand{\citeeacsl}{\cite{DBLP:conf/sac/DelahayeKS13}\xspace}
+\newcommand{\citesante}{\cite{DBLP:conf/sac/ChebaroKGJ12}\xspace}
+\newcommand{\citeeacsltoc}{\cite{DBLP:conf/rv/KosmatovPS13}\xspace}
+
+\newcommand{\SliceTest}{\ensuremath{\mbox{Slice\,\&\,Test}}}
+\newcommand{\dep}{\leadsto}
+\newcommand{\alarms}{\mathop{\textit{alarms}}\nolimits}
+
+\newcommand{\NC}{\mathrm{NC}\xspace}
+\newcommand{\CW}{\mathrm{CW}\xspace}
+\newcommand{\NCCE}{\mathrm{NCCE}\xspace}
+\newcommand{\CWCE}{\mathrm{CWCE}\xspace}
+\newcommand{\all}{\mathrm{all}\xspace}
+\newcommand{\each}{\mathrm{each}\xspace}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+\newcommand{\commentAG}[1]{{\color{red}((AG: {#1}))}}
+\newcommand{\commentGP}[1]{\colorbox{violet}{{\color{white}((GP: {#1}))}}}
+%\newcommand{\commentNK}[1]{\colorbox{blue}{{\color{white}((NK: {#1}))}}}
+\newcommand{\commentNK}[1]{{{\color{blue}((NK: {#1}))\color{black}}}}
+\newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
