@@ -1,0 +1,113 @@
+
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
+      \path (C.south)+(-2,-1) node (basep) {\lstinline{\base_addr(p)}};
+      
+      \draw [->,line width=1.2pt] (basep) -- (C.south west);
+      \draw [->,line width=1.2pt] (p) -- (C);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Adresse de base d'un bloc}
+  \label{fig:base-addr}
+\end{figure}
+
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm]at(B.east)(C){$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south west)+(0,-1) node (p) {\lstinline{p}};
+      \draw [->,line width=1.2pt] (p) -- (C.south west);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south east)
+      node [midway,below] {\lstinline{\block_length(p)}};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Longueur d'un bloc}
+  \label{fig:block-length}
+\end{figure}
+
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
+            {$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
+      
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [|<->|,line width=1.2pt]
+      (C.south west) -- (C.south)
+      node [midway,below] {\lstinline{\offset(p)}};
+    \end{tikzpicture}
+  \end{center}
+  \caption{Offset d'un pointeur dans un bloc}
+  \label{fig:offset}
+\end{figure}
+
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node[anchor=west,memcell,full,minimum width=4cm] at(B.east)(C){$bloc_2$};
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
+      \path (C.south)+(0,-1.5) node {\lstinline{\valid(p)}};
+      \path (D.south)+(0,-1) node (q) {\lstinline{q}};
+      \path (D.south)+(0,-1.5) node {\lstinline{!\valid(q)}};
+      \draw [->,line width=1.2pt] (p) -- (C);
+      \draw [->,line width=1.2pt] (q) -- (D);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Validité d'un bloc}
+  \label{fig:valid}
+\end{figure}
+
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\sffamily]
+      \node [memcell] at (0,0) (A) {};
+      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
+        \begin{tikzpicture}
+          \node[memcell,init] (c1) {c1};
+          \node[memcell,init,anchor=west] at (c1.east) (c2) {c2};
+          \node[memcell,uninit,anchor=west] at (c2.east) (c3) {c3};
+        \end{tikzpicture}
+      };
+      \node [anchor=west,memcell] at (C.east) (D) {};
+      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+      \node [anchor=west,memcell] at (E.east) (F) {};
+      \node[below left=-3mm and -12mm of C,node distance=0mm] (c1) {};
+      \node[below right=-3mm and -12mm of C,node distance=0mm] (c3) {};
+      \node[below of=c1] (p) {\lstinline{p}};
+      \node[below of=p,node distance=0.4cm] {\lstinline{\initialized(p)}};
+      \node[below of=c3] (q) {\lstinline{q}};
+      \node[below of=q,node distance=0.9cm] {\lstinline{!\initialized(q)}};
+      \draw [->,line width=1.2pt] (p) -- (c1);
+      \draw [->,line width=1.2pt] (q) -- (c3);
+    \end{tikzpicture}
+  \end{center}
+  \caption{Initialisation des octets d'un bloc}
+  \label{fig:initialized}
+\end{figure}

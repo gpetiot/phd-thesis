@@ -2,7 +2,7 @@ MLPOST_EXEC :=$(shell which mlpost)
 MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
-FIG=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps)
+FIG=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) tikz_mem_annots.tex
 
 all: main.pdf
 

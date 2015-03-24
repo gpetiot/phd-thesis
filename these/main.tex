@@ -7,7 +7,7 @@
 \usepackage[nounderscore]{syntax}
 \usepackage{listings,courier,multirow,colortbl,hyperref,url,etex,pstricks-add,
   lscape,tikz,pgfplots,amssymb,pifont}
-\usetikzlibrary{matrix,shapes,backgrounds,fit}
+\usetikzlibrary{matrix,shapes,backgrounds,fit,chains}
 
 \tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
 \tikzstyle{pleaf}=[pnode,fill=gray!30]
@@ -1022,33 +1022,17 @@ Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block\_length},
 \lstinline{\offset}, \lstinline{\valid}, \lstinline{\valid_read} et
 \lstinline{\initialized}.
 
-\subsection{Adresse de base d'un bloc}
+\input{tikz_mem_annots}
+
+
 
 \lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
 qui contient, au label \lstinline{L}, le pointeur \lstinline{p}.
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
-            {$bloc_2$};
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
-      \path (C.south)+(-2,-1) node (basep) {\lstinline{\base_addr(p)}};
-      
-      \draw [->,line width=1.2pt] (basep) -- (C.south west);
-      \draw [->,line width=1.2pt] (p) -- (C);
-    \end{tikzpicture}
-  \end{center}
-  \caption{Adresse de base d'un bloc}
-  \label{fig:base-addr}
-\end{figure}
-
 La Fig.~\ref{fig:base-addr} illustre \lstinline{\base_addr(p)}.
+La Fig.~\ref{fig:base-addr-example}
+illustre l'utilisation de \lstinline{\base_addr}, l'annotation de ce
+programme est vraie.
+
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1063,38 +1047,14 @@ int main() {
 \label{fig:base-addr-example}
 \end{figure}
 
-La Fig.~\ref{fig:base-addr-example}
-illustre l'utilisation de \lstinline{\base_addr}, l'annotation de ce
-programme est vraie.
 
 
-\subsection{Longueur d'un bloc}
 
 \lstinline'\block_length{L}(p)' retourne la longueur (en octets) du
-bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}. 
-
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm]at(B.east)(C){$bloc_2$};
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south west)+(0,-1) node (p) {\lstinline{p}};
-      \draw [->,line width=1.2pt] (p) -- (C.south west);
-      \draw [|<->|,line width=1.2pt]
-      (C.south west) -- (C.south east)
-      node [midway,below] {\lstinline{\block_length(p)}};
-    \end{tikzpicture}
-  \end{center}
-  \caption{Longueur d'un bloc}
-  \label{fig:block-length}
-\end{figure}
-
+bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}.
 La Fig.~\ref{fig:block-length} illustre \lstinline{\block_length(p)}.
+La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
+\lstinline{\block_length}, l'annotation de ce programme est vraie.
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1109,39 +1069,13 @@ int main() {
 \label{fig:block-length-example}
 \end{figure}
 
-La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
-\lstinline{\block_length}, l'annotation de ce programme est vraie.
 
-
-\subsection{Offset d'un pointeur dans un bloc}
 
 \lstinline'\offset{L}(p)' retourne le décalage (en octets), au label
 \lstinline{L}, entre \lstinline{p} et son adresse de base.
-
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C)
-            {$bloc_2$};
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
-      
-      \draw [->,line width=1.2pt] (p) -- (C);
-      \draw [|<->|,line width=1.2pt]
-      (C.south west) -- (C.south)
-      node [midway,below] {\lstinline{\offset(p)}};
-    \end{tikzpicture}
-  \end{center}
-  \caption{Offset d'un pointeur dans un bloc}
-  \label{fig:offset}
-\end{figure}
-
 La Fig.~\ref{fig:offset} illustre \lstinline{\offset(p)}.
+La Fig.~\ref{fig:offset-example} illustre l'utilisation de
+\lstinline{\offset}, l'annotation de ce programme est vraie.
 
 
 \begin{figure}[h]
@@ -1157,45 +1091,18 @@ int main() {
 \label{fig:offset-example}
 \end{figure}
 
- La
-Fig.~\ref{fig:offset-example} illustre l'utilisation de
-\lstinline{\offset}, l'annotation de ce programme est vraie.
 
-
-\subsection{Validité d'un bloc}
 
 \lstinline'\valid{L}(p)' (respectivement \lstinline'\valid_read{L}(p)') est vrai
 si le déréférencement de \lstinline{p} au label \lstinline{L} est autorisé en
 lecture et en écriture (resp. au moins en lecture).
-
 \lstinline'\valid{L}(p)' implique \lstinline'\valid_read{L}(p)'
 mais l'inverse n'est pas vrai.
-
-
-
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node[anchor=west,memcell,full,minimum width=4cm] at(B.east)(C){$bloc_2$};
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(0,-1) node (p) {\lstinline{p}};
-      \path (C.south)+(0,-1.5) node {\lstinline{\valid(p)}};
-      \path (D.south)+(0,-1) node (q) {\lstinline{q}};
-      \path (D.south)+(0,-1.5) node {\lstinline{!\valid(q)}};
-      \draw [->,line width=1.2pt] (p) -- (C);
-      \draw [->,line width=1.2pt] (q) -- (D);
-    \end{tikzpicture}
-  \end{center}
-  \caption{Validité d'un bloc}
-  \label{fig:valid}
-\end{figure}
-
 La Fig.~\ref{fig:valid} illustre le prédicat \lstinline{\valid}.
+La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
+\lstinline{\valid}. Dans ce programme toutes les assertions de validité
+sont vraies.
+
 
 \begin{figure}[h]
 \begin{lstlisting}
@@ -1217,47 +1124,14 @@ int main(void) {
 \label{fig:valid-example}
 \end{figure}
 
-La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
-\lstinline{\valid}. Dans ce programme toutes les assertions de validité
-sont vraies.
-
-
-\subsection{Initialisation des octets d'un bloc}
 
 \lstinline'\initialized{L}(p)' est un prédicat prenant un pointeur \lstinline{p}
 sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
 initialisée au label \lstinline{L}.
-
-
-
-\begin{figure}[h]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
-        \begin{tikzpicture}[>=latex,font=\sffamily]
-          \node [memcell,init] at (0,0) (c1) {c1};
-          \node [anchor=west,memcell,init] at (c1.east) (c2) {c2};
-          \node [anchor=west,memcell,uninit] at (c2.east) (c3) {c3};
-        \end{tikzpicture}
-      };
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \path (C.south)+(-1,-1) node (p) {\lstinline{p}};
-      \path (C.south)+(-2,-1.5) node {\lstinline{\initialized(p)}};
-      \path (C.south)+(1,-1) node (q) {\lstinline{q}};
-      \path (C.south)+(2,-1.5) node {\lstinline{!\initialized(q)}};
-      \draw [->,line width=1.2pt] (p) -- (p)+(0,.5);
-      \draw [->,line width=1.2pt] (q) -- (q)+(0,.5);
-    \end{tikzpicture}
-  \end{center}
-  \caption{Initialisation des octets d'un bloc}
-  \label{fig:initialized}
-\end{figure}
-
 La Fig.~\ref{fig:initialized} illustre le prédicat \lstinline{\initialized}.
+La Fig.~\ref{fig:initialized-example} illustre
+l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
+toutes les assertions sont vraies.
 
 
 \begin{figure}[h]
@@ -1275,9 +1149,6 @@ int main(void) {
 \label{fig:initialized-example}
 \end{figure}
 
-La Fig.~\ref{fig:initialized-example} illustre
-l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
-toutes les assertions sont vraies.
 
 
 Pour pouvoir traiter ces annotations \acsl, nous devons donc conserver
