@@ -11,11 +11,10 @@ let big_delta = Num.bp 10.
 let big_title s = tex ("\\textbf{\\Large{" ^ s ^ "}}")
 let small_title s = tex ("\\textbf{\\emph{\\large{" ^ s ^ "}}}")
 
-let external_color = Color.rgb8 255 165 0
-let framac_color = Color.rgb8 50 205 50
+let framac_color = Color.lightgreen
 let cil_color = Color.lightcyan
-let plugin_color = Color.rgb8 250 128 114
-let libraries_color = Color.orange
+let plugin_color = Color.rgb8 255 200 200
+let libraries_color = Color.lightblue
 
 let std_box ?stroke ?color s = rect ~name:s ?stroke ?fill:color (tex s)
 let mk_services ?(big=false) ?color title b = 
