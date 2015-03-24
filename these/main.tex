@@ -55,8 +55,8 @@ TODO
 Le domaine de la vérification et de la validation regroupe un ensemble de
 techniques du cycle de développement des logiciels qui ont pour objectif de
 s'assurer de leur correction et de leur sûreté. Ces deux notions sont apparues
-dans les années soixante-dix avec les travaux de \bsc{Dijkstra} \cite{Dijkstra},
-\bsc{Floyd} \cite{Floyd} et \bsc{Hoare} \cite{Hoare}.
+dans les années soixante-dix avec les travaux de \bsc{Dijkstra}
+\cite{Dijkstra/75}, \bsc{Floyd} \cite{Floyd/63} et \bsc{Hoare} \cite{Hoare/69}.
 
 La correction d'un logiciel représente le respect de l'implémentation par
 rapport aux spécifications. La sûreté d'un logiciel est liée à son absence
@@ -66,10 +66,10 @@ d'erreurs à l'exécution.
 \section{Model-checking}
 \label{sec:model-checking}
 
-Le model-checking \cite{model-checking} permet de vérifier algorithmiquement si
+Le model-checking \cite{Clarke/86} permet de vérifier algorithmiquement si
 un modèle donné (le système ou une abstraction de ce système) satisfait une
-spécification, formulée en termes de logique temporelle \cite{LTL}. Un modèle
-est un ensemble d'états, de propriétés que vérifie chaque état, et de
+spécification, formulée en termes de logique temporelle \cite{Clarke/82}.
+Un modèle est un ensemble d'états, de propriétés que vérifie chaque état, et de
 transitions entre ces états qui décrivent l'évolution du système.
 
 Le model-checking couvre l'ensemble des états du système et des transitions afin
@@ -77,9 +77,9 @@ d'analyser toutes les exécutions possibles du système. Sur de grands systèmes
 cette méthode est pénalisée par l'explosion combinatoire du nombre des états (et
 la complexité en temps ou en espace qui en résulte). Il est néanmoins possible
 de modéliser des algorithmes asynchrones répartis et des automates non
-déterministes, comme le fait notamment l'outil \textsc{Spin} \cite{SPIN}.
+déterministes, comme le fait notamment l'outil \spin \cite{\citespin}.
 
-La plateforme \textsc{Frama-C} du LSL intègre \textsc{Aoraï}, un greffon
+La plateforme \framac intègre \textsc{Aoraï}, un greffon
 permettant d'annoter automatiquement le code source d'un programme C d'après
 une formule de logique temporelle linéaire, de sorte que les annotations sont
 vérifiées si le programme repecte la formule.
@@ -89,14 +89,14 @@ vérifiées si le programme repecte la formule.
 \label{sec:AS}
 
 
-L'analyse statique \cite{static-analysis} examine le code source du programme
+L'analyse statique \cite{Nielson/99} examine le code source du programme
 sans l'exécuter. Elle raisonne sur tous les comportements qui pourraient
 survenir lors de l'exécution et permet donc de déduire des propriétés devant
 être vérifiées pour toutes ces exécutions, dans le but de prouver la correction
 du programme.
 
 En revanche, la vérification de programme étant en général indécidable
-\cite{undecidability}, il est souvent nécessaire d'utiliser des
+\cite{Landi/92}, il est souvent nécessaire d'utiliser des
 sur-approximations, ce qui implique que les résultats peuvent être moins précis
 que ce que l'on souhaite mais ils sont garantis pour toutes les exécutions.
 Ainsi, on peut établir des propriétés de sûreté ({\em safety}), où l’on cherche
@@ -112,7 +112,7 @@ prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de théorèmes
 \subsection{Interprétation abstraite}
 \label{sec:interpretation-abstraite}
 
-L'interprétation abstraite \cite{abstract-interpretation} s'appuie sur les
+L'interprétation abstraite \cite{Cousot/92} s'appuie sur les
 théories du point-fixe et des domaines pour introduire des sur-approximations
 des comportements d'un programme. Elle consiste à abstraire les domaines des
 variables par des domaines finis et beaucoup plus petits. Par exemple, le
@@ -136,21 +136,21 @@ suivante : ``la propriété abstraite calculée ne doit oublier aucune exécutio
 concrète''. L'abstraction est effectuée à partir de prédicats atomiques
 définissant des abstractions des domaines des variables.
 
-\textsc{PolySpace C Verifier} \cite{PolySpace} a été le premier outil commercial
+\polyspace \cite{\citepolyspace} a été le premier outil commercial
 utilisant l'interprétation abstraite pour détecter les erreurs à l'exécution
 dans les programmes en C, C++ et Ada mais signale beaucoup de fausses alarmes.
-L'ENS a développé \textsc{Astrée} \cite{ASTREE}, spécifique au langage C et aux
-logiciels critiques. Le CEA LIST a développé \textsc{Fluctuat} \cite{Fluctuat},
+L'ENS a développé \astree \cite{\citeastree}, spécifique au langage C et aux
+logiciels critiques. \fluctuat \cite{\citefluctuat},
 qui mesure précisément les approximations faites à l'exécution d'un programme C.
-\textsc{Frama-C} intègre un greffon d'interprétation abstraite : \textsc{Value}
-\cite{Value}.
+\framac intègre un greffon d'interprétation abstraite : \Value
+\cite{\citevalue}.
 
 
 
 \subsection{Abstraction à partir de prédicats}
 \label{sec:abstraction-predicats}
 
-L'abstraction à partir de prédicats \cite{predicate-abstraction} est une
+L'abstraction à partir de prédicats \cite{Schiller/OOPSLA12} est une
 technique permettant de générer automatiquement des abstractions de systèmes au
 nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
 ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
@@ -172,17 +172,17 @@ a qu'un nombre fini de prédicats, le model-checking peut donc être appliqué �
 cette abstraction. Si une propriété de sûreté est vérifiée dans l'abstraction,
 elle l'est également dans le système concret.
 
-Cette technique est notamment utilisée par l'outil \textsc{Slam} \cite{SLAM} de
-Microsoft.
+Cette technique est notamment utilisée par \slam \cite{\citeslam}.
 
 
 \subsection{Preuve de théorèmes}
 \label{sec:preuve}
 
 La preuve de théorèmes utilise des fondements mathématiques et logiques
-\cite{Hoare} pour prouver des propriétés de programmes. Tout d'abord, le système
+\cite{Hoare/69} pour prouver des propriétés de programmes. Tout d'abord, le
+système
 est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
-de la plus faible précondition \cite{Dijkstra} est utilisé pour générer des
+de la plus faible précondition \cite{Dijkstra/75} est utilisé pour générer des
 formules appelées obligations de preuve, qui sont finalement soumises à un
 prouveur de théorèmes, qui applique différentes techniques de résolution.
 
@@ -192,15 +192,14 @@ des systèmes de grande taille. En contre-partie, cette technique requiert une
 expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
 par exemple) et guider le prouveur si nécessaire.
 
-Il existe des prouveurs automatiques tels que \textsc{Simplify}
-\cite{Simplify}, \textsc{Ergo} \cite{Ergo} et \textsc{Z3} \cite{Z3}; et des
+Il existe des prouveurs automatiques tels que \simplify \cite{\citesimplify},
+\ergo \cite{\citeergo} et \zthree \cite{\citezthree}; et des
 prouveurs interactifs, où la preuve est guidée par l'utilisateur, tels que
-\textsc{Coq} \cite{Coq}, \textsc{Isabelle} \cite{Isabelle}, et \textsc{Hol}
-\cite{HOL}. Certains de ces prouveurs ou assistants de preuve sont intégrés à
-d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
-\textsc{Frama-C} intègre deux greffons de preuve, \textsc{Jessie} et
-\textsc{Wp}, qui traitent des programmes dont le code contient des annotations
-\textsc{Acsl} \cite{ACSL}.
+\coq \cite{\citecoq}, \isabelle \cite{\citeisabelle}, et \hol \cite{\citehol}.
+Certains de ces prouveurs ou assistants de preuve sont intégrés à
+d'autres outils tels \boogie \cite{\citeboogie} ou \escjava \cite{\citeescjava}.
+\framac intègre le greffon de preuve, \Wp \cite{\citewp} qui traite des
+programmes dont le code contient des annotations \acsl \cite{\citeacsl}.
 
 
 \section{Analyse dynamique}
@@ -208,8 +207,8 @@ d'autres outils tels Boogie \cite{Boogie} ou ESC/Java \cite{ESC/Java}.
 
 
 L’analyse dynamique est basée sur des techniques d’exécution du programme, de
-simulation \cite{simulation} d’un modèle ou d'exécution symbolique
-\cite{symbolic-execution}, regroupées sous le terme générique ``test''.
+simulation \cite{Whitner/WSC89} d’un modèle ou d'exécution symbolique
+\cite{Clarke/76}, regroupées sous le terme générique ``test''.
 
 Les tests peuvent s’appliquer tout au long du cycle de développement d’un
 logiciel. Les tests unitaires vérifient le bon fonctionnement des différentes
@@ -272,10 +271,9 @@ chemins du programme. L’exécution concrète sert à confirmer que le chemin
 parcouru est bien celui pour lequel le cas de test exécuté a été généré.
 
 Plusieurs outils se basent sur l'exécution concolique pour explorer un programme
-sous test, dont \textsc{Smart} \cite{SMART}, \textsc{Pex} \cite{PEX} et
-\textsc{Sage} \cite{SAGE} développés par Microsoft, \textsc{Cute} \cite{CUTE},
-\textsc{Klee} \cite{KLEE}, \textsc{Exe} \cite{EXE} et enfin
-\textsc{PathCrawler}, \cite{PathCrawler} développé au CEA LIST. Ces outils
+sous test, dont \smart \cite{\citesmart}, \pex \cite{\citepex},
+\sage \cite{\citesage}, \cute \cite{\citecute}, \klee \cite{\citeklee},
+\exe \cite{\citeexe}, \pathcrawler \cite{\citepathcrawler}. Ces outils
 utilisent des solveurs de contraintes pour générer des cas de test permettant
 d'aboutir à une couverture souhaitée des exécutions du programme par les tests.
 
@@ -300,10 +298,10 @@ les données de test sont choisies aux bornes des domaines de définition des
 variables.
 \end{description}
 
-Le CEA LIST développe \textsc{GATeL} \cite{GATEL}, un outil de génération de
+\gatel \cite{\citegatel} est un générateur de
 tests fonctionnels qui se base sur une représentation symbolique des états du
 système : le programme, les invariants et les contraintes décrivant l'objectif
-de test sont exprimés dans le langage \textsc{Lustre} \cite{Lustre}. Cet outil
+de test sont exprimés dans le langage \lustre \cite{\citelustre}. Cet outil
 offre la possibilité de réaliser des partitions de domaines.
 
 
@@ -322,15 +320,15 @@ Les méthodes statiques et les méthodes dynamiques ont des avantages et des
 inconvénients complémentaires : l'analyse statique étant complète mais
 imprécise, l'analyse dynamique étant précise mais incomplète. L’idée de les
 combiner pour associer leurs avantages et combattre leurs inconvénients
-\cite{duality} est une voie de recherche active et fructueuse dans le domaine de
-la vérification de programmes.
+\cite{Ernst/WODA03} est une voie de recherche active et fructueuse dans le
+domaine de la vérification de programmes.
 
 
 \subsection{\textsc{Static ANalysis and TEst}}
 
-La méthode \textsc{Sante} \cite{TheseOmar, SANTE}, mise en \oe{}uvre au sein de
-\textsc{Frama-C}, combine l'interprétation abstraite, le {\em slicing} et la
-génération de tests structurels avec \textsc{PathCrawler}. L’analyse statique
+La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
+\framac, combine l'interprétation abstraite, le {\em slicing} et la
+génération de tests structurels avec \pathcrawler. L’analyse statique
 signale les instructions risquant de provoquer des erreurs à l’exécution par des
 alarmes, dont certaines peuvent être de fausses alarmes, puis l’analyse
 dynamique génère des tests confirmant ou infirmant ces alarmes. Sur des
@@ -347,14 +345,14 @@ le risque d'une erreur à l'exécution n'est pas écarté (nous les appellerons
 invalide à la mémoire.
 
 Ces alarmes vont être validées par des tests. Nous utilisons
-\textsc{PathCrawler} \cite{PathCrawler}, un outil de génération de tests
+\pathcrawler \cite{\citepathcrawler}, un outil de génération de tests
 structurels, pour tenter de mettre en évidence un cas de test pour lequel le
 chemin d'exécution passe par cette alarme, et provoque une erreur.
 
 Pour diminuer le coût de la génération de tests, nous simplifions
 syntaxiquement les programmes qui lui seront soumis pour ne garder que les
 instructions dont dépend l'alarme considérée, on appelle cette opération
-{\em slicing} \cite{slicing}. Nous obtenons ainsi des programmes plus simples,
+{\em slicing} \cite{Korel/88}. Nous obtenons ainsi des programmes plus simples,
 tels que si une alarme est présente dans le programme d'origine, elle l'est
 également dans les programmes simplifiés si le {\em slicing} a été paramétré
 pour conserver les instructions dont dépend cette alarme. Et si elle provoque
@@ -369,26 +367,27 @@ effectivement une erreur à l'exécution. Et la mise en commun des résultats de
 deux phases permet de classifier davantage d'alarmes dans l'une ou l'autre de
 ces deux catégories que chacune des deux méthodes prise séparément. La preuve de
 la correction de cette méthode et le résultat des analyses comparées sont
-détaillés dans \cite{TheseOmar} et \cite{SANTE} et ne seront pas répétés ici.
+détaillés dans \cite{Chebaro/11} et \cite{\citesante} et ne seront pas répétés
+ici.
 
 \input{fig_SANTE_slicing.tex}
 
 L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
-simplifié et est soumis en l'état à \textsc{PathCrawler}.
+simplifié et est soumis en l'état à \pathcrawler.
 
 L'option {\em all} (Fig.~\ref{figSlicing} ~\textbf{b}) génère un seul programme
 simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
 option ne tire pas profit du fait que certaines alarmes peuvent être
 indépendantes (et peuvent donc être soumises séparément), la complexité du
-programme soumis à \textsc{PathCrawler} peut l'empêcher de générer des cas de
+programme soumis à \pathcrawler peut l'empêcher de générer des cas de
 test pour toutes les alarmes dans le temps qui lui est imparti.
 
 L'option {\em each} (Fig.~\ref{figSlicing} ~\textbf{c}) tente de corriger ce
 défaut, elle génère un programme simplifié par alarme et invoque
-\textsc{PathCrawler} autant de fois. Ainsi, les alarmes les plus simples ne sont
+\pathcrawler autant de fois. Ainsi, les alarmes les plus simples ne sont
 pas pénalisées par les plus complexes. Néanmoins, en cas de dépendances
 mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
-\textsc{PathCrawler}, ce qui est une perte de temps.
+\pathcrawler, ce qui est une perte de temps.
 
 \input{fig_SANTE_slicing_advanced.tex}
 
@@ -396,7 +395,7 @@ mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
 L'option {\em min} (Fig.~\ref{figSlicingAdvanced} ~\textbf{a}) tente de corriger
 les inconvénients de {\em all} et de {\em each} et propose de générer une
 couverture minimale des alarmes par {\em slicing}, de manière à regrouper dans
-un même ensemble les alarmes ayant une relation de dépendance \cite{SANTE}.
+un même ensemble les alarmes ayant une relation de dépendance \cite{\citesante}.
 Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
 dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
 $a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
@@ -425,7 +424,7 @@ couvrants $\{a_1; a_2\}$ et $\{a_1; a_3; a_4; a_5\}$.
 Chacun de ces ensembles sera utilisé pour générer un programme simplifié ne
 contenant que des alarmes ayant une relation de dépendance, évitant ainsi
 d'avoir plusieurs programmes identiques en cas de dépendances mutuelles (et
-réduisant le nombre d'appels à \textsc{PathCrawler}).
+réduisant le nombre d'appels à \pathcrawler).
 On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
 cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
 cas de {\em each}.
@@ -463,31 +462,30 @@ couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 \subsection{\textsc{DyTa}}
 
-\textsc{DyTa} \cite{DyTa} est un outil combinant une phase d'analyse statique et
-une phase d'analyse dynamique. \textsc{Code Contracts} \cite{CodeContracts} est
+\dyta \cite{\citedyta} est un outil combinant une phase d'analyse statique et
+une phase d'analyse dynamique. \codecontracts \cite{\citecodecontracts} est
 utilisé pour spécifier des pré/post-conditions et des invariants de programmes
 C\#, il identifie également les bugs potentiels (violations de contrat) par
 interprétation abstraite.
 
-\textsc{DyTa} instrumente ensuite le programme pour rajouter des instructions
+\dyta instrumente ensuite le programme pour rajouter des instructions
 assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
 aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
 également des points de contrôle à l'endroit des instructions signalées par
 l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
-par \textsc{Pex} \cite{PEX}. Cette étape est semblable à l'instrumentation
-opérée par \textsc{Sante} \cite{SANTE} pour rajouter des points de contrôle afin
-de guider l'exécution concolique du programme par \textsc{PathCrawler}
-\cite{PathCrawler}.
+par \pex. Cette étape est semblable à l'instrumentation
+opérée par \sante pour rajouter des points de contrôle afin
+de guider l'exécution concolique du programme par \pathcrawler.
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
-\textsc{DyTa} de calculer les points de contrôle à partir desquels les alarmes
+\dyta de calculer les points de contrôle à partir desquels les alarmes
 (instructions potentiellement dangereuses) sont inatteignables. La génération
 dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
 cette dernière guide l'exploration pour la génération dynamique de tests.
 
 \subsection{Vérification collaborative et test}
 
-Cette méthode \cite{collaborative-verification} part du constat que la plupart
+Cette méthode \cite{Christakis/FM12} part du constat que la plupart
 des outils de vérifications statiques (outils utilisant simplement des
 heuristiques, outils d'interprétation abstraite, model-checkers, ou outils de
 preuve) font des compromis afin d'améliorer les performances, de réduire le
@@ -508,22 +506,22 @@ Pour faciliter la vérification statique du programme, l'utilisateur doit au
 préalable ajouter des annotations (invariants de boucle par exemple). Les
 propriétés qui n'ont pas été vérifiées statiquement sont validées par des tests
 unitaires. Le programme est instrumenté afin de rajouter des vérifications à
-l'exécution pour guider la génération de contre-exemples. \textsc{Pex}
-\cite{PEX} est utilisé pour générer des cas de test par exécution concolique,
+l'exécution pour guider la génération de contre-exemples. \pex est utilisé pour
+générer des cas de test par exécution concolique,
 mettant en évidence des contre-exemples. L'utilisateur peut décider de
 privilégier l'analyse statique ou le test selon qu'il spécifie ou non son
 programme.
 
 Cette combinaison d'analyse statique, d'une instrumentation et du test est
-comparable à \textsc{Sante} \cite{SANTE}, bien qu'il manque l'étape de slicing
-qui permet à \textsc{Sante} d'économiser du temps sur l'analyse dynamique. En
+comparable à \sante, bien qu'il manque l'étape de slicing
+qui permet à \sante d'économiser du temps sur l'analyse dynamique. En
 revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
 statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
-possible avec \textsc{Sante}.
+possible avec \sante.
 
 \subsection{Vérification de propriétés décrites par des automates finis}
 
-Cette méthode \cite{checking-prop-state-machines} combine une instrumentation du
+Cette méthode \cite{Slaby/FMICS12} combine une instrumentation du
 code source, une étape de {\em slicing} et une exécution symbolique.
 L'instrumentation rajoute des instructions simulant le comportement de
 l'automate fini correspondant au programme, dont les états correspondent aux
@@ -532,22 +530,22 @@ Le {\em slicing} est appliqué pour réduire la taille du programme, on ne
 conserve que le code relatif aux états d'erreur de l'automate. Le programme
 simplifié doit être équivalent au programme instrumenté en ce qui concerne
 l'atteignabilité des états d'erreur de l'automate.
-L'exécution symbolique du programme par \textsc{Klee} \cite{KLEE} va permettre
+L'exécution symbolique du programme par \klee \cite{\citeklee} va permettre
 de mettre en évidence des contre-exemples pour ces propriétés.
 
 L'utilisation du {\em slicing} afin de réduire la portion de code analysée
 (et donc le nombre de chemins d'exécution) par l'exécution symbolique est
-similaire à \textsc{Sante} \cite{SANTE}. En revanche, cette méthode ne semble
+similaire à \sante \cite{\citesante}. En revanche, cette méthode ne semble
 pas applicable quel que soit le type d'erreur.
-\cite{checking-prop-state-machines} prend l'exemple de verrous à poser sur des
+\cite{Slaby/FMICS12} prend l'exemple de verrous à poser sur des
 variables du programme. L'instrumentation repère des motifs bien précis dans le
 programme et le code généré est spécifique à ce type d'erreur. Contrairement à
-\textsc{Sante}, cette méthode n'applique pas d'analyse statique plus générale
+\sante, cette méthode n'applique pas d'analyse statique plus générale
 (pouvant lever différents types d'alarmes) avant l'instrumentation.
 
 \subsection{Localisation d'erreurs par slicing guidé par la trace d'exécution}
 
-Cette méthode \cite{fault-localization} utilise un {\em slicing} arrière à
+Cette méthode \cite{Jiang/QSIC12} utilise un {\em slicing} arrière à
 partir d'une instruction de déréférencement produisant une {\em Null Pointer
 Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
 fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
@@ -556,30 +554,29 @@ déterminer si chacun des pointeurs peut être \lstinline[language=java]{null}.
 Puis une analyse d'alias est opérée afin d'augmenter la précision de l'analyse
 statique.
 
-Contrairement à \textsc{Sante} \cite{SANTE} qui commence par utiliser une
+Contrairement à \sante qui commence par utiliser une
 analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
 une analyse dynamique; cette méthode commence par une analyse dynamique, dont
 le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
 
-\subsection{\textsc{Blast}}
+\subsection{\blast}
 
-Cet outil \cite{BLAST} vérifie les propriétés temporelles de sûreté d'un
+\blast \cite{\citeblast} vérifie les propriétés temporelles de sûreté d'un
 programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
 raffinement des abstractions du programme est basé sur une abstraction par
 prédicat et la découverte des prédicats se fait par interpolation. C'est une
-implémentation de la méthode \textsc{Cegar} \cite{CEGAR} tout comme
-\textsc{Slam} \cite{SLAM} et \textsc{Magic} \cite{MAGIC}. La génération des cas
+implémentation de la méthode \cegar \cite{\citecegar} tout comme
+\slam \cite{\citeslam} et \magic \cite{\citemagic}. La génération des cas
 de test se fait par exécution symbolique.
 
-\textsc{Blast} ne traite ni les débordements arithmétiques ni les opérations
+\blast ne traite ni les débordements arithmétiques ni les opérations
 bit-à-bit, et considère que toutes les opérations arithmétiques sur les
 pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
-propriétés ne contient pas de quantificateurs, contrairement à \textsc{Acsl}
-\cite{ACSL}.
+propriétés ne contient pas de quantificateurs, contrairement à \acsl.
 
-\subsection{\textsc{Smart}}
+\subsection{\smart}
 
-Cet outil \cite{SMART} (basé sur son prédécesseur \textsc{Dart} \cite{DART})
+\smart \cite{\citesmart} (basé sur son prédécesseur \dart \cite{\citedart})
 génère des tests par exécution concolique. Pour résoudre le problème de
 l'explosion du nombre de chemins, il va calculer à la demande des résumés de
 fonction qui sont des pré-conditions et post-conditions pour chaque fonction
@@ -589,9 +586,9 @@ La génération automatique de ces résumés est présentée comme se faisant pa
 ``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
 dynamique car utilisant une exécution symbolique (et résolution de contraintes).
 
-\subsection{\textsc{Synergy}, \textsc{Dash} et \textsc{Yogi}}
+\subsection{\synergy, \dash et \yogi}
 
-\textsc{Synergy} \cite{SYNERGY} est un algorithme combinant du test (essayer
+\synergy \cite{\citesynergy} est un algorithme combinant du test (essayer
 d'atteindre un état d'erreur) et une abstraction (trouver une abstraction
 suffisamment précise montrant qu'aucun chemin ne peut atteindre un état
 d'erreur). La sous-approximation du test et la sur-approximation de
@@ -604,28 +601,26 @@ Les états de l'abstraction, les régions, sont des classes d'équivalence des
 vers une région d'erreur, alors il n'existe aucune suite de transitions
 concrètes menant d'un état initial concret à un état d'erreur concret.
 
-\textsc{Dash} \cite{DASH} est une évolution de \textsc{Synergy}, prenant en
+\dash \cite{\citedash} est une évolution de \synergy, prenant en
 compte les appels de procédure et les pointeurs (contrairement à
-\textsc{Synergy}). \textsc{Dash} raffine l'abstraction en utilisant uniquement
+\synergy). \dash raffine l'abstraction en utilisant uniquement
 les relations d'alias mises en évidence par les tests. La génération de tests
 guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
-la raffiner. Cet algorithme est implémenté dans l'outil \textsc{Yogi}
-\cite{YOGI}.
+la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
 
-\subsection{\textsc{Sage}}
+\subsection{\sage}
 
-Cet outil \cite{SAGE} utilise une analyse dynamique uniquement afin de générer
+\sage \cite{\citesage} utilise une analyse dynamique uniquement afin de générer
 des tests pour des programmes au format binaire x86. Il combine une exécution
 symbolique à du {\em fuzz testing}. Une première exécution avec des entrées
 valides permet de récupérer une trace d'exécution du programme. L'exécution
 symbolique de cette trace permet de collecter les contraintes du chemin
 d'exécution. De nouveaux chemins sont générés par négation des contraintes,
-à la manière de \textsc{PathCrawler} \cite{PathCrawler} et autres outils
-similaires.
+à la manière de \pathcrawler et autres outils similaires.
 
-\subsection{\textsc{Smash}}
+\subsection{\Smash}
 
-Cet outil \cite{SMASH} combine une abstraction par prédicats et une génération
+\Smash \cite{\citesmash} combine une abstraction par prédicats et une génération
 dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
 est calculé par analyse statique (vrai pour toutes les exécutions, permettant
 de prouver l'absence d'erreurs, c'est une sur-approximation) et un autre résumé
@@ -650,18 +645,18 @@ Mémoization des résultats intermédiaires sous la forme de résumés réutilis
 \subsubsection{Résumé des outils Microsoft}
 
 
-\textsc{Slam} \cite{SLAM} utilise une abstraction par prédicat et un raffinement
-de partition (implémentation de l'algorithme \textsc{Cegar} \cite{CEGAR}) pour
+\slam utilise une abstraction par prédicat et un raffinement
+de partition (implémentation de l'algorithme \cegar) pour
 effectuer une analyse statique compositionnelle mais n'effectue pas d'analyse
-dynamique. \textsc{Smart} \cite{SMART} exécute une analyse dynamique
+dynamique. \smart exécute une analyse dynamique
 compositionnelle. C'est une extension de l'algorithme d'analyse dynamique non
-compositionnelle de \textsc{Dart} \cite{DART}, mais n'effectue pas d'analyse
-statique. \textsc{Synergy} \cite{SYNERGY} combine \textsc{Slam} \cite{SLAM} et
-\textsc{Dart} \cite{DART} (\textsc{Cegar} compositionnel + test non
-compositionnel). L'algorithme est intra-procédural. \textsc{Dash} \cite{DASH}
-étend l'algorithme \textsc{Synergy}, il est inter-procédural mais non
-compositionnel. \textsc{Smash} \cite{SMASH} est la version compositionelle de
-\textsc{Dash}.
+compositionnelle de \dart, mais n'effectue pas d'analyse
+statique. \synergy combine \slam et
+\dart (\cegar compositionnel + test non
+compositionnel). L'algorithme est intra-procédural. \dash
+étend l'algorithme \synergy, il est inter-procédural mais non
+compositionnel. \Smash est la version compositionelle de
+\dash.
 
 
 
@@ -679,17 +674,17 @@ La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
       & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc} \\
       & & non-compo & compo & & non-compo & compo \\
       \hline
-      \textsc{Slam} \cite{SLAM} & & & $\surd$ & & & \\
+      \slam & & & $\surd$ & & & \\
       \hline
-      \textsc{Dart} \cite{DART} & & & & & $\surd$ & \\
+      \dart & & & & & $\surd$ & \\
       \hline
-    \textsc{Smart} \cite{SMART} & & & & & & $\surd$ \\
+    \smart & & & & & & $\surd$ \\
     \hline
-    \textsc{Synergy} \cite{SYNERGY} & $\surd$ & & & $\surd$ & & \\
+    \synergy & $\surd$ & & & $\surd$ & & \\
     \hline
-    \textsc{Dash} \cite{DASH} & & $\surd$ & & & $\surd$ & \\
+    \dash & & $\surd$ & & & $\surd$ & \\
     \hline
-    \textsc{Smash} \cite{SMASH} & & & $\surd$ & & & $\surd$ \\
+    \Smash & & & $\surd$ & & & $\surd$ \\
     \hline
     \end{tabular}
   \end{scriptsize}
@@ -702,7 +697,7 @@ La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
 
 \subsection{Analyses statique et dynamique pour la génération d'invariants}
 
-Cette méthode \cite{fromTestsToProofs} propose une solution au problème du
+Cette méthode \cite{Gupta/TACAS09} propose une solution au problème du
 passage à l'échelle de la génération d'invariants (de programmes impératifs) par
 résolution de contraintes. Les invariants arithmétiques linéaires sont générés
 d'après les informations obtenues par interprétation abstraite du programme, par
@@ -711,10 +706,10 @@ permettent de générer des contraintes qui vont permettre au solveur de
 contraintes de simplifier le système de contraintes et de réduire l'espace de
 recherche.
 
-\subsection{\textsc{Cegar} : Raffinement d'abstraction guidé par des
-  contre-exemples}
+\subsection{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
 
-Le raffinement d'abstraction guidé par des contre-exemples \cite{CEGAR} associe
+Le raffinement d'abstraction guidé par des contre-exemples \cite{\citecegar}
+associe
 l’abstraction par prédicats et le model-checking : une abstraction du programme
 est générée à partir d’un ensemble de prédicats et invariants. Si le
 model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
@@ -727,41 +722,41 @@ Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
 seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
 absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
 terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
-lesquels \textsc{Blast} \cite{BLAST}, \textsc{Magic} \cite{MAGIC} et
-\textsc{Slam} \cite{SLAM}.
+lesquels \blast \cite{\citeblast}, \magic \cite{\citemagic} et
+\slam \cite{\citeslam}.
 
 Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
 générée peut donc mettre un certain temps avant de converger vers une forme
 acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
-raffinement de l'abstraction : \textsc{Cegaar} \cite{CEGAAR}. Cette technique
+raffinement de l'abstraction : \cegaar \cite{\citecegaar}. Cette technique
 élimine une infinité de contre-exemples (traces infaisables) de la forme
 $\alpha . \lambda^* . \beta$ en une seule étape, où $\lambda$ correspond à une
 ou plusieurs exécutions d'une boucle.
 
-\subsection{\textsc{DSD-Crasher} et \textsc{Check'n'Crash}}
+\subsection{\dsdcrasher et \checkncrash}
 
-L'outil \textsc{DSD-Crasher} \cite{DSD-Crasher} combine une première analyse
+L'outil \dsdcrasher \cite{\citedsdcrasher} combine une première analyse
 dynamique, une analyse statique et une seconde analyse dynamique. La première
 analyse dynamique utilise une génération de tests et des techniques
 d'apprentissage pour générer des invariants probables (inférence de la
-spécification par \textsc{Daikon} \cite{discover-invariants}).
+spécification par \daikon \cite{\citedaikon}).
 
-Les deux dernières étapes sont celles de l'outil \textsc{Check'n'Crash}
-\cite{ChecknCrash}. L'analyse statique (\textsc{ESC/Java} \cite{ESC/Java}) va
-émettre des alarmes concernant le non-respect des invariants, et la seconde
+Les deux dernières étapes sont celles de l'outil \checkncrash
+\cite{\citecheckncrash}. L'analyse statique (\escjavatwo \cite{\citeescjavatwo})
+va émettre des alarmes concernant le non-respect des invariants, et la seconde
 analyse dynamique va tenter de confirmer ces alarmes par résolution de
-contraintes et génération de tests (\textsc{JCrasher} \cite{JCrasher}). La
+contraintes et génération de tests (\jcrasher \cite{\citejcrasher}). La
 classification des alarmes et la génération de tests sont très dépendantes de
-la qualité des invariants générés par \textsc{Daikon}.
+la qualité des invariants générés par \daikon.
 
-Cette méthode se distingue de \textsc{Sante} \cite{SANTE} par son analyse
+Cette méthode se distingue de \sante \cite{\citesante} par son analyse
 dynamique préliminaire qui détecte des invariants afin de guider l'analyse
 statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
 d'augmenter le taux de classification des alarmes par l'analyse dynamique.
 
 \subsection{Génération de données de test par algorithme génétique}
 
-\cite{search-based-testing-of-NPE} propose une méthode de génération de données
+\cite{Romano/ICST11} propose une méthode de génération de données
 de test mettant en évidence des {\em Null Pointer Exceptions} de Java. Tout
 d'abord une analyse inter-procédurale du flot de contrôle et du flôt de données
 collecte les chemins menant aux exceptions. Cette analyse se fait en arrière, en
@@ -771,17 +766,17 @@ but de couvrir ces chemins. Les individus (des entrées potentielles), dont le
 type de donnée peut être complexe, sont encodés sous forme XML.
 
 Cette méthode a été comparée avec d'autres façons de générer des données de
-test \cite{DbZ-exception-raising-via-branch-coverage}, leurs expérimentations
+test \cite{Ahn/TAP10}, leurs expérimentations
 ont montré qu'elle était plus efficace que d'autres stratégies de recherche
 optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
 efficace que la programmation par contraintes (en terme de temps d'exécution). 
 
 \subsection{Génération de tests unitaires à partir de preuves formelles}
 
-\cite{generating-unit-tests-from-formal-proofs} présente une méthode de
+\cite{Engel/TAP07} présente une méthode de
 génération automatique de tests unitaires pour \textsc{Java Card} à partir d'une
 tentative de preuve formelle du système, qui doit être au préalable annoté en
-utilisant le langage de spécification \textsc{JML} \cite{JML}.
+utilisant le langage de spécification \jml \cite{\citejml}.
 
 L'information contenue dans la preuve (même partielle) est utilisée
 pour extraire des données de test à partir des conditions de chemins. Les
@@ -797,10 +792,10 @@ invariants de boucle, etc.).
 TODO
 
 
-\section{Frama-C}
+\section{\framac}
 
 
-\textsc{Frama-C} \cite{Frama-C} est une plate-forme dédiée à l'analyse statique
+\framac \cite{\citeframac} est une plate-forme dédiée à l'analyse statique
 des programmes C, conjointement dévelopée par INRIA et le CEA LIST. Son
 architecture (Fig.~\ref{fig:archi}) comporte un noyau et un écosystème de
 greffons, rendant l’outil extensible. Les greffons peuvent échanger des
@@ -814,20 +809,20 @@ une collaboration entre différentes analyses.
   \begin{center}
     \includegraphics{frama_c_architecture.mps}
   \end{center}
-  \caption{Architecture de \textsc{Frama-C}}\label{fig:archi}
+  \caption{Architecture de \framac}\label{fig:archi}
 \end{figure}
 
 
-\textsc{Frama-C} est basé sur CIL \cite{CIL}, une bibliothèque qui normalise des
+\framac est basé sur \cil \cite{\citecil}, une bibliothèque qui normalise des
 programmes C (ISO C99) en opérant des modifications syntaxiques : normalisation
 des boucles en utilisant la structure \lstinline{while}, unique
 \lstinline{return} pour
-chaque fonction, etc. \textsc{Frama-C} étend CIL pour supporter des annotations
-dédiées portant sur le code source, exprimées dans le langage \textsc{Acsl}.
-\textsc{Acsl} \cite{ACSL} est un langage formel de spécification
-comportementale \cite{BISL}, inspiré de JML \cite{JML}, pouvant exprimer des
-propriétés fonctionnelles de programmes C : pré-conditions, post-conditions,
-invariants, etc.
+chaque fonction, etc. \framac étend \cil pour supporter des annotations
+dédiées portant sur le code source, exprimées dans le langage \acsl.
+\acsl \cite{\citeacsl} est un langage formel de spécification
+comportementale \cite{Hatcliff/12}, inspiré de \jml \cite{\citejml}, pouvant
+exprimer des propriétés fonctionnelles de programmes C : pré-conditions,
+post-conditions, invariants, etc.
 
 En effet, la spécification d'une fonction comprend les pré-conditions requises
 (exprimées par une clause \lstinline{requires}) lors de l'appel et les
@@ -856,7 +851,7 @@ arguments doivent être des pointeurs valides, autrement dit, le déréférencem
 de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
 pré-condition impose que les emplacements mémoire occupés par chacune de ces
 variables soient disjoints. En plus de \lstinline{\valid} et
-\lstinline{\separated}, \textsc{Acsl} fournit de nombreux prédicats et
+\lstinline{\separated}, \acsl fournit de nombreux prédicats et
 fonctions afin de décrire les états de la mémoire. \lstinline{\at(e,l)}
 fait référence à la valeur de l'expression \lstinline{e} à l'état de la mémoire
 au label \lstinline{l}. \lstinline{Pre} est un label prédéfini qui fait
@@ -866,7 +861,7 @@ post-conditions (\lstinline{ensures}) signifient qu'à la fin de la fonction,
 début de la fonction, et réciproquement.
 
 
-\textsc{Acsl} offre aussi la possibilité d'écrire des annotations dans le code
+\acsl offre aussi la possibilité d'écrire des annotations dans le code
 source, permettant d'exprimer des propriétés devant être vraies à un point donné
 du programme : les assertions (\lstinline{assert}).
 Il est également possible d'exprimer des propriétés devant être vraies avant une
@@ -874,20 +869,20 @@ boucle et après chaque itération de cette boucle : les invariants de boucle
 (\lstinline{loop invariant}).
 
 
-Les annotations du langage \textsc{Acsl} sont écrites en utilisant la logique
+Les annotations du langage \acsl sont écrites en utilisant la logique
 du premier ordre, et il est possible de définir ses propres fonctions et
 prédicats.
-Les greffons peuvent valider ou invalider les propriétés \textsc{Acsl} et
-générer des annotations \textsc{Acsl}, les annotations sont donc un moyen
+Les greffons peuvent valider ou invalider les propriétés \acsl et
+générer des annotations \acsl, les annotations sont donc un moyen
 d'échanger des informations entre les différentes analyses opérées par les
 greffons.
 
 
-\section{PathCrawler}
+\section{\pathcrawler}
 
-\textsc{PathCrawler} \cite{PathCrawler} est un outil de génération de tests
+\pathcrawler \cite{\citepathcrawler} est un outil de génération de tests
 structurels pour les programmes C, accessible sous la forme d'un service web :
-\textsc{PathCrawler Online} \cite{PathCrawlerOnline}.
+\textsc{PathCrawler Online} \cite{\citepconline}.
 
 Étant donné un programme C sous test $p$ et une pré-condition sur ses entrées,
 il génère des cas de test respectant un critère de couverture de test. Le
@@ -897,14 +892,14 @@ irréalisable sur des programmes réels, le critère \emph{tous les k-chemins} a
 été défini, il limite l'exploration aux chemins qui ont au plus $k$ itérations
 consécutives de chaque boucle.
 
-\textsc{PathCrawler} commence par construire une version instrumentée de $p$
+\pathcrawler commence par construire une version instrumentée de $p$
 permettant de tracer l'exécution de chaque cas de test, puis il génère les
 contraintes représentant la sémantique de chaque instruction de $p$. La
 prochaine étape est la génération et la résolution de contraintes pour produire
 les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
 couverture. La résolution de contraintes s'effectue à l'aide
-d'\textsc{ECLiPSe Prolog} \cite{ECLiPSe}, un environnement de programmation en
-logique par contraintes basé sur Prolog.
+d'\eclipse \prolog \cite{\citeeclipse}, un environnement de programmation en
+logique par contraintes basé sur \prolog.
 
 Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
 l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
@@ -985,18 +980,18 @@ TODO
 
 Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
 programmes C, dévelopée pour la vérification d'assertions à l'exécution
-({\em runtime assertion checking} \cite{RAC}) dans \textsc{Frama-C}
-\cite{Frama-C}.
-Cette solution inclut un langage de spécification exécutable, \textsc{e-acsl},
-et un traducteur, \textsc{e-acsl2c}\footnote{http://frama-c.com/eacsl.html}.
+({\em runtime assertion checking} \cite{Clarke/06}) dans \framac
+\cite{\citeframac}.
+Cette solution inclut un langage de spécification exécutable, \eacsl,
+et un traducteur, \eacsltoc \cite{\citeeacsltoc}.
 Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
-de spécification \textsc{e-acsl}.
+de spécification \eacsl.
 
 \subsection{\textsc{Executable-acsl}}
 
-\textsc{e-acsl} est un sous-ensemble ``exécutable'' du langage \textsc{acsl}
-implémenté dans \textsc{Frama-C}. Contrairement à \textsc{acsl}, chaque
-spécification \textsc{e-acsl} est exécutable : elle peut être évaluée à
+\eacsl est un sous-ensemble ``exécutable'' du langage \acsl
+implémenté dans \framac. Contrairement à \acsl, chaque
+spécification \eacsl est exécutable : elle peut être évaluée à
 l'exécution.
 
 \subsection{Bibliothèque de monitoring de la mémoire}
@@ -1007,10 +1002,10 @@ monitorer les opérations effectuées en mémoire par le programme. Pour ce fair
 nous avons développé une bibliothèque C permettant d'enregistrer et de récupérer
 les informations de validité et d'initialisation d'un programme. Les appels aux
 fonctions de cette bibiliothèque C sont automatiquement ajoutés aux emplacements
-adéquats dans le code source du programme par \textsc{e-acsl2c} durant la
-traduction de la spécification \textsc{e-acsl} en C.
+adéquats dans le code source du programme par \eacsltoc durant la
+traduction de la spécification \eacsl en C.
 
-\textsc{e-acsl2c} est un greffon de \textsc{Frama-C} qui traduit automatiquement
+\eacsltoc est un greffon de \framac qui traduit automatiquement
 un programme C annoté en un autre programme dont l'exécution échouera si une
 annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
 du nouveau programme est exactement le même que celui du programme d'origine.
@@ -1021,7 +1016,7 @@ du nouveau programme est exactement le même que celui du programme d'origine.
 \section{Informations relatives à la validité et à l'initialisation}
 
 
-Détaillons les annotations \textsc{acsl} que nous souhaitons prendre en compte.
+Détaillons les annotations \acsl que nous souhaitons prendre en compte.
 Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block\_length},
 \lstinline{\offset}, \lstinline{\valid}, \lstinline{\valid_read} et
 \lstinline{\initialized}.
@@ -1284,7 +1279,7 @@ l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
 toutes les assertions sont vraies.
 
 
-Pour pouvoir traiter ces annotations \textsc{acsl}, nous devons donc conserver
+Pour pouvoir traiter ces annotations \acsl, nous devons donc conserver
 pour chaque bloc les informations suivantes :
 \begin{itemize}
 \item l'adresse de base
@@ -1379,7 +1374,7 @@ triée : on peut avoir besoin d'accéder directement à un bloc à partir de son
 adresse de base, mais aussi à partir de n'importe quelle adresse contenue dans
 le bloc (donc accéder au bloc précédent). Par exemple, la fonction
 \lstinline{__base_addr(p)} utilisée pour le traitement de la construction
-\textsc{acsl} \lstinline{\base_addr(p)} cherche l'adresse de base la plus
+\acsl \lstinline{\base_addr(p)} cherche l'adresse de base la plus
 proche et inférieure à \lstinline{p} (et enfin vérifie les bornes du bloc).
 Cette contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
 chaînées ne sont pas assez efficaces à cause de la complexité linéaire au pire
@@ -1389,10 +1384,10 @@ monotone, ce qui est souvent le cas. Enfin, le coût du rééquilibrage de l'arb
 (pour un arbre binaire de recherche équilibré) serait amorti dans le cas où les
 modifications de la structure de l'arbre sont moins nombreuses que les accès
 simples; ce qui n'est pas nécessairement vrai sur les exemples de code que nous
-avons instrumentés avec \textsc{e-acsl2c}.
+avons instrumentés avec \eacsltoc.
 
 Notre implémentation du $store$ se base sur un {\em Patricia trie}
-\cite{Patricia-tries} (appelé aussi {\em radix tree} ou ``arbre à préfixe
+\cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
 compact'', cette structure est efficace même si l'abre n'est pas équilibré.
 Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
 bits) ou des préfixes d'adresses. Chaque feuille contient les données relatives
@@ -1645,10 +1640,10 @@ ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 Pour évaluer notre solution, nous avons effectué plus de 300 exécutions sur
 plus de 30 programmes, obtenus à partir d'une dizaine d'exemples. Nous avons
 volontairement gardés des exemples plutôt courts (moins de 200 lignes de code)
-car ils ont dû être annotés en \textsc{acsl} manuellement.
+car ils ont dû être annotés en \acsl manuellement.
 
 Nous avons mesuré le temps d'exécution du programme d'origine et du code
-instrumenté par \textsc{e-acsl2c} avec différentes options, afin d'évaluer les
+instrumenté par \eacsltoc avec différentes options, afin d'évaluer les
 performances des différentes implémentations et optimisations. Des indicateurs
 comme le nombre de variables, d'allocations mémoires, d'enregistrements et de
 requêtes a également été enregistré.
@@ -1687,16 +1682,16 @@ plus rapide que la première sur nos exemples.
 \item[Capacité de détection d'erreurs] \hfill \\
 Nous avons utilisé le ``test mutationnel'' pour évaluer la capacité de détection
 d'erreurs en utilisant la vérification d'assertion à l'exécution avec
-\textsc{Frama-C}. Nous avons considéré 5 exemples annotés et généré leurs
+\framac. Nous avons considéré 5 exemples annotés et généré leurs
 {\em mutants} (en appliquant une {\em mutation} sur leur code source) et leur
 avons appliqué la vérification à l'exécution. Les mutations incluent :
 modifications d'opérateur arithmétique numérique, modifications d'opérateur
 arithmétique sur les pointeurs, modifications d'opérateur de comparaison et
 modifications d'opérateur logique ($land$ et $lor$).
 
-L'outil de génération de test \textsc{PathCrawler} \cite{PathCrawler} a été
+L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
 utilisé pour produire les cas de test. Chaque mutant a été instrumenté par
-\textsc{e-acsl2c} et exécuté sur chaque cas de test pour vérifier que la
+\eacsltoc et exécuté sur chaque cas de test pour vérifier que la
 spécification était satisfaite à l'exécution. Les programmes d'origine passent
 toutes les vérifications à l'exécution. Lorsqu'une violation d'une annotation a
 été reportée pour au moins un cas de testn le mutant est considéré comme étant
@@ -1718,7 +1713,7 @@ une fusion de deux listes chaînées de 10000 et 20000 éléments. Rbt$_{10000}$
 une insertion/suppression de 10000 éléments dans un arbre rouge et noir. mS$_n$
 est un tri fusion d'une liste chaînée de $n$ éléments. La ligne supplémentaire
 ``+ RTE'' de chaque exemple correspond à une application préalable du greffon
-\textsc{Rte} qui génère des assertions qui sont vraies si le programme ne
+\rte qui génère des assertions qui sont vraies si le programme ne
 contient pas d'erreur à l'exécution.
 
 Les colonnes ont la signification suivante : \danger contient le nombre
@@ -1729,19 +1724,19 @@ commun, sb est le nombre d'insertion dans le $store$, Pt correspond à
 l'implémentation par Patricia tries, St correspond à l'implémentation par Splay
 trees. L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations
 sans (resp. avec) application d'une analyse statique $Dataflow$ permettant de
-n'instrumenter que ce qui est nécessaire (section 6 de \cite{RV2013}). L'indice
-$_1$ (resp. $_2$)
+n'instrumenter que ce qui est nécessaire (section 6 de \cite{\citeeacsltoc}).
+L'indice $_1$ (resp. $_2$)
 correspond à l'implémentation non optimisée (resp. optimisée) du calcul du
 plus grand préfixe commun pour l'implémentation utilisant les Patricia tries.
-Le temps d'analyse du programme avec \textsc{Valgrind} \cite{Valgrind} est
+Le temps d'analyse du programme avec \valgrind \cite{\citevalgrind} est
 indiqué dans la dernière colonne.
 
-Nous remarquons que le temps d'exécution de \textsc{Valgrind} n'est pas
+Nous remarquons que le temps d'exécution de \valgrind n'est pas
 comparable avec celui de notre solution, cela s'explique simplement par le fait
-que celui-ci ne prend pas en compte la spécification \textsc{acsl}, et se
+que celui-ci ne prend pas en compte la spécification \acsl, et se
 contente de vérifier des propriétés comme l'absence d'erreur de segmentation ou
 l'absence de fuite de mémoire. En revanche, notre démarche vise à supporter au
-maximum les annotations \textsc{acsl}, ce qui nécessite un monitoring plus
+maximum les annotations \acsl, ce qui nécessite un monitoring plus
 lourd.
 
 Nos expérimentations, présentées dans la Fig.~\ref{fig:mmodel-exp}, confirment
