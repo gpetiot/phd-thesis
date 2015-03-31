@@ -6,7 +6,7 @@ FIG=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) tikz_
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(FIG) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex
+main.dvi: main.tex $(BIB) $(FIG) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex mem_annots.c
 	latex $^
 	bibtex main
 	latex $^
