@@ -136,6 +136,12 @@ Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block_length},
 \input{tikz_mem_annots}
 
 
+\begin{figure}[tb]
+  \lstinputlisting[firstline=4,firstnumber=1] {mem_annots.c}
+  \caption{Annotations mémoire -- Exemple en C}
+  \label{lst:mem-annots}
+\end{figure}
+
 
 \lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
 qui contient, au label \lstinline{L}, le pointeur \lstinline{p}.
@@ -143,67 +149,16 @@ La Fig.~\ref{fig:base-addr} illustre \lstinline{\base_addr(p)}.
 La Fig.~\ref{fig:base-addr-example}
 illustre l'utilisation de \lstinline{\base_addr}, l'annotation de ce
 programme est vraie.
-
-
-\begin{figure}[h]
-\begin{lstlisting}
-int main() {
-  int *p = malloc(3*sizeof(int));
-  //@ assert \base_addr(p+2) == p;
-  free(p);
-  return 0;
-}
-\end{lstlisting}
-\caption{Exemple d'utilisation de ${\tt \backslash base\_addr}$}
-\label{fig:base-addr-example}
-\end{figure}
-
-
-
-
 \lstinline'\block_length{L}(p)' retourne la longueur (en octets) du
 bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}.
 La Fig.~\ref{fig:block-length} illustre \lstinline{\block_length(p)}.
 La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
 \lstinline{\block_length}, l'annotation de ce programme est vraie.
-
-\begin{figure}[h]
-\begin{lstlisting}
-int main() {
-  int *p = malloc(3*sizeof(int));
-  //@ assert \block_length(p) == 3*sizeof(int);
-  free(p);
-  return 0;
-}
-\end{lstlisting}
-\caption{Exemple d'utilisation de ${\tt \backslash block\_length}$}
-\label{fig:block-length-example}
-\end{figure}
-
-
-
 \lstinline'\offset{L}(p)' retourne le décalage (en octets), au label
 \lstinline{L}, entre \lstinline{p} et son adresse de base.
 La Fig.~\ref{fig:offset} illustre \lstinline{\offset(p)}.
 La Fig.~\ref{fig:offset-example} illustre l'utilisation de
 \lstinline{\offset}, l'annotation de ce programme est vraie.
-
-
-\begin{figure}[h]
-\begin{lstlisting}
-int main() {
-  int *p = maloc(3*sizeof(int));
-  //@ assert \offset(p+2) == 2;
-  free(p);
-  return 0;
-}
-\end{lstlisting}
-\caption{Exemple d'utilisation de ${\tt \backslash offset}$}
-\label{fig:offset-example}
-\end{figure}
-
-
-
 \lstinline'\valid{L}(p)' (respectivement \lstinline'\valid_read{L}(p)') est vrai
 si le déréférencement de \lstinline{p} au label \lstinline{L} est autorisé en
 lecture et en écriture (resp. au moins en lecture).
@@ -213,29 +168,6 @@ La Fig.~\ref{fig:valid} illustre le prédicat \lstinline{\valid}.
 La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
 \lstinline{\valid}. Dans ce programme toutes les assertions de validité
 sont vraies.
-
-
-\begin{figure}[h]
-\begin{lstlisting}
-int main(void) {
-  int *a, *b;
-  //@ assert ! \valid(a);
-  //@ assert ! \valid(b);
-  a = malloc(sizeof(int));
-  b = a;
-  //@ assert \valid(a);
-  //@ assert \valid(b);
-  free(b);
-  //@ assert ! \valid(a);
-  //@ assert ! \valid(b);
-  return 0;
-}
-\end{lstlisting}
-\caption{Exemple d'utilisation du prédicat ${\tt \backslash valid}$}
-\label{fig:valid-example}
-\end{figure}
-
-
 \lstinline'\initialized{L}(p)' est un prédicat prenant un pointeur \lstinline{p}
 sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
 initialisée au label \lstinline{L}.
@@ -244,21 +176,6 @@ La Fig.~\ref{fig:initialized-example} illustre
 l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
 toutes les assertions sont vraies.
 
-
-\begin{figure}[h]
-\begin{lstlisting}
-int main(void) {
-  int *p = malloc(3*sizeof(int));
-  p[0] = 0;
-  //@ assert \initialized(p+0);
-  //@ assert ! \initialized(p+1);
-  free(p);
-  return 0;
-}
-\end{lstlisting}
-\caption{Exemple d'utilisation du prédicat ${\tt \backslash initialized}$}
-\label{fig:initialized-example}
-\end{figure}
 
 
 
