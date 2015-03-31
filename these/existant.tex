@@ -31,6 +31,22 @@ une formule de logique temporelle linéaire, de sorte que les annotations sont
 vérifiées si le programme repecte la formule.
 
 
+\section{Langages de spécification}
+\label{sec:speclang}
+
+
+\subsection{Java Modeling Language (JML)}
+\label{sec:jml}
+
+TODO
+
+
+\subsection{ANSI/ISO C Specification Language (ACSL)}
+\label{sec:acsl}
+
+TODO
+
+
 \section{Analyse statique}
 \label{sec:AS}
 
@@ -51,7 +67,7 @@ par exemple), afin d'exclure certains risques d'erreurs à l'exécution.
 
 Parmi les méthodes statiques sont distinguées : l'interprétation abstraite
 (section~\ref{sec:interpretation-abstraite}), l'abstraction à partir de
-prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de théorèmes
+prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de programmes
 (section~\ref{sec:preuve}).
 
 
@@ -121,10 +137,10 @@ elle l'est également dans le système concret.
 Cette technique est notamment utilisée par \slam \cite{\citeslam}.
 
 
-\subsection{Preuve de théorèmes}
+\subsection{Preuve de programmes}
 \label{sec:preuve}
 
-La preuve de théorèmes utilise des fondements mathématiques et logiques
+La preuve de programmes utilise des fondements mathématiques et logiques
 \cite{Hoare/69} pour prouver des propriétés de programmes. Tout d'abord, le
 système
 est décrit par un ensemble d'axiomes et de règles d'inférence. Puis, le calcul
@@ -132,7 +148,7 @@ de la plus faible précondition \cite{Dijkstra/75} est utilisé pour générer d
 formules appelées obligations de preuve, qui sont finalement soumises à un
 prouveur de théorèmes, qui applique différentes techniques de résolution.
 
-Contrairement au model-checking, la preuve de théorèmes a l'avantage d'être
+Contrairement au model-checking, la preuve a l'avantage d'être
 indépendante de la taille de l'espace des états, et peut donc s'appliquer sur
 des systèmes de grande taille. En contre-partie, cette technique requiert une
 expertise de l'utilisateur pour adapter le programme à la preuve (en l'annotant
@@ -184,7 +200,7 @@ ne sera pas détaillé dans cette thèse.
 
 
 
-\subsubsection{Exécution symbolique augmentée}
+\subsubsection*{Exécution symbolique augmentée}
 
 
 
@@ -224,6 +240,73 @@ utilisent des solveurs de contraintes pour générer des cas de test permettant
 d'aboutir à une couverture souhaitée des exécutions du programme par les tests.
 
 
+\subsubsection*{\pathcrawler}
+
+\pathcrawler \cite{\citepathcrawler} est un outil de génération de tests
+structurels pour les programmes C, accessible sous la forme d'un service web :
+\textsc{PathCrawler Online} \cite{\citepconline}.
+
+Étant donné un programme C sous test $p$ et une pré-condition sur ses entrées,
+il génère des cas de test respectant un critère de couverture de test. Le
+critère \emph{tous les chemins} impose une couverture de tous les chemins
+faisables de $p$. L'exploration exhaustive de tous les chemins étant en pratique
+irréalisable sur des programmes réels, le critère \emph{tous les k-chemins} a
+été défini, il limite l'exploration aux chemins qui ont au plus $k$ itérations
+consécutives de chaque boucle.
+
+\pathcrawler commence par construire une version instrumentée de $p$
+permettant de tracer l'exécution de chaque cas de test, puis il génère les
+contraintes représentant la sémantique de chaque instruction de $p$. La
+prochaine étape est la génération et la résolution de contraintes pour produire
+les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
+couverture. La résolution de contraintes s'effectue à l'aide
+d'\eclipse \prolog \cite{\citeeclipse}, un environnement de programmation en
+logique par contraintes basé sur \prolog.
+
+Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
+l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
+de $p$ en suivant le chemin $\pi$.
+ 
+La méthode de génération de test est composée des étapes suivantes :
+
+\begin{itemize}
+\item[$(\mathcal{G}_1)$]
+Création d'une variable logique pour chaque entrée.
+Prise en compte des contraintes de la pré-condition.
+Le préfixe de chemin initial $\pi$ est vide.
+Aller à $(\mathcal{G}_2)$.
+
+\item[$(\mathcal{G}_2)$]
+Exécuter symboliquement le chemin $\pi$ : ajout des contraintes et
+mise à jour de la mémoire en fonction des instructions de $\pi$.
+Si certaines contraintes sont insatisfiables, aller à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_3)$.
+
+\item[$(\mathcal{G}_3)$]
+Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
+les contraintes du chemin courant. Si les contraintes sont insatisfiables, aller
+à $(\mathcal{G}_5)$.
+Sinon, aller à $(\mathcal{G}_4)$.
+
+\item[$(\mathcal{G}_4)$]
+Exécuter le programme avec trace sur le cas de test $t$ généré pour obtenir
+le chemin d'exécution, qui doit commencer par $\pi$.
+Aller à $(\mathcal{G}_5)$.
+
+\item[$(\mathcal{G}_5)$]
+Calculer le prochain chemin partiel $\pi$ à couvrir. Un parcours en profondeur
+détermine la dernière décision $d$ pour laquelle il reste une branche à
+explorer. S'il n'existe pas une telle décision, l'algorithme s'arrête. Sinon,
+$\pi$ est recalculé et contient maintenant le chemin partiel précédent dans
+lequel les contraintes correspondant à $d$ ont été niées, et retour à l'étape
+$(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
+(en considérant que le solveur de contraintes peut trouver une solution dans un
+temps raisonnable) et que seulement le plus court des préfixes infaisables de
+chaque chemin infaisable est exploré.
+\end{itemize}
+
+
+
 \subsection{Test fonctionnel}
 \label{sec:test-fonctionnel}
 
@@ -259,7 +342,7 @@ offre la possibilité de réaliser des partitions de domaines.
 TODO
 
 
-\section{Combinaison d'analyses statiques et dynamiques}
+\section{Combinaisons statique/dynamique}
 \label{sec:combinaison}
 
 Les méthodes statiques et les méthodes dynamiques ont des avantages et des
@@ -270,7 +353,7 @@ combiner pour associer leurs avantages et combattre leurs inconvénients
 domaine de la vérification de programmes.
 
 
-\subsection{\textsc{Static ANalysis and TEst}}
+\subsubsection*{\textsc{Static ANalysis and TEst}}
 
 La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
 \framac, combine l'interprétation abstraite, le {\em slicing} et la
@@ -406,7 +489,7 @@ diagnostiquées ne seront plus considérées. L'itération suivante génère la
 couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 
-\subsection{\dyta}
+\subsubsection*{\dyta}
 
 \dyta \cite{\citedyta} est un outil combinant une phase d'analyse statique et
 une phase d'analyse dynamique. \codecontracts \cite{\citecodecontracts} est
@@ -429,7 +512,7 @@ L'analyse statique du graphe du flot de contrôle du programme permet à
 dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
 cette dernière guide l'exploration pour la génération dynamique de tests.
 
-\subsection{Vérification collaborative et test}
+\subsubsection*{Vérification collaborative et test}
 
 Cette méthode \cite{Christakis/FM12} part du constat que la plupart
 des outils de vérifications statiques (outils utilisant simplement des
@@ -465,7 +548,7 @@ revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
 statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
 possible avec \sante.
 
-\subsection{Vérification de propriétés décrites par des automates finis}
+\subsubsection*{Vérification de propriétés décrites par des automates finis}
 
 Cette méthode \cite{Slaby/FMICS12} combine une instrumentation du
 code source, une étape de {\em slicing} et une exécution symbolique.
@@ -489,7 +572,7 @@ programme et le code généré est spécifique à ce type d'erreur. Contrairemen
 \sante, cette méthode n'applique pas d'analyse statique plus générale
 (pouvant lever différents types d'alarmes) avant l'instrumentation.
 
-\subsection{Localisation d'erreurs par slicing guidé par la trace d'exécution}
+\subsubsection*{Localisation d'erreurs par slicing guidé par la trace d'exécution}
 
 Cette méthode \cite{Jiang/QSIC12} utilise un {\em slicing} arrière à
 partir d'une instruction de déréférencement produisant une {\em Null Pointer
@@ -505,7 +588,7 @@ analyse statique, dont le résultat paramètre le {\em slicing}, puis termine pa
 une analyse dynamique; cette méthode commence par une analyse dynamique, dont
 le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
 
-\subsection{\blast}
+\subsubsection*{\blast}
 
 \blast \cite{\citeblast} vérifie les propriétés temporelles de sûreté d'un
 programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
@@ -520,7 +603,7 @@ bit-à-bit, et considère que toutes les opérations arithmétiques sur les
 pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
 propriétés ne contient pas de quantificateurs, contrairement à \acsl.
 
-\subsection{\smart}
+\subsubsection*{\smart}
 
 \smart \cite{\citesmart} (basé sur son prédécesseur \dart \cite{\citedart})
 génère des tests par exécution concolique. Pour résoudre le problème de
@@ -532,7 +615,7 @@ La génération automatique de ces résumés est présentée comme se faisant pa
 ``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
 dynamique car utilisant une exécution symbolique (et résolution de contraintes).
 
-\subsection{\synergy, \dash et \yogi}
+\subsubsection*{\synergy, \dash et \yogi}
 
 \synergy \cite{\citesynergy} est un algorithme combinant du test (essayer
 d'atteindre un état d'erreur) et une abstraction (trouver une abstraction
@@ -554,7 +637,7 @@ les relations d'alias mises en évidence par les tests. La génération de tests
 guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
 la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
 
-\subsection{\sage}
+\subsubsection*{\sage}
 
 \sage \cite{\citesage} utilise une analyse dynamique uniquement afin de générer
 des tests pour des programmes au format binaire x86. Il combine une exécution
@@ -564,7 +647,7 @@ symbolique de cette trace permet de collecter les contraintes du chemin
 d'exécution. De nouveaux chemins sont générés par négation des contraintes,
 à la manière de \pathcrawler et autres outils similaires.
 
-\subsection{\Smash}
+\subsubsection*{\Smash}
 
 \Smash \cite{\citesmash} combine une abstraction par prédicats et une génération
 dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
@@ -588,7 +671,7 @@ Mémoization des résultats intermédiaires sous la forme de résumés réutilis
 \end{definition}
 
 
-\subsubsection{Résumé des outils Microsoft}
+\subsubsection*{Résumé des outils Microsoft}
 
 
 \slam utilise une abstraction par prédicat et un raffinement
@@ -641,7 +724,7 @@ La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
 
 
 
-\subsection{Analyses statique et dynamique pour la génération d'invariants}
+\subsubsection*{Analyses statique et dynamique pour la génération d'invariants}
 
 Cette méthode \cite{Gupta/TACAS09} propose une solution au problème du
 passage à l'échelle de la génération d'invariants (de programmes impératifs) par
@@ -652,7 +735,7 @@ permettent de générer des contraintes qui vont permettre au solveur de
 contraintes de simplifier le système de contraintes et de réduire l'espace de
 recherche.
 
-\subsection{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
+\subsubsection*{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
 
 Le raffinement d'abstraction guidé par des contre-exemples \cite{\citecegar}
 associe
@@ -679,7 +762,7 @@ raffinement de l'abstraction : \cegaar \cite{\citecegaar}. Cette technique
 $\alpha . \lambda^* . \beta$ en une seule étape, où $\lambda$ correspond à une
 ou plusieurs exécutions d'une boucle.
 
-\subsection{\dsdcrasher et \checkncrash}
+\subsubsection*{\dsdcrasher et \checkncrash}
 
 L'outil \dsdcrasher \cite{\citedsdcrasher} combine une première analyse
 dynamique, une analyse statique et une seconde analyse dynamique. La première
@@ -700,7 +783,7 @@ dynamique préliminaire qui détecte des invariants afin de guider l'analyse
 statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
 d'augmenter le taux de classification des alarmes par l'analyse dynamique.
 
-\subsection{Génération de données de test par algorithme génétique}
+\subsubsection*{Génération de données de test par algorithme génétique}
 
 \cite{Romano/ICST11} propose une méthode de génération de données
 de test mettant en évidence des {\em Null Pointer Exceptions} de Java. Tout
@@ -717,7 +800,7 @@ ont montré qu'elle était plus efficace que d'autres stratégies de recherche
 optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
 efficace que la programmation par contraintes (en terme de temps d'exécution). 
 
-\subsection{Génération de tests unitaires à partir de preuves formelles}
+\subsubsection*{Génération de tests unitaires à partir de preuves formelles}
 
 \cite{Engel/TAP07} présente une méthode de
 génération automatique de tests unitaires pour \textsc{Java Card} à partir d'une
@@ -730,12 +813,6 @@ oracles sont générés à partir des postconditions. En revanche, il n'y a aucu
 garantie sur le critère de couverture des chemins par les tests générés,
 celle-ci dépend de la qualité de la spécification du code (présence des
 invariants de boucle, etc.).
-
-
-\section{Langages de spécification}
-
-
-TODO
 
 
 \section{\framac}
@@ -825,67 +902,7 @@ d'échanger des informations entre les différentes analyses opérées par les
 greffons.
 
 
-\section{\pathcrawler}
+\section{Aide à la preuve de programmes}
 
-\pathcrawler \cite{\citepathcrawler} est un outil de génération de tests
-structurels pour les programmes C, accessible sous la forme d'un service web :
-\textsc{PathCrawler Online} \cite{\citepconline}.
 
-Étant donné un programme C sous test $p$ et une pré-condition sur ses entrées,
-il génère des cas de test respectant un critère de couverture de test. Le
-critère \emph{tous les chemins} impose une couverture de tous les chemins
-faisables de $p$. L'exploration exhaustive de tous les chemins étant en pratique
-irréalisable sur des programmes réels, le critère \emph{tous les k-chemins} a
-été défini, il limite l'exploration aux chemins qui ont au plus $k$ itérations
-consécutives de chaque boucle.
-
-\pathcrawler commence par construire une version instrumentée de $p$
-permettant de tracer l'exécution de chaque cas de test, puis il génère les
-contraintes représentant la sémantique de chaque instruction de $p$. La
-prochaine étape est la génération et la résolution de contraintes pour produire
-les cas de test pour un ensemble de chemins $\Pi$ satisfaisant le critère de
-couverture. La résolution de contraintes s'effectue à l'aide
-d'\eclipse \prolog \cite{\citeeclipse}, un environnement de programmation en
-logique par contraintes basé sur \prolog.
-
-Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $p$,
-l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
-de $p$ en suivant le chemin $\pi$.
- 
-La méthode de génération de test est composée des étapes suivantes :
-
-\begin{itemize}
-\item[$(\mathcal{G}_1)$]
-Création d'une variable logique pour chaque entrée.
-Prise en compte des contraintes de la pré-condition.
-Le préfixe de chemin initial $\pi$ est vide.
-Aller à $(\mathcal{G}_2)$.
-
-\item[$(\mathcal{G}_2)$]
-Exécuter symboliquement le chemin $\pi$ : ajout des contraintes et
-mise à jour de la mémoire en fonction des instructions de $\pi$.
-Si certaines contraintes sont insatisfiables, aller à $(\mathcal{G}_5)$.
-Sinon, aller à $(\mathcal{G}_3)$.
-
-\item[$(\mathcal{G}_3)$]
-Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
-les contraintes du chemin courant. Si les contraintes sont insatisfiables, aller
-à $(\mathcal{G}_5)$.
-Sinon, aller à $(\mathcal{G}_4)$.
-
-\item[$(\mathcal{G}_4)$]
-Exécuter le programme avec trace sur le cas de test $t$ généré pour obtenir
-le chemin d'exécution, qui doit commencer par $\pi$.
-Aller à $(\mathcal{G}_5)$.
-
-\item[$(\mathcal{G}_5)$]
-Calculer le prochain chemin partiel $\pi$ à couvrir. Un parcours en profondeur
-détermine la dernière décision $d$ pour laquelle il reste une branche à
-explorer. S'il n'existe pas une telle décision, l'algorithme s'arrête. Sinon,
-$\pi$ est recalculé et contient maintenant le chemin partiel précédent dans
-lequel les contraintes correspondant à $d$ ont été niées, et retour à l'étape
-$(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
-(en considérant que le solveur de contraintes peut trouver une solution dans un
-temps raisonnable) et que seulement le plus court des préfixes infaisables de
-chaque chemin infaisable est exploré.
-\end{itemize}
+TODO
