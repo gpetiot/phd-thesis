@@ -145,38 +145,28 @@ Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block_length},
 
 \lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
 qui contient, au label \lstinline{L}, le pointeur \lstinline{p}.
-La Fig.~\ref{fig:base-addr} illustre \lstinline{\base_addr(p)}.
-La Fig.~\ref{fig:base-addr-example}
-illustre l'utilisation de \lstinline{\base_addr}, l'annotation de ce
-programme est vraie.
+
 \lstinline'\block_length{L}(p)' retourne la longueur (en octets) du
 bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}.
-La Fig.~\ref{fig:block-length} illustre \lstinline{\block_length(p)}.
-La Fig.~\ref{fig:block-length-example} illustre l'utilisation de
-\lstinline{\block_length}, l'annotation de ce programme est vraie.
+
 \lstinline'\offset{L}(p)' retourne le décalage (en octets), au label
 \lstinline{L}, entre \lstinline{p} et son adresse de base.
-La Fig.~\ref{fig:offset} illustre \lstinline{\offset(p)}.
-La Fig.~\ref{fig:offset-example} illustre l'utilisation de
-\lstinline{\offset}, l'annotation de ce programme est vraie.
+
 \lstinline'\valid{L}(p)' (respectivement \lstinline'\valid_read{L}(p)') est vrai
 si le déréférencement de \lstinline{p} au label \lstinline{L} est autorisé en
 lecture et en écriture (resp. au moins en lecture).
 \lstinline'\valid{L}(p)' implique \lstinline'\valid_read{L}(p)'
 mais l'inverse n'est pas vrai.
-La Fig.~\ref{fig:valid} illustre le prédicat \lstinline{\valid}.
-La Fig.~\ref{fig:valid-example} illustre l'utilisations du prédicat
-\lstinline{\valid}. Dans ce programme toutes les assertions de validité
-sont vraies.
+
 \lstinline'\initialized{L}(p)' est un prédicat prenant un pointeur \lstinline{p}
 sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
 initialisée au label \lstinline{L}.
-La Fig.~\ref{fig:initialized} illustre le prédicat \lstinline{\initialized}.
-La Fig.~\ref{fig:initialized-example} illustre
-l'utilisation du prédicat \lstinline{\initialized}. Dans ce programme,
-toutes les assertions sont vraies.
 
-
+La Fig.~\ref{lst:mem-annots} illustre ces annotations sur un programme C, le
+programme et ses annotations sont correctes : l'exécution du programme traduit
+par \eacsltoc ne génère pas d'erreur.
+La Fig.~\ref{fig:mem-annots} schématise la mémoire allouée par le programme de
+la Fig.~\ref{lst:mem-annots}.
 
 
 Pour pouvoir traiter ces annotations \acsl, nous devons donc conserver
