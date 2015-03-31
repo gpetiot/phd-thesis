@@ -31,25 +31,26 @@ une formule de logique temporelle linéaire, de sorte que les annotations sont
 vérifiées si le programme repecte la formule.
 
 
-\section{Langages de spécification}
-\label{sec:speclang}
-
-
-\subsection{Java Modeling Language (JML)}
-\label{sec:jml}
-
-TODO
-
-
-\subsection{ANSI/ISO C Specification Language (ACSL)}
-\label{sec:acsl}
-
-TODO
 
 
 \section{Analyse statique}
 \label{sec:AS}
 
+
+\subsection{Langages de spécification}
+\label{sec:speclang}
+
+
+\subsubsection*{Java Modeling Language (\jml)}
+\label{sec:jml}
+
+TODO
+
+
+\subsubsection*{ANSI/ISO C Specification Language (\acsl)}
+\label{sec:acsl}
+
+TODO
 
 L'analyse statique \cite{Nielson/99} examine le code source du programme
 sans l'exécuter. Elle raisonne sur tous les comportements qui pourraient
@@ -66,7 +67,7 @@ des invariants sur les valeurs des variables du programme (une plage de valeurs
 par exemple), afin d'exclure certains risques d'erreurs à l'exécution.
 
 Parmi les méthodes statiques sont distinguées : l'interprétation abstraite
-(section~\ref{sec:interpretation-abstraite}), l'abstraction à partir de
+(section~\ref{sec:interpretation-abstraite}), l'abstraction à base de
 prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de programmes
 (section~\ref{sec:preuve}).
 
@@ -95,7 +96,7 @@ L’erreur signalée par une alarme peut ne jamais apparaître à l’exécution
 ce cas on l’appelle fausse alarme. On ne calcule donc pas la propriété exacte
 mais une abstraction de cette propriété, en imposant la contrainte de sûreté
 suivante : ``la propriété abstraite calculée ne doit oublier aucune exécution
-concrète''. L'abstraction est effectuée à partir de prédicats atomiques
+concrète''. L'abstraction est effectuée à base de prédicats atomiques
 définissant des abstractions des domaines des variables.
 
 \polyspace \cite{\citepolyspace} a été le premier outil commercial
@@ -109,10 +110,10 @@ qui mesure précisément les approximations faites à l'exécution d'un programm
 
 
 
-\subsection{Abstraction à partir de prédicats}
+\subsection{Abstraction à base de prédicats}
 \label{sec:abstraction-predicats}
 
-L'abstraction à partir de prédicats \cite{Schiller/OOPSLA12} est une
+L'abstraction à base de prédicats \cite{Schiller/OOPSLA12} est une
 technique permettant de générer automatiquement des abstractions de systèmes au
 nombre d'états infini. Pour un programme $P$ au nombre d'états infini, un
 ensemble fini de prédicats $E = \{f_1, ..., f_n\}$ est défini, ces prédicats
@@ -166,6 +167,10 @@ programmes dont le code contient des annotations \acsl \cite{\citeacsl}.
 
 \section{Analyse dynamique}
 \label{sec:AD}
+
+
+\subsection{Langages de spécification exécutables}
+\label{sec:execspeclang}
 
 
 L’analyse dynamique est basée sur des techniques d’exécution du programme, de
