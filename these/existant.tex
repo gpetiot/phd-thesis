@@ -697,18 +697,17 @@ compositionnel. \Smash est la version compositionelle de
 
 
 
-La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
+La Table~\ref{tab:microsoft-summary} résume graphiquement ces outils.
 
 
-\begin{figure}
+\begin{table}
   \centering
   \begin{scriptsize}
-    \begin{tabular}{|c|c|c|c|c|c|c|}
-      \hline
+    \begin{tabular}{c|c|c|c|c|c|c}
       \multirow{3}{*}{Outils} & \multicolumn{3}{c|}{Analyse statique}
-      & \multicolumn{3}{c|}{Analyse dynamique} \\
+      & \multicolumn{3}{c}{Analyse dynamique} \\
       & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc}
-      & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc} \\
+      & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c}{inter-proc} \\
       & & non-compo & compo & & non-compo & compo \\
       \hline
       \slam & & & \ok & & & \\
@@ -722,12 +721,11 @@ La figure~\ref{fig:microsoft-summary} résume graphiquement ces outils.
     \dash & & \ok & & & \ok & \\
     \hline
     \Smash & & & \ok & & & \ok \\
-    \hline
     \end{tabular}
   \end{scriptsize}
   \caption{Type d'analyse et caractéristiques des outils de Microsoft}
-  \label{fig:microsoft-summary}
-\end{figure}
+  \label{tab:microsoft-summary}
+\end{table}
 
 
 
