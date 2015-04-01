@@ -33,5 +33,5 @@ endif
 clean:
 	rm *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
 
-run_eacsl2c_on_mem_annots: mem_annots.c
+run_eacsl2c_on_mem_annots: listings/mem_annots.c
 	frama-c $< -e-acsl -then-on e-acsl -print -ocode out.c && gcc out.c `frama-c -print-share-path`/e-acsl/e_acsl.c `frama-c -print-share-path`/e-acsl/memory_model/e_acsl_mmodel.c `frama-c -print-share-path`/e-acsl/memory_model/e_acsl_bittree.c && ./a.out
