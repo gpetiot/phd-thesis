@@ -1,7 +1,5 @@
 
-%\chapterintro
-
-\section{Introduction}
+\chapterintro
 
 
 Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
@@ -12,15 +10,6 @@ Cette solution inclut un langage de spécification exécutable, \eacsl,
 et un traducteur, \eacsltoc \cite{\citeeacsltoc}.
 Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
 de spécification \eacsl.
-
-\subsection{\textsc{Executable-acsl}}
-
-\eacsl est un sous-ensemble ``exécutable'' du langage \acsl
-implémenté dans \framac. Contrairement à \acsl, chaque
-spécification \eacsl est exécutable : elle peut être évaluée à
-l'exécution.
-
-\subsection{Bibliothèque de monitoring de la mémoire}
 
 Afin de supporter les annotations relatives au modèle mémoire (validité d'un
 pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
@@ -37,9 +26,7 @@ annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
 du nouveau programme est exactement le même que celui du programme d'origine.
 
 
-
-
-\section{Informations relatives à la validité et à l'initialisation}
+\section{Annotations \eacsl liées à la mémoire}
 
 
 Détaillons les annotations \acsl que nous souhaitons prendre en compte.
@@ -96,10 +83,3 @@ pour chaque bloc les informations suivantes :
 \item un booléen indiquant s'il y a eu un accès au bloc hors bornes
 \end{itemize}
 
-
-
-
-
-\section{Conclusion}
-conclusion + future work + application dans le greffon PathCrawler (transition
-avec le chapitre suivant)

@@ -172,10 +172,6 @@ programmes dont le code contient des annotations \acsl \cite{\citeacsl}.
 \label{sec:AD}
 
 
-\subsection{Langages de spécification exécutables}
-\label{sec:execspeclang}
-
-
 L’analyse dynamique est basée sur des techniques d’exécution du programme, de
 simulation \cite{Whitner/WSC89} d’un modèle ou d'exécution symbolique
 \cite{Clarke/76}, regroupées sous le terme générique ``test''.
@@ -201,6 +197,17 @@ fonctionnel (section~\ref{sec:test-fonctionnel}). Comme son nom l'indique, le
 test aléatoire consiste à générer des valeurs d'entrée du programme au hasard et
 ne sera pas détaillé dans cette thèse.
 
+
+\subsection{Langages de spécification exécutables}
+\label{sec:execspeclang}
+
+
+\subsubsection*{\textsc{Executable-acsl} (\eacsl)}
+
+\eacsl est un sous-ensemble ``exécutable'' du langage \acsl
+implémenté dans \framac. Contrairement à \acsl, chaque
+spécification \eacsl est exécutable : elle peut être évaluée à
+l'exécution.
 
 
 \subsection{Exécution symbolique pour le test structurel}
