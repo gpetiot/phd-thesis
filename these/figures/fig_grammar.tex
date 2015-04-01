@@ -1,0 +1,51 @@
+\begin{figure}[tb]
+%\vspace{-3mm}
+\begin{tabular}{lrl}
+%\textit{globals}  & ::= & \textit{decl}$^*$ \\
+\textit{function}  & ::= 
+   & \texttt{/*@}  (\texttt{requires}
+   \textit{\underline{predicate}}\texttt{;})*
+\\
+ & & \texttt{\phantom{/*@}} (\texttt{typically}
+       \textit{\underline{predicate}}\texttt{;})*
+\\
+ & & \texttt{\phantom{/*@}} (\texttt{ensures}
+       \textit{\underline{predicate}}\texttt{;})* \texttt{~*/}
+\\
+ & & \textit{\underline{type}}$^{\textit{as}\;T}$
+       \textit{\underline{id}}$^{\textit{as}\;f}$ (\textit{\underline{params}})
+     \{ \\
+     & &   \textit{Beg}$_f$ : $T$ \texttt{res;} \\
+     & & \textit{decl}$^*$ \quad \textit{stmt}$^*$ \\
+     & & \textit{End}$_f$ : \texttt{return res;} \}
+\\
+\textit{decl}  & ::= 
+ & \textit{\underline{type}} \textit{\underline{id}}\texttt{;} \\
+\textit{stmt}  & ::=
+ &   \textit{\underline{label}} :
+    \texttt{assert} \textit{\underline{predicate}}\texttt{;}
+\\
+ & $\mid$ & \textit{\underline{label}}$^{\textit{as}\;l}$ :
+     (\texttt{/*@} \textit{loop\_annot} \texttt{*/})$^?$
+\\
+ & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
+        \texttt{while} ( \textit{\underline{bool\_expr}} ) \{
+\\
+ & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
+        \quad \textit{BegIter}$_l$ : \quad \textit{stmt}$^*$
+\\
+ & &  \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :}   
+        \quad \textit{EndIter}$_l$ : \}
+\\
+ & $\mid$ & (\textit{\underline{label}} :)$^?$ 
+    \textit{\underline{not\_while\_stmt}}
+\\
+\textit{loop\_annot}  & ::= 
+ & (\texttt{loop invariant} \textit{\underline{predicate}}\texttt{;})* 
+\\
+ & &  (\texttt{loop variant} \textit{\underline{term}}\texttt{;})$^?$
+\end{tabular}
+\vspace{-1mm}
+\caption{Grammar of an annotated C function \label{fig:grammar}}
+\vspace{-4mm}
+\end{figure}
