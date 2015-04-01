@@ -309,9 +309,7 @@ requêtes a également été enregistré.
 
 
 
-\begin{description}
-
-\item[Implémentation du store] \hfill \\
+\textbf{Implémentation du store :}\\
 Pour déterminer quelle implémentation du $store$ est la plus appropriée, nous
 avons comparé des implémentations utilisant : des Patricia tries, des listes
 chaînées, des arbres binaires de recherche non équilibrés et des Splay trees.
@@ -330,7 +328,7 @@ les performances sont beaucoup moins bonnes (jusqu'à 500 fois). Ceci est dû à
 la nature des Splay treees : le dernier élément accédé est remonté à la racine
 de l'arbre.
 
-\item[Calcul du plus grand préfixe commun] \hfill \\
+\textbf{Calcul du plus grand préfixe commun :} \\
 Nous avons comparé deux implémentations de ce calcul. La première utilise un
 parcours linéaire de l'adresse (bit-à-bit, de gauche à droite). La seconde
 est une recherche dichotomique du meilleur préfixe dans un tableau dont le
@@ -338,7 +336,7 @@ contenu et les indices (indiquant le prochain élément à tester) sont
 pré-calculés. Cette seconde implémentation s'est révélée en moyenne 2.7 fois
 plus rapide que la première sur nos exemples.
 
-\item[Capacité de détection d'erreurs] \hfill \\
+\textbf{Capacité de détection d'erreurs :} \\
 Nous avons utilisé le ``test mutationnel'' pour évaluer la capacité de détection
 d'erreurs en utilisant la vérification d'assertion à l'exécution avec
 \framac. Nous avons considéré 5 exemples annotés et généré leurs
@@ -347,7 +345,6 @@ avons appliqué la vérification à l'exécution. Les mutations incluent :
 modifications d'opérateur arithmétique numérique, modifications d'opérateur
 arithmétique sur les pointeurs, modifications d'opérateur de comparaison et
 modifications d'opérateur logique ($land$ et $lor$).
-
 L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
 utilisé pour produire les cas de test. Chaque mutant a été instrumenté par
 \eacsltoc et exécuté sur chaque cas de test pour vérifier que la
@@ -358,7 +355,6 @@ toutes les vérifications à l'exécution. Lorsqu'une violation d'une annotation
 faite des mutants équivalents (lorsque la mutation produit un programme
 équivalent au programme d'origine), tous les mutants erronés ont été tués.
 
-\end{description}
 
 La Table~\ref{tab:mmodel-exp} contient les résultats des expérimentations
 comparant les différentes implémentations du $store$ et du calcul du plus grand
