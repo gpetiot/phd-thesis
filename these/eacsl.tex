@@ -86,11 +86,8 @@ chaque octet du bloc.
 \subsection{Calcul du plus grand préfixe commun}
 
 
-\begin{figure}[bt]
-  \lstinputlisting{listings/common_prefix_mask.c}
-  \caption{Calcul du plus grand préfixe commun}
-  \label{lst:prefix}
-\end{figure}
+\lstinputlisting[caption={Calcul du plus grand préfixe commun},
+  label=lst:prefix]{listings/common_prefix_mask.c}
 
 
 Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
@@ -111,7 +108,7 @@ La version optimisée de ce calcul consiste
 maintenant en une recherche dichotomique dans un tableau pré-calculé qui
 contient tous les préfixes possibles. Les transitions entre les étapes de la
 recherche se font en utilisant des indices pré-calculés, de manière à obtenir
-le prochain masque à essayer. La Fig.~\ref{lst:prefix} illustre cette
+le prochain masque à essayer. Le Listing~\ref{lst:prefix} illustre cette
 implémentation du calcul sur des mots de 8 bits. Les masques sont
 stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
 masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.

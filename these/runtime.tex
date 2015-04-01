@@ -18,11 +18,8 @@ Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block_length},
 \input{figures/fig_mem_annots}
 
 
-\begin{figure}[tb]
-  \lstinputlisting[firstline=4,firstnumber=1] {listings/mem_annots.c}
-  \caption{Annotations mémoire -- Exemple en C}
-  \label{lst:mem-annots}
-\end{figure}
+\lstinputlisting[caption={Annotations mémoire -- Exemple en C},
+   label=lst:mem-annots,firstline=4,firstnumber=1]{listings/mem_annots.c}
 
 
 \lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
@@ -44,11 +41,11 @@ mais l'inverse n'est pas vrai.
 sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
 initialisée au label \lstinline{L}.
 
-La Fig.~\ref{lst:mem-annots} illustre ces annotations sur un programme C, le
+Le Listing~\ref{lst:mem-annots} illustre ces annotations sur un programme C, le
 programme et ses annotations sont correctes : l'exécution du programme traduit
 par \eacsltoc ne génère pas d'erreur.
-La Fig.~\ref{fig:mem-annots} schématise la mémoire allouée par le programme de
-la Fig.~\ref{lst:mem-annots}.
+La Fig.~\ref{fig:mem-annots} schématise la mémoire allouée par le programme du
+Listing~\ref{lst:mem-annots}.
 
 
 Pour pouvoir traiter ces annotations \acsl, nous devons donc conserver
