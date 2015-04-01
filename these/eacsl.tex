@@ -158,43 +158,7 @@ on retourne \lstinline{NULL}.
 \subsection{Ajout}
 
 
-\begin{figure}[h]
-  \begin{center}
-    \begin{tabular}{ccc}
-      \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
-          style={font=\scriptsize}]
-        \node[pnode] {\texttt{0010\,****}}
-        child { node[pleaf] {\texttt{0010\,0110}} }
-        child { node[pnode] {\texttt{0010\,1***}}
-          child { node[pleaf] {\texttt{0010\,1001}} }
-          child { node[pleaf] {\texttt{0010\,1101}} }
-        };
-        \node at (-1.7,0) {\textbf{a)}};
-      \end{tikzpicture}
-& 
-      \hspace{1mm} 
-&
-      \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
-          sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
-        \node[pnode] {\texttt{0010\,****}}
-        child { node[pnode] {\texttt{0010\,011*}}
-          child { node[pleaf] {\texttt{0010\,0110}} }
-          child { node[pleaf] {\texttt{0010\,0111}} }
-        }
-        child { node[pnode] {\texttt{0010\,1***}}
-          child { node[pleaf] {\texttt{0010\,1001}} }
-          child { node[pleaf] {\texttt{0010\,1101}} }
-        };
-        \node at (-3.4,0) {\textbf{b)}};
-     \end{tikzpicture}   
-    \end{tabular}
-  \end{center}
-  \vspace{-3mm}
-  \caption{Exemple de Patricia trie \textbf{a)} avant,
-    et \textbf{b)} après insertion de \texttt{0010\,0111}}
-  \vspace{-3mm}
-  \label{fig:insertion-Patricia-trie}
-\end{figure}
+\input{figures/fig_add_patricia_trie}
 
 
 L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
@@ -227,43 +191,8 @@ courant.
 \subsection{Suppression}
 
 
-\begin{figure}[h]
-  \begin{center}
-    \begin{tabular}{ccc}
-      \begin{tikzpicture}[grow=down,level 2/.style={sibling distance=17mm},
-          sibling distance=35mm,level distance=6mm,style={font=\scriptsize}]
-        \node[pnode] {\texttt{0010\,****}}
-        child { node[pnode] {\texttt{0010\,011*}}
-          child { node[pleaf] {\texttt{0010\,0110}} }
-          child { node[pleaf] {\texttt{0010\,0111}} }
-        }
-        child { node[pnode] {\texttt{0010\,1***}}
-          child { node[pleaf] {\texttt{0010\,1001}} }
-          child { node[pleaf] {\texttt{0010\,1101}} }
-        };
-        \node at (-3.4,0) {\textbf{a)}};
-     \end{tikzpicture}   
-& 
-      \hspace{1mm} 
-&
-       \begin{tikzpicture}[grow=down,sibling distance=18mm,level distance=6mm,
-          style={font=\scriptsize}]
-        \node[pnode] {\texttt{0010\,****}}
-        child { node[pleaf] {\texttt{0010\,0110}} }
-        child { node[pnode] {\texttt{0010\,1***}}
-          child { node[pleaf] {\texttt{0010\,1001}} }
-          child { node[pleaf] {\texttt{0010\,1101}} }
-        };
-        \node at (-1.7,0) {\textbf{b)}};
-      \end{tikzpicture}
-    \end{tabular}
-  \end{center}
-  \vspace{-3mm}
-  \caption{Exemple de Patricia trie \textbf{a)} avant,
-    et \textbf{b)} après suppression de \texttt{0010\,0111}}
-  \vspace{-3mm}
-  \label{fig:suppression-Patricia-trie}
-\end{figure}
+\input{figures/fig_rem_patricia_trie}
+
 
 La suppression d'une feuille $x$ du Patricia trie se déroule comme suit. Si cet
 élément est la racine, l'arbre devient vide. Sinon, Cette feuille a un frère $y$
