@@ -334,7 +334,7 @@ utilisé pour produire les cas de test. Chaque mutant a été instrumenté par
 spécification était satisfaite à l'exécution. Les programmes d'origine passent
 toutes les vérifications à l'exécution. Lorsqu'une violation d'une annotation a
 été reportée pour au moins un cas de testn le mutant est considéré comme étant
-{\em tué}. La Fig.~\ref{fig:mutation-exp} illustre les résultats. Exception
+{\em tué}. La Table~\ref{tab:mutation-exp} illustre les résultats. Exception
 faite des mutants équivalents (lorsque la mutation produit un programme
 équivalent au programme d'origine), tous les mutants erronés ont été tués.
 
@@ -415,10 +415,9 @@ nos hypothèses, à savoir :
 
 
 
-\begin{table}[t]
+\begin{table}[tb]
   \centering
-  \begin{tabular}{|c|c|c|c|c|c|c|}
-    \hline
+  \begin{tabular}{c|c|c|c|c|c}
     & alarmes & mutants & équivalents & tués & \% erronés tués \\
     \hline
     fibonacci & 19  & 27 & 2 & 25 & 100\% \\
@@ -430,8 +429,7 @@ nos hypothèses, à savoir :
     binarySearch & 7 & 38 & 1 & 37 & 100\% \\
     \hline
     merge & 5 & 92 & 5 & 87 & 100\% \\
-    \hline
   \end{tabular}
-  \label{fig:mutation-exp}
+  \label{tab:mutation-exp}
   \caption{Capacité de détection d'erreurs}
 \end{table}
