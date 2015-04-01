@@ -8,6 +8,9 @@
 \tikzstyle{full}=[fill=blue!20]
 \tikzstyle{init}=[fill=green!20]
 \tikzstyle{uninit}=[fill=white]
+\tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
+\tikzstyle{pleaf}=[pnode,fill=gray!30]
+\tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
 
 \newcommand{\tikzinsert}[3]{%
   \tikz[remember picture,overlay]\node[#3] (#1) {#2};}
