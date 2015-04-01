@@ -7,7 +7,7 @@ LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c listings/swap.c
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex motiv_contrib.tex traduction.tex preuve.tex runtime.tex stady.tex scenarios.tex ce.tex eacsl.tex
+main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex motiv_contrib.tex traduction.tex preuve.tex runtime.tex stady.tex scenarios.tex ce.tex eacsl.tex header.tex
 	latex $^
 	bibtex main
 	latex $^

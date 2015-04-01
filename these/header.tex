@@ -1,0 +1,26 @@
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[frenchb]{babel}
+\usepackage[nounderscore]{syntax}
+\usepackage{listings,courier,multirow,colortbl,hyperref,url,etex,pstricks-add,
+  lscape,tikz,pgfplots,amssymb,pifont}
+\usetikzlibrary{matrix,shapes,backgrounds,fit,chains}
+
+\tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
+\tikzstyle{pleaf}=[pnode,fill=gray!30]
+\tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
+
+\input{commands}
+\input{style_listings}
+
+
+\declarethesis{Contribution à la Vérification de Programmes C par Combinaison
+  Tests et Preuves}{\today}{reference number}
+\addauthor{Guillaume}{Petiot}
+\addjury{Firstname}{Lastname}{Role}{Job}
+
+\thesisabstract[english]{Abstract}
+\thesiskeywords[english]{keyword1, keyword2}
+\thesisabstract[french]{Résumé}
+\thesiskeywords[french]{keyword1, keyword2}
