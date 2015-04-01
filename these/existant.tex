@@ -867,23 +867,13 @@ post-conditions, une clause indique quels sont les emplacements mémoire qui
 peuvent être affectés (\lstinline{assigns}) par la fonction.
 
 
-\begin{figure}[h]
-\begin{lstlisting}
-/*@ requires \valid(a) && \valid(b);
-    requires \separated(a,b);
-    assigns *a, *b;
-    ensures *a == \at(*b,Pre);
-    ensures *b == \at(*a,Pre); */
-void swap(int* a, int* b);
-\end{lstlisting}
-\caption{Exemple de spécification \acsl}
-\label{fig:acsl-spec}
-\end{figure}
+\lstinputlisting[caption={Exemple de spécification \acsl},label=lst:swap]
+   {listings/swap.c}
 
 
 Considérons par exemple une spécification fournie pour une fonction
 \lstinline{swap}
-(Fig.~\ref{fig:acsl-spec}). La première pré-condition établit que les deux
+(Listing~\ref{lst:swap}). La première pré-condition établit que les deux
 arguments doivent être des pointeurs valides, autrement dit, le déréférencement
 de $a$ ou de $b$ ne produira pas d'erreur à l'exécution. La seconde
 pré-condition impose que les emplacements mémoire occupés par chacune de ces

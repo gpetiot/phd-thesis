@@ -3,7 +3,7 @@ MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
 FIG=figures/fig_SANTE_slicing.tex figures/fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) figures/fig_mem_annots.tex
-LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c
+LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c listings/swap.c
 
 all: main.pdf
 
