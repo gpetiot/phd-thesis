@@ -340,9 +340,10 @@ faite des mutants équivalents (lorsque la mutation produit un programme
 
 \end{description}
 
-La Fig.~\ref{fig:mmodel-exp} contient les résultats des expérimentations
+La Table~\ref{tab:mmodel-exp} contient les résultats des expérimentations
 comparant les différentes implémentations du $store$ et du calcul du plus grand
-préfixe commun. bS$_{10000}$ est une recherche binaire dans un tableaux de 10000
+préfixe commun, la Fig.~\ref{fig:mmodel-exp} représente graphiquement ces
+données. bS$_{10000}$ est une recherche binaire dans un tableaux de 10000
 éléments. iS$_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
 mM$_{n^2}$ est une multiplication de matrices $n \times n$. mI$_{n^2}$ contient
 des calculs matriciels (dont inversion et multiplication) sur des  matrices
@@ -394,7 +395,9 @@ nos hypothèses, à savoir :
 \begin{landscape}
   \begin{table}[h]
     \centering
+    \begin{footnotesize}
     \input{table_eacsl_experiments.tex}
+    \end{footnotesize}
     \label{tab:mmodel-exp}
     \caption{Comparaison des différentes implémentations du $store$}
   \end{table}
