@@ -395,24 +395,27 @@ nos hypothèses, à savoir :
   \begin{table}[h]
     \centering
     \input{table_eacsl_experiments.tex}
-    \label{fig:mmodel-exp}
+    \label{tab:mmodel-exp}
     \caption{Comparaison des différentes implémentations du $store$}
   \end{table}
 \end{landscape}
 
 
-
-\begin{tikzpicture}
-  \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log]
-    \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}\loadedtable;
-    \foreach \i in {
-      list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
-      \addplot table [x=N, y=\i] {\loadedtable};
-    }
-    \legend{list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA}
-  \end{axis}
-\end{tikzpicture}
-
+\begin{figure}[bt]
+  \begin{tikzpicture}
+    \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log]
+      \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
+      \loadedtable;
+      \foreach \i in {
+        list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
+        \addplot table [x=N, y=\i] {\loadedtable};
+      }
+      \legend{list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA}
+    \end{axis}
+  \end{tikzpicture}
+  \label{fig:mmodel-exp}
+  \caption{Comparaison des différentes implémentations du $store$}
+\end{figure}
 
 
 \begin{table}[tb]
