@@ -2,11 +2,12 @@ MLPOST_EXEC :=$(shell which mlpost)
 MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
-FIG=fig_SANTE_slicing.tex fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) tikz_mem_annots.tex
+FIG=figures/fig_SANTE_slicing.tex figures/fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) figures/fig_mem_annots.tex
+LISTINGS=listings/mem_annots.c
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(FIG) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex mem_annots.c motiv_contrib.tex traduction.tex preuve.tex runtime.tex stady.tex scenarios.tex ce.tex
+main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex motiv_contrib.tex traduction.tex preuve.tex runtime.tex stady.tex scenarios.tex ce.tex
 	latex $^
 	bibtex main
 	latex $^
