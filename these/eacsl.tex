@@ -131,8 +131,9 @@ implémentation du calcul sur des mots de 8 bits. Les masques sont
 stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
 masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.
 ligne 5). Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
-et la fonction essaie i = 4, puis i = shorter[4] = 2, puis i = longer[2] = 3,
-puis i = longer[3] = -3, pour finalement retourner mask[3] = \texttt{0xE0}, qui
+et la fonction essaie \lstinline'i = 4', puis \lstinline'i = shorter[4] = 2',
+puis \lstinline'i = longer[2] = 3', puis \lstinline'i = longer[3] = -3', pour
+finalement retourner \lstinline'mask[3] = 0xE0', qui
 est précisément \texttt{1110\,0000}.
 
 
