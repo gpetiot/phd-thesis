@@ -2,21 +2,24 @@ MLPOST_EXEC :=$(shell which mlpost)
 MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
-FIG=figures/fig_SANTE_slicing.tex figures/fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) figures/fig_mem_annots.tex figures/fig_add_patricia_trie.tex figures/fig_rem_patricia_trie.tex
+FIG=$(MLFIG:.ml=.mps) figures/fig_mem_annots.tex figures/fig_add_patricia_trie.tex figures/fig_rem_patricia_trie.tex
 LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c listings/swap.c
-CHAPTERS=$(wildcard chapter_*.tex)
+CHAPTERS_TEX=$(wildcard chapter_*.tex)
+CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
 
-all: main.pdf
+all: main.pdf $(CHAPTERS_PDF)
 
-main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex $(CHAPTERS) header.tex
-	latex $^
+main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex $(CHAPTERS_TEX) header.tex
+	pdflatex $<
 	bibtex main
-	latex $^
-	latex $^
+	pdflatex $<
+	pdflatex $<
 
-main.pdf: main.dvi
-	dvipdf main.dvi
-
+$(CHAPTERS_PDF): %.pdf: %.tex chapter.tex header.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex commands.tex
+	pdflatex -jobname="$(patsubst %.tex,%,$<)" "\def\chaptertoinclude{$(patsubst %.tex,%,$<)}\input{chapter}"
+	bibtex $(patsubst %.tex,%,$<)
+	pdflatex -jobname="$(patsubst %.tex,%,$<)" "\def\chaptertoinclude{$(patsubst %.tex,%,$<)}\input{chapter}"
+	pdflatex -jobname="$(patsubst %.tex,%,$<)" "\def\chaptertoinclude{$(patsubst %.tex,%,$<)}\input{chapter}"
 
 .SUFFIXES: .fig .pdf .eps .mll .ml .mps
 

@@ -384,8 +384,7 @@ classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
 possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
 testés et donc le temps nécessaire à leur analyse.
 
-Le fonctionnement général de la méthode est illustré par la
-Fig.~\ref{figSlicing} ~\textbf{a}. Cette méthode utilise l'analyse de valeurs
+Cette méthode utilise l'analyse de valeurs
 (interprétation abstraite) afin de sélectionner les instructions pour lesquelles
 le risque d'une erreur à l'exécution n'est pas écarté (nous les appellerons
 ``alarmes'' par la suite), par exemple une division par zéro ou un accès
@@ -417,29 +416,25 @@ la correction de cette méthode et le résultat des analyses comparées sont
 détaillés dans \cite{Chebaro/11} et \cite{\citesante} et ne seront pas répétés
 ici.
 
-\input{figures/fig_SANTE_slicing.tex}
-
 L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
 simplifié et est soumis en l'état à \pathcrawler.
 
-L'option {\em all} (Fig.~\ref{figSlicing} ~\textbf{b}) génère un seul programme
+L'option {\em all} génère un seul programme
 simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
 option ne tire pas profit du fait que certaines alarmes peuvent être
 indépendantes (et peuvent donc être soumises séparément), la complexité du
 programme soumis à \pathcrawler peut l'empêcher de générer des cas de
 test pour toutes les alarmes dans le temps qui lui est imparti.
 
-L'option {\em each} (Fig.~\ref{figSlicing} ~\textbf{c}) tente de corriger ce
+L'option {\em each} tente de corriger ce
 défaut, elle génère un programme simplifié par alarme et invoque
 \pathcrawler autant de fois. Ainsi, les alarmes les plus simples ne sont
 pas pénalisées par les plus complexes. Néanmoins, en cas de dépendances
 mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
 \pathcrawler, ce qui est une perte de temps.
 
-\input{figures/fig_SANTE_slicing_advanced.tex}
 
-
-L'option {\em min} (Fig.~\ref{figSlicingAdvanced} ~\textbf{a}) tente de corriger
+L'option {\em min} tente de corriger
 les inconvénients de {\em all} et de {\em each} et propose de générer une
 couverture minimale des alarmes par {\em slicing}, de manière à regrouper dans
 un même ensemble les alarmes ayant une relation de dépendance \cite{\citesante}.
@@ -481,8 +476,8 @@ Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
 complexes à classifier pénalisent les autres, qui peuvent ne pas être
 diagnostiquées dans le temps imparti.
 
-Pour corriger ce défaut, l'option {\em smart} (Fig.~\ref{figSlicingAdvanced}
-~\textbf{b}) est définie. Elle consiste à appliquer {\em min} itérativement en
+Pour corriger ce défaut, l'option {\em smart} est définie.
+Elle consiste à appliquer {\em min} itérativement en
 diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
 supprimées seront des alarmes classifiées ou des alarmes finales.
 
