@@ -1,29 +1,10 @@
 
 \chapterintro
 
-
-Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
-programmes C, dévelopée pour la vérification d'assertions à l'exécution
-({\em runtime assertion checking} \cite{Clarke/06}) dans \framac
-\cite{\citeframac}.
-Cette solution inclut un langage de spécification exécutable, \eacsl,
-et un traducteur, \eacsltoc \cite{\citeeacsltoc}.
-Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
-de spécification \eacsl.
-
 Afin de supporter les annotations relatives au modèle mémoire (validité d'un
 pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
-monitorer les opérations effectuées en mémoire par le programme. Pour ce faire,
-nous avons développé une bibliothèque C permettant d'enregistrer et de récupérer
-les informations de validité et d'initialisation d'un programme. Les appels aux
-fonctions de cette bibiliothèque C sont automatiquement ajoutés aux emplacements
-adéquats dans le code source du programme par \eacsltoc durant la
-traduction de la spécification \eacsl en C.
+monitorer les opérations effectuées en mémoire par le programme.
 
-\eacsltoc est un greffon de \framac qui traduit automatiquement
-un programme C annoté en un autre programme dont l'exécution échouera si une
-annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
-du nouveau programme est exactement le même que celui du programme d'origine.
 
 
 \section{Annotations \eacsl liées à la mémoire}
