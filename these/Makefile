@@ -4,10 +4,11 @@ BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
 FIG=figures/fig_SANTE_slicing.tex figures/fig_SANTE_slicing_advanced.tex $(MLFIG:.ml=.mps) figures/fig_mem_annots.tex figures/fig_add_patricia_trie.tex figures/fig_rem_patricia_trie.tex
 LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c listings/swap.c
+CHAPTERS=$(wildcard chapter_*.tex)
 
 all: main.pdf
 
-main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex existant.tex motiv_contrib.tex traduction.tex preuve.tex runtime.tex stady.tex scenarios.tex ce.tex eacsl.tex header.tex
+main.dvi: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex table_eacsl_experiments.tex commands.tex $(CHAPTERS) header.tex
 	latex $^
 	bibtex main
 	latex $^
