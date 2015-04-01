@@ -2,6 +2,342 @@
 \chapter{Traduction pour le test}
 \label{sec:traduction}
 
-%\chapterintro
+\chapterintro
+
+TODO
+
+\section{Transformation de programme \acsl vers C}
+
+
+
+\input{figures/fig_grammar}
+
+This section presents the instrumentation process for C functions annotated in
+\textsc{ACSL} that we support during test generation for
+the annotated code.
+%either to check the annotations at runtime or to test them. 
+It will be convenient to consider that specific labels 
+are introduced for each statement and annotation inside a function body, as well
+as for  the beginning and the end of each function body and loop body. 
+(Strictly speaking, labels cannot be put just before declarations or ``\lstinline|}|'' in C, but this
+can be easily fixed by adding a skip instruction ``\lstinline{;}'' after such
+labels.)
+We assume that functions respect the normal form defined by the syntactic
+entity \textit{function} from the grammar in Fig.~\ref{fig:grammar}. 
+In this
+figure, the superscript ``${\textit{as}\;X}$'' means that any occurrence of $X$
+in the analysis of the current rule should be replaced with the string referred
+by the superscripted syntactic entity.
+For example, if \texttt{foo} is the name $id$ of the analyzed function in the
+rule $function$, labels $\texttt{Beg}_f$ and $\texttt{End}_f$ in this function's
+body are replaced by $\texttt{Beg}_{\texttt{foo}}$ and $\texttt{End}_{\texttt{foo}}$
+providing unique labels for the beginning and the end of the function body.
+Array and pointer accesses are supposed to be written as \lstinline|*(p+i)|.
+The terminal symbols are presented in a \texttt{typewriter font}.
+\underline{Underlined} non-terminal symbols are not detailed because they are
+part of the C or ACSL languages.
+$Terms$ and $predicates$ are ACSL expressions, most of them are described in
+Sec.~\ref{sec:term} and Sec.~\ref{sec:pred}.
+
+
+
+\subsection{Sous-langage considéré}
+
+The specification language \eacsl is a strict executable subset of \acsl, which
+is a behavioral specification language implemented in \framac. On the one hand,
+designed as a subset of \acsl{}, \eacsl{} preserves \acsl{} semantics.
+Therefore, existing \framac analyzers supporting \acsl{} continue to be used
+with \eacsl{} without any change. On the other hand, the \eacsl{} language is
+\textit{executable}, that is, all its annotations can be translated into C and
+executed at runtime.  Thus it can be used by dynamic analyses and monitors.  Due
+to these two specific features %(preserving \acsl{} semantics and being
+%executable), 
+\eacsl{} facilitates combinations of static and dynamic analyses.
+
+\eacsl is based on a typed first-order logic in which terms may contain
+\textit{pure} (\emph{i.e.} side-effect free) C expressions and special keywords.
+For instance, the \lstinline{\result} keyword allows the user to talk about the
+result of a function, while \lstinline{\valid} is a builtin predicate stating
+that its argument is a valid pointer. Quantifications are bounded by constraints
+to finite intervals of integers
+in order to remain executable. An \textsc{Eiffel}-like contract \cite{eiffel}
+may be associated to each function in order to specify its pre- and
+postconditions. These contracts may be split into several named guarded
+behaviors for which the users may require completeness and/or
+disjointness. Assertions, loop invariants and loop variants may also be
+associated to statements. We now focus on two of the most important design
+choices of the language: integers and undefinedness.
+
+\subsubsection{Integers}\label{sec:eacsl-integers}
+
+In addition to all machine types, \eacsl terms also include mathematical
+integers of type  \lstinline{integer}: integer constants and operators, as well as logic variables are of
+this type. Integer arithmetics is unbounded and never
+overflows. \eacsl holds a small subtyping system to automatically coerce C
+integral types into mathematical integers. For instance, if \lstinline{x} is a C
+variable of type \lstinline{int}, \lstinline{x+1} and \lstinline{1} are of type
+\lstinline{integer} and a coercion from \lstinline{int} to \lstinline{integer} is
+introduced when typing \lstinline{x} in this context. This design was chosen for
+several reasons. First, one of the main goals of \framac is program proving by
+discharging proof obligations to automatic theorem provers. Such provers usually
+work much better with mathematical arithmetics than with \textit{modular
+  arithmetics}, that is, bounded arithmetics with overflows.  Second,
+specifications are usually written without any implementation detail in mind,
+and potential overflows are implementation details. Third, it is still possible
+to use bounded modular arithmetics when required by using explicit casts: for
+instance, \lstinline{(int)(INT_MAX + 1)} is equal to \lstinline{INT_MIN}, the
+smallest representable value of \lstinline{int}. Fourth, this choice makes it
+much easier to talk about potential overflows in specifications: for example,
+thanks to mathematical arithmetics, 
+\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} specifies in the easiest way
+that \lstinline{x+y} must not overflow.
+Unless otherwise stated, ``integer'' will refer below to ``unbounded integer''.
+
+\subsubsection{Undefinedness}\label{sec:undefined}
+
+\eacsl is executable. However, evaluation of undefined terms like \lstinline{1/0} is not
+possible. To solve this issue, \eacsl follows Chalin's Runtime Assertion
+Checking semantics~\cite{chalin10} by stating that semantics of such terms is
+``undefined'': \eacsl uses a 3-valued logic~\cite{konikowska91} like
+\textsc{Spark2014}~\cite{sparkERTS2014} or \textsc{JML}~\cite{assert}. It is
+then the responsibility of the tools interpreting \eacsl{} to ensure that an
+undefined term is never evaluated. An indirect consequence of this design is
+that operators \lstinline{&&}\,, \ \lstinline{||}\,, \ \lstinline{_?_:_} \ and
+\ \lstinline{==>} \ in \eacsl are lazy (like the C counterparts for the first
+three of them).
+
+
+\subsection{Support des entiers mathématiques}\label{sec:integers}
+
+
+\lstinputlisting[style=c,escapechar=§,caption={Properties over integers: naive
+    instrumentation gives false negative},label=lst:Z:1]
+                {listings/naive_false_negative.c}
+
+\lstinputlisting[style=c,caption={Properties over integers: naive
+    instrumentation gives false positive},label=lst:Z:2]
+                {listings/naive_false_positive.c}
+
+
+Listing~\ref{lst:Z:1} and Listing~\ref{lst:Z:2} exhibit two examples where 
+naive translation of annotations with mathematical integers leads to unsoundness.
+ Let  \lstinline'x' be of type \lstinline'int'.
+The assertion at line 1 of Listing~\ref{lst:Z:1}
+is obviously false when \lstinline'x = INT_MAX'. 
+The naive translation of this assertion
+(line 3) uses machine integers with modular arithmetics
+(we assume a 32-bit architecture), so 
+\lstinline'x+1' remains less or equal to \lstinline'INT_MAX' for any value of
+\lstinline'x', making it impossible to find the assertion violation.
+The correct translation for this annotation
+(sketched at lines 6--8) maintains the semantics of unbounded integer arithmetics
+using an external unbounded integer library (we use GMP, the GNU Multi-Precision library)
+to represent values that may overflow otherwise (like
+\lstinline'INT_MAX+1' here).
+It creates and initializes necessary variables for unbounded integers,
+then computes and compares the values as unbounded integers.
+The second example (Listing~\ref{lst:Z:2}) defines an ACSL assertion
+(line 2) that is always correct here: for any positive integer \lstinline'x',
+its successor also is positive. The naive instrumentation
+(line 4) will exhibit an error for \lstinline'x = INT_MAX':
+due to modular arithmetics, \lstinline'x+1' overflows and becomes negative,
+violating the assertion. A correct translation using unbounded integers 
+(not detailed here)
+%(lines 7--9) 
+maintains the expected behavior, so that the assertion remains valid for any positive integer
+\lstinline'x'.
+Using the naive translation for these two examples would result in a
+false negative in the first case, and in a false positive in the second case,
+undermining the tool's correctness and precision.
+The translation rules for E-ACSL constructs %terms and predicates 
+presented below %in Sec. \ref{sec:pred}, \ref{sec:term} and \ref{sec:annot} 
+respect unbounded integer semantics of E-ACSL mathematical integers and
+assume the usage of an external library as illustrated in Listing~\ref{lst:Z:1}.
+To simplify the notation of code insertions, we will use the abbreviated notation
+${}^{\square}$\lstinline{var} 
+to indicate that the variable \lstinline{var} must be declared and
+allocated (with \lstinline{Z_t var; Z_init(var);})
+at the beginning of the inserted code, and the notation
+\lstinline{var}${}^{\boxtimes}$ 
+to indicate that the variable \lstinline{var} must be de-allocated
+(with \lstinline{Z_clear(var);})
+at the end of the inserted code.
+We will also use underlined code fragments to indicate that the corresponding
+operation (assignment, comparison, \dots) should be translated using
+corresponding functions from the unbounded integer library.
+So line 12 of Listing~\ref{lst:Z:1} illustrates abbreviated notation of 
+instrumentation for lines 6--9.
+As mentioned in Sec. \ref{sec:eacsl-integers}, %we assume that all 
+type coersions  
+are automatically made explicit in the annotations in \framac, 
+so \lstinline'x+1' in line 1 of Listing~\ref{lst:Z:1}  becomes \lstinline'(integer)x+1'.
+
+
+\subsection{Principe général}
+
+
+
+\lstinputlisting[style=c,escapechar=§,caption={Instrumented version of program
+    of Listing~\ref{lst:normalized}},label=lst:abbrv]
+                {listings/is_present_instrumented.c}
+
+
+Let us describe the principles of instrumentation for an annotated function
+$f$ respecting the grammar of Fig.~\ref{fig:grammar}.
+First, each input value $x$ (a formal parameter $x$ in $params$ or a global variable $x$) of type
+$T$ is stored as \lstinline|T old_x = x;|
+at the beginning of the instrumented FUT, i.e. at label $Beg_f$, in
+the $decl^*$ section.
+For an input array  (or pointer) \lstinline'x', the values are stored in the dynamically
+allocated array \lstinline'old_val_x' whose size is inferred from the
+We also generate an additional function named \lstinline'f_precond'
+that is used to check the precondition of the FUT. For the  FUT  we ensure
+that the precondition is assumed by inserting 
+\lstinline|fassume(f_precond(x1, ..., xn));| 
+at label $Beg_{f}$
+(cf line 11 in Listing~\ref{lst:abbrv}).
+
+Second, any \textsc{ACSL} annotation of the form \lstinline|kwd w| (where
+keyword \lstinline|kwd| belongs to \{\lstinline|assert|, \lstinline|requires|,
+\lstinline|typically|, \lstinline|ensures|, \lstinline|loop variant|,
+\lstinline|loop invariant|\} and $w$ is a predicate or a term) is translated.
+Some other \textsc{ACSL} constructs are not detailed here because they can be
+obtained from the described \textsc{ACSL} fragment. For example, behaviors can
+be rewritten as implications in \lstinline|ensures| annotations,
+statement contracts can be rewritten as implicative \lstinline|assert|'s and
+global (resp., loop or statement)
+\lstinline|assigns| clauses can be rewritten as postconditions
+(resp., loop invariants or assertions)
+checking the non-modification of some variables. 
+
+Each pair
+$(label, annotation)$ is translated into a sequence of \emph{code insertions} 
+$(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$, that 
+represents a list of fragments of C programs $c_1, c_2, \ldots, c_n$ where
+the fragment $c_i$ will be inserted into the instrumented program at label
+$l_i$. Program fragments $c_i$ are parts of a correct program that might be
+incomplete if taken separately
+since a syntactically complete statement can be split into several insertions.
+%for example \lstinline|while(1) {| and
+%\lstinline|}| are two fragments of a larger C program containing a loop.
+When there are several fragments to insert in the same location $l$, they
+are inserted according  to their order in the list. \textsc{ACSL} annotations
+are translated separately, and the  resulting sequences of insertions are treated 
+respecting the order of annotations in the source program.
+
+Translation of annotations is defined by the rules in Sec.~\ref{sec:annot}. It
+requires translating \textsc{ACSL} terms and predicates. These
+transformations are described by the rules in Sec.~\ref{sec:term} and
+Sec.~\ref{sec:pred}. In these rules we use the following notation:
+\begin{itemize}
+\item $p$, $p_1$, $p_2$ and $p_3$ are \textsc{E-ACSL} predicates;
+\item $t$, $t_1$, $t_2$ and $t_3$ are \textsc{E-ACSL} terms and $w$ is either a
+  predicate or a term;
+\item $c$, $c_1$, $c_2$ and $c_3$ are fragments of C programs;
+%% TODO: renommer c_i en s_i ?
+\item $e$, $e_1$, $e_2$ and $e_3$ are C expressions;
+\item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ and $EndIter_l$ are
+  program labels;
+\item $i$ is an identifier of a bounded variable in an \textsc{ACSL} predicate
+  and an iterating counter in a C program, $x$ is an identifier of a C variable;
+\item $I$, $I_1$, $I_2$ and $I_3$ are lists of code insertions $(l_i, c_i)$.
+\end{itemize}
+
+
+
+We denote by \lstinline'res', \lstinline'var_n', \lstinline'i_n',
+\lstinline|old_x|, \lstinline'old_val_x' and \lstinline|old_variant|, fresh
+variables, that is, identifiers different from all other identifiers of the
+instrumented program.
+When we use several times a rule introducing a fresh variable, all occurrences
+must be different. It can be easily implemented incrementing the number
+\lstinline'n' in \lstinline|var_n| or \lstinline'i_n' and replacing
+\lstinline|x| in \lstinline|old_x| or \lstinline'old_val_x' by the
+names of parameters of $f$ or global variables.
+
+For convenience, we assume that all bounded variables in annotations and all program variables are different
+from one another.
+In particular, we can translate bounded variables into C without renaming.
+
+
+\subsubsection{Exemple}
+\label{sec:running-example}
+%\vspace{-2mm}
+
+\lstinputlisting[style=c,escapechar=§,caption={Annotated C function deciding if
+    \lstinline{v} is present in array \lstinline{t} of size \lstinline{n}},
+  label=lst:normalized]{listings/is_present_normalized.c}
+
+We present in Listing~\ref{lst:normalized} an example of FUT  
+normalized according to the grammar of Fig.~\ref{fig:grammar}. It returns $1$
+when a given value is present in a given array, or $0$ otherwise. The
+instrumented program obtained after translation of annotations of this function
+is presented  (using abbreviated notation) in Listing~\ref{lst:abbrv}. The generated  precondition function is
+defined at lines 1--6 (Listing~\ref{lst:abbrv}), it returns a nonzero value when the
+precondition holds. The \lstinline|requires| clause in line 1
+(Listing~\ref{lst:normalized}) stating that the array size \lstinline|n| is
+positive  is
+translated as the condition in line 3 (Listing~\ref{lst:abbrv}).
+The \lstinline|requires| clause in line 2 (Listing~\ref{lst:normalized}) states
+that \lstinline|(t+0)|$, ..., $\lstinline|(t+(n-1))| are valid pointers, and leads
+to the condition in line 4 (Listing~\ref{lst:abbrv}). The
+\lstinline|typically| clause 
+in line 3 of Listing~\ref{lst:normalized} (translated
+as line 5  of Listing~\ref{lst:abbrv}), 
+is an extension of 
+\acsl defining a precondition
+considered only for testing. It strengthens the precondition to restrict
+the (potentially too big) number of paths to be explored by test generation to
+user-controlled partial coverage. Here it bounds the state space of
+\lstinline|n| (and thus the size of \lstinline|t|) to $[0, 6]$ (it can be seen
+as a domain {\em finitization} \cite{Korat}).
+The loop invariant in line 9 of Listing~\ref{lst:normalized} 
+%is bounding \lstinline|i|
+%to values between $[0, \lstinline|n|]$. It 
+is translated as lines 13--14 of
+Listing~\ref{lst:abbrv} to check that the invariant holds before the first loop
+iteration, and lines 21--22 of Listing~\ref{lst:abbrv} to check the preservation of
+the invariant by any iteration. (An additional loop invariant 
+\lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|
+necessary to formally prove the postcondition using deductive verification
+was not included in this simplified example).
+The loop variant line 10 in Listing~\ref{lst:normalized} is translated as
+line 15 of Listing~\ref{lst:abbrv} to check that the variant is positive or
+zero before the loop, line 18 of Listing~\ref{lst:abbrv} to back up the
+value of the variant at the beginning of the loop, and lines 23--25 of
+Listing~\ref{lst:abbrv} to check that it strictly decreases but remains positive
+or zero, thus ensuring the termination of the loop.
+The postcondition at lines 4-5 of Listing~\ref{lst:normalized} is translated as
+lines 28--32 of Listing~\ref{lst:abbrv}, it states that \lstinline|\result| is
+non zero if and only if there exists an element of \lstinline|t| equal
+to \lstinline|v|.
+The values of formal parameters \lstinline|t|, \lstinline|n| and
+\lstinline|v|
+are saved in lines 10--11
+(Listing~\ref{lst:abbrv}), a new array \lstinline|old_val_t| saves the old values
+contained in \lstinline|t|, it is allocated line 10, filled line 11 and
+deallocated line 33.
+
+
+
+\section{Traduction des termes \acsl}
+\label{sec:term}
+
+TODO
+
+
+\section{Traduction des prédicats \acsl}
+\label{sec:pred}
+
+TODO
+
+
+\section{Traduction des annotations \acsl}
+\label{sec:annot}
+
+TODO
+
+
+\section{Différences entre le Test et la Validation d'Assertions à l'Exécution}
 
 TODO
