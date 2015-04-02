@@ -11,6 +11,12 @@
 \tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
 \tikzstyle{pleaf}=[pnode,fill=gray!30]
 \tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
+%% traduction
+\tikzstyle{box}=[draw,minimum height=2em,text width=11em,outer sep=0]
+\tikzstyle{func}=[box,minimum height=4em]
+\tikzstyle{pre}=[box,fill=red!20,text centered]
+\tikzstyle{post}=[box,fill=red!20,text centered]
+\tikzstyle{precond}=[draw,text width=2em,fill=gray!20,minimum height=1.5em]
 
 \newcommand{\tikzinsert}[3]{%
   \tikz[remember picture,overlay]\node[#3] (#1) {#2};}
@@ -47,13 +53,15 @@
 \newcommand{\commentNK}[1]{{{\color{blue}((NK: {#1}))\color{black}}}}
 \newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
 
-\newcommand{\semicolon}{\lstinline';'}
+\newcommand{\semicolon}{\mathtt{;}}
 \newcommand{\Zclear}{{^\boxtimes}}
 \newcommand{\Zinit}{{^\square}}
 \newcommand{\rulearrow}{\mapsto}
-\newcommand{\noinst}{\lstinline|;|}
+\newcommand{\noinst}{\mathtt{;}}
 \newcommand{\concat}{\cdot}
 \newcommand{\emptylist}{\emptyset}
+\newcommand{\bopen}{\boldsymbol{\textbraceleft}}
+\newcommand{\bclose}{\boldsymbol{\textbraceright}}
 \newcommand{\myinference}[3][]{
   \vspace{4pt}
   $\textsc{#1} \quad \dfrac{#2}{#3}$
