@@ -173,7 +173,7 @@ so \lstinline'x+1' in line 1 of Listing~\ref{lst:Z:1}  becomes \lstinline'(integ
 
 
 \subsection{Principe général}
-
+\label{sec:principles}
 
 
 \lstinputlisting[style=c,escapechar=§,caption={Instrumented version of program
@@ -770,7 +770,7 @@ the \textsc{ACSL} semantics of those operators: the first operand is always
 evaluated (in $I_1$) but the second one is only evaluated (in $I_2$) when necessary. The rule
 The rule \textsc{$\pi$-if} is the counterpart of \textsc{$\tau$-if} (cf
 Sec.~\ref{sec:term}) for predicates.
-In our running example of Fig.~\ref{fig:normalized}, translating 
+In our running example of Listing~\ref{lst:normalized}, translating 
 the postcondition
 \lstinline{\result != 0 <==> \exists integer i; 0<=i<n && *(t+i)==v} requires
 the translation of the predicates \lstinline|\result != 0| and
@@ -779,7 +779,7 @@ and \lstinline|var_35|. These two predicates are put together to build the
 translation of
 the composed predicate, that is, according to \textsc{$\pi$-equiv},
 \lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 32 of
-Fig.~\ref{fig:abbrv}).
+Listing~\ref{lst:abbrv}).
 In the rule \textsc{$\pi$-rel}, \lstinline|op| is any of these
 operators: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
 
@@ -831,10 +831,10 @@ pointer \lstinline{t1} within offset range \lstinline|t_2..t_3|. The rules \text
 evaluate the validity of the memory location a pointer points to by the means of
 a function \lstinline|fvalid|, and the validity of a pointer 
 within an offset range by \lstinline|fvalidr|.
-In our running example of Fig.~\ref{fig:normalized}, the predicate
+In our running example of Listing~\ref{lst:normalized}, the predicate
 \lstinline|\valid(t+(0..n-1))| in the \lstinline|requires| clause of line 2 is
 translated to \lstinline[style=c]|fvalidr(t,0,(n-1))| (line 4 of
-Fig.~\ref{fig:abbrv}).
+Listing~\ref{lst:abbrv}).
 Full support of these predicates requires a precise low-level
 memory representation. 
 %(\textsc{PathCrawler} supports them for input arrays and pointers.)
@@ -888,9 +888,9 @@ This rule also treats the universally quantified predicate
 (l, \lstinline{\forall integer i; t1<=i<t2 ==> p}) since it
 is equivalent to 
 (l, \lstinline{! (\exists integer i; t1<=i<t2 && !p)}).
-In Fig.~\ref{fig:normalized}, the quantified predicate
+In Listing~\ref{lst:normalized}, the quantified predicate
 \lstinline{\exists integer i; 0<=i<n && *(t+i)==v} of 
-line 4 is translated in lines 29--31 of Fig.~\ref{fig:abbrv}
+line 4 is translated in lines 29--31 of Listing~\ref{lst:abbrv}
 and the fresh variable containing the value of the predicate after its
 evaluation is \lstinline|var_35| (declared at line 29).
 
@@ -1058,12 +1058,12 @@ $Beg_h$ if $h$ is a {\em callee} (resp. FUT), where
 $x_1, x_2, ..., x_n$ are the formal parameters of $h$, and
 the \lstinline|fassume| function restricts 
 test generation to input values for which it returns true.
-In the example of Fig.~\ref{fig:normalized}, the
+In the example of Listing~\ref{lst:normalized}, the
 \lstinline|requires| clause lines 1-2 and the \lstinline|typically| clause line
-3 are translated to the lines 3--5 of Fig.~\ref{fig:abbrv}. The validity of the
+3 are translated to the lines 3--5 of Listing~\ref{lst:abbrv}. The validity of the
 \lstinline'is_present_precond' precondition is {\em assumed} line 11 of
-Fig.~\ref{fig:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
-translated as lines 28--32 in Fig.~\ref{fig:abbrv}. 
+Listing~\ref{lst:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
+translated as lines 28--32 in Listing~\ref{lst:abbrv}. 
 
 
 
@@ -1131,10 +1131,10 @@ it saves the previous value of the term in a fresh variable
 \lstinline|old_variant|. Finally, it checks at the end of each iteration that
 the current value of the variant is still positive or zero and is strictly
 decreasing (compared to its value in the previous iteration).
-In the running example of Fig.~\ref{fig:normalized}, translating the
+In the running example of Listing~\ref{lst:normalized}, translating the
 \lstinline|loop invariant| line 9 results in lines 13--14 and 21--22 in
-Fig.~\ref{fig:abbrv}, while translating the \lstinline|loop variant| line 10
-results in lines 15, 18 and 23--25 in Fig.~\ref{fig:abbrv}.
+Listing~\ref{lst:abbrv}, while translating the \lstinline|loop variant| line 10
+results in lines 15, 18 and 23--25 in Listing~\ref{lst:abbrv}.
 
 
 \section{Différences entre le Test et la Validation d'Assertions à l'Exécution}
