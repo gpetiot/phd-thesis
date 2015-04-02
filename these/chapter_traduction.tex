@@ -15,7 +15,6 @@ TODO
 This section presents the instrumentation process for C functions annotated in
 \textsc{ACSL} that we support during test generation for
 the annotated code.
-%either to check the annotations at runtime or to test them. 
 It will be convenient to consider that specific labels 
 are introduced for each statement and annotation inside a function body, as well
 as for  the beginning and the end of each function body and loop body. 
@@ -356,7 +355,7 @@ the translation result $e$ is always a variable of type \lstinline'Z_t'
 \scriptsize{
   {\myinference[$\tau$-old\hspace{-2mm}{}]
     {}
-    {(l, \mathtt{\backslash old(x)}:ctype) \rulearrow (\emptyset, \mathtt{old_x})}
+    {(l, \mathtt{\backslash old(x)}:ctype) \rulearrow (\emptyset, \mathtt{old\_x})}
   }
   {\myinference[$\tau$-var\hspace{-2mm}{}]
     {}
@@ -364,13 +363,13 @@ the translation result $e$ is always a variable of type \lstinline'Z_t'
   }
   {\myinference[$\tau$-old-val\hspace{-2mm}{}]
     {(l, t:int) \rulearrow (I, e)}
-    {(l, \mathtt{\\old(*(x+t))}:ctype) \rulearrow (I,\mathtt{*(old_val_x+e)})}
+    {(l, \mathtt{\backslash old(*(x+t))}:ctype) \rulearrow (I,\mathtt{*(old\_val\_x+e)})}
   }
   \vspace{-7mm}
 
   {\myinference[$\tau$-res\hspace{-2mm}{}]
     {}
-    {(l, \mathtt{\\result}:ctype) \rulearrow (\emptyset, \mathtt{res})}
+    {(l, \mathtt{\backslash result}:ctype) \rulearrow (\emptyset, \mathtt{res})}
   }
   {\myinference[$\tau$-const\hspace{-1mm}{}]
     {}
@@ -400,20 +399,11 @@ Applied to an identifier $x$, it is translated as the fresh variable
 Applied to a memory access (rule \textsc{$\tau$-old-val}), we use the dynamically
 allocated array \lstinline|old_val_x| that memorizes the elements of an array
 \lstinline|x| at the entry of the function (cf Sec.~\ref{sec:principles}).
-%\lstinline|\old| applied on a complex term is
-%propagated to simpler terms,
-%and we end up with \lstinline|\old| only applied to identifiers.
-%Notice that the declaration of variables like \lstinline|old_x| and
-%\lstinline|old_val_x| is
-%systematically made at the beginning of each function as explained in
-%Sec.~\ref{sec:principles}.
 The special term \lstinline|\result| translated by the rule
 \textsc{$\tau$-res} denotes the return value of the function in
 \textsc{ACSL} written into the fresh variable   \lstinline|res|.
 That variable is unique after the normalization of the abstract syntax tree (AST) by
 \textsc{Frama-C}. 
-%We consider it is always called \lstinline|res| in the
-%normalized form.
 The rule \textsc{$\tau$-const} states that an integer variable is defined to
 store the integer constant.
 
@@ -425,7 +415,7 @@ store the integer constant.
       {
         (l, (int)(t : \mathbb{Z})) \rulearrow
         (I \concat (l,
-        \mathtt{ int var_n = }\
+        \mathtt{ int\ var_n = }\
         \underline{\mathtt{e} \Zclear}
         \semicolon
         ), \mathtt{var_n})
@@ -457,8 +447,8 @@ and from C type to integer.
     {(l, t_1:ptr) \rulearrow (I_1, e_1) \quad
       (l, t_2:int) \rulearrow (I_2, e_2) \quad
     op \in \{+, -\}}
-    {(l, (\mathtt{t1 op t2}):ptr) \rulearrow
-      (I_1 \concat I_2, \mathtt{e1 op e2})}
+    {(l, (\mathtt{t1\ op\ t2}):ptr) \rulearrow
+      (I_1 \concat I_2, \mathtt{e1\ op\ e2})}
   }
   {\myinference[$\tau$-unop$_1$]
     {(l, t:ptr) \rulearrow (I, e)}
@@ -472,10 +462,10 @@ and from C type to integer.
       op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
       \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
       \mathtt{\&\&}\}}
-    {(l, (\mathtt{t1 op t2}):int) \rulearrow
+    {(l, (\mathtt{t1\ op\ t2}):int) \rulearrow
       (I_1 \concat I_2 \concat (l,
-      \mathtt{int var_n = }\
-      \underline{\mathtt{e1}\Zclear\ \mathtt{ op e2 }\Zclear}
+      \mathtt{int\ var_n = }\
+      \underline{\mathtt{e1}\Zclear\ \mathtt{ op\ e2 }\Zclear}
       \semicolon
       ), \mathtt{var_n})}
   }
@@ -491,17 +481,17 @@ and from C type to integer.
       op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
       \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
       \mathbin{\char`\^}\}}
-    {(l, (\mathtt{t1 op t2}):\mathbb{Z}) \rulearrow
+    {(l, (\mathtt{t1\ op\ t2}):\mathbb{Z}) \rulearrow
       (I_1 \concat I_2 \concat (l,
-      \underline{\Zinit \mathtt{var_n = e1}\Zclear\ \mathtt{ op e2} \Zclear}
+      \underline{\Zinit \mathtt{var_n = e1}\Zclear\ \mathtt{ op\ e2} \Zclear}
       \semicolon
       ), \mathtt{var_n})}
   }
   {\myinference[$\tau$-unop$_3$]
     {(l, t:\mathbb{Z}) \rulearrow (I, e) \quad
       op \in \{ -, \sim\}}
-    {(l, (\mathtt{op t}):\mathbb{Z}) \rulearrow (I, \concat (l,
-      \underline{\mathtt{e = op e}}
+    {(l, (\mathtt{op\ t}):\mathbb{Z}) \rulearrow (I, \concat (l,
+      \underline{\mathtt{e = op\ e}}
       \semicolon
       ), \mathtt{e})}
   }
@@ -512,26 +502,26 @@ and from C type to integer.
       (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
       (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
     {
-      (l, (\mathtt{t1 ? t2}~\textbf{:}~\mathtt{t3}):\mathbb{Z})
+      (l, (\mathtt{t1\ ?\ t2}~\textbf{:}~\mathtt{t3}):\mathbb{Z})
       \rulearrow
       (I_1
       \concat (l,
       \mathtt{if(}
       \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
-      \mathtt{) \{}
+      \mathtt{)} \bopen
       )
       \concat I_2
       \concat (l,
       \underline{\Zinit \mathtt{var_n = e2} \Zclear}
-      \semicolon
-      \mathtt{ \} else \{}
+      \semicolon \bclose
+      \mathtt{else} \bopen
       )
       \concat I_3
       \concat
       (l,
       \underline{\Zinit \mathtt{var_n = e3} \Zclear}
       \semicolon
-      \mathtt{ \}}),
+      \bclose ),
       \mathtt{var_n})
     }
   }
@@ -577,7 +567,7 @@ of $t_1$.
     (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
   {
     \splitfrac
-        {(l, (\mathtt{\\sum(t1, t2, \\lambda integer i; t3)}):\mathbb{Z})
+        {(l, (\mathtt{\backslash sum(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
           \rulearrow}
         {
           (I_1 \concat I_2
@@ -587,12 +577,12 @@ of $t_1$.
           \underline{\Zinit \mathtt{i_n = e1} \Zclear}\semicolon\
           \underline{\mathtt{i_n <= e2} \Zclear}\semicolon\
           \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{)\{})
+          \mathtt{)} \bopen )
           \concat I_3
           \concat
           (l,
           \underline{\mathtt{var_n += e3} \Zclear}\semicolon
-          \mathtt{\}}
+          \bclose
           ),
           \mathtt{var_n})
         }
@@ -605,7 +595,7 @@ of $t_1$.
     (l, t_3:int) \rulearrow (I_3, e_3)}
   {
     \splitfrac
-        {(l, (\mathtt{\\numof(t1, t2, \\lambda integer i; t3)}):\mathbb{Z})
+        {(l, (\mathtt{\backslash numof(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
           \rulearrow}
         {
           (I_1 \concat I_2
@@ -619,13 +609,13 @@ of $t_1$.
           \underline{\mathtt{i_n <= e2} \Zclear}
           \semicolon\
           \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{) \{}
+          \mathtt{)} \bopen
           \concat I_3
           \concat (l,
           \mathtt{if(e3)}\
           \underline{\mathtt{var_n++}}
           \semicolon
-          \mathtt{ \}}
+          \bclose
           ),
           \mathtt{var_n})
         }
@@ -689,14 +679,14 @@ main \textsc{ACSL} predicates we handle.
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
     {(l, \mathtt{p1 \&\& p2})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int var_n = e1; if(var_n) \{})
+      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(var_n)} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2; \}}), \mathtt{var_n})
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
     }
   }
   {\myinference[$\pi$-true]
     {}
-    {(l, \mathtt{\\true}) \rulearrow (\emptyset, \mathtt{1})}
+    {(l, \mathtt{\backslash true}) \rulearrow (\emptyset, \mathtt{1})}
   }
 
   \vspace{-3mm}
@@ -704,14 +694,14 @@ main \textsc{ACSL} predicates we handle.
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
     {(l, \mathtt{p1 || p2})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int var_n = e1; if(!var_n) \{})
+      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(!var_n)} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2; \}}), \mathtt{var_n})
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
     }
   }
   {\myinference[$\pi$-false]
     {}
-    {(l, \mathtt{\\false}) \rulearrow (\emptyset, \mathtt{0})}
+    {(l, \mathtt{\backslash false}) \rulearrow (\emptyset, \mathtt{0})}
   }
 
   \vspace{-3mm}
@@ -720,9 +710,9 @@ main \textsc{ACSL} predicates we handle.
       (l, p_2) \rulearrow (I_2, e_2)}
     {(l, \mathtt{p1 ==> p2})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int var_n = 1; if(e1) \{})
+      (I_1 \concat (l, \mathtt{int\ var_n = 1; if(e1)} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2; \}}), \mathtt{var_n})
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
     }
   }
   {\myinference[$\pi$-not]
@@ -737,11 +727,11 @@ main \textsc{ACSL} predicates we handle.
       (l, p_3) \rulearrow (I_3, e_3)}
     {
       (l, \mathtt{t ? p2 : p3}) \rulearrow
-      (I_1 \concat (l, \mathtt{int var_n; if(}
+      (I_1 \concat (l, \mathtt{int\ var_n; if(}
       \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
-      \mathtt{) \{})
-      \concat I_2 \concat (l, \mathtt{var_n=e2; \} else \{})
-      \concat I_3 \concat (l, \mathtt{var_n=e3; \}}),
+      \mathtt{)} \bopen)
+      \concat I_2 \concat (l, \mathtt{var_n=e2;} \bclose \mathtt{else} \bopen)
+      \concat I_3 \concat (l, \mathtt{var_n=e3;} \bclose),
       \mathtt{var_n})
     }
   }
@@ -752,10 +742,10 @@ main \textsc{ACSL} predicates we handle.
       (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
       op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
       \mathtt{==}, \mathtt{!=}\}}
-    {(l, \mathtt{t1 op t2}) \rulearrow
+    {(l, \mathtt{t1\ op\ t2}) \rulearrow
       (I_1 \concat I_2 \concat (l,
-      \mathtt{int var_n =}\
-      \underline{\mathtt{ e1} \Zclear\ \mathtt{ op e2} \Zclear}
+      \mathtt{int\ var_n =}\
+      \underline{\mathtt{ e1} \Zclear\ \mathtt{ op\ e2} \Zclear}
       \semicolon
       ), \mathtt{var_n})}
   }
@@ -801,7 +791,7 @@ operators: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
 \scriptsize{
   {\myinference[$\pi$-valid]
     {(l, t:ptr) \rulearrow (I, e) }
-    {(l, \mathtt{\\valid(t)})
+    {(l, \mathtt{\backslash valid(t)})
       \rulearrow
       (I, \mathtt{fvalid(e)})
     }
@@ -811,7 +801,7 @@ operators: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
       (l, t_2:int) \rulearrow (I_2, e_2) \\
       (l, t_3:int) \rulearrow (I_3, e_3)}
     {
-      (l, \mathtt{\\valid(t1+(t2..t3))}) \rulearrow
+      (l, \mathtt{\backslash valid(t1+(t2..t3))}) \rulearrow
       (I_1 \concat I_2 \concat I_3,\mathtt{fvalidr(e1,e2,e3)})
     }
   }
@@ -860,20 +850,21 @@ memory representation.
       (l, p) \rulearrow (I, e)}
     {
       \splitfrac
-          {(l, \mathtt{\\exists integer i; t1 <= i < t2 \&\& p}) \rulearrow
+          {(l, \mathtt{\backslash exists\ integer\ i;\ t1 <= i < t2\ \&\&\ p})
+            \rulearrow
           }
           {
             (I_1 \concat I_2\concat
             (l,
-            \mathtt{int var_n = 0; for(}
+            \mathtt{int\ var_n = 0; for(}
             \underline{\Zinit \mathtt{i_n = e1} \Zclear}
             \semicolon\
             \underline{\mathtt{i_n < e2} \Zclear}\
-            \mathtt{ \&\& !var_n;}\
+            \mathtt{ \&\&\ !var_n;}\
             \underline{\mathtt{i_n++} \Zclear}
-            \mathtt{) \{})
+            \mathtt{)} \bopen)
             \concat I \concat (l,
-            \mathtt{var_n = e; \}}),
+            \mathtt{var_n = e;} \bclose),
             \mathtt{var_n})
           }
     }
@@ -920,7 +911,7 @@ such inputs exist. The rules are of the following form:
 \dfrac
     {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
       (l_n, w) \rulearrow (I_n, e_n)}
-    {(l, \mathtt{kwd w;}) \rulearrow
+    {(l, \mathtt{kwd\ w;}) \rulearrow
       g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
 \]
 \vspace{-4mm}
@@ -973,31 +964,6 @@ such inputs exist. The rules are of the following form:
     \path [draw, -] (post-g1.west) -| (anchor-post-g1.west);
     \path [draw, ->] (anchor-post-g1.west)
     -- node [above] {} (anchor-post-g1-2.east);
-
-    %% %% dots
-    %% \node (dots) [right=1mm of box-g1] {...};
-
-    %% %% gn
-    %% \node (box-gn) [func,right=.2cm of dots] {
-    %%   \lstinline|fassert(gn_precond(...));|\\ ... \\ ...};
-    %% \path (box-gn)+(0,3em) node (pre-gn) [pre] {\{Pre\}};
-    %% \path (box-gn)+(0,-3em) node (post-gn) [post] {\{Post\}};
-    %% \node [below=.1cm of post-gn] {callee $g_n$};
-    %% %% gn_precond
-    %% \node (gn-precond) [precond,above=.6cm of pre-gn] {};
-    %% \node [below=.1cm of gn-precond] {\scriptsize $g_n\_precond$};
-    %% %% link between gn and gn_precond
-    %% \path (box-gn.west)+(-.1,2.4) node (anchor-pre-gn) {};
-    %% \path (box-gn.west)+(1.3,2.4) node (anchor-pre-gn-2) {};
-    %% \path [draw, -] (pre-gn.west) -| (anchor-pre-gn.west);
-    %% \path [draw, ->] (anchor-pre-gn.west)
-    %% -- node [above] {} (anchor-pre-gn-2.east);
-    %% %% gn_post
-    %% \path (box-gn.west)+(-.1,-.4) node (anchor-post-gn) {};
-    %% \path (box-gn.west)+(0,-.4) node (anchor-post-gn-2) {};
-    %% \path [draw, -] (post-gn.west) -| (anchor-post-gn.west);
-    %% \path [draw, ->] (anchor-post-gn.west)
-    %% -- node [above] {} (anchor-post-gn-2.east);
   \end{tikzpicture}
   \vspace{-8mm}
   \caption{Pre-Post translation scheme for the FUT and called functions} \label{fig:pre-post}
@@ -1031,7 +997,7 @@ exploration switches to another branch.
 \scriptsize{
   {\myinference[$\alpha$-assert]
     {(l, p) \rulearrow (I, e)}
-    {(l, \mathtt{assert p;})
+    {(l, \mathtt{assert\ p;})
       \rulearrow
       I \concat (l, \mathtt{fassert(e);})}
   }
@@ -1039,7 +1005,7 @@ exploration switches to another branch.
 
   {\myinference[$\alpha$-post]
     {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mathtt{ensures p;})
+    {(End_f, \mathtt{ensures\ p;})
       \rulearrow
       I \concat (End_f, \mathtt{fassert(e);})}
   }
@@ -1049,12 +1015,12 @@ exploration switches to another branch.
     {(Beg_{f\_precond}, p) \rulearrow (I, e)}
     {(Beg_f, \left \{\hspace{-2mm}
       \begin{array}{r}
-        \mathtt{typically p;} \\
-        \mathtt{requires p;}
+        \mathtt{typically\ p;} \\
+        \mathtt{requires\ p;}
       \end{array} \right. \hspace{-2mm}
       )
       \rulearrow
-      I \concat (Beg_{f\_precond}, \mathtt{if(!e) return 0;})}
+      I \concat (Beg_{f\_precond}, \mathtt{if(!e)\ return\ 0;})}
   }
 }
   \vspace{-4mm}
@@ -1077,9 +1043,6 @@ the predicate of a precondition in a separate function that we call
 \lstinline|typically| clauses does not hold, or $1$ otherwise. This function
 has to be called with the same formal parameters as the function
 being translated.
-%, it
-%returns $1$ or $0$ with respect to the value of the precondition of the
-%considered function. Thus this 
 Since the precondition is \emph{assumed} for the function under test
 and must be \emph{ensured} for a called function,
 its result has to be {\em asserted} in the case
@@ -1095,8 +1058,6 @@ $Beg_h$ if $h$ is a {\em callee} (resp. FUT), where
 $x_1, x_2, ..., x_n$ are the formal parameters of $h$, and
 the \lstinline|fassume| function restricts 
 test generation to input values for which it returns true.
-%adding the constraints of the precondition to
-%the path predicate of the function under test.
 In the example of Fig.~\ref{fig:normalized}, the
 \lstinline|requires| clause lines 1-2 and the \lstinline|typically| clause line
 3 are translated to the lines 3--5 of Fig.~\ref{fig:abbrv}. The validity of the
@@ -1113,7 +1074,7 @@ translated as lines 28--32 in Fig.~\ref{fig:abbrv}.
     {(l, p) \rulearrow (I_1, e_1) \\
       (EndIter_l, p) \rulearrow (I_2, e_2)}
     {
-      (l, \mathtt{loop invariant p;}) \rulearrow
+      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
       I_1 \concat (l, \mathtt{fassert(e1);})
       \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
     }
@@ -1129,7 +1090,7 @@ translated as lines 28--32 in Fig.~\ref{fig:abbrv}.
     {
       \splitfrac
           {
-            (l, \mathtt{loop variant t;}) \rulearrow
+            (l, \mathtt{loop\ variant\ t;}) \rulearrow
           }
           {
             I_1 \concat (l,
@@ -1138,7 +1099,7 @@ translated as lines 28--32 in Fig.~\ref{fig:abbrv}.
             \mathtt{);})
             \concat I_2
             \concat (BegIter_l,
-            \underline{\Zinit \mathtt{old_variant = e2} \Zclear}
+            \underline{\Zinit \mathtt{oldvariant = e2} \Zclear}
             \semicolon
             )
             \concat I_3
@@ -1146,7 +1107,7 @@ translated as lines 28--32 in Fig.~\ref{fig:abbrv}.
             \mathtt{fassert(}
             \underline{\mathtt{0 <= e3}}\
             \mathtt{ \&\& }\
-            \underline{\mathtt{e3}\Zclear\mathtt{< old_variant} \Zclear}
+            \underline{\mathtt{e3}\Zclear\mathtt{< oldvariant} \Zclear}
             \mathtt{);})
           }
     }
@@ -1185,23 +1146,12 @@ has been implemented in two \textsc{Frama-C} \cite{Frama-C} plugins:
 for Runtime Assertion Checking (RAC), and \textsc{StaDy}, that instruments a program for Test Generation with
 \textsc{PathCrawler} \cite{PathCrawler}. 
 This section  discusses similarities and differences between both kinds of instrumentation.
-%point out some
-%specificities of \textsc{PathCrawler} taken into consideration in
-%our implementation of the translation rules in \textsc{StaDy}.
-
-%\textbf{Similarities and differences with Runtime Assertion Checking.}
-%\paragraph{Similarities and differences with Runtime Assertion Checking}
-%both ensue from our formalization. 
 
 Test generation and runtime checking both need to
 generate executable code and so consider only an executable subset of the
 specification language. 
 Therefore, most rules defined in Sec. \ref{sec:term}, \ref{sec:pred} and \ref{sec:annot} 
 for test generation are also valid for RAC.
-
-%The presented translation rules are very similar to the translation
-%for runtime assertion checking in \textsc{Frama-C}
-%and will constitute the starting point for their complete formalization.
 
 \textbf{Precondition of the function under test (FUT).}
 One difference is the treatment of the precondition of the FUT.
