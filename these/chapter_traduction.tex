@@ -13,7 +13,7 @@ TODO
 \input{figures/fig_grammar}
 
 This section presents the instrumentation process for C functions annotated in
-\textsc{ACSL} that we support during test generation for
+\acsl that we support during test generation for
 the annotated code.
 It will be convenient to consider that specific labels 
 are introduced for each statement and annotation inside a function body, as well
@@ -98,7 +98,7 @@ Unless otherwise stated, ``integer'' will refer below to ``unbounded integer''.
 possible. To solve this issue, \eacsl follows Chalin's Runtime Assertion
 Checking semantics~\cite{chalin10} by stating that semantics of such terms is
 ``undefined'': \eacsl uses a 3-valued logic~\cite{konikowska91} like
-\textsc{Spark2014}~\cite{sparkERTS2014} or \textsc{JML}~\cite{assert}. It is
+\textsc{Spark2014}~\cite{sparkERTS2014} or \jml~\cite{assert}. It is
 then the responsibility of the tools interpreting \eacsl{} to ensure that an
 undefined term is never evaluated. An indirect consequence of this design is
 that operators \lstinline{&&}\,, \ \lstinline{||}\,, \ \lstinline{_?_:_} \ and
@@ -1141,10 +1141,10 @@ results in lines 15, 18 and 23--25 in Fig.~\ref{fig:abbrv}.
 
 
 Instrumentation based translation of ACSL annotations into C code 
-has been implemented in two \textsc{Frama-C} \cite{Frama-C} plugins:
-\textsc{e-acsl2c} \cite{Delahaye/SAC13,Kosmatov/RV13} that generates an instrumented program
-for Runtime Assertion Checking (RAC), and \textsc{StaDy}, that instruments a program for Test Generation with
-\textsc{PathCrawler} \cite{PathCrawler}. 
+has been implemented in two \framac \cite{\citeframac} plugins:
+\eacsltoc \cite{Delahaye/SAC13,Kosmatov/RV13} that generates an instrumented program
+for Runtime Assertion Checking (RAC), and \stady, that instruments a program for Test Generation with
+\pathcrawler \cite{\citepathcrawler}. 
 This section  discusses similarities and differences between both kinds of instrumentation.
 
 Test generation and runtime checking both need to
@@ -1162,22 +1162,22 @@ Hence, the precondition  of the FUT should be assumed during test generation
 to ensure that all generated test inputs respect the precondition of the FUT 
 (cf Fig.~\ref{fig:pre-post}).
 
-Besides, the treatment of the precondition of the FUT in \textsc{PathCrawler} has two optimizations.
+Besides, the treatment of the precondition of the FUT in \pathcrawler has two optimizations.
 First, an internal mechanism of unquantified and quantified preconditions
 allows a direct translation of ACSL preconditions into constraints
 supported in an efficient manner.
 Hence, for precondition patterns that can be expressed by this mechanism,
-a translation into C code is not necessary for \textsc{PathCrawler}.
+a translation into C code is not necessary for \pathcrawler.
 Second, for the remaining preconditions translated into a C function, 
-\textsc{PathCrawler} offers a specific
+\pathcrawler offers a specific
 efficient mechanism \cite{Delahaye/RV13}.
 A call to \lstinline|fassume| (adding the constraints of the
 precondition to the constraint store \emph{before} the path predicate in the FUT)
-can be replaced in \textsc{PathCrawler} by a dedicated support for
+can be replaced in \pathcrawler by a dedicated support for
 late precondition (where precondition constraints are posted \emph{after}
 other path constraints of the FUT).
 Thus the call to \lstinline|fassume| for the FUT 
-in \textsc{PathCrawler} is not needed (cf Fig.~\ref{fig:pre-post}).
+in \pathcrawler is not needed (cf Fig.~\ref{fig:pre-post}).
 
 \textbf{Memory-related constructs.}
 Runtime checkers also require a complex instrumentation framework
@@ -1188,7 +1188,7 @@ ACSL annotation \cite{Kosmatov/RV13}.
 Some of these constructs can be handled symbolically in
 concolic testing without additional instrumentation.
 The functions \lstinline|fvalid| and \lstinline|fvalidr| are builtin C functions
-defined by \textsc{PathCrawler} that return the value of validity of a pointer
+defined by \pathcrawler that return the value of validity of a pointer
 \cite{testing-pointers}.
 They actually support global variables and formal parameters of the function
 under test.
@@ -1202,7 +1202,7 @@ Indeed, test generation on the instrumented code would have to
 treat much more complex code, with lots of additional function 
 calls, dynamic memory allocation and de-allocation, etc.
 This can be avoided again using symbolic execution of the test generation
-tool. \textsc{PathCrawler} offers dedicated builtin support 
+tool. \pathcrawler offers dedicated builtin support 
 for GMP numbers and operations that are efficiently translated into
 appropriate constraints on unbounded integers and handled 
 by the underlying constraint solver.
@@ -1212,12 +1212,12 @@ Straightforward translation of annotations into C may introduce runtime errors d
 with undefined terms (such as 1/0, cf Sec. \ref{sec:undefined}). 
 This issue can be easily solved for test generation exactly as proposed in \cite{Delahaye/SAC13} for RAC,
 by an additional guard generation phase
-by running  the \textsc{Frama-C/RTE} plugin~\cite{Frama-C} on the instrumented code
+by running  the \rte plugin~\cite{\citeframac} on the instrumented code
 to add annotations preventing
 runtime errors, and finally running the instrumentation again on these new annotations.
 Runtime  errors related to unbounded integer (division of a GMP integer by 0, 
 overflow during a type coersion \lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) 
-are not treated by \textsc{RTE}, but they can be easily prevented 
+are not treated by \rte, but they can be easily prevented 
 by adding suitable checks in the corresponding rules.
 For example, the downcast of a term $t$ from integer to $int$ (see the rule
 \textsc{$\tau$-coerce$_1$} of Fig.~\ref{fig:coerce}) can be guarded by inserting
