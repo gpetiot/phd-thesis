@@ -2,7 +2,7 @@ MLPOST_EXEC :=$(shell which mlpost)
 MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
 MLFIG=frama_c_architecture.ml
-FIG=$(MLFIG:.ml=.mps) figures/fig_mem_annots.tex figures/fig_add_patricia_trie.tex figures/fig_rem_patricia_trie.tex figures/fig_grammar.tex
+FIG=$(MLFIG:.ml=.mps) figures/fig_mem_annots.tex figures/fig_add_patricia_trie.tex figures/fig_rem_patricia_trie.tex figures/fig_grammar.tex figures/fig_rules.tex figures/fig_translation_scheme.tex
 LISTINGS=listings/mem_annots.c listings/common_prefix_mask.c listings/swap.c listings/naive_false_positive.c listings/naive_false_negative.c listings/is_present_normalized.c listings/is_present_instrumented.c
 CHAPTERS_TEX=$(wildcard chapter_*.tex)
 CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)

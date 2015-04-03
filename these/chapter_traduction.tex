@@ -322,6 +322,8 @@ deallocated line 33.
 \section{Traduction des termes \acsl}
 \label{sec:term}
 
+\input{figures/fig_rules}
+
 Let us denote
 $(l, t:T) \rulearrow ((l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n), e)$
 an instance of the partial function $\tau$ mapping an E-ACSL term $t$ of type
@@ -348,48 +350,6 @@ For a term $t:\mathbb{Z}$,
 the translation result $e$ is always a variable of type \lstinline'Z_t'
 (that justifies de-allocation \lstinline{e}${}^{\boxtimes}$ e.g. in Fig.~\ref{fig:coerce}).
 
-
-
-\begin{figure*}[t]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\tau$-old\hspace{-2mm}{}]
-    {}
-    {(l, \mathtt{\backslash old(x)}:ctype) \rulearrow (\emptyset, \mathtt{old\_x})}
-  }
-  {\myinference[$\tau$-var\hspace{-2mm}{}]
-    {}
-    {(l, \mathtt{x}:ctype) \rulearrow (\emptyset, \mathtt{x})}
-  }
-  {\myinference[$\tau$-old-val\hspace{-2mm}{}]
-    {(l, t:int) \rulearrow (I, e)}
-    {(l, \mathtt{\backslash old(*(x+t))}:ctype) \rulearrow (I,\mathtt{*(old\_val\_x+e)})}
-  }
-  \vspace{-7mm}
-
-  {\myinference[$\tau$-res\hspace{-2mm}{}]
-    {}
-    {(l, \mathtt{\backslash result}:ctype) \rulearrow (\emptyset, \mathtt{res})}
-  }
-  {\myinference[$\tau$-const\hspace{-1mm}{}]
-    {}
-    {
-      (l, \mathtt{cst:}\mathbb{Z})
-      \rulearrow
-      ((l,
-      \underline{\Zinit\mathtt{var_n = cst}}
-      ), \mathtt{var_n})}
-  }
-}
-  \vspace{-5mm}
-  \caption{Translation rules for constants, identifiers, and
-    \textbf{$\backslash$\lstinline{old}} terms}
-  \label{fig:const-id}
-\vspace{-4mm}
-\end{figure*}
-
-
-
 Fig.~\ref{fig:const-id} describes the rules for identifiers
 (\textsc{$\tau$-var}), for the \lstinline|\result| term
 (\textsc{$\tau$-res}) and constants (\textsc{$\tau$-const}).
@@ -407,131 +367,8 @@ That variable is unique after the normalization of the abstract syntax tree (AST
 The rule \textsc{$\tau$-const} states that an integer variable is defined to
 store the integer constant.
 
-
-\begin{figure*}[bt]
-  \scriptsize{
-    {\myinference[$\tau$-coerce$_1$]
-      {(l, t:\mathbb{Z}) \rulearrow (I, e)}
-      {
-        (l, (int)(t : \mathbb{Z})) \rulearrow
-        (I \concat (l,
-        \mathtt{ int\ var_n = }\
-        \underline{\mathtt{e} \Zclear}
-        \semicolon
-        ), \mathtt{var_n})
-      }
-    }
-    {\myinference[$\tau$-coerce$_2$]
-      {(l, t:int) \rulearrow (I, e)}
-      {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
-        \underline{\Zinit \mathtt{var_n = e}}
-        \semicolon
-        ), \mathtt{var_n})}
-    }
-  }
-  \vspace{-4mm}
-  \caption{Translation rules for coercions}
-  \label{fig:coerce}
-\vspace{-2mm}
-\end{figure*}
-
-
 Fig.~\ref{fig:coerce} details the rules for coercions, from integer to C type
 and from C type to integer.
-
-
-\begin{figure*}[bt]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\tau$-binop$_1$]
-    {(l, t_1:ptr) \rulearrow (I_1, e_1) \quad
-      (l, t_2:int) \rulearrow (I_2, e_2) \quad
-    op \in \{+, -\}}
-    {(l, (\mathtt{t1\ op\ t2}):ptr) \rulearrow
-      (I_1 \concat I_2, \mathtt{e1\ op\ e2})}
-  }
-  {\myinference[$\tau$-unop$_1$]
-    {(l, t:ptr) \rulearrow (I, e)}
-    {(l, (\mathtt{* t}): ctype) \rulearrow (I, \mathtt{* e})}
-  }
-  \vspace{-3mm}
-
-  {\myinference[$\tau$-binop$_2$]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
-      op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
-      \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
-      \mathtt{\&\&}\}}
-    {(l, (\mathtt{t1\ op\ t2}):int) \rulearrow
-      (I_1 \concat I_2 \concat (l,
-      \mathtt{int\ var_n = }\
-      \underline{\mathtt{e1}\Zclear\ \mathtt{ op\ e2 }\Zclear}
-      \semicolon
-      ), \mathtt{var_n})}
-  }
-  {\myinference[$\tau$-unop$_2$]
-    {(l, t:int) \rulearrow (I, e)}
-    {(l, (\mathtt{! t}): int) \rulearrow (I, \mathtt{! e})}
-  }
-  \vspace{-3mm}
-
-  {\myinference[$\tau$-binop$_3$]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
-      op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
-      \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
-      \mathbin{\char`\^}\}}
-    {(l, (\mathtt{t1\ op\ t2}):\mathbb{Z}) \rulearrow
-      (I_1 \concat I_2 \concat (l,
-      \underline{\Zinit \mathtt{var_n = e1}\Zclear\ \mathtt{ op\ e2} \Zclear}
-      \semicolon
-      ), \mathtt{var_n})}
-  }
-  {\myinference[$\tau$-unop$_3$]
-    {(l, t:\mathbb{Z}) \rulearrow (I, e) \quad
-      op \in \{ -, \sim\}}
-    {(l, (\mathtt{op\ t}):\mathbb{Z}) \rulearrow (I, \concat (l,
-      \underline{\mathtt{e = op\ e}}
-      \semicolon
-      ), \mathtt{e})}
-  }
-  \vspace{-3mm}
-
-  {\myinference[$\tau$-if]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-      (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
-    {
-      (l, (\mathtt{t1\ ?\ t2}~\textbf{:}~\mathtt{t3}):\mathbb{Z})
-      \rulearrow
-      (I_1
-      \concat (l,
-      \mathtt{if(}
-      \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
-      \mathtt{)} \bopen
-      )
-      \concat I_2
-      \concat (l,
-      \underline{\Zinit \mathtt{var_n = e2} \Zclear}
-      \semicolon \bclose
-      \mathtt{else} \bopen
-      )
-      \concat I_3
-      \concat
-      (l,
-      \underline{\Zinit \mathtt{var_n = e3} \Zclear}
-      \semicolon
-      \bclose ),
-      \mathtt{var_n})
-    }
-  }
-  }
-  \vspace{-2mm}
-  \caption{Translation rules for unary and binary operations}
-  \label{fig:op}
-\vspace{-2mm}
-\end{figure*}
-
 
 Fig.~\ref{fig:op} details the rules for unary operations
 (\textsc{$\tau$-unop$_*$}),
@@ -558,75 +395,7 @@ of $t_1$.
 
 
 
-\begin{figure*}[bt]
-%\vspace{-2mm}
-\scriptsize{
-{\myinference[$\tau$-sum]
-  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-    (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
-  {
-    \splitfrac
-        {(l, (\mathtt{\backslash sum(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
-          \rulearrow}
-        {
-          (I_1 \concat I_2
-          \concat
-          (l, \underline{\Zinit \mathtt{var_n = 0}} \semicolon\
-          \mathtt{ for(}
-          \underline{\Zinit \mathtt{i_n = e1} \Zclear}\semicolon\
-          \underline{\mathtt{i_n <= e2} \Zclear}\semicolon\
-          \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{)} \bopen )
-          \concat I_3
-          \concat
-          (l,
-          \underline{\mathtt{var_n += e3} \Zclear}\semicolon
-          \bclose
-          ),
-          \mathtt{var_n})
-        }
-  }
-}
 
-{\myinference[$\tau$-numof]
-  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-    (l, t_3:int) \rulearrow (I_3, e_3)}
-  {
-    \splitfrac
-        {(l, (\mathtt{\backslash numof(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
-          \rulearrow}
-        {
-          (I_1 \concat I_2
-          \concat
-          (l,
-          \underline{\Zinit \mathtt{var_n = 0}}
-          \semicolon\
-          \mathtt{ for(}
-          \underline{\Zinit \mathtt{i_n = e1} \Zclear}
-          \semicolon\
-          \underline{\mathtt{i_n <= e2} \Zclear}
-          \semicolon\
-          \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{)} \bopen
-          \concat I_3
-          \concat (l,
-          \mathtt{if(e3)}\
-          \underline{\mathtt{var_n++}}
-          \semicolon
-          \bclose
-          ),
-          \mathtt{var_n})
-        }
-  }
-}
-}
-\vspace{-2mm}
-\caption{Translation rules for builtin logic functions}
-\label{fig:builtin}
-\vspace{-3mm}
-\end{figure*}
 
 
 Fig.~\ref{fig:builtin} presents the rules for translating the builtin
@@ -662,101 +431,6 @@ We define in Fig.~\ref{fig:pred-logic},
 Fig.~\ref{fig:valid} and Fig.~\ref{fig:quantif} the transformation rules for the
 main \textsc{ACSL} predicates we handle.
 
-
-
-\begin{figure*}[t]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\pi$-equiv]
-    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 <==> p2})
-      \rulearrow
-      (I_1 \concat I_2, \mathtt{((!e1 || e2) \&\& (!e2 || e1))})}
-  }
-
-  \vspace{-1mm}
-  {\myinference[$\pi$-and]
-    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 \&\& p2})
-      \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(var_n)} \bopen)
-      \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
-    }
-  }
-  {\myinference[$\pi$-true]
-    {}
-    {(l, \mathtt{\backslash true}) \rulearrow (\emptyset, \mathtt{1})}
-  }
-
-  \vspace{-3mm}
-  {\myinference[$\pi$-or]
-    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 || p2})
-      \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(!var_n)} \bopen)
-      \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
-    }
-  }
-  {\myinference[$\pi$-false]
-    {}
-    {(l, \mathtt{\backslash false}) \rulearrow (\emptyset, \mathtt{0})}
-  }
-
-  \vspace{-3mm}
-  {\myinference[$\pi$-impl]
-    {(l, p_1) \rulearrow (I_1, e_1) \\
-      (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 ==> p2})
-      \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = 1; if(e1)} \bopen)
-      \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
-    }
-  }
-  {\myinference[$\pi$-not]
-    {(l, p) \rulearrow (I, e)}
-    {(l, \mathtt{!p}) \rulearrow (I, \mathtt{!e})}
-  }
-  \vspace{-3mm}
-
-  {\myinference[$\pi$-if]
-    {(l, t:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-      (l, p_2) \rulearrow (I_2, e_2) \\
-      (l, p_3) \rulearrow (I_3, e_3)}
-    {
-      (l, \mathtt{t ? p2 : p3}) \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n; if(}
-      \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
-      \mathtt{)} \bopen)
-      \concat I_2 \concat (l, \mathtt{var_n=e2;} \bclose \mathtt{else} \bopen)
-      \concat I_3 \concat (l, \mathtt{var_n=e3;} \bclose),
-      \mathtt{var_n})
-    }
-  }
-  \vspace{-0.5mm}
-
-  {\myinference[$\pi$-rel]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
-      op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
-      \mathtt{==}, \mathtt{!=}\}}
-    {(l, \mathtt{t1\ op\ t2}) \rulearrow
-      (I_1 \concat I_2 \concat (l,
-      \mathtt{int\ var_n =}\
-      \underline{\mathtt{ e1} \Zclear\ \mathtt{ op\ e2} \Zclear}
-      \semicolon
-      ), \mathtt{var_n})}
-  }
-}
-  \vspace{-2mm}
-  \caption{Translation rules for simplest predicates}
-  \label{fig:pred-logic}
-\vspace{-4mm}
-\end{figure*}
-
-
 Fig.~\ref{fig:pred-logic} details the translation rules for the simplest
 predicates of the \textsc{ACSL} language. The rules \textsc{$\pi$-true} and
 \textsc{$\pi$-false} state that $true$ (resp. $false$) are translated into $1$
@@ -783,37 +457,6 @@ Listing~\ref{lst:abbrv}).
 In the rule \textsc{$\pi$-rel}, \lstinline|op| is any of these
 operators: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
 
-
-
-
-\begin{figure*}[bt]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\pi$-valid]
-    {(l, t:ptr) \rulearrow (I, e) }
-    {(l, \mathtt{\backslash valid(t)})
-      \rulearrow
-      (I, \mathtt{fvalid(e)})
-    }
-  }
-  {\myinference[$\pi$-valid-range]
-    {(l, t_1:ptr) \rulearrow (I_1, e_1) \\
-      (l, t_2:int) \rulearrow (I_2, e_2) \\
-      (l, t_3:int) \rulearrow (I_3, e_3)}
-    {
-      (l, \mathtt{\backslash valid(t1+(t2..t3))}) \rulearrow
-      (I_1 \concat I_2 \concat I_3,\mathtt{fvalidr(e1,e2,e3)})
-    }
-  }
-}
-  \vspace{-4mm}
-  \caption{Translation rules for memory validity predicate}
-  \label{fig:valid}
-\vspace{-3mm}
-\end{figure*}
-
-
-
 Fig.~\ref{fig:valid} shows the translation rules for the \lstinline|\valid|
 predicate that holds if its parameter points to a valid memory location and can
 be dereferenced. 
@@ -836,46 +479,7 @@ In our running example of Listing~\ref{lst:normalized}, the predicate
 translated to \lstinline[style=c]|fvalidr(t,0,(n-1))| (line 4 of
 Listing~\ref{lst:abbrv}).
 Full support of these predicates requires a precise low-level
-memory representation. 
-%(\textsc{PathCrawler} supports them for input arrays and pointers.)
-
-
-
-\begin{figure*}[bt]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\pi$-exists]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-      (l, p) \rulearrow (I, e)}
-    {
-      \splitfrac
-          {(l, \mathtt{\backslash exists\ integer\ i;\ t1 <= i < t2\ \&\&\ p})
-            \rulearrow
-          }
-          {
-            (I_1 \concat I_2\concat
-            (l,
-            \mathtt{int\ var_n = 0; for(}
-            \underline{\Zinit \mathtt{i_n = e1} \Zclear}
-            \semicolon\
-            \underline{\mathtt{i_n < e2} \Zclear}\
-            \mathtt{ \&\&\ !var_n;}\
-            \underline{\mathtt{i_n++} \Zclear}
-            \mathtt{)} \bopen)
-            \concat I \concat (l,
-            \mathtt{var_n = e;} \bclose),
-            \mathtt{var_n})
-          }
-    }
-  }
-}
-  \vspace{-2mm}
-  \caption{Translation rule for quantified predicate}
-  \label{fig:quantif}
-\vspace{-4mm}
-\end{figure*}
-
+memory representation.
 
 The rules \textsc{$\pi$-exists}
 (Fig.~\ref{fig:quantif}) translates the existentially
@@ -917,60 +521,7 @@ such inputs exist. The rules are of the following form:
 \vspace{-4mm}
 
 
-\begin{figure}[tb]
-  \hspace{-5mm}
-  \begin{center}
-  \begin{tikzpicture}[align=left]
-    %% f
-    \node (box-f) [func] {
-      \lstinline|fassume(f_precond(...));|\\ \texttt{g();} \\ ...};
-    \path (box-f)+(0,3em) node (pre-f) [pre] {\{Pre\}};
-    \path (box-f)+(0,-3em) node (post-f) [post] {\{Post\}};
-    \node [below=.1cm of post-f] {FUT $f$};
-    %% f_precond
-    \node (f-precond) [precond,above=.6cm of pre-f] {};
-    \node [below=.1mm of f-precond] {\scriptsize $f\_precond$};
-    %% link between f and f_precond
-    \path (box-f.west)+(-.1,2.4) node (anchor-pre-f) {};
-    \path (box-f.west)+(1.3,2.4) node (anchor-pre-f-2) {};
-    \path [draw, -] (pre-f.west) -| (anchor-pre-f.west);
-    \path [draw, ->] (anchor-pre-f.west)
-    -- node [above] {} (anchor-pre-f-2.east);
-    %% f_post
-    \path (box-f.west)+(-.1,-.4) node (anchor-post-f) {};
-    \path (box-f.west)+(0,-.4) node (anchor-post-f-2) {};
-    \path [draw, -] (post-f.west) -| (anchor-post-f.west);
-    \path [draw, ->] (anchor-post-f.west)
-    -- node [above] {} (anchor-post-f-2.east);
-
-    %% g1
-    \node (box-g1) [func,right=.4cm of box-f] {
-      \lstinline|fassert(g_precond(...));|\\  ~\\ ...};
-    \path (box-g1)+(0,3em) node (pre-g1) [pre] {\{Pre\}};
-    \path (box-g1)+(0,-3em) node (post-g1) [post] {\{Post\}};
-    \node [below=.1cm of post-g1] {callee $g$};
-    %% g1_precond
-    \node (g1-precond) [precond,above=.6cm of pre-g1] {};
-    \node [below=.1mm of g1-precond] {\scriptsize $g\_precond$};
-    %% link between g1 and g1_precond
-    \path (box-g1.west)+(-.1,2.4) node (anchor-pre-g1) {};
-    \path (box-g1.west)+(1.3,2.4) node (anchor-pre-g1-2) {};
-    \path [draw, -] (pre-g1.west) -| (anchor-pre-g1.west);
-    \path [draw, ->] (anchor-pre-g1.west)
-    -- node [above] {} (anchor-pre-g1-2.east);
-    %% g1_post
-    \path (box-g1.west)+(-.1,-.4) node (anchor-post-g1) {};
-    \path (box-g1.west)+(0,-.4) node (anchor-post-g1-2) {};
-    \path [draw, -] (post-g1.west) -| (anchor-post-g1.west);
-    \path [draw, ->] (anchor-post-g1.west)
-    -- node [above] {} (anchor-post-g1-2.east);
-  \end{tikzpicture}
-  \vspace{-8mm}
-  \caption{Pre-Post translation scheme for the FUT and called functions} \label{fig:pre-post}
-  \end{center}
-  \vspace{-6mm}
-\end{figure}
-
+\input{figures/fig_translation_scheme}
 
 
 This rule pattern states that if the term or predicate $w$ at label $l_i$
@@ -989,46 +540,6 @@ function \lstinline|fassert|, that is expanded to a conditional \lstinline|if|.
 Test generation tries to cover both branches. If the expected property is
 false, the failure is reported and the
 exploration switches to another branch.
-
-
-
-\begin{figure}[t]
-%\vspace{-2mm}
-\scriptsize{
-  {\myinference[$\alpha$-assert]
-    {(l, p) \rulearrow (I, e)}
-    {(l, \mathtt{assert\ p;})
-      \rulearrow
-      I \concat (l, \mathtt{fassert(e);})}
-  }
-  \vspace{-1mm}
-
-  {\myinference[$\alpha$-post]
-    {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mathtt{ensures\ p;})
-      \rulearrow
-      I \concat (End_f, \mathtt{fassert(e);})}
-  }
-  \vspace{-1mm}
-
-  {\myinference[$\alpha$-pre\hspace{-2mm}]
-    {(Beg_{f\_precond}, p) \rulearrow (I, e)}
-    {(Beg_f, \left \{\hspace{-2mm}
-      \begin{array}{r}
-        \mathtt{typically\ p;} \\
-        \mathtt{requires\ p;}
-      \end{array} \right. \hspace{-2mm}
-      )
-      \rulearrow
-      I \concat (Beg_{f\_precond}, \mathtt{if(!e)\ return\ 0;})}
-  }
-}
-  \vspace{-4mm}
-  \caption{Translation rules for assert, postcondition and precondition}
-  \label{fig:annot}
-\vspace{-4mm}
-\end{figure}
-
 
 Fig.~\ref{fig:annot} describes the translation rules for an assertion at label $l$
 (\textsc{$\alpha$-assert}), a postcondition (\textsc{$\alpha$-post}) and
@@ -1064,61 +575,6 @@ In the example of Listing~\ref{lst:normalized}, the
 \lstinline'is_present_precond' precondition is {\em assumed} line 11 of
 Listing~\ref{lst:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
 translated as lines 28--32 in Listing~\ref{lst:abbrv}. 
-
-
-
-\begin{figure*}[tb]
-  %\vspace{-2mm}
-  \scriptsize{
- {\myinference[$\alpha$-invariant]
-    {(l, p) \rulearrow (I_1, e_1) \\
-      (EndIter_l, p) \rulearrow (I_2, e_2)}
-    {
-      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
-      I_1 \concat (l, \mathtt{fassert(e1);})
-      \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
-    }
-  }
- \vspace{-1mm}
-
-  {\myinference[$\alpha$-variant]
-    {
-      (l, t) \rulearrow (I_1, e_1) \\
-      (BegIter_l, t) \rulearrow (I_2, e_2) \\
-      (EndIter_l, t) \rulearrow (I_3, e_3)
-    }
-    {
-      \splitfrac
-          {
-            (l, \mathtt{loop\ variant\ t;}) \rulearrow
-          }
-          {
-            I_1 \concat (l,
-            \mathtt{fassert(}
-            \underline{\mathtt{0 <= e1} \Zclear}
-            \mathtt{);})
-            \concat I_2
-            \concat (BegIter_l,
-            \underline{\Zinit \mathtt{oldvariant = e2} \Zclear}
-            \semicolon
-            )
-            \concat I_3
-            \concat(EndIter_l,
-            \mathtt{fassert(}
-            \underline{\mathtt{0 <= e3}}\
-            \mathtt{ \&\& }\
-            \underline{\mathtt{e3}\Zclear\mathtt{< oldvariant} \Zclear}
-            \mathtt{);})
-          }
-    }
-  }
-  }
-  \vspace{-4mm}
-  \caption{Transformation rules for loop annotations: invariant and variant}
-  \label{fig:loop-annot}
-\vspace{-3mm}
-\end{figure*}
-
 
 The translation rules for the loop invariants (\textsc{$\alpha$-invariant}) and
 loop variants (\textsc{$\alpha$-variant}) for a loop at label $l$ are presented in

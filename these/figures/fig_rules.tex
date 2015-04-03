@@ -1,0 +1,468 @@
+\begin{figure*}[t]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\tau$-old\hspace{-2mm}{}]
+    {}
+    {(l, \mathtt{\backslash old(x)}:ctype) \rulearrow (\emptyset, \mathtt{old\_x})}
+  }
+  {\myinference[$\tau$-var\hspace{-2mm}{}]
+    {}
+    {(l, \mathtt{x}:ctype) \rulearrow (\emptyset, \mathtt{x})}
+  }
+  {\myinference[$\tau$-old-val\hspace{-2mm}{}]
+    {(l, t:int) \rulearrow (I, e)}
+    {(l, \mathtt{\backslash old(*(x+t))}:ctype) \rulearrow (I,\mathtt{*(old\_val\_x+e)})}
+  }
+  \vspace{-7mm}
+
+  {\myinference[$\tau$-res\hspace{-2mm}{}]
+    {}
+    {(l, \mathtt{\backslash result}:ctype) \rulearrow (\emptyset, \mathtt{res})}
+  }
+  {\myinference[$\tau$-const\hspace{-1mm}{}]
+    {}
+    {
+      (l, \mathtt{cst:}\mathbb{Z})
+      \rulearrow
+      ((l,
+      \underline{\Zinit\mathtt{var_n = cst}}
+      ), \mathtt{var_n})}
+  }
+}
+  \vspace{-5mm}
+  \caption{Translation rules for constants, identifiers, and
+    \textbf{$\backslash$\lstinline{old}} terms}
+  \label{fig:const-id}
+\vspace{-4mm}
+\end{figure*}
+
+\begin{figure*}[bt]
+  \scriptsize{
+    {\myinference[$\tau$-coerce$_1$]
+      {(l, t:\mathbb{Z}) \rulearrow (I, e)}
+      {
+        (l, (int)(t : \mathbb{Z})) \rulearrow
+        (I \concat (l,
+        \mathtt{ int\ var_n = }\
+        \underline{\mathtt{e} \Zclear}
+        \semicolon
+        ), \mathtt{var_n})
+      }
+    }
+    {\myinference[$\tau$-coerce$_2$]
+      {(l, t:int) \rulearrow (I, e)}
+      {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
+        \underline{\Zinit \mathtt{var_n = e}}
+        \semicolon
+        ), \mathtt{var_n})}
+    }
+  }
+  \vspace{-4mm}
+  \caption{Translation rules for coercions}
+  \label{fig:coerce}
+\vspace{-2mm}
+\end{figure*}
+
+\begin{figure*}[bt]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\tau$-binop$_1$]
+    {(l, t_1:ptr) \rulearrow (I_1, e_1) \quad
+      (l, t_2:int) \rulearrow (I_2, e_2) \quad
+    op \in \{+, -\}}
+    {(l, (\mathtt{t1\ op\ t2}):ptr) \rulearrow
+      (I_1 \concat I_2, \mathtt{e1\ op\ e2})}
+  }
+  {\myinference[$\tau$-unop$_1$]
+    {(l, t:ptr) \rulearrow (I, e)}
+    {(l, (\mathtt{* t}): ctype) \rulearrow (I, \mathtt{* e})}
+  }
+  \vspace{-3mm}
+
+  {\myinference[$\tau$-binop$_2$]
+    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
+      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
+      \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
+      \mathtt{\&\&}\}}
+    {(l, (\mathtt{t1\ op\ t2}):int) \rulearrow
+      (I_1 \concat I_2 \concat (l,
+      \mathtt{int\ var_n = }\
+      \underline{\mathtt{e1}\Zclear\ \mathtt{ op\ e2 }\Zclear}
+      \semicolon
+      ), \mathtt{var_n})}
+  }
+  {\myinference[$\tau$-unop$_2$]
+    {(l, t:int) \rulearrow (I, e)}
+    {(l, (\mathtt{! t}): int) \rulearrow (I, \mathtt{! e})}
+  }
+  \vspace{-3mm}
+
+  {\myinference[$\tau$-binop$_3$]
+    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
+      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
+      \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
+      \mathbin{\char`\^}\}}
+    {(l, (\mathtt{t1\ op\ t2}):\mathbb{Z}) \rulearrow
+      (I_1 \concat I_2 \concat (l,
+      \underline{\Zinit \mathtt{var_n = e1}\Zclear\ \mathtt{ op\ e2} \Zclear}
+      \semicolon
+      ), \mathtt{var_n})}
+  }
+  {\myinference[$\tau$-unop$_3$]
+    {(l, t:\mathbb{Z}) \rulearrow (I, e) \quad
+      op \in \{ -, \sim\}}
+    {(l, (\mathtt{op\ t}):\mathbb{Z}) \rulearrow (I, \concat (l,
+      \underline{\mathtt{e = op\ e}}
+      \semicolon
+      ), \mathtt{e})}
+  }
+  \vspace{-3mm}
+
+  {\myinference[$\tau$-if]
+    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+      (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
+    {
+      (l, (\mathtt{t1\ ?\ t2}~\textbf{:}~\mathtt{t3}):\mathbb{Z})
+      \rulearrow
+      (I_1
+      \concat (l,
+      \mathtt{if(}
+      \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
+      \mathtt{)} \bopen
+      )
+      \concat I_2
+      \concat (l,
+      \underline{\Zinit \mathtt{var_n = e2} \Zclear}
+      \semicolon \bclose
+      \mathtt{else} \bopen
+      )
+      \concat I_3
+      \concat
+      (l,
+      \underline{\Zinit \mathtt{var_n = e3} \Zclear}
+      \semicolon
+      \bclose ),
+      \mathtt{var_n})
+    }
+  }
+  }
+  \vspace{-2mm}
+  \caption{Translation rules for unary and binary operations}
+  \label{fig:op}
+\vspace{-2mm}
+\end{figure*}
+
+\begin{figure*}[bt]
+%\vspace{-2mm}
+\scriptsize{
+{\myinference[$\tau$-sum]
+  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+    (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
+  {
+    \splitfrac
+        {(l, (\mathtt{\backslash sum(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
+          \rulearrow}
+        {
+          (I_1 \concat I_2
+          \concat
+          (l, \underline{\Zinit \mathtt{var_n = 0}} \semicolon\
+          \mathtt{ for(}
+          \underline{\Zinit \mathtt{i_n = e1} \Zclear}\semicolon\
+          \underline{\mathtt{i_n <= e2} \Zclear}\semicolon\
+          \underline{\mathtt{i_n++} \Zclear}
+          \mathtt{)} \bopen )
+          \concat I_3
+          \concat
+          (l,
+          \underline{\mathtt{var_n += e3} \Zclear}\semicolon
+          \bclose
+          ),
+          \mathtt{var_n})
+        }
+  }
+}
+
+{\myinference[$\tau$-numof]
+  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+    (l, t_3:int) \rulearrow (I_3, e_3)}
+  {
+    \splitfrac
+        {(l, (\mathtt{\backslash numof(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
+          \rulearrow}
+        {
+          (I_1 \concat I_2
+          \concat
+          (l,
+          \underline{\Zinit \mathtt{var_n = 0}}
+          \semicolon\
+          \mathtt{ for(}
+          \underline{\Zinit \mathtt{i_n = e1} \Zclear}
+          \semicolon\
+          \underline{\mathtt{i_n <= e2} \Zclear}
+          \semicolon\
+          \underline{\mathtt{i_n++} \Zclear}
+          \mathtt{)} \bopen
+          \concat I_3
+          \concat (l,
+          \mathtt{if(e3)}\
+          \underline{\mathtt{var_n++}}
+          \semicolon
+          \bclose
+          ),
+          \mathtt{var_n})
+        }
+  }
+}
+}
+\vspace{-2mm}
+\caption{Translation rules for builtin logic functions}
+\label{fig:builtin}
+\vspace{-3mm}
+\end{figure*}
+
+\begin{figure*}[t]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\pi$-equiv]
+    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+    {(l, \mathtt{p1 <==> p2})
+      \rulearrow
+      (I_1 \concat I_2, \mathtt{((!e1 || e2) \&\& (!e2 || e1))})}
+  }
+
+  \vspace{-1mm}
+  {\myinference[$\pi$-and]
+    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+    {(l, \mathtt{p1 \&\& p2})
+      \rulearrow
+      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(var_n)} \bopen)
+      \concat I_2
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+    }
+  }
+  {\myinference[$\pi$-true]
+    {}
+    {(l, \mathtt{\backslash true}) \rulearrow (\emptyset, \mathtt{1})}
+  }
+
+  \vspace{-3mm}
+  {\myinference[$\pi$-or]
+    {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+    {(l, \mathtt{p1 || p2})
+      \rulearrow
+      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(!var_n)} \bopen)
+      \concat I_2
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+    }
+  }
+  {\myinference[$\pi$-false]
+    {}
+    {(l, \mathtt{\backslash false}) \rulearrow (\emptyset, \mathtt{0})}
+  }
+
+  \vspace{-3mm}
+  {\myinference[$\pi$-impl]
+    {(l, p_1) \rulearrow (I_1, e_1) \\
+      (l, p_2) \rulearrow (I_2, e_2)}
+    {(l, \mathtt{p1 ==> p2})
+      \rulearrow
+      (I_1 \concat (l, \mathtt{int\ var_n = 1; if(e1)} \bopen)
+      \concat I_2
+      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+    }
+  }
+  {\myinference[$\pi$-not]
+    {(l, p) \rulearrow (I, e)}
+    {(l, \mathtt{!p}) \rulearrow (I, \mathtt{!e})}
+  }
+  \vspace{-3mm}
+
+  {\myinference[$\pi$-if]
+    {(l, t:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+      (l, p_2) \rulearrow (I_2, e_2) \\
+      (l, p_3) \rulearrow (I_3, e_3)}
+    {
+      (l, \mathtt{t ? p2 : p3}) \rulearrow
+      (I_1 \concat (l, \mathtt{int\ var_n; if(}
+      \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
+      \mathtt{)} \bopen)
+      \concat I_2 \concat (l, \mathtt{var_n=e2;} \bclose \mathtt{else} \bopen)
+      \concat I_3 \concat (l, \mathtt{var_n=e3;} \bclose),
+      \mathtt{var_n})
+    }
+  }
+  \vspace{-0.5mm}
+
+  {\myinference[$\pi$-rel]
+    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
+      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
+      \mathtt{==}, \mathtt{!=}\}}
+    {(l, \mathtt{t1\ op\ t2}) \rulearrow
+      (I_1 \concat I_2 \concat (l,
+      \mathtt{int\ var_n =}\
+      \underline{\mathtt{ e1} \Zclear\ \mathtt{ op\ e2} \Zclear}
+      \semicolon
+      ), \mathtt{var_n})}
+  }
+}
+  \vspace{-2mm}
+  \caption{Translation rules for simplest predicates}
+  \label{fig:pred-logic}
+\vspace{-4mm}
+\end{figure*}
+
+\begin{figure*}[bt]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\pi$-valid]
+    {(l, t:ptr) \rulearrow (I, e) }
+    {(l, \mathtt{\backslash valid(t)})
+      \rulearrow
+      (I, \mathtt{fvalid(e)})
+    }
+  }
+  {\myinference[$\pi$-valid-range]
+    {(l, t_1:ptr) \rulearrow (I_1, e_1) \\
+      (l, t_2:int) \rulearrow (I_2, e_2) \\
+      (l, t_3:int) \rulearrow (I_3, e_3)}
+    {
+      (l, \mathtt{\backslash valid(t1+(t2..t3))}) \rulearrow
+      (I_1 \concat I_2 \concat I_3,\mathtt{fvalidr(e1,e2,e3)})
+    }
+  }
+}
+  \vspace{-4mm}
+  \caption{Translation rules for memory validity predicate}
+  \label{fig:valid}
+\vspace{-3mm}
+\end{figure*}
+
+\begin{figure*}[bt]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\pi$-exists]
+    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+      (l, p) \rulearrow (I, e)}
+    {
+      \splitfrac
+          {(l, \mathtt{\backslash exists\ integer\ i;\ t1 <= i < t2\ \&\&\ p})
+            \rulearrow
+          }
+          {
+            (I_1 \concat I_2\concat
+            (l,
+            \mathtt{int\ var_n = 0; for(}
+            \underline{\Zinit \mathtt{i_n = e1} \Zclear}
+            \semicolon\
+            \underline{\mathtt{i_n < e2} \Zclear}\
+            \mathtt{ \&\&\ !var_n;}\
+            \underline{\mathtt{i_n++} \Zclear}
+            \mathtt{)} \bopen)
+            \concat I \concat (l,
+            \mathtt{var_n = e;} \bclose),
+            \mathtt{var_n})
+          }
+    }
+  }
+}
+  \vspace{-2mm}
+  \caption{Translation rule for quantified predicate}
+  \label{fig:quantif}
+\vspace{-4mm}
+\end{figure*}
+
+\begin{figure}[t]
+%\vspace{-2mm}
+\scriptsize{
+  {\myinference[$\alpha$-assert]
+    {(l, p) \rulearrow (I, e)}
+    {(l, \mathtt{assert\ p;})
+      \rulearrow
+      I \concat (l, \mathtt{fassert(e);})}
+  }
+  \vspace{-1mm}
+
+  {\myinference[$\alpha$-post]
+    {(End_f, p) \rulearrow (I, e)}
+    {(End_f, \mathtt{ensures\ p;})
+      \rulearrow
+      I \concat (End_f, \mathtt{fassert(e);})}
+  }
+  \vspace{-1mm}
+
+  {\myinference[$\alpha$-pre\hspace{-2mm}]
+    {(Beg_{f\_precond}, p) \rulearrow (I, e)}
+    {(Beg_f, \left \{\hspace{-2mm}
+      \begin{array}{r}
+        \mathtt{typically\ p;} \\
+        \mathtt{requires\ p;}
+      \end{array} \right. \hspace{-2mm}
+      )
+      \rulearrow
+      I \concat (Beg_{f\_precond}, \mathtt{if(!e)\ return\ 0;})}
+  }
+}
+  \vspace{-4mm}
+  \caption{Translation rules for assert, postcondition and precondition}
+  \label{fig:annot}
+\vspace{-4mm}
+\end{figure}
+
+\begin{figure*}[tb]
+  %\vspace{-2mm}
+  \scriptsize{
+ {\myinference[$\alpha$-invariant]
+    {(l, p) \rulearrow (I_1, e_1) \\
+      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {
+      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
+      I_1 \concat (l, \mathtt{fassert(e1);})
+      \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
+    }
+  }
+ \vspace{-1mm}
+
+  {\myinference[$\alpha$-variant]
+    {
+      (l, t) \rulearrow (I_1, e_1) \\
+      (BegIter_l, t) \rulearrow (I_2, e_2) \\
+      (EndIter_l, t) \rulearrow (I_3, e_3)
+    }
+    {
+      \splitfrac
+          {
+            (l, \mathtt{loop\ variant\ t;}) \rulearrow
+          }
+          {
+            I_1 \concat (l,
+            \mathtt{fassert(}
+            \underline{\mathtt{0 <= e1} \Zclear}
+            \mathtt{);})
+            \concat I_2
+            \concat (BegIter_l,
+            \underline{\Zinit \mathtt{oldvariant = e2} \Zclear}
+            \semicolon
+            )
+            \concat I_3
+            \concat(EndIter_l,
+            \mathtt{fassert(}
+            \underline{\mathtt{0 <= e3}}\
+            \mathtt{ \&\& }\
+            \underline{\mathtt{e3}\Zclear\mathtt{< oldvariant} \Zclear}
+            \mathtt{);})
+          }
+    }
+  }
+  }
+  \vspace{-4mm}
+  \caption{Transformation rules for loop annotations: invariant and variant}
+  \label{fig:loop-annot}
+\vspace{-3mm}
+\end{figure*}
