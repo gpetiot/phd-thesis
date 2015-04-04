@@ -1,5 +1,4 @@
 \begin{figure*}[t]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\tau$-old\hspace{-2mm}{}]
     {}
@@ -33,7 +32,6 @@
   \caption{Translation rules for constants, identifiers, and
     \textbf{$\backslash$\lstinline{old}} terms}
   \label{fig:const-id}
-\vspace{-4mm}
 \end{figure*}
 
 \begin{figure*}[bt]
@@ -57,14 +55,11 @@
         ), \mathtt{var_n})}
     }
   }
-  \vspace{-4mm}
   \caption{Translation rules for coercions}
   \label{fig:coerce}
-\vspace{-2mm}
 \end{figure*}
 
 \begin{figure*}[bt]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\tau$-binop$_1$]
     {(l, t_1:ptr) \rulearrow (I_1, e_1) \quad
@@ -149,14 +144,11 @@
     }
   }
   }
-  \vspace{-2mm}
   \caption{Translation rules for unary and binary operations}
   \label{fig:op}
-\vspace{-2mm}
 \end{figure*}
 
 \begin{figure*}[bt]
-%\vspace{-2mm}
 \scriptsize{
 {\myinference[$\tau$-sum]
   {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
@@ -219,14 +211,11 @@
   }
 }
 }
-\vspace{-2mm}
 \caption{Translation rules for builtin logic functions}
 \label{fig:builtin}
-\vspace{-3mm}
 \end{figure*}
 
 \begin{figure*}[t]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\pi$-equiv]
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
@@ -311,14 +300,11 @@
       ), \mathtt{var_n})}
   }
 }
-  \vspace{-2mm}
   \caption{Translation rules for simplest predicates}
   \label{fig:pred-logic}
-\vspace{-4mm}
 \end{figure*}
 
 \begin{figure*}[bt]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\pi$-valid]
     {(l, t:ptr) \rulearrow (I, e) }
@@ -337,14 +323,11 @@
     }
   }
 }
-  \vspace{-4mm}
   \caption{Translation rules for memory validity predicate}
   \label{fig:valid}
-\vspace{-3mm}
 \end{figure*}
 
 \begin{figure*}[bt]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\pi$-exists]
     {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
@@ -372,14 +355,11 @@
     }
   }
 }
-  \vspace{-2mm}
   \caption{Translation rule for quantified predicate}
   \label{fig:quantif}
-\vspace{-4mm}
 \end{figure*}
 
 \begin{figure}[t]
-%\vspace{-2mm}
 \scriptsize{
   {\myinference[$\alpha$-assert]
     {(l, p) \rulearrow (I, e)}
@@ -409,14 +389,11 @@
       I \concat (Beg_{f\_precond}, \mathtt{if(!e)\ return\ 0;})}
   }
 }
-  \vspace{-4mm}
   \caption{Translation rules for assert, postcondition and precondition}
   \label{fig:annot}
-\vspace{-4mm}
 \end{figure}
 
 \begin{figure*}[tb]
-  %\vspace{-2mm}
   \scriptsize{
  {\myinference[$\alpha$-invariant]
     {(l, p) \rulearrow (I_1, e_1) \\
@@ -466,8 +443,6 @@
     }
   }
   }
-  \vspace{-4mm}
   \caption{Transformation rules for loop annotations: invariant and variant}
   \label{fig:loop-annot}
-\vspace{-3mm}
 \end{figure*}
