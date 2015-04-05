@@ -7,8 +7,7 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_add_patricia_trie.tex \
 	figures/fig_rem_patricia_trie.tex \
 	figures/fig_grammar.tex \
-	figures/fig_rules.tex \
-	figures/fig_translation_scheme.tex
+	figures/fig_rules.tex
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
@@ -33,7 +32,6 @@ chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/common_prefix_mask.c
 chapter_traduction_DEPS=figures/fig_grammar.tex \
 			figures/fig_rules.tex \
-			figures/fig_translation_scheme.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
 			listings/is_present_normalized.c \

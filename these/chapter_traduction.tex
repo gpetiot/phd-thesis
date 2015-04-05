@@ -521,8 +521,6 @@ such inputs exist. The rules are of the following form:
 \vspace{-4mm}
 
 
-\input{figures/fig_translation_scheme}
-
 
 This rule pattern states that if the term or predicate $w$ at label $l_i$
 is translated (by $\tau$ or $\pi$) as
@@ -558,10 +556,7 @@ Since the precondition is \emph{assumed} for the function under test
 and must be \emph{ensured} for a called function,
 its result has to be {\em asserted} in the case
 of a {\em callee}  and {\em assumed} in the case of the function under
-test. 
-Fig.~\ref{fig:pre-post} illustrates where
-pre/postconditions checks are inserted for a FUT $f$ that calls $g_1$, that 
-calls $g_2$, etc. 
+test.
 So for each function, a check 
 \lstinline|fassert(h_precond(x1, x2, ..., xn));| (resp.
 \lstinline|fassume(h_precond(x1, x2, ..., xn));|) is inserted at the label
@@ -615,8 +610,7 @@ In RAC, it is usually checked as any other annotation.
 In test generation, it is used to avoid testing the program on inadmissible values 
 for which the program is not supposed to work correctly.
 Hence, the precondition  of the FUT should be assumed during test generation
-to ensure that all generated test inputs respect the precondition of the FUT 
-(cf Fig.~\ref{fig:pre-post}).
+to ensure that all generated test inputs respect the precondition of the FUT.
 
 Besides, the treatment of the precondition of the FUT in \pathcrawler has two optimizations.
 First, an internal mechanism of unquantified and quantified preconditions
@@ -633,7 +627,7 @@ can be replaced in \pathcrawler by a dedicated support for
 late precondition (where precondition constraints are posted \emph{after}
 other path constraints of the FUT).
 Thus the call to \lstinline|fassume| for the FUT 
-in \pathcrawler is not needed (cf Fig.~\ref{fig:pre-post}).
+in \pathcrawler is not needed.
 
 \textbf{Memory-related constructs.}
 Runtime checkers also require a complex instrumentation framework
