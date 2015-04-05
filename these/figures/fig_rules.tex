@@ -438,9 +438,8 @@
 
   {\myinference[$\alpha$-variant]
     {
-      (l, t) \rulearrow (I_1, e_1) \\
-      (BegIter_l, t) \rulearrow (I_2, e_2) \\
-      (EndIter_l, t) \rulearrow (I_3, e_3)
+      (BegIter_l, t) \rulearrow (I_1, e_1) \\
+      (EndIter_l, t) \rulearrow (I_2, e_2)
     }
     {
       \splitfrac
@@ -448,27 +447,17 @@
             (l, \mathtt{loop\ variant\ t;}) \rulearrow
           }
           {
-            \splitfrac
-            {
-              I_1 \concat (l,
+              I_1 \concat ((BegIter_l,
               \mathtt{fassert(}
-              \underline{\mathtt{0 <= e1} \Zclear}
-              \mathtt{);})
+              \underline{\mathtt{0 <= e1}}
+              \mathtt{);\ }
+              \underline{\Zinit \mathtt{oldvariant = e1} \Zclear}
+              \semicolon)
               \concat I_2
-              \concat (BegIter_l,
-              \underline{\Zinit \mathtt{oldvariant = e2} \Zclear}
-              \semicolon
-              )
-            }
-            {
-              \concat I_3
               \concat(EndIter_l,
               \mathtt{fassert(}
-              \underline{\mathtt{0 <= e3}}\
-              \mathtt{ \&\& }\
-              \underline{\mathtt{e3}\Zclear\mathtt{< oldvariant} \Zclear}
+              \underline{\mathtt{e2}\Zclear\mathtt{< oldvariant} \Zclear}
               \mathtt{);})
-            }
           }
     }
   }
