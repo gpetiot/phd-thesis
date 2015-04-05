@@ -389,20 +389,20 @@
   \vspace{-1mm}
 
   {\myinference[$\alpha$-check-assigns]
-    {}
+    {(End_f, x) \rulearrow (I, e)}
     {(End_f, \mathtt{assigns\ X;})
       \rulearrow
       I \concat
       \forall (x:ctype) \not \in X:
-      (Beg_f, \mathtt{ctype\ assigns_x = x;})
-      \concat (End_f, \mathtt{fassert(x == assigns_x);})
+      (Beg_f, \mathtt{ctype\ assigns_x = e;})
+      \concat (End_f, \mathtt{fassert(e == assigns_x);})
     }
   }
   {\myinference[$\alpha$-assume-assigns]
-    {}
+    {(End_f, x) \rulearrow (I, e)}
     {(End_f, \mathtt{assigns\ x;})
       \rulearrow
-      I \concat (End_f, \mathtt{x = nondet();})}
+      I \concat (End_f, \mathtt{e = nondet();})}
   }
   \vspace{-1mm}
 
@@ -425,7 +425,25 @@
 
 \begin{figure*}[tb]
   \scriptsize{
- {\myinference[$\alpha$-invariant]
+  {\myinference[$\alpha$-check-loop-assigns]
+    {(l, x) \rulearrow (I, e)}
+    {(l, \mathtt{loop\ assigns\ X;})
+      \rulearrow
+      I \concat
+      \forall (x:ctype) \not \in X:
+      (BegIter_l, \mathtt{ctype\ assigns_x = e;})
+      \concat (EndIter_l, \mathtt{fassert(e == assigns_x);})
+    }
+  }
+  {\myinference[$\alpha$-assume-loop-assigns]
+    {(l, x) \rulearrow (I, e)}
+    {(l, \mathtt{loop\ assigns\ x;})
+      \rulearrow
+      I \concat (l, \mathtt{e = nondet();})}
+  }
+  \vspace{-1mm}
+
+ {\myinference[$\alpha$-check-invariant]
     {(l, p) \rulearrow (I_1, e_1) \\
       (EndIter_l, p) \rulearrow (I_2, e_2)}
     {
@@ -434,9 +452,26 @@
       \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
     }
   }
+
+ {\myinference[$\alpha$-assume-invariant-1]
+    {(l, p) \rulearrow (I, e)}
+    {
+      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
+      I \concat (l, \mathtt{fassume(e\ \&\&\ !loopcond);})
+    }
+  }
+ {\myinference[$\alpha$-assume-invariant-2]
+    {(l, p) \rulearrow (I_1, e_1) \\
+      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {
+      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
+      I_1 \concat (l, \mathtt{fassume(e1);})
+      \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
+    }
+  }
  \vspace{-1mm}
 
-  {\myinference[$\alpha$-variant]
+  {\myinference[$\alpha$-check-variant]
     {
       (BegIter_l, t) \rulearrow (I_1, e_1) \\
       (EndIter_l, t) \rulearrow (I_2, e_2)
