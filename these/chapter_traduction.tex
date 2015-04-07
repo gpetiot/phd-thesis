@@ -86,41 +86,54 @@ mathématiques et la non-définition (nous utiliserons le terme anglais
 
 \subsubsection{Entiers mathématiques}\label{sec:eacsl-integers}
 
-In addition to all machine types, \eacsl terms also include mathematical
-integers of type  \lstinline{integer}: integer constants and operators, as well as logic variables are of
-this type. Integer arithmetics is unbounded and never
-overflows. \eacsl holds a small subtyping system to automatically coerce C
-integral types into mathematical integers. For instance, if \lstinline{x} is a C
-variable of type \lstinline{int}, \lstinline{x+1} and \lstinline{1} are of type
-\lstinline{integer} and a coercion from \lstinline{int} to \lstinline{integer} is
-introduced when typing \lstinline{x} in this context. This design was chosen for
-several reasons. First, one of the main goals of \framac is program proving by
-discharging proof obligations to automatic theorem provers. Such provers usually
-work much better with mathematical arithmetics than with \textit{modular
-  arithmetics}, that is, bounded arithmetics with overflows.  Second,
-specifications are usually written without any implementation detail in mind,
-and potential overflows are implementation details. Third, it is still possible
-to use bounded modular arithmetics when required by using explicit casts: for
-instance, \lstinline{(int)(INT_MAX + 1)} is equal to \lstinline{INT_MIN}, the
-smallest representable value of \lstinline{int}. Fourth, this choice makes it
-much easier to talk about potential overflows in specifications: for example,
-thanks to mathematical arithmetics, 
-\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} specifies in the easiest way
-that \lstinline{x+y} must not overflow.
-Unless otherwise stated, ``integer'' will refer below to ``unbounded integer''.
+
+En plus des entiers machine, les termes \eacsl peuvent être des entiers
+mathématiques de type \lstinline{integer} : les constantes entières, les
+opérations sur les entiers, ainsi que les variables logiques sont de type
+\lstinline{integer}.
+L'arithmétique entière est non bornée et donc les débordements d'entier
+(\textit{overflows}) sont impossibles.
+\eacsl dispose d'un système de sous-typage pour convertir automatiquement les
+types entiers du C vers les entiers mathématiques.
+Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
+\lstinline{x+1} et \lstinline{1} sont de type \lstinline{integer} et une
+conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
+dans ce contexte quand la variable \lstinline{x} est typée.
+Ce choix a été fait pour plusieurs raisons.
+Premièrement, un des buts principaux de \framac est la preuve de programmes par
+appels à des prouveurs externes, la plupart de ces prouveurs fonctionnent mieux
+avec l'arithmétique entière qu'avec l'arithmétique bornée (ou modulaire).
+Deuxièmement, les spécifications sont habituellement écrites sans se préoccuper
+des détails d'implémentation, et les débordements d'entiers sont des détails
+d'implémentation.
+Troisièmement, il reste possible d'utiliser l'arithmétique bornée si besoin en
+utilisant des conversions explicites (\textit{casts}).
+Par exemple, \lstinline{(int)(INT_MAX + 1)} est égal à \lstinline{INT_MIN}, la
+plus petite valeur représentable de type \lstinline{int}.
+Quatrièmement, ce choix facilite l'expression des débordements potentiels dans
+les spécifications : par exemple, grâce à l'arithmétique entière,
+\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} est le moyen le plus simple
+de spécifier que \lstinline{x+y} ne déborde pas.
+Dans la suite, sauf mention contraire, ``entier'' fait référence à
+``entier non-borné''.
+
 
 \subsubsection{Undefinedness}\label{sec:undefined}
 
-\eacsl is executable. However, evaluation of undefined terms like \lstinline{1/0} is not
-possible. To solve this issue, \eacsl follows Chalin's Runtime Assertion
-Checking semantics~\cite{chalin10} by stating that semantics of such terms is
-``undefined'': \eacsl uses a 3-valued logic~\cite{konikowska91} like
-\textsc{Spark2014}~\cite{sparkERTS2014} or \jml~\cite{assert}. It is
-then the responsibility of the tools interpreting \eacsl{} to ensure that an
-undefined term is never evaluated. An indirect consequence of this design is
-that operators \lstinline{&&}\,, \ \lstinline{||}\,, \ \lstinline{_?_:_} \ and
-\ \lstinline{==>} \ in \eacsl are lazy (like the C counterparts for the first
-three of them).
+
+\eacsl est exécutable.
+Cependant, l'évaluation de termes indéfinis comme \lstinline{1/0} n'est pas
+possible.
+Pour résoudre ce problème, \eacsl suit la sémantique de vérification à
+l'exécution définie par Chalin~\cite{chalin10}, selon laquelle la sémantique de
+tels termes est ``indéfinie'' (\textit{undefined}) : \eacsl utilise une logique
+tri-valuée~\cite{konikowska91} comme \textsc{Spark2014}~\cite{sparkERTS2014} ou
+\jml \cite{\citejml}.
+Il est de la responsibilité des outils interprétant \eacsl de s'assurer que les
+termes indéfinis ne sont jamais évalués.
+Une conséquence indirecte de ce choix est qie les opérateurs \lstinline{&&}\,,
+\ \lstinline{||}\,, \ \lstinline{_?_:_} \ et\ \lstinline{==>} sont
+``paresseux'' (comme leur équivalent C pour les trois premiers).
 
 
 \subsection{Support des entiers mathématiques}\label{sec:integers}
