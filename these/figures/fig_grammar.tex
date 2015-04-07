@@ -1,5 +1,4 @@
 \begin{figure}[tb]
-%\vspace{-3mm}
 \begin{tabular}{lrl}
 %\textit{globals}  & ::= & \textit{decl}$^*$ \\
 \textit{function}  & ::= 
@@ -8,6 +7,9 @@
 \\
  & & \texttt{\phantom{/*@}} (\texttt{typically}
        \textit{\underline{predicate}}\texttt{;})*
+\\
+ & & \texttt{\phantom{/*@}} (\texttt{assigns}
+       \textit{\underline{term}}\texttt{;})*
 \\
  & & \texttt{\phantom{/*@}} (\texttt{ensures}
        \textit{\underline{predicate}}\texttt{;})* \texttt{~*/}
@@ -43,9 +45,11 @@
 \textit{loop\_annot}  & ::= 
  & (\texttt{loop invariant} \textit{\underline{predicate}}\texttt{;})* 
 \\
+ & &  (\texttt{loop assigns} \textit{\underline{term}}\texttt{;})* 
+\\
  & &  (\texttt{loop variant} \textit{\underline{term}}\texttt{;})$^?$
 \end{tabular}
 \vspace{-1mm}
-\caption{Grammar of an annotated C function \label{fig:grammar}}
+\caption{Grammaire d'une fonction C annotée \label{fig:grammar}}
 \vspace{-4mm}
 \end{figure}
