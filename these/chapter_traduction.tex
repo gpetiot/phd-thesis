@@ -166,7 +166,7 @@ représenter les valeurs pouvant provoquer un débordement d'entier (ici
 Les variables nécessaires pour la gestion des entiers non bornés sont crées et
 initialisées, puis le résultat est calculé et les comparaisons sont faites en
 tant qu'entier non borné.
-Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \acsl (ligne 2)
+Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \eacsl (ligne 2)
 qui est toujours correcte : pour tout entier positif \lstinline'x', son
 successeur est aussi positif.
 Une traduction naïve de cette annotation (ligne 3) génèrera une erreur à
@@ -201,7 +201,7 @@ le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
 \lstinline'(integer)(x+1)'.
 
 
-\subsection{Principe général}
+\subsection{Principes généraux}
 \label{sec:principles}
 
 
@@ -210,33 +210,38 @@ le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
                 {listings/is_present_instrumented.c}
 
 
-Let us describe the principles of instrumentation for an annotated function
-$f$ respecting the grammar of Fig.~\ref{fig:grammar}.
-First, each input value $x$ (a formal parameter $x$ in $params$ or a global variable $x$) of type
-$T$ is stored as \lstinline|T old_x = x;|
-at the beginning of the instrumented FUT, i.e. at label $Beg_f$, in
-the $decl^*$ section.
-For an input array  (or pointer) \lstinline'x', the values are stored in the dynamically
-allocated array \lstinline'old_val_x' whose size is inferred from the
-We also generate an additional function named \lstinline'f_precond'
-that is used to check the precondition of the FUT. For the  FUT  we ensure
-that the precondition is assumed by inserting 
-\lstinline|fassume(f_precond(x1, ..., xn));| 
-at label $Beg_{f}$
-(cf line 11 in Listing~\ref{lst:abbrv}).
+Présentons maintenant les principes de la traduction d'une fonction $f$ annotée
+respectant la grammaire de la figure~\ref{fig:grammar}.
+Premièrement, chaque valeur d'entrée \lstinline'x' (un paramètre formel de la
+liste $params$ ou une variable globale) de type $T$ est mémorisée par
+l'instruction \lstinline|T old_x = x;| au début de la fonction sous test
+instrumentée, c'est-à-dire au label $Beg_f$, dans la section $decl^*$.
+Pour chaque tableau ou pointeur \lstinline'x', les valeurs pointées sont
+mémorisées dans un tableau alloué dynamiquement \lstinline'old_val_x' dont la
+taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose la
+présence en précondition de la fonction sous test.
+%% We also generate an additional function named \lstinline'f_precond'
+%% that is used to check the precondition of the FUT. For the  FUT  we ensure
+%% that the precondition is assumed by inserting 
+%% \lstinline|fassume(f_precond(x1, ..., xn));| 
+%% at label $Beg_{f}$
+%% (cf line 11 in Listing~\ref{lst:abbrv}).
 
-Second, any \textsc{ACSL} annotation of the form \lstinline|kwd w| (where
-keyword \lstinline|kwd| belongs to \{\lstinline|assert|, \lstinline|requires|,
+Deuxièmement, toute annotation \eacsl de la forme \lstinline'kwd w' (où
+\lstinline'kwd' $\in$ $\bopen$ \lstinline|assert|, \lstinline|requires|,
 \lstinline|typically|, \lstinline|ensures|, \lstinline|loop variant|,
-\lstinline|loop invariant|\} and $w$ is a predicate or a term) is translated.
-Some other \textsc{ACSL} constructs are not detailed here because they can be
-obtained from the described \textsc{ACSL} fragment. For example, behaviors can
-be rewritten as implications in \lstinline|ensures| annotations,
-statement contracts can be rewritten as implicative \lstinline|assert|'s and
-global (resp., loop or statement)
-\lstinline|assigns| clauses can be rewritten as postconditions
-(resp., loop invariants or assertions)
-checking the non-modification of some variables. 
+\lstinline|loop invariant|, \lstinline|assigns|, \lstinline|loop assigns|
+$\bclose$ et \lstinline'w' est un terme ou un prédicat) est traduite.
+D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
+obtenues à partir du fragment \eacsl décrit.
+Par exemple, les behaviors peuvent être réécrits comme des implications dans les
+clauses \lstinline'ensures' et les contrats d'instruction peuvent être réécrits
+comme des implications dans des assertions.
+%% global (resp., loop or statement)
+%% \lstinline|assigns| clauses can be rewritten as postconditions
+%% (resp., loop invariants or assertions)
+%% checking the non-modification of some variables.
+
 
 Each pair
 $(label, annotation)$ is translated into a sequence of \emph{code insertions} 
@@ -288,8 +293,8 @@ from one another.
 In particular, we can translate bounded variables into C without renaming.
 
 
-%\subsubsection{Exemple}
-%\label{sec:running-example}
+\subsubsection*{Exemple}
+\label{sec:translation-example}
 %\vspace{-2mm}
 
 \lstinputlisting[style=c,escapechar=§,caption={Annotated C function deciding if
