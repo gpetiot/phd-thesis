@@ -4,70 +4,87 @@
 
 \chapterintro
 
-TODO
 
-\section{Transformation de programme \acsl vers C}
+Ce chapitre détaille les règles à appliquer pour traduire des annotations \acsl
+en code C sémantiquement équivalent.
+Cette méthode permet d'utiliser un outil de génération de tests prenant des
+programmes C en entrée, sans que ce outils n'aient à traiter les annotations
+\acsl.
+Le processus de traduction est présenté dans sa généralité, puis sont détaillées
+les règles de traduction (du niveau le plus bas vers le niveau le plus haut) des
+termes, des prédicats et des annotations \acsl.
+Enfin, nous abordons les différences entre une traduction pour le test et une
+traduction pour la validation à l'exécution.
 
+
+\section{Processus de transformation de programme}
 
 
 \input{figures/fig_grammar}
 
-This section presents the instrumentation process for C functions annotated in
-\acsl that we support during test generation for
-the annotated code.
-It will be convenient to consider that specific labels 
-are introduced for each statement and annotation inside a function body, as well
-as for  the beginning and the end of each function body and loop body. 
-(Strictly speaking, labels cannot be put just before declarations or ``\lstinline|}|'' in C, but this
-can be easily fixed by adding a skip instruction ``\lstinline{;}'' after such
-labels.)
-We assume that functions respect the normal form defined by the syntactic
-entity \textit{function} from the grammar in Fig.~\ref{fig:grammar}. 
-In this
-figure, the superscript ``${\textit{as}\;X}$'' means that any occurrence of $X$
-in the analysis of the current rule should be replaced with the string referred
-by the superscripted syntactic entity.
-For example, if \texttt{foo} is the name $id$ of the analyzed function in the
-rule $function$, labels $\texttt{Beg}_f$ and $\texttt{End}_f$ in this function's
-body are replaced by $\texttt{Beg}_{\texttt{foo}}$ and $\texttt{End}_{\texttt{foo}}$
-providing unique labels for the beginning and the end of the function body.
-Array and pointer accesses are supposed to be written as \lstinline|*(p+i)|.
-The terminal symbols are presented in a \texttt{typewriter font}.
-\underline{Underlined} non-terminal symbols are not detailed because they are
-part of the C or ACSL languages.
-$Terms$ and $predicates$ are ACSL expressions, most of them are described in
-Sec.~\ref{sec:term} and Sec.~\ref{sec:pred}.
-
+Cette section présent le processus d'instrumentation des fonctions C annotées
+avec le langage d'annotations \acsl pour la génération de tests.
+Pour des raisons de commodité, nous considérons qu'un label précède chaque
+instruction et annotation à l'intérieur d'une fonction.
+Considérons aussi la présence d'un label au début et à la fin de chaque corps de
+boucle.
+(Strictement parlant, les labels ne peuvent pas être placés juste avant les
+déclarations de variables ou l'accolade fermante ``$\bclose$'' en C, mais
+cette limitation peut être contournée par l'ajout d'une instruction ``skip''
+(``\lstinline{;}'') après ces labels.)
+Nous supposons que les fonctions respectent la forme normale définie par
+l'entité syntactique \textit{function} de la grammaire définie
+figure~\ref{fig:grammar}. 
+Dans cette figure, la notation ``${\textit{as}\;X}$'' en exposant signifie que
+chaque occurrence de $X$ dans la règle courante doit être remplacée par la
+chaîne à laquelle on fait référence en exposant.
+Par exemple, si \texttt{foo} est le nom ($id$) de la fonction sous test dans la
+règle $function$, les labels $\texttt{Beg}_f$ et $\texttt{End}_f$ dans le corps
+de cette fonction sont remplacés par $\texttt{Beg}_{\texttt{foo}}$ et
+$\texttt{End}_{\texttt{foo}}$, ce qui assure des labels uniques au début et à la
+fin du corps de la fonction.
+Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
+Les symboles terminaux sont présentés en police \texttt{typewriter}.
+Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
+font partie des langages C ou \acsl.
+$Termes$ et $predicats$ sont des expressions \acsl qui sont décrits en
+section~\ref{sec:term} et section~\ref{sec:pred}.
 
 
 \subsection{Sous-langage considéré}
 
-The specification language \eacsl is a strict executable subset of \acsl, which
-is a behavioral specification language implemented in \framac. On the one hand,
-designed as a subset of \acsl{}, \eacsl{} preserves \acsl{} semantics.
-Therefore, existing \framac analyzers supporting \acsl{} continue to be used
-with \eacsl{} without any change. On the other hand, the \eacsl{} language is
-\textit{executable}, that is, all its annotations can be translated into C and
-executed at runtime.  Thus it can be used by dynamic analyses and monitors.  Due
-to these two specific features %(preserving \acsl{} semantics and being
-%executable), 
-\eacsl{} facilitates combinations of static and dynamic analyses.
+Le langage de spécification \eacsl est un sous-langage exécutable d'\acsl, qui
+est un langage de spécification comportementale implémenté dans \framac.
+Premièrement, étant un sous-ensemble d'\acsl, \eacsl préserve la sémantique
+d'\acsl, ce qui implique que les greffons de \framac existants supportant \acsl
+peuvent être utilisés avec \eacsl sans modification.
+Deuxièmement, le langage \eacsl est \textit{exécutable}, ce qui veut dire que
+toutes les annotations peuvent être traduites en C et exécutées, il peut donc
+être utilisé pour l'analyse dynamique et le \textit{monitoring} (surveillance
+d'exécution).
 
-\eacsl is based on a typed first-order logic in which terms may contain
-\textit{pure} (\emph{i.e.} side-effect free) C expressions and special keywords.
-For instance, the \lstinline{\result} keyword allows the user to talk about the
-result of a function, while \lstinline{\valid} is a builtin predicate stating
-that its argument is a valid pointer. Quantifications are bounded by constraints
-to finite intervals of integers
-in order to remain executable. An \textsc{Eiffel}-like contract \cite{eiffel}
-may be associated to each function in order to specify its pre- and
-postconditions. These contracts may be split into several named guarded
-behaviors for which the users may require completeness and/or
-disjointness. Assertions, loop invariants and loop variants may also be
-associated to statements. We now focus on two of the most important design
-choices of the language: integers and undefinedness.
+\eacsl est basé sur une logique du premier ordre typée dans laquelle chaque
+terme peut contenir des expressions C pures (sans effets de bord) et des
+mots-clés du langage.
+Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
+résultat d'une fonction, \lstinline{\valid} est un prédicat qui renvoie vrai si
+son argument est un pointeur valide (se référer au manuel du
+langage~\cite{\citeacsl}).
+Les quantificateurs existentiels et universels sont bornées par des contraintes
+de domaines finis d'entiers afin de rester exécutable.
+Un contrat de fonction à la \textsc{Eiffel} \cite{eiffel} peut être associé à
+chaque fonction pour spécifier les pré- et postconditions.
+Ces contrats peuvent définir des comportements (\lstinline{behaviors}) gardés et
+nommés, pour lesquels l'exhaustivité (\textit{completeness}) et/ou la séparation
+(\textit{disjointness}) peut être requise.
+Les assertions, les invariants de boucle et les variants peuvent aussi être
+associés aux instructions.
+Abordons maintenant deux des choix les plus importants du langage: les entiers
+mathématiques et la non-définition (nous utiliserons le terme anglais
+\textit{undefinedness}).
 
-\subsubsection{Integers}\label{sec:eacsl-integers}
+
+\subsubsection{Entiers mathématiques}\label{sec:eacsl-integers}
 
 In addition to all machine types, \eacsl terms also include mathematical
 integers of type  \lstinline{integer}: integer constants and operators, as well as logic variables are of
@@ -259,8 +276,8 @@ from one another.
 In particular, we can translate bounded variables into C without renaming.
 
 
-\subsubsection{Exemple}
-\label{sec:running-example}
+%\subsubsection{Exemple}
+%\label{sec:running-example}
 %\vspace{-2mm}
 
 \lstinputlisting[style=c,escapechar=§,caption={Annotated C function deciding if
