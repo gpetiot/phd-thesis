@@ -1,6 +1,5 @@
 //@ assert x+1 <= INT_MAX; 
 // fails with x = INT_MAX since INT_MAX + 1 does not overflow in ACSL
-
 fassert(x+1 <= 2147483647); // naive instrumentation: never fails in modular arithmetics
 
 // correct instrumentation with unbounded integers:

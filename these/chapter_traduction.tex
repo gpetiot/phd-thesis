@@ -139,67 +139,66 @@ Une conséquence indirecte de ce choix est qie les opérateurs \lstinline{&&}\,,
 \subsection{Support des entiers mathématiques}\label{sec:integers}
 
 
-\lstinputlisting[style=c,escapechar=§,caption={Properties over integers: naive
-    instrumentation gives false negative},label=lst:Z:1]
+\lstinputlisting[style=c,escapechar=§,caption={Propriétés des entiers : faux
+    négatif dû à une traduction naïve},label=lst:Z:1]
                 {listings/naive_false_negative.c}
 
-\lstinputlisting[style=c,caption={Properties over integers: naive
-    instrumentation gives false positive},label=lst:Z:2]
+\lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
+    une traduction naïve},label=lst:Z:2]
                 {listings/naive_false_positive.c}
 
 
-Listing~\ref{lst:Z:1} and Listing~\ref{lst:Z:2} exhibit two examples where 
-naive translation of annotations with mathematical integers leads to unsoundness.
- Let  \lstinline'x' be of type \lstinline'int'.
-The assertion at line 1 of Listing~\ref{lst:Z:1}
-is obviously false when \lstinline'x = INT_MAX'. 
-The naive translation of this assertion
-(line 3) uses machine integers with modular arithmetics
-(we assume a 32-bit architecture), so 
-\lstinline'x+1' remains less or equal to \lstinline'INT_MAX' for any value of
-\lstinline'x', making it impossible to find the assertion violation.
-The correct translation for this annotation
-(sketched at lines 6--8) maintains the semantics of unbounded integer arithmetics
-using an external unbounded integer library (we use GMP, the GNU Multi-Precision library)
-to represent values that may overflow otherwise (like
-\lstinline'INT_MAX+1' here).
-It creates and initializes necessary variables for unbounded integers,
-then computes and compares the values as unbounded integers.
-The second example (Listing~\ref{lst:Z:2}) defines an ACSL assertion
-(line 2) that is always correct here: for any positive integer \lstinline'x',
-its successor also is positive. The naive instrumentation
-(line 4) will exhibit an error for \lstinline'x = INT_MAX':
-due to modular arithmetics, \lstinline'x+1' overflows and becomes negative,
-violating the assertion. A correct translation using unbounded integers 
-(not detailed here)
-%(lines 7--9) 
-maintains the expected behavior, so that the assertion remains valid for any positive integer
-\lstinline'x'.
-Using the naive translation for these two examples would result in a
-false negative in the first case, and in a false positive in the second case,
-undermining the tool's correctness and precision.
-The translation rules for E-ACSL constructs %terms and predicates 
-presented below %in Sec. \ref{sec:pred}, \ref{sec:term} and \ref{sec:annot} 
-respect unbounded integer semantics of E-ACSL mathematical integers and
-assume the usage of an external library as illustrated in Listing~\ref{lst:Z:1}.
-To simplify the notation of code insertions, we will use the abbreviated notation
-${}^{\square}$\lstinline{var} 
-to indicate that the variable \lstinline{var} must be declared and
-allocated (with \lstinline{Z_t var; Z_init(var);})
-at the beginning of the inserted code, and the notation
-\lstinline{var}${}^{\boxtimes}$ 
-to indicate that the variable \lstinline{var} must be de-allocated
-(with \lstinline{Z_clear(var);})
-at the end of the inserted code.
-We will also use underlined code fragments to indicate that the corresponding
-operation (assignment, comparison, \dots) should be translated using
-corresponding functions from the unbounded integer library.
-So line 12 of Listing~\ref{lst:Z:1} illustrates abbreviated notation of 
-instrumentation for lines 6--9.
-As mentioned in Sec. \ref{sec:eacsl-integers}, %we assume that all 
-type coersions  
-are automatically made explicit in the annotations in \framac, 
-so \lstinline'x+1' in line 1 of Listing~\ref{lst:Z:1}  becomes \lstinline'(integer)x+1'.
+Le listing~\ref{lst:Z:1} et le listing~\ref{lst:Z:2} montrent deux exemples où
+une traduction naïve des annotations contenant des entiers mathématiques mènent
+à un résultat incorrect.
+Soit \lstinline'x' de type \lstinline'int'.
+L'assertion ligne 1 du listing~\ref{lst:Z:1} est fausse lorsque
+\lstinline'x = INT_MAX'.
+La traduction naïve de cette assertion (ligne 3) utilise les entiers machine
+avec arithmétique modulaire (supposons une architecture 32 bits), donc
+\lstinline'x+1' reste inférieur ou égal à \lstinline'INT_MAX' pour toute valeur
+de \lstinline'x', rendant tout échec de l'assertion impossible.
+La traduction correcte pour cette annotation (lignes 6--9) conserve la
+sémantique de l'arithmétique entière non bornée en utilisant une bibliothèque
+externe (nous avons choisi GMP, la bibliothèque GNU Multi-Precision) pour
+représenter les valeurs pouvant provoquer un débordement d'entier (ici
+\lstinline'INT_MAX+1').
+Les variables nécessaires pour la gestion des entiers non bornés sont crées et
+initialisées, puis le résultat est calculé et les comparaisons sont faites en
+tant qu'entier non borné.
+Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \acsl (ligne 2)
+qui est toujours correcte : pour tout entier positif \lstinline'x', son
+successeur est aussi positif.
+Une traduction naïve de cette annotation (ligne 3) génèrera une erreur à
+l'exécution pour \lstinline'x = INT_MAX' : en arithmétique modulaire
+\lstinline'x+1' déborde et devient négatif, violant l'assertion ligne 2.
+Une traduction correcte utilisant les entiers non bornés (non présentée ici)
+conserve le comportement attendu : l'assertion est vraie pour tout entier
+positif \lstinline'x'.
+Une traduction naïve des annotations dans ces deux exemples résulterait en un
+faux négatif dans le premier cas et en un faux positif dans le deuxième cas, ce
+qui porterait atteinte à la correction et à la précision de notre méthode.
+Les règles de traduction pour les constructions \eacsl que nous présentons
+respectent la sémantique des entiers non bornés d'\eacsl et suppose
+l'utilisation d'une bibilothèque externe telle GMP, comme illustré dans le
+listing~\ref{lst:Z:1}.
+
+Pour simplifier la lecture des insertions de code générées par la traduction,
+nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
+que la variable \lstinline{var} doit être déclarée et allouée (avec
+\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
+notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
+\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
+à la fin du code inséré.
+Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
+(affectation, comparaison, \dots) utilise l'arithmétique non bornée est doit
+être traduite en utilisant les fonctions correspondantes d'une bibliothèque
+comme GMP.
+Les lignes 12--13 du listing~\ref{lst:Z:1} illustrent la notation abrégée de 
+l'instrumentation des lignes 6--9.
+\framac explicite les conversion de type implicites dans les annotations, donc
+le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
+\lstinline'(integer)(x+1)'.
 
 
 \subsection{Principe général}
