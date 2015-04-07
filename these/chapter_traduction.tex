@@ -242,55 +242,53 @@ comme des implications dans des assertions.
 %% (resp., loop invariants or assertions)
 %% checking the non-modification of some variables.
 
+Chaque paire, $(label, annotation)$ est traduite en une séquence
+d'\emph{insertions de code}
+$(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$, qui 
+represente une liste de fragments de programmes C $c_1, c_2, \ldots, c_n$ où
+le fragment $c_i$ sera inséré dans le programme instrumenté au label $l_i$.
+Les annotations \eacsl sont traduites séparément et les séquences de fragments
+résultant de la traduction sont traitées en suivant l'ordre des annotations dans
+le programme.
+Quand plusieurs fragments doivent être insérés au même endroit $l$, ils sont
+insérés en respectant leur ordre dans la séquence (l'ordre dans lequel ils ont
+été générés).
 
-Each pair
-$(label, annotation)$ is translated into a sequence of \emph{code insertions} 
-$(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$, that 
-represents a list of fragments of C programs $c_1, c_2, \ldots, c_n$ where
-the fragment $c_i$ will be inserted into the instrumented program at label
-$l_i$. Program fragments $c_i$ are parts of a correct program that might be
-incomplete if taken separately
-since a syntactically complete statement can be split into several insertions.
-%for example \lstinline|while(1) {| and
-%\lstinline|}| are two fragments of a larger C program containing a loop.
-When there are several fragments to insert in the same location $l$, they
-are inserted according  to their order in the list. \textsc{ACSL} annotations
-are translated separately, and the  resulting sequences of insertions are treated 
-respecting the order of annotations in the source program.
-
-Translation of annotations is defined by the rules in Sec.~\ref{sec:annot}. It
-requires translating \textsc{ACSL} terms and predicates. These
-transformations are described by the rules in Sec.~\ref{sec:term} and
-Sec.~\ref{sec:pred}. In these rules we use the following notation:
+La traduction d'annotations est définie par les règles de la
+section~\ref{sec:annot}.
+Cela requiert de traduire les termes et les prédicats \eacsl.
+Ces transformations sont décrites par les règles des sections~\ref{sec:term}
+et~\ref{sec:pred}.
+Dans ces règles, les notations suivantes sont utilisées :
 \begin{itemize}
-\item $p$, $p_1$, $p_2$ and $p_3$ are \textsc{E-ACSL} predicates;
-\item $t$, $t_1$, $t_2$ and $t_3$ are \textsc{E-ACSL} terms and $w$ is either a
-  predicate or a term;
-\item $c$, $c_1$, $c_2$ and $c_3$ are fragments of C programs;
-%% TODO: renommer c_i en s_i ?
-\item $e$, $e_1$, $e_2$ and $e_3$ are C expressions;
-\item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ and $EndIter_l$ are
-  program labels;
-\item $i$ is an identifier of a bounded variable in an \textsc{ACSL} predicate
-  and an iterating counter in a C program, $x$ is an identifier of a C variable;
-\item $I$, $I_1$, $I_2$ and $I_3$ are lists of code insertions $(l_i, c_i)$.
+\item $p$, $p_1$, $p_2$ et $p_3$ sont des prédicats \eacsl;
+\item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl et $w$ est un prédicat
+  ou un terme;
+\item $c$, $c_1$, $c_2$ et $c_3$ sont des fragments de programmes C;
+\item $e$, $e_1$, $e_2$ et $e_3$ sont des expressions C;
+\item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ et $EndIter_l$ sont
+  des labels du programme;
+\item $i$ est un identifiant de variable liée dans un prédicat \eacsl et un
+  compteur d'itérations dans un programme C, $x$ est un identifiant de
+  variable C;
+\item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
+  $(l_i, c_i)$.
 \end{itemize}
 
+Les variables \lstinline'res', \lstinline'var_n', \lstinline'i_n',
+\lstinline|old_x|, \lstinline'old_val_x' et \lstinline|old_variant| sont
+``fraîches'' (fresh), c'est-à-dire que ces identifiants sont supposés différents
+de tous les autres identifiants de variables du programme instrumenté :
+quand on utilise plusieurs fois une règle introduisant une variable fraîche,
+toutes les occurrences de la variable créée doivent être différentes.
+Ceci peut être implémenté en incrémentant le compteur $n$ à chaque occurrence
+dans \lstinline'var_n' et \lstinline'i_n', et en utilisant le nom de la variable
+d'origine à la place de $x$ dans \lstinline'old_x' et \lstinline'old_val_x'.
 
-
-We denote by \lstinline'res', \lstinline'var_n', \lstinline'i_n',
-\lstinline|old_x|, \lstinline'old_val_x' and \lstinline|old_variant|, fresh
-variables, that is, identifiers different from all other identifiers of the
-instrumented program.
-When we use several times a rule introducing a fresh variable, all occurrences
-must be different. It can be easily implemented incrementing the number
-\lstinline'n' in \lstinline|var_n| or \lstinline'i_n' and replacing
-\lstinline|x| in \lstinline|old_x| or \lstinline'old_val_x' by the
-names of parameters of $f$ or global variables.
-
-For convenience, we assume that all bounded variables in annotations and all program variables are different
-from one another.
-In particular, we can translate bounded variables into C without renaming.
+Pour des raisons de commodité, nous supposons que toutes les variables logiques
+liées dans les annotations et toutes les variables du programme sont
+différentes, ceci nous permet en particulier de traduire les variables logiques
+en C sans les renommer.
 
 
 \subsubsection*{Exemple}
