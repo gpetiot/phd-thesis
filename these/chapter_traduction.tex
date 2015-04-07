@@ -293,62 +293,63 @@ en C sans les renommer.
 
 \subsubsection*{Exemple}
 \label{sec:translation-example}
-%\vspace{-2mm}
+
 
 \lstinputlisting[style=c,escapechar=§,caption={Annotated C function deciding if
     \lstinline{v} is present in array \lstinline{t} of size \lstinline{n}},
   label=lst:normalized]{listings/is_present_normalized.c}
 
-We present in Listing~\ref{lst:normalized} an example of FUT  
-normalized according to the grammar of Fig.~\ref{fig:grammar}. It returns $1$
-when a given value is present in a given array, or $0$ otherwise. The
-instrumented program obtained after translation of annotations of this function
-is presented  (using abbreviated notation) in Listing~\ref{lst:abbrv}. The generated  precondition function is
-defined at lines 1--6 (Listing~\ref{lst:abbrv}), it returns a nonzero value when the
-precondition holds. The \lstinline|requires| clause in line 1
-(Listing~\ref{lst:normalized}) stating that the array size \lstinline|n| is
-positive  is
-translated as the condition in line 3 (Listing~\ref{lst:abbrv}).
-The \lstinline|requires| clause in line 2 (Listing~\ref{lst:normalized}) states
-that \lstinline|(t+0)|$, ..., $\lstinline|(t+(n-1))| are valid pointers, and leads
-to the condition in line 4 (Listing~\ref{lst:abbrv}). The
-\lstinline|typically| clause 
-in line 3 of Listing~\ref{lst:normalized} (translated
-as line 5  of Listing~\ref{lst:abbrv}), 
-is an extension of 
-\acsl defining a precondition
-considered only for testing. It strengthens the precondition to restrict
-the (potentially too big) number of paths to be explored by test generation to
-user-controlled partial coverage. Here it bounds the state space of
-\lstinline|n| (and thus the size of \lstinline|t|) to $[0, 6]$ (it can be seen
-as a domain {\em finitization} \cite{Korat}).
-The loop invariant in line 9 of Listing~\ref{lst:normalized} 
-%is bounding \lstinline|i|
-%to values between $[0, \lstinline|n|]$. It 
-is translated as lines 13--14 of
-Listing~\ref{lst:abbrv} to check that the invariant holds before the first loop
-iteration, and lines 21--22 of Listing~\ref{lst:abbrv} to check the preservation of
-the invariant by any iteration. (An additional loop invariant 
+Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
+test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
+Elle retourne $1$ quand la valeur $v$ en paramètre est présente dans le tabbleau
+$t$ en paramètre, ou $0$ sinon.
+Le programme instrumenté obtenu après traduction des annotations de cette
+fonction est présenté (utilisant la notation abrégée pour les entiers non
+bornés) dans le listing~\ref{lst:abbrv}.
+La fonction précondition générée est définie lignes 1--6
+(listing~\ref{lst:abbrv}), elle retourne une valeur non nulle quand la
+précondition est vraie.
+La clause \lstinline'requires' de la ligne 1 (listing~\ref{lst:normalized})
+indique que la taille du tableau \lstinline|n| est positive, elle est traduite
+en conditionnelle ligne 3 du listing~\ref{lst:abbrv}.
+La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) 
+indique que \lstinline|(t+0)|$, ..., $\lstinline|(t+(n-1))| sont des pointeurs
+valides, elle est traduite en conditionnelle ligne 4 du
+listing~\ref{lst:abbrv}).
+La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
+(traduite ligne 5 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
+d'\eacsl définissant une précondition pour le test.
+Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
+chemins à explorer par la génération de tests, elle permet d'obtenir une
+couverture partielle des chemins : seuls les chemins satisfaisant cette clause
+sont considérés.
+Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
+\lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
+\cite{Korat}).
+L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
+aux lignes 13--14 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
+vrai avant la première itération (établissement), et aux lignes 21--22 du
+listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
+chaque itération.
+(Un invariant de boucle supplémentaire 
 \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|
-necessary to formally prove the postcondition using deductive verification
-was not included in this simplified example).
-The loop variant line 10 in Listing~\ref{lst:normalized} is translated as
-line 15 of Listing~\ref{lst:abbrv} to check that the variant is positive or
-zero before the loop, line 18 of Listing~\ref{lst:abbrv} to back up the
-value of the variant at the beginning of the loop, and lines 23--25 of
-Listing~\ref{lst:abbrv} to check that it strictly decreases but remains positive
-or zero, thus ensuring the termination of the loop.
-The postcondition at lines 4-5 of Listing~\ref{lst:normalized} is translated as
-lines 28--32 of Listing~\ref{lst:abbrv}, it states that \lstinline|\result| is
-non zero if and only if there exists an element of \lstinline|t| equal
-to \lstinline|v|.
-The values of formal parameters \lstinline|t|, \lstinline|n| and
-\lstinline|v|
-are saved in lines 10--11
-(Listing~\ref{lst:abbrv}), a new array \lstinline|old_val_t| saves the old values
-contained in \lstinline|t|, it is allocated line 10, filled line 11 and
-deallocated line 33.
-
+nécessaire pour prouver formellement la postcondition n'est pas inclus dans cet
+exemple simplifié).
+Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit à la
+ligne 15 du listing~\ref{lst:abbrv} pour vérifier que le variant est positif ou
+nul avant chaque itération de la boucle, à la ligne 18 du
+listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
+boucle, et aux lignes 23--25 du listing~\ref{lst:abbrv} pour vérifier que le
+variant décroisse strictement après chaque itération, assurant ainsi la
+terminaison de la boucle.
+La postcondition des lignes 4-5 du listing~\ref{lst:normalized} est traduite aux
+lignes 28--32 du listing~\ref{lst:abbrv}, définit que \lstinline|\result| est
+non nul si et seulement si il existe un élément de \lstinline|t| égal à
+\lstinline|v|.
+Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
+sont mémorisées lignes 10--11 du listing~\ref{lst:abbrv}, un nouveau tableau
+\lstinline|old_val_t| stocke les anciennes valeurs contenues dans \lstinline|t|,
+il est alloué ligne 10, rempli ligne 11 et désalloué ligne 33.
 
 
 \section{Traduction des termes \acsl}
