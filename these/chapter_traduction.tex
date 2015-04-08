@@ -5,14 +5,14 @@
 \chapterintro
 
 
-Ce chapitre détaille les règles à appliquer pour traduire des annotations \acsl
+Ce chapitre détaille les règles à appliquer pour traduire des annotations \eacsl
 en code C sémantiquement équivalent.
 Cette méthode permet d'utiliser un outil de génération de tests prenant des
 programmes C en entrée, sans que ce outils n'aient à traiter les annotations
-\acsl.
+\eacsl.
 Le processus de traduction est présenté dans sa généralité, puis sont détaillées
 les règles de traduction (du niveau le plus bas vers le niveau le plus haut) des
-termes, des prédicats et des annotations \acsl.
+termes, des prédicats et des annotations \eacsl.
 Enfin, nous abordons les différences entre une traduction pour le test et une
 traduction pour la validation à l'exécution.
 
@@ -23,7 +23,7 @@ traduction pour la validation à l'exécution.
 \input{figures/fig_grammar}
 
 Cette section présent le processus d'instrumentation des fonctions C annotées
-avec le langage d'annotations \acsl pour la génération de tests.
+avec le langage d'annotations \eacsl pour la génération de tests.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
 instruction et annotation à l'intérieur d'une fonction.
 Considérons aussi la présence d'un label au début et à la fin de chaque corps de
@@ -46,8 +46,8 @@ fin du corps de la fonction.
 Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
 Les symboles terminaux sont présentés en police \texttt{typewriter}.
 Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
-font partie des langages C ou \acsl.
-$Termes$ et $predicats$ sont des expressions \acsl qui sont décrits en
+font partie des langages C ou \eacsl.
+$Termes$ et $predicats$ sont des expressions \eacsl qui sont décrits en
 section~\ref{sec:term} et section~\ref{sec:pred}.
 
 
@@ -352,8 +352,9 @@ sont mémorisées lignes 10--11 du listing~\ref{lst:abbrv}, un nouveau tableau
 il est alloué ligne 10, rempli ligne 11 et désalloué ligne 33.
 
 
-\section{Traduction des termes \acsl}
+\section{Traduction des termes \eacsl}
 \label{sec:term}
+
 
 \input{figures/fig_rules}
 
@@ -422,7 +423,7 @@ bit-à-bit ($\sim$) et on suppose que ces opérations prennent un
 
 \textsc{$\tau$-binop$_1$} traite l'arithmétique de pointeur, l'opérande gauche
 est un pointeur, $op$ doit être \lstinline|+| ou \lstinline|-|, et l'opérande
-droite est de type $int$
+droite est de type \lstinline'int'.
 \textsc{$\tau$-binop$_2$} traite la comparaison, $op$ est un opérateur de
 comparaison sur les entiers et le résultat de la comparaison est stocké dans un
 \lstinline|int|.
@@ -450,92 +451,89 @@ La règle \textsc{$\tau$-numof} initialise aussi une variable entière fraîche
 non nulle.
 
 
-\section{Traduction des prédicats \acsl}
+\section{Traduction des prédicats \eacsl}
 \label{sec:pred}
 
-Similarly to the translation function $\tau$ for terms (see
-Sec.~\ref{sec:term}), the translation function for predicates, denoted $\pi$,
-is defined as a partial function mapping a label and an \textsc{ACSL} predicate
-to a sequence of code insertions
-$(l_i, c_i)$ and a C expression $e \in \{0, 1\}$.
-When a predicate $p$ can be directly translated without additional C code, 
-the sequence of code insertions is empty and denoted $\emptyset$.
+
+De manière similaire à la fonction de traduction $\tau$ pour les termes
+(section~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
+est définie comme une fonction partielle qui, à un label et un prédicat \eacsl,
+associe une séquence d'insertions de code $(l_i, c_i)$ et une expression C
+$e \in \{0, 1\}$.
+Quand un prédicat $p$ peut être traduit directement et ne nécessite pas la
+création d'instructions C, la séquence d'insertions est vide et notée
+$\emptyset$.
+
+Nous définissons dans la figure~\ref{fig:pred-logic}, la figure~\ref{fig:valid}
+et la figure~\ref{fig:quantif} les règles de traduction pour les principaux
+prédicats \eacsl que nous supportons.
+
+La figure~\ref{fig:pred-logic} détaille les règles de traduction pour les
+prédicats les plus simples du langage \eacsl.
+Les règles \textsc{$\pi$-true} et \textsc{$\pi$-false} indiquent que
+\lstinline'\true' (respectivement \lstinline'\false') se traduit en $1$
+(respectivement $0$).
+Les règles \textsc{$\pi$-equiv} et \textsc{$\pi$-not} sont compositionnelles :
+les prédicats fils sont traduits récursivement, puis le résultat de la
+traduction est construit à partir des valeurs des prédicats fils.
+Les règles \textsc{$\pi$-and}, \textsc{$\pi$-or} et \textsc{$\pi$-impl}
+reflètent l'évaluation paresseuse de ces opérateurs selon la sémantique d'\eacsl
+: le premier opérande est toujours évalué (en $I_1$) mais le deuxième n'est
+évalué (en $I_2$) que si nécessaire.
+La règle \textsc{$\pi$-if} est similaire à \textsc{$\tau$-if} (voir
+section~\ref{sec:term}).
+Dans l'exemple du listing~\ref{lst:normalized}, la traduction de la
+postcondition
+\lstinline{\result != 0 <==> \exists integer i; 0<=i<n && *(t+i)==v} requiert
+la traduction des prédicats \lstinline|\result != 0| et
+\lstinline{\exists(...)} qui sont respectivement traduits en \lstinline|var_32|
+et \lstinline|var_35|.
+Ces deux prédicats sont assemblés pour construire la traduction du prédicat
+composé, d'après la règle \textsc{$\pi$-equiv},:
+\lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 32 du
+listing~\ref{lst:abbrv}).
+Dans la règle \textsc{$\pi$-rel}, \lstinline|op| est un des opérateurs suivants
+: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
+
+La figure~\ref{fig:valid} montre les règles de traduction pour le prédicat
+\lstinline|\valid|, qui est vrai si le pointeur en argument pointe vers une
+case mémoire valide et peut être déréférencé.
+\lstinline'\valid(t)' exprime la validité d'un seul pointeur et
+\lstinline'\valid(t1+(t2..t3))' exprime la validité du pointeur \lstinline't1'
+dans l'intervalle d'offsets \lstinline't2..t3', ce qui veut dire que
+\lstinline't1+t2', \dots, \lstinline't1+t3' sont valides.
+Les règles \textsc{$\pi$-valid} et \textsc{$\pi$-valid-range} couvrent les deux
+cas.
+On suppose que l'évaluation de la validité d'un pointeur est possible au moyen
+d'une fonction \lstinline'fvalid' et que l'évaluation d'un pointeur sur un
+intervalle d'offsets est peut se faire au moyen d'une fonction
+\lstinline'validr'.
+Le support de ces prédicats nécessite une représentation précise de la mémoire
+du programme, la réalisation de telles fonctions est abordée dans le
+chapitre~\ref{sec:runtime}.
+Dans notre exemple du listing~\ref{lst:normalized}, le prédicat
+\lstinline|\valid(t+(0..n-1))| de la clause \lstinline|requires| de la ligne 2
+est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 4 du
+listing~\ref{lst:abbrv}).
+
+La règle \textsc{$\pi$-exists} (figure~\ref{fig:quantif}) aborde la traduction
+du prédicat existentiel \lstinline'\exists', quantifié sur les entiers.
+Le code généré met à jour une variable \lstinline'var_n' (initialement $false$)
+à chaque itération de la boucle, jusqu'à ce que toutes les valeurs de
+\lstinline'i' soient considérées ou que \lstinline'var_n' soit évalué à $true$.
+Cette règle permet aussi de traduire le prédicat universellement quantifié
+\lstinline{\forall integer i; t1<=i<t2 ==> p}, ce dernier étant équivalent à
+\lstinline{! (\exists integer i; t1<=i<t2 && !p)}.
+Dans le listing~\ref{lst:normalized}, le prédicat
+\lstinline{\exists integer i; 0<=i<n && *(t+i)==v} de la ligne 4 est traduit
+au lignes 29--31 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
+valeur du prédicat après évaluation est \lstinline|var_35| (déclarée à la
+ligne 29).
 
 
-We define in Fig.~\ref{fig:pred-logic},
-Fig.~\ref{fig:valid} and Fig.~\ref{fig:quantif} the transformation rules for the
-main \textsc{ACSL} predicates we handle.
-
-Fig.~\ref{fig:pred-logic} details the translation rules for the simplest
-predicates of the \textsc{ACSL} language. The rules \textsc{$\pi$-true} and
-\textsc{$\pi$-false} state that $true$ (resp. $false$) are translated into $1$
-(resp. $0$). The rules \textsc{$\pi$-equiv} and
-\textsc{$\pi$-not} are
-compositional: the subpredicates are translated recursively, then the result of
-the translation of the predicate is rebuilt from the values of the subpredicates.
-The rules \textsc{$\pi$-and},
-\textsc{$\pi$-or} and \textsc{$\pi$-impl} are reflective of the laziness of
-the \textsc{ACSL} semantics of those operators: the first operand is always
-evaluated (in $I_1$) but the second one is only evaluated (in $I_2$) when necessary. The rule
-The rule \textsc{$\pi$-if} is the counterpart of \textsc{$\tau$-if} (cf
-Sec.~\ref{sec:term}) for predicates.
-In our running example of Listing~\ref{lst:normalized}, translating 
-the postcondition
-\lstinline{\result != 0 <==> \exists integer i; 0<=i<n && *(t+i)==v} requires
-the translation of the predicates \lstinline|\result != 0| and
-\lstinline{\exists(...)} that are respectively translated as \lstinline|var_32|
-and \lstinline|var_35|. These two predicates are put together to build the
-translation of
-the composed predicate, that is, according to \textsc{$\pi$-equiv},
-\lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 32 of
-Listing~\ref{lst:abbrv}).
-In the rule \textsc{$\pi$-rel}, \lstinline|op| is any of these
-operators: \lstinline[style=c]{<, <=, >, >=, ==, !=}.
-
-Fig.~\ref{fig:valid} shows the translation rules for the \lstinline|\valid|
-predicate that holds if its parameter points to a valid memory location and can
-be dereferenced. 
-Basic usages are
-\lstinline{\valid(t)} 
-%and \lstinline|\valid(t1+t2)| 
-%(that is a generalization of
-%the previous with $t_2$ equal to $0$) 
-for checking  the validity of a single 
-pointer \lstinline{t},
-%or of pointer \lstinline{t1} with offset \lstinline{t2}, 
-and \lstinline|\valid(t1+(t2..t3))| for checking the validity of 
-pointer \lstinline{t1} within offset range \lstinline|t_2..t_3|. The rules \textsc{$\pi$-valid} and
-\textsc{$\pi$-valid-range} cover both usages. We assume that we can
-evaluate the validity of the memory location a pointer points to by the means of
-a function \lstinline|fvalid|, and the validity of a pointer 
-within an offset range by \lstinline|fvalidr|.
-In our running example of Listing~\ref{lst:normalized}, the predicate
-\lstinline|\valid(t+(0..n-1))| in the \lstinline|requires| clause of line 2 is
-translated to \lstinline[style=c]|fvalidr(t,0,(n-1))| (line 4 of
-Listing~\ref{lst:abbrv}).
-Full support of these predicates requires a precise low-level
-memory representation.
-
-The rules \textsc{$\pi$-exists}
-(Fig.~\ref{fig:quantif}) translates the existentially
-quantified predicate \lstinline|\exists| other integer values.
-It updates
-a variable \lstinline|var_n| (initially set to $false$) at each iteration of the
-loop until all values of \lstinline|i| are considered or  
-until \lstinline|var_n| is evaluated to $true$.
-This rule also treats the universally quantified predicate
-(l, \lstinline{\forall integer i; t1<=i<t2 ==> p}) since it
-is equivalent to 
-(l, \lstinline{! (\exists integer i; t1<=i<t2 && !p)}).
-In Listing~\ref{lst:normalized}, the quantified predicate
-\lstinline{\exists integer i; 0<=i<n && *(t+i)==v} of 
-line 4 is translated in lines 29--31 of Listing~\ref{lst:abbrv}
-and the fresh variable containing the value of the predicate after its
-evaluation is \lstinline|var_35| (declared at line 29).
-
-
-\section{Traduction des annotations \acsl}
+\section{Traduction des annotations \eacsl}
 \label{sec:annot}
+
 
 Now we  define the translation rules for annotations that allow to trigger 
 annotation failures and 
@@ -705,7 +703,7 @@ Runtime  errors related to unbounded integer (division of a GMP integer by 0,
 overflow during a type coersion \lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) 
 are not treated by \rte, but they can be easily prevented 
 by adding suitable checks in the corresponding rules.
-For example, the downcast of a term $t$ from integer to $int$ (see the rule
+For example, the downcast of a term $t$ from integer to \lstinline'int' (see the rule
 \textsc{$\tau$-coerce$_1$} of Fig.~\ref{fig:coerce}) can be guarded by inserting
 \lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{&&}\underline{\lstinline{e <= INT\_MAX}}\lstinline{)}
 before the assignment \underline{\lstinline'var_n = e'}.
