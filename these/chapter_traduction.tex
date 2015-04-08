@@ -268,8 +268,8 @@ Dans ces règles, les notations suivantes sont utilisées :
 \item $e$, $e_1$, $e_2$ et $e_3$ sont des expressions C;
 \item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ et $EndIter_l$ sont
   des labels du programme;
-\item $i$ est un identifiant de variable liée dans un prédicat \eacsl et un
-  compteur d'itérations dans un programme C, $x$ est un identifiant de
+\item $i$ est un identificateur de variable liée dans un prédicat \eacsl et un
+  compteur d'itérations dans un programme C, $x$ est un identificateur de
   variable C;
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)$.
@@ -277,9 +277,9 @@ Dans ces règles, les notations suivantes sont utilisées :
 
 Les variables \lstinline'res', \lstinline'var_n', \lstinline'i_n',
 \lstinline|old_x|, \lstinline'old_val_x' et \lstinline|old_variant| sont
-``fraîches'' (fresh), c'est-à-dire que ces identifiants sont supposés différents
-de tous les autres identifiants de variables du programme instrumenté :
-quand on utilise plusieurs fois une règle introduisant une variable fraîche,
+``fraîches'' (fresh), c'est-à-dire que ces identificateurs sont supposés
+différents de tous les autres identifiants de variables du programme instrumenté
+: quand on utilise plusieurs fois une règle introduisant une variable fraîche,
 toutes les occurrences de la variable créée doivent être différentes.
 Ceci peut être implémenté en incrémentant le compteur $n$ à chaque occurrence
 dans \lstinline'var_n' et \lstinline'i_n', et en utilisant le nom de la variable
@@ -357,95 +357,97 @@ il est alloué ligne 10, rempli ligne 11 et désalloué ligne 33.
 
 \input{figures/fig_rules}
 
-Let us denote
+Soit
 $(l, t:T) \rulearrow ((l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n), e)$
-an instance of the partial function $\tau$ mapping an E-ACSL term $t$ of type
-$T$ at label $l$ to the pair $(I, e)$ where $I$ is a list of code insertions
-$(l_i, c_i)$, $e$ is a C expression, and $T$ can be $\mathbb{Z}$ (integer) or
-$ctype$. We only consider
-the following types as included in $ctype$: $ptr$,
-that can be a pointer of any type, and \lstinline'int' that is the regular C
-type. Other integral C types such as \lstinline'char', \lstinline'long',
-\lstinline'unsigned' could be supported in the same way, but are not considered
-for simplicity and readability purposes.
-The expression $e$ is pure (i.e. has no side
-effects) and evaluates the value of the term at the given point.
-%(that is usually computed by the inserted program fragments $c_i$).  
-The evaluation of $e$ often requires additional
-computations, that are performed by the inserted program fragments
-resulting from the predicate and term translation. For example, a quantified
-term requires the computation of a value throughout a \lstinline|for| loop
-(see Fig.~\ref{fig:builtin}). In this case, the second element of the returned
-pair, $e$, is the value of a variable computed by the loop.
-When a term $t$ can be directly translated without additional C code, 
-the sequence of code insertions is empty and denoted $\emptyset$.
-For a term $t:\mathbb{Z}$,
-the translation result $e$ is always a variable of type \lstinline'Z_t'
-(that justifies de-allocation \lstinline{e}${}^{\boxtimes}$ e.g. in Fig.~\ref{fig:coerce}).
+une instance de la fonction partielle $\tau$ qui à un terme \eacsl $t$ de type
+$T$ au label $l$ associe la paire $(I, e)$ où $I$ est une liste d'insertions de
+code $(l_i, c_i)$, $e$ est une expression C, et $T$ peut être $\mathbb{Z}$
+(\lstinline'integer') or $ctype$.
+Nous considérons comme étant inclus dans $ctype$ les types suivants : $ptr$,
+type pointeur pointant vers n'importe quel type du C, et le type C
+\lstinline'int'.
+Les autres types C tels \lstinline'char', \lstinline'long',
+\lstinline'unsigned', etc. peuvent être supportés de manière similaire, mais ne
+sont pas abordés pour des raisons de simplicité et lisibilité.
+L'expression $e$ est pure (elle ne provoque pas d'effet de bord) et correspond
+à l'évaluation du term $t$ au point de programme donné $l$.
+L'évaluation de $e$ requiert le plus souvent plusieurs opérations, qui sont
+effectuées par les fragments de programme qui résultent de la traduction du
+terme et seront insérés aux endroits adéquats dans le programme instrumenté.
+Par exemple, un terme quantifié (comme une somme : \lstinline'sum') a besoin de
+plusieurs instructions pour être évalué, et notamment d'une boucle (voir la
+figure~\ref{fig:builtin}).
+Dans ce cas, le second élément de la paire retournée, $e$ est la valeur de la
+variable calculée par le boucle.
+Quand un terme $t$ peut être traduit directement sans nécessiter de code C
+supplémentaire, la séquence d'insertions de code est vide et notée $\emptyset$.
+Pour un terme $t:\mathbb{Z}$, le resultat de traduction $e$ est toujours une
+variable de type \lstinline'Z_t' (ce qui justifie une désallocation
+\lstinline{e}${}^{\boxtimes}$, voir figure~\ref{fig:coerce}).
 
-Fig.~\ref{fig:const-id} describes the rules for identifiers
-(\textsc{$\tau$-var}), for the \lstinline|\result| term
-(\textsc{$\tau$-res}) and constants (\textsc{$\tau$-const}).
-Two rules are considered for the ACSL construct \lstinline|\old|.
-Applied to an identifier $x$, it is translated as the fresh variable
-\lstinline|old_x| storing the value at the entry of the function.
-Applied to a memory access (rule \textsc{$\tau$-old-val}), we use the dynamically
-allocated array \lstinline|old_val_x| that memorizes the elements of an array
-\lstinline|x| at the entry of the function (cf Sec.~\ref{sec:principles}).
-The special term \lstinline|\result| translated by the rule
-\textsc{$\tau$-res} denotes the return value of the function in
-\textsc{ACSL} written into the fresh variable   \lstinline|res|.
-That variable is unique after the normalization of the abstract syntax tree (AST) by
-\textsc{Frama-C}. 
-The rule \textsc{$\tau$-const} states that an integer variable is defined to
-store the integer constant.
+La figure~\ref{fig:const-id} présente les règles de traduction pour les
+identificateurs de variable (\textsc{$\tau$-var}), pour le terme
+\lstinline|\result| (\textsc{$\tau$-res}) et pour les constantes
+(\textsc{$\tau$-const}).
+Deux règles sont nécessaires pour traduire la construction \eacsl
+\lstinline|\old|.
+Appliquée à un identificateur $x$ (règle \textsc{$\tau$-old}), le terme est
+traduit en variable fraîche \lstinline|old_x| qui contient la valeur de $x$ au
+début de la fonction.
+Appliquée à un accès mémoire (règle \textsc{$\tau$-old-val}), on utilise le
+tableau alloué dynamiquement \lstinline|old_val_x| qui contient les valeurs du
+tableau ou pointeur \lstinline'x' au début de la fonction (se référer à la
+section~\ref{sec:principles}).
+Le terme \lstinline|\result| est traduit par la règle \textsc{$\tau$-res}, il
+fait référence à la valeur de retour de la fonction en \eacsl qui est écrite
+dans la variable \lstinline|res|.
+Cette variable est unique dans chaque fonction après normalisation de l'arbre de
+syntaxe abstrait (AST) par \framac.
+La règle \textsc{$\tau$-const} établit qu'une variable entière est définie pour
+prendre la valeur d'une contante entière.
 
-Fig.~\ref{fig:coerce} details the rules for coercions, from integer to C type
-and from C type to integer.
+La figure~\ref{fig:coerce} détaille les règles de conversions implicites, de
+\lstinline'integer' vers type C et de type C vers \lstinline'integer'.
 
-Fig.~\ref{fig:op} details the rules for unary operations
-(\textsc{$\tau$-unop$_*$}),
-binary operations (\textsc{$\tau$-binop$_*$}) and the ternary condition on terms
-(\textsc{$\tau$-if}).
-\textsc{$\tau$-unop$_1$} deals with pointer indirection ($\star$).
-In \textsc{$\tau$-unop$_2$}, the logical not (\lstinline|!|) does not involve
-integers.
-In \textsc{$\tau$-unop$_3$}, $op$ is the unary minus (\lstinline|-|) or the
-bitwise complement ($\sim$) and is an operation from and to integer.
-In \textsc{$\tau$-binop$_1$}, the left operand is a pointer so $op$ must be
-\lstinline|+| or \lstinline|-|, whereas the right operand is an $int$
-(if it is an integer, it will be coerced to $int$ using the rule
-\textsc{$\tau$-coerce$_1$} for pointer arithmetics).
-In \textsc{$\tau$-binop$_2$}, $op$ is a comparison operator over integer values
-and the result of the comparison is stored in an \lstinline|int|.
-In \textsc{$\tau$-binop$_3$}, $op$ is any of the arithmetic
-operators: \lstinline|+|, \lstinline|-|, \lstinline|/|, \lstinline|%|,
-\lstinline|<<|, \lstinline|>>|, \lstinline{|}, \lstinline|&|, \lstinline|^|
-over integers.
-In the rule \textsc{$\tau$-if}, the evaluation of $t_2$ and $t_3$ are in
-conditional branches: only one of them is computed, depending on the evaluation
-of $t_1$.
+La figure~\ref{fig:op} détaille les règles pour les opérations unaires
+(\textsc{$\tau$-unop$_*$}), les opérations binaires (\textsc{$\tau$-binop$_*$}) 
+et la condition ternaire sur les termes (\textsc{$\tau$-if}).
+\textsc{$\tau$-unop$_1$} traite le cas de l'indirection de pointeur ($\star$).
+\textsc{$\tau$-unop$_2$} traite le cas de la négation logique (\lstinline|!|) et
+n'opère que sur un \lstinline'int', si c'est un \lstinline'integer' il est
+converti en utilisant la règle \textsc{$\tau$-coerce$_1$}.
+\textsc{$\tau$-unop$_3$} traite le cas du \lstinline|-| unaire et du complément
+bit-à-bit ($\sim$) et on suppose que ces opérations prennent un
+\lstinline'integer' en entrée et en sortie.
 
+\textsc{$\tau$-binop$_1$} traite l'arithmétique de pointeur, l'opérande gauche
+est un pointeur, $op$ doit être \lstinline|+| ou \lstinline|-|, et l'opérande
+droite est de type $int$
+\textsc{$\tau$-binop$_2$} traite la comparaison, $op$ est un opérateur de
+comparaison sur les entiers et le résultat de la comparaison est stocké dans un
+\lstinline|int|.
+\textsc{$\tau$-binop$_3$} traite les opérations arithmétiques entières (les
+opérandes et le résultat sont des entiers), $op$ est des opérateurs
+arithmétiques suivants : \lstinline|+|, \lstinline|-|, \lstinline|/|,
+\lstinline|%|, \lstinline|<<|, \lstinline|>>|, \lstinline{|}, \lstinline|&|,
+\lstinline|^|.
+Dans la règle \textsc{$\tau$-if}, les évaluations de $t_2$ et $t_3$ sont dans
+des branches conditionnelles : on calcule uniquement l'un des deux, en fonction
+de l'évaluation de $t_1$.
 
-
-
-
-
-Fig.~\ref{fig:builtin} presents the rules for translating the builtin
-logic functions \lstinline|\sum| (\textsc{$\tau$-sum}) and \lstinline|\numof|
-(\textsc{$\tau$-numof}). % and \lstinline|\min| (\textsc{$\tau$-min}).
-The rule for function %\lstinline|\max| and
-\lstinline|\product| is similar 
-to the rule % \textsc{$\tau$-min} and
+La figure~\ref{fig:builtin} présente les règles de traduction pour les fonctions
+logiques \lstinline|\sum| (\textsc{$\tau$-sum}) et \lstinline|\numof|
+(\textsc{$\tau$-numof}).
+La règle pour la fonction \lstinline|\product| est similaire à la règle
 \textsc{$\tau$-sum}.
-%respectively.
-The rule \textsc{$\tau$-sum} over integers initializes a fresh integer variable
-\lstinline|var_n|, initialized to $0$, and increments its value with the value
-of the \lstinline|\lambda|-term \lstinline't3' at each iteration.
-The rule \textsc{$\tau$-numof} also initializes a fresh integer variable
-\lstinline|var_n| to $0$, but increments it only when the (non-integer)
-\lstinline|\lambda|-term \lstinline't3' is evaluated to a non-null expression.
-
+La règle \textsc{$\tau$-sum} permet de calculer une somme d'entiers non bornés,
+elle initialise une variable entière fraîche \lstinline|var_n| à $0$ et
+l'incrémente avec la valeur du \lstinline|\lambda|-terme \lstinline't3' à chaque
+itération.
+La règle \textsc{$\tau$-numof} initialise aussi une variable entière fraîche
+\lstinline|var_n| à $0$, mais incrémente sa valeur uniquement quand le
+\lstinline|\lambda|-terme \lstinline't3' (non entier) s'évalue en une expression
+non nulle.
 
 
 \section{Traduction des prédicats \acsl}
