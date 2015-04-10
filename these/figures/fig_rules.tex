@@ -427,12 +427,17 @@
   \scriptsize{
   {\myinference[$\alpha$-check-loop-assigns]
     {(l, x) \rulearrow (I, e)}
-    {(l, \mathtt{loop\ assigns\ X;})
-      \rulearrow
-      I \concat
-      \forall (x:ctype) \not \in X:
-      (BegIter_l, \mathtt{ctype\ assigns_x = e;})
-      \concat (EndIter_l, \mathtt{fassert(e == assigns_x);})
+    {
+      \splitfrac
+      {
+        (l, \mathtt{loop\ assigns\ X;}) \rulearrow
+      }
+      {
+        I \concat
+        \forall (x:ctype) \not \in X:
+        (BegIter_l, \mathtt{ctype\ assigns_x = e;})
+        \concat (EndIter_l, \mathtt{fassert(e == assigns_x);})
+      }
     }
   }
   {\myinference[$\alpha$-assume-loop-assigns]
