@@ -655,101 +655,117 @@ ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 17--18 et
 23--24 du listing~\ref{lst:abbrv}.
 
 
-\section{Différences entre le Test et la Validation d'Assertions à l'Exécution}
+\section{Similarités et Différences entre le Test et la Validation à
+  l'Exécution}
 
 
-Instrumentation based translation of ACSL annotations into C code 
-has been implemented in two \framac \cite{\citeframac} plugins:
-\eacsltoc \cite{Delahaye/SAC13,Kosmatov/RV13} that generates an instrumented program
-for Runtime Assertion Checking (RAC), and \stady, that instruments a program for Test Generation with
-\pathcrawler \cite{\citepathcrawler}. 
-This section  discusses similarities and differences between both kinds of instrumentation.
+La traduction d'annotations \eacsl en code C a été implémentée dans deux
+greffons \framac : \eacsltoc \cite{Delahaye/SAC13,Kosmatov/RV13} et \stady
+\cite{Petiot/TAP14,Petiot/SCAM14}.
+Le premier génère un programme instrumenté pour la validation d'assertions à
+l'exécution, le second génère un programme instrumenté pour la génération de
+tests avec \pathcrawler \cite{\citepathcrawler}.
+Cette section discute les similarités et les différences entre ces deux façons
+d'instrumenter.
 
-Test generation and runtime checking both need to
-generate executable code and so consider only an executable subset of the
-specification language. 
-Therefore, most rules defined in Sec. \ref{sec:term}, \ref{sec:pred} and \ref{sec:annot} 
-for test generation are also valid for RAC.
-
-\textbf{Precondition of the function under test (FUT).}
-One difference is the treatment of the precondition of the FUT.
-In RAC, it is usually checked as any other annotation.
-In test generation, it is used to avoid testing the program on inadmissible values 
-for which the program is not supposed to work correctly.
-Hence, the precondition  of the FUT should be assumed during test generation
-to ensure that all generated test inputs respect the precondition of the FUT.
-
-Besides, the treatment of the precondition of the FUT in \pathcrawler has two optimizations.
-First, an internal mechanism of unquantified and quantified preconditions
-allows a direct translation of ACSL preconditions into constraints
-supported in an efficient manner.
-Hence, for precondition patterns that can be expressed by this mechanism,
-a translation into C code is not necessary for \pathcrawler.
-Second, for the remaining preconditions translated into a C function, 
-\pathcrawler offers a specific
-efficient mechanism \cite{Delahaye/RV13}.
-A call to \lstinline|fassume| (adding the constraints of the
-precondition to the constraint store \emph{before} the path predicate in the FUT)
-can be replaced in \pathcrawler by a dedicated support for
-late precondition (where precondition constraints are posted \emph{after}
-other path constraints of the FUT).
-Thus the call to \lstinline|fassume| for the FUT 
-in \pathcrawler is not needed.
-
-\textbf{Memory-related constructs.}
-Runtime checkers also require a complex instrumentation framework
-to treat memory-related constructs where each memory related operation
-is instrumented and relative memory block metadata is stored
-so that it can be extracted when it is necessary to evaluate a memory-related
-ACSL annotation \cite{Kosmatov/RV13}.
-Some of these constructs can be handled symbolically in
-concolic testing without additional instrumentation.
-The functions \lstinline|fvalid| and \lstinline|fvalidr| are builtin C functions
-defined by \pathcrawler that return the value of validity of a pointer
-\cite{testing-pointers}.
-They actually support global variables and formal parameters of the function
-under test.
-
-\textbf{Unbounded integers.}
-While translation of ACSL mathematical integers relying on an external library 
-for unbounded integers (like GMP) is appropriate and sufficient for
-RAC, it will be quite inefficient if the library function code is
-directly handled by test generation.
-Indeed, test generation on the instrumented code would have to 
-treat much more complex code, with lots of additional function 
-calls, dynamic memory allocation and de-allocation, etc.
-This can be avoided again using symbolic execution of the test generation
-tool. \pathcrawler offers dedicated builtin support 
-for GMP numbers and operations that are efficiently translated into
-appropriate constraints on unbounded integers and handled 
-by the underlying constraint solver.
-
-\textbf{Runtime errors.}
-Straightforward translation of annotations into C may introduce runtime errors due to annotations
-with undefined terms (such as 1/0, cf Sec. \ref{sec:undefined}). 
-This issue can be easily solved for test generation exactly as proposed in \cite{Delahaye/SAC13} for RAC,
-by an additional guard generation phase
-by running  the \rte plugin~\cite{\citeframac} on the instrumented code
-to add annotations preventing
-runtime errors, and finally running the instrumentation again on these new annotations.
-Runtime  errors related to unbounded integer (division of a GMP integer by 0, 
-overflow during a type coersion \lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) 
-are not treated by \rte, but they can be easily prevented 
-by adding suitable checks in the corresponding rules.
-For example, the downcast of a term $t$ from integer to \lstinline'int' (see the rule
-\textsc{$\tau$-coerce$_1$} of Fig.~\ref{fig:coerce}) can be guarded by inserting
-\lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{&&}\underline{\lstinline{e <= INT\_MAX}}\lstinline{)}
-before the assignment \underline{\lstinline'var_n = e'}.
+La traduction pour la génération de test et la traduction pour la validation à
+l'exécution ont toutes deux besoin de générer du code exécutable, c'est pourquoi
+un sous-ensemble exécutable du langage de spécification est considéré dans les
+deux cas.
+De plus, la plupart des règles définies dans les sections~\ref{sec:term},
+\ref{sec:pred} et \ref{sec:annot} sont autant valable pour la validation à
+l'exécution que pour le test.
 
 
-\textbf{Triggering errors during test generation.}
-The function \lstinline|fassert(cond)| is a C macro defined by
-\textsc{PathCrawler} that is expanded as a conditional
-\lstinline|if(cond)|, testing
-if its parameter is true. Covering all feasible paths of the
-program will therefore enforce the generation of test inputs activating the
-$then$ branch of this condition, and test inputs activating the
-$else$ branch. So if there exist inputs such that \lstinline'cond' is evaluated to
-$false$, a test case activating the \lstinline|fassert| thus
-violating the corresponding annotation is generated. In other terms, a
-counter-example for that annotation is generated if such inputs exist.
+\textbf{Précondition de la fonction sous test.}
+Une première différence est le traitement de la précondition de la fonction sous
+test.
+En vérification à l'exécution, elle est vérifiée comme n'importe quelle autre
+annotation.
+En génération de tests, la précondition est utilisée pour éviter de tester le
+programmes avec des valeurs d'entrées incorrectes, pour lesquelles le bon
+fonctionnement du programme n'est pas garanti.
+La préconditon de la fonction sous test est donc supposée vraie pour la
+génération de tests, afin de s'assurer que toutes les entrées générées par le
+test satisfont cette précondition.
+
+%% Besides, the treatment of the precondition of the FUT in \pathcrawler has two optimizations.
+%% First, an internal mechanism of unquantified and quantified preconditions
+%% allows a direct translation of ACSL preconditions into constraints
+%% supported in an efficient manner.
+%% Hence, for precondition patterns that can be expressed by this mechanism,
+%% a translation into C code is not necessary for \pathcrawler.
+%% Second, for the remaining preconditions translated into a C function, 
+%% \pathcrawler offers a specific
+%% efficient mechanism \cite{Delahaye/RV13}.
+%% A call to \lstinline|fassume| (adding the constraints of the
+%% precondition to the constraint store \emph{before} the path predicate in the FUT)
+%% can be replaced in \pathcrawler by a dedicated support for
+%% late precondition (where precondition constraints are posted \emph{after}
+%% other path constraints of the FUT).
+%% Thus the call to \lstinline|fassume| for the FUT 
+%% in \pathcrawler is not needed.
+
+\textbf{Annotations liées au modèle mémoire.}
+La validation à l'exécution nécessite une instrumentation complexe pour traiter
+les constructions \eacsl liées au modèle mémoire comme \lstinline'\valid',
+\lstinline'\block_length', \lstinline'\base_addr', etc.
+Chaque opération affectant la mémoire doit être instrumentée et les informations
+de chaque case mémoire doivent être enregistrées afin de pouvoir évaluer ces
+annotations \cite{Kosmatov/RV13}.
+Nous aborderons les spécificités d'une telle instrumentation dans le
+chapitre~\ref{sec:runtime}.
+Certaines de ces constructions peuvent être traitées symboliquement en test
+concolique sans nécessiter d'instrumentation spécifique dans le code C.
+C'est ce que nous faisons ici en supposant la définition de fonctions C
+\lstinline'fvalid' et \lstinline'fvalidr' supportées par le générateur de tests,
+qui retournent la valeur de validité du pointeur en argument si celui-ci est
+une variable globale ou un paramètre formel de la fonction sous test.
+
+\textbf{Arithmétique non bornée.}
+Tandis que l'utilisation d'une bibliothèque externe d'artihmétique non bornée
+(comme GMP) pour traduire les entiers d'\eacsl est appropriée pour la validation
+à l'exécution, il n'en est pas de même pour la génération de tests :
+si le code des functions de la bibliothèque est analysé par le
+générateur de tests, alors cette solution se révèlera inefficace.
+En effet, la génération de tests à partir du programme instrumenté aura à
+traiter un code beaucoup plus compliqué, avec de nombreux appels de fonctions, 
+des allocations/désallocations dynamiques, etc.
+Ceci peut être évité en exécutant symboliquement les fonctions de la
+bibliothèque : \pathcrawler offre un support dédié aux fonctions de la
+bibliothèque GMP, dont les opérations sont traduites efficacement en contraintes
+sur les entiers non bornés, que le solveur de contraintes sous-jacent peut
+traiter.
+
+\textbf{Erreurs à l'exécution.}
+La traduction d'annotations en C peut introduire des erreurs à l'exécution dues
+aux termes dont la sémantique est indéfinie dans les annotations, comme
+\lstinline'1/0' (voir section~\ref{sec:undefined}).
+Ce problème peut être évité pour la génération de tests comme proposé dans
+\cite{Delahaye/SAC13} pour la validation à l'exécution, en utilisant le greffon
+\rte \cite{\citeframac} sur le code résultant de l'instrumentation, celui-ci va
+rajouter des gardes supplémentaires et il suffit ensuite de ré-instrumenter le
+programme en tenant compte de ces nouvelles annotations.
+Les erreurs à l'exécution liées aux entiers non bornés (division d'un entier
+GMP par $0$, débordement pendant une conversion
+\lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) ne sont pas traités
+par \rte mais ces erreurs peuvent être évitées en ajoutant les gardes
+nécessaires aux règles de traduction.
+Par exemple, le cast d'un term $t$ d'\lstinline'integer' vers \lstinline'int'
+(voir la règle \textsc{$\tau$-coerce$_1$} de la figure~\ref{fig:coerce}) peut
+être gardée en ajoutant
+\lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{ && }\underline{\lstinline{e <= INT\_MAX}}\lstinline{)} avant l'affectation
+\underline{\lstinline'var_n = e'}.
+
+%% already said earlier.
+%% \textbf{Triggering errors during test generation.}
+%% The function \lstinline|fassert(cond)| is a C macro defined by
+%% \textsc{PathCrawler} that is expanded as a conditional
+%% \lstinline|if(cond)|, testing
+%% if its parameter is true. Covering all feasible paths of the
+%% program will therefore enforce the generation of test inputs activating the
+%% $then$ branch of this condition, and test inputs activating the
+%% $else$ branch. So if there exist inputs such that \lstinline'cond' is evaluated to
+%% $false$, a test case activating the \lstinline|fassert| thus
+%% violating the corresponding annotation is generated. In other terms, a
+%% counter-example for that annotation is generated if such inputs exist.
