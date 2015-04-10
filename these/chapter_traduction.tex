@@ -72,7 +72,7 @@ son argument est un pointeur valide (se référer au manuel du
 langage~\cite{\citeacsl}).
 Les quantificateurs existentiels et universels sont bornées par des contraintes
 de domaines finis d'entiers afin de rester exécutable.
-Un contrat de fonction à la \textsc{Eiffel} \cite{eiffel} peut être associé à
+Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
 chaque fonction pour spécifier les pré- et postconditions.
 Ces contrats peuvent définir des comportements (\lstinline{behaviors}) gardés et
 nommés, pour lesquels l'exhaustivité (\textit{completeness}) et/ou la séparation
@@ -125,9 +125,9 @@ Dans la suite, sauf mention contraire, ``entier'' fait référence à
 Cependant, l'évaluation de termes indéfinis comme \lstinline{1/0} n'est pas
 possible.
 Pour résoudre ce problème, \eacsl suit la sémantique de vérification à
-l'exécution définie par Chalin~\cite{chalin10}, selon laquelle la sémantique de
+l'exécution définie par Chalin~\cite{Chalin/10}, selon laquelle la sémantique de
 tels termes est ``indéfinie'' (\textit{undefined}) : \eacsl utilise une logique
-tri-valuée~\cite{konikowska91} comme \textsc{Spark2014}~\cite{sparkERTS2014} ou
+tri-valuée~\cite{Konikowska/91} comme \spark~\cite{\citespark} ou
 \jml \cite{\citejml}.
 Il est de la responsibilité des outils interprétant \eacsl de s'assurer que les
 termes indéfinis ne sont jamais évalués.
@@ -325,7 +325,7 @@ couverture partielle des chemins : seuls les chemins satisfaisant cette clause
 sont considérés.
 Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
 \lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
-\cite{Korat}).
+\cite{\citekorat}).
 L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
 aux lignes 13--14 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
 vrai avant la première itération (établissement), et aux lignes 21--22 du
