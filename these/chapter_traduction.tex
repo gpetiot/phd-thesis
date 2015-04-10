@@ -535,13 +535,15 @@ ligne 29).
 \label{sec:annot}
 
 
-Now we  define the translation rules for annotations that allow to trigger 
-annotation failures and 
-enforce 
-test generation of erroneous inputs. For each annotation, a fragment of a C
-program ending by a condition test is inserted into the program. The test
-generator will try to cover all feasible paths, thus activating the error if
-such inputs exist. The rules are of the following form:
+Définissons maintenant les règles de traduction de haut niveau pour les
+annotations, qui permettent de mettre en évidence les échecs d'annotation.
+Pour chaque annotation, un fragment de programme C se terminant par une
+condition est inséré dans le programme.
+Le générateur de tests essaiera de couvrir tous les chemins d'exécution
+faisables, donc s'il existe des entrées permettant de provoquer un échec de la
+condition de l'annotation, l'erreur sera trouvée.
+Les règles sont de la forme suivante :
+
 
 \vspace{-4mm}
 \[
@@ -554,72 +556,103 @@ such inputs exist. The rules are of the following form:
 \vspace{-4mm}
 
 
+Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
+traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
+\lstinline'kwd k;' au point de programme $l$ est traduite par composition
+des insertions de code $I_i$ et des expressions $e_i$.
+Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
+l'annotation.
+La figure~\ref{fig:annot} et la figure~\ref{fig:loop-annot} présentent les
+règles de traduction pour chaque annotation.
+Soit la condition $e$ qui doit être testée pour chaque annotation, qui
+correspond au statut de validité de l'annotation en question.
+Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
+d'une expression, cette fonction correspond à un \lstinline'if' dont la branche
+\lstinline'else' génère une erreur et la rapporte.
+Nous définissons également une fonction \lstinline'fassume' permettant de tester
+la valeur d'une expression, cette fonction correspond à un \lstinline'if' dont
+la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
+la branche \lstinline'else' est activée sont ignorées.
 
-This rule pattern states that if the term or predicate $w$ at label $l_i$
-is translated (by $\tau$ or $\pi$) as
-$(I_i, e_i)$, then the property $kwd\ w$ involving $w$ at
-program point $l$ will be translated by some composition 
-function of code insertions of each
-$I_i$ and of the expressions $e_i$. 
-The particular composition function, denoted $g_{kwd}$, depends on
-the annotation kind.
-In Fig.~\ref{fig:annot} and Fig.~\ref{fig:loop-annot} we present the
-translation rules for each annotation kind. Suppose \lstinline|fassert| is a C
-function checking an expression. We define the condition $e$ that
-must be tested for each annotation. The test is expressed by applying the
-function \lstinline|fassert|, that is expanded to a conditional \lstinline|if|.
-Test generation tries to cover both branches. If the expected property is
-false, the failure is reported and the
-exploration switches to another branch.
+La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
+(\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
+\textsc{$\alpha$-assume-pre}), les assigns (\textsc{$\alpha$-check-assigns} et
+\textsc{$\alpha$-assume-assigns}) et les postconditions
+(\textsc{$\alpha$-check-post} et \textsc{$\alpha$-assume-post}).
+La règle \textsc{$\alpha$-assert} vérifie simplement la valeur du prédicat
+traduit au label $l$ avec la fonction \lstinline'fassert'.
+La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
+\textsc{$\alpha$-assume-pre} suppose sa validité au début de la fonction
+intrumentée.
+La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
+pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
+Pour chacune de ces l-value, une sauvegarde est faite au début de la fonction,
+puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
+La règle \textsc{$\alpha$-assume-assigns} suppose que toutes les l-values
+présentes dans la clause \lstinline'assigns' ont changé de valeur : elle affecte
+une nouvelle valeur non déterministe à chacune d'elle à la fin de la fonction.
+La règle \textsc{$\alpha$-check-post} vérifie le prédicat et la règle
+\textsc{$\alpha$-assume-post} suppose sa validité à la fin de la fonction
+instrumentée.
+%% The rule \textsc{$\alpha$-pre} checks
+%% the predicate of a precondition in a separate function that we call
+%% \lstinline'f_precond', returning $0$ if one of the \lstinline|requires| or
+%% \lstinline|typically| clauses does not hold, or $1$ otherwise. This function
+%% has to be called with the same formal parameters as the function
+%% being translated.
+%% Since the precondition is \emph{assumed} for the function under test
+%% and must be \emph{ensured} for a called function,
+%% its result has to be {\em asserted} in the case
+%% of a {\em callee}  and {\em assumed} in the case of the function under
+%% test.
+%% So for each function, a check 
+%% \lstinline|fassert(h_precond(x1, x2, ..., xn));| (resp.
+%% \lstinline|fassume(h_precond(x1, x2, ..., xn));|) is inserted at the label
+%% $Beg_h$ if $h$ is a {\em callee} (resp. FUT), where
+%% $x_1, x_2, ..., x_n$ are the formal parameters of $h$, and
+%% the \lstinline|fassume| function restricts 
+%% test generation to input values for which it returns true.
+%% In the example of Listing~\ref{lst:normalized}, the
+%% \lstinline|requires| clause lines 1-2 and the \lstinline|typically| clause line
+%% 3 are translated to the lines 3--5 of Listing~\ref{lst:abbrv}. The validity of the
+%% \lstinline'is_present_precond' precondition is {\em assumed} line 11 of
+%% Listing~\ref{lst:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
+%% translated as lines 28--32 in Listing~\ref{lst:abbrv}. 
 
-Fig.~\ref{fig:annot} describes the translation rules for an assertion at label $l$
-(\textsc{$\alpha$-assert}), a postcondition (\textsc{$\alpha$-post}) and
-a precondition (\textsc{$\alpha$-pre})
-that are considered to be stated resp. at labels $End_f$ and $Beg_f$. 
-The rule \textsc{$\alpha$-assert}
-simply checks the translated predicate at label $l$ with the function
-\lstinline|fassert|. The rule \textsc{$\alpha$-post} checks the predicate at
-the end of the function being translated. The rule \textsc{$\alpha$-pre} checks
-the predicate of a precondition in a separate function that we call
-\lstinline'f_precond', returning $0$ if one of the \lstinline|requires| or
-\lstinline|typically| clauses does not hold, or $1$ otherwise. This function
-has to be called with the same formal parameters as the function
-being translated.
-Since the precondition is \emph{assumed} for the function under test
-and must be \emph{ensured} for a called function,
-its result has to be {\em asserted} in the case
-of a {\em callee}  and {\em assumed} in the case of the function under
-test.
-So for each function, a check 
-\lstinline|fassert(h_precond(x1, x2, ..., xn));| (resp.
-\lstinline|fassume(h_precond(x1, x2, ..., xn));|) is inserted at the label
-$Beg_h$ if $h$ is a {\em callee} (resp. FUT), where
-$x_1, x_2, ..., x_n$ are the formal parameters of $h$, and
-the \lstinline|fassume| function restricts 
-test generation to input values for which it returns true.
-In the example of Listing~\ref{lst:normalized}, the
-\lstinline|requires| clause lines 1-2 and the \lstinline|typically| clause line
-3 are translated to the lines 3--5 of Listing~\ref{lst:abbrv}. The validity of the
-\lstinline'is_present_precond' precondition is {\em assumed} line 11 of
-Listing~\ref{lst:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
-translated as lines 28--32 in Listing~\ref{lst:abbrv}. 
-
-The translation rules for the loop invariants (\textsc{$\alpha$-invariant}) and
-loop variants (\textsc{$\alpha$-variant}) for a loop at label $l$ are presented in
-Fig.~\ref{fig:loop-annot}. The rule \textsc{$\alpha$-invariant} checks the
-predicate of the loop invariant before the loop, and after
-each iteration of the loop (i.e. at the predefined label $EndIter_l$). The rule
-\textsc{$\alpha$-variant} checks that the variant term is non-negative at the
-beginning of each iteration,
-then the previous value of the variant is saved at the begining of the loop
-iteration in a fresh variable 
-\lstinline|oldvariant|. Finally, it checks at the end of each iteration that
-the current value of the variant is strictly
-decreasing (compared to its value in the previous iteration).
-In the running example of Listing~\ref{lst:normalized}, translating the
-\lstinline|loop invariant| line 9 results in lines 13--14 and 21--22 in
-Listing~\ref{lst:abbrv}, while translating the \lstinline|loop variant| line 10
-results in lines 15, 18 and 23--25 in Listing~\ref{lst:abbrv}.
+Les règles de traduction pour les invariants de boucle
+(\textsc{$\alpha$-check-invariant}, \textsc{$\alpha$-assume-invariant-1} et
+\textsc{$\alpha$-assume-invariant-2}), les variants de boucle
+(\textsc{$\alpha$-variant}) et les loop assigns
+(\textsc{$\alpha$-check-loop-assigns} et \textsc{$\alpha$-assume-loop-assigns})
+pour une boucle au label $l$ sont présentées dans la
+figure~\ref{fig:loop-annot}.
+La règle \textsc{$\alpha$-check-loop-assigns} vérifie que es l-values qui ne
+sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
+boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
+chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
+boucle.
+La règle \textsc{$\alpha$-assume-loop-assigns} suppose que toutes les l-values
+présentes dans la clause \lstinline'loop assigns' ont changé de valeur : une
+nouvelle valeur non déterministe est affectée à chacune d'elle.
+La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
+avant la boucle et après chaque itération de la boucle.
+La règle \textsc{$\alpha$-assume-invariant-1} a vocation à remplacer toute la
+boucle, elle suppose que le prédicat de l'invariant est vrai, ainsi que la
+négation de la condition de boucle (appelée ici \lstinline'loopcond').
+La règle \textsc{$\alpha$-assume-invariant-2} permet de suppose que la boucle
+a déjà itéré un certain nombre de fois, elle suppose que l'invariant est vrai
+avant la boucle, et vérifie l'invariant à la fin de chaque itération.
+La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
+au début de chaque itération, puis mémorise la valeur du terme au début de la
+boucle dans une variable fraîche \lstinline|oldvariant|. Enfin, on vérifie à la
+fin de chaque itération que le variant décroît strictement (par rapport à sa
+valeur au début de l'itération).
+Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
+\lstinline'loop invariant' de la ligne 9 par la règle
+\textsc{$\alpha$-check-invariant} donne les lignes 13--14 et 21--22 du
+listing~\ref{lst:abbrv}, tandis que la traduction du \lstinline'loop variant'
+ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 17--18 et
+23--24 du listing~\ref{lst:abbrv}.
 
 
 \section{Différences entre le Test et la Validation d'Assertions à l'Exécution}
