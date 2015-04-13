@@ -43,9 +43,20 @@
 \newcommand{\all}{\mathrm{all}\xspace}
 \newcommand{\each}{\mathrm{each}\xspace}
 
-\newtheorem{theorem}{Theorem}
+\newtheorem{theorem}{Théorème}
 \newtheorem{proposition}[theorem]{Proposition}
-\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{lemma}[theorem]{Lemme}
+
+%\newenvironment{proof}[1][Preuve]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+%\newenvironment{definition}[1][Definition]{\begin{trivlist}
+%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Exemple]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remarque]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{notation}[1][Notations]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \newcommand{\commentAG}[1]{{\color{red}((AG: {#1}))}}
 \newcommand{\commentGP}[1]{\colorbox{violet}{{\color{white}((GP: {#1}))}}}
@@ -68,6 +79,18 @@
   \vspace{4pt}
 }
 
+\newcommand{\eval}[2]{$\mathscr{E}$ $\llbracket$ #1 $\rrbracket$ #2}
+\newcommand{\comp}[2]{$\mathscr{C}$ $\llbracket$ #1 $\rrbracket$ #2} 
+
+%% \newcommand{\qed}{\nobreak \ifvmode \relax \else
+%%   \ifdim\lastskip<1.5em \hskip-\lastskip
+%%   \hskip1.5em plus0em minus0.5em \fi \nobreak
+%%   \vrule height0.75em width0.5em depth0.25em\fi}
+
+\newcommand{\eq}[1]{\stackrel{\smash{\scriptscriptstyle\mathrm{#1}}}{=}}
+\newcommand{\openpar}{{\color{blue}\textbf{(}}}
+\newcommand{\closepar}[1]{{\color{blue}\textbf{)$_{#1}$}}}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \newcommand{\tool}[1]{\textsc{\small #1}\xspace}
@@ -75,7 +98,7 @@
 \newcommand{\stady}{\tool{StaDy}}
   \newcommand{\citestadytap}{Petiot/TAP14}
   \newcommand{\citestadyscam}{Petiot/SCAM14}
-  %\newcommand{\citestadysefl}{Petiot/SEFM15}
+  %\newcommand{\citestadysefm}{Petiot/SEFM15}
 \newcommand{\framac}{\tool{Frama-C}} \newcommand{\citeframac}{Cuoq/SEFM12}
 \newcommand{\pathcrawler}{\tool{PathCrawler}}
   \newcommand{\citepathcrawler}{Botella/AST09}
@@ -115,7 +138,7 @@
   \newcommand{\citeescjavatwo}{Cok/CASSIS04}
 \newcommand{\cute}{\tool{Cute}} \newcommand{\citecute}{Sen/CAV06}
 \newcommand{\pex}{\tool{Pex}} \newcommand{\citepex}{Tillmann/TAP08}
-\newcommand{\exe}{\tool{Exe}} \newcommand{\citeexe}{Cadar/08}
+\newcommand{\Exe}{\tool{Exe}} \newcommand{\citeexe}{Cadar/08}
 \newcommand{\klee}{\tool{Klee}} \newcommand{\citeklee}{Cadar/OSDI08}
 \newcommand{\socos}{\tool{Socos}} \newcommand{\citesocos}{Back/TAP07}
 \newcommand{\sage}{\tool{Sage}} \newcommand{\citesage}{Godefroid/NDSS08}

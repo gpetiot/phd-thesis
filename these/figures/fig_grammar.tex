@@ -18,7 +18,7 @@
        \textit{\underline{id}}$^{\textit{as}\;f}$ (\textit{\underline{params}})
      \{ \\
      & &   \textit{Beg}$_f$ : $T$ \texttt{res;} \\
-     & & \textit{decl}$^*$ \quad \textit{stmt}$^*$ \\
+     & & \textit{decl}$^{*}$ \quad \textit{stmt}$^{*}$ \\
      & & \textit{End}$_f$ : \texttt{return res;} \}
 \\
 \textit{decl}  & ::= 
@@ -34,7 +34,7 @@
         \texttt{while} ( \textit{\underline{bool\_expr}} ) \{
 \\
  & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
-        \quad \textit{BegIter}$_l$ : \quad \textit{stmt}$^*$
+        \quad \textit{BegIter}$_l$ : \quad \textit{stmt}$^{*}$
 \\
  & &  \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :}   
         \quad \textit{EndIter}$_l$ : \}

@@ -215,7 +215,7 @@ respectant la grammaire de la figure~\ref{fig:grammar}.
 Premièrement, chaque valeur d'entrée \lstinline'x' (un paramètre formel de la
 liste $params$ ou une variable globale) de type $T$ est mémorisée par
 l'instruction \lstinline|T old_x = x;| au début de la fonction sous test
-instrumentée, c'est-à-dire au label $Beg_f$, dans la section $decl^*$.
+instrumentée, c'est-à-dire au label $Beg_f$, dans la section $decl^{*}$.
 Pour chaque tableau ou pointeur \lstinline'x', les valeurs pointées sont
 mémorisées dans un tableau alloué dynamiquement \lstinline'old_val_x' dont la
 taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose la
@@ -411,8 +411,9 @@ La figure~\ref{fig:coerce} détaille les règles de conversions implicites, de
 \lstinline'integer' vers type C et de type C vers \lstinline'integer'.
 
 La figure~\ref{fig:op} détaille les règles pour les opérations unaires
-(\textsc{$\tau$-unop$_*$}), les opérations binaires (\textsc{$\tau$-binop$_*$}) 
-et la condition ternaire sur les termes (\textsc{$\tau$-if}).
+(\textsc{$\tau$-unop$_{*}$}), les opérations binaires
+(\textsc{$\tau$-binop$_{*}$}) et la condition ternaire sur les termes
+(\textsc{$\tau$-if}).
 \textsc{$\tau$-unop$_1$} traite le cas de l'indirection de pointeur ($\star$).
 \textsc{$\tau$-unop$_2$} traite le cas de la négation logique (\lstinline|!|) et
 n'opère que sur un \lstinline'int', si c'est un \lstinline'integer' il est
