@@ -2,112 +2,165 @@
 \chapter{Preuve de correction}
 \label{sec:preuve-correction}
 
-%\chapterintro
 
-TODO
-
-The grammar of E-ACSL \cite{E-ACSL} terms and predicates allowed in annotations
-is detailed in Sec.~\ref{sec:grammar}.
-The properties we are trying to establish in this paper are expressed
-in Sec.~\ref{sec:properties}.
-Sections~\ref{sec:term-translation}, \ref{sec:predicate-translation} and
-\ref{sec:annotation-translation} contain the proofs of these properties,
-respectively on terms, on predicates and on annotations.
+La grammaire des termes et prédicats de \eacsl \cite{\citeeacsl} autorisés dans
+les annotations est détaillée en section~\ref{sec:grammar}, leur sémantique est
+présentée en section~\ref{sec:semantics}.
+Les propriétés que nous vérifions sont définies en section~\ref{sec:properties}.
+Les sections~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
+\ref{sec:annotation-translation} détaillent la preuve de ces propriétés
+respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
-\section{Grammar of input language}
+\section{Grammaire du langage en entrée}
 \label{sec:grammar}
 
-%\begin{figure}
-\begin{tabular}{lrl}
-  \textit{term} & ::= & \textit{cst} \\
-  & $\mid$ & \textit{lvalue} \\
-  & $\mid$ & $-$ \textit{term} \\
-  & $\mid$ & $*$ \textit{term} \\
-  & $\mid$ & $!$ \textit{term} \\
-  & $\mid$ & $~$ \textit{term} \\
-  & $\mid$ & \textit{term} \textit{binop} \textit{term} \\
-  & $\mid$ & \lstinline'\abs(' \textit{term} \lstinline')' \\
-  & $\mid$ & \lstinline'\sum(' \textit{term}$,$ \textit{term}$,$
-  \lstinline'\lambda integer' \textit{id}$;$ \textit{term} \lstinline')' \\
-  & $\mid$ & \lstinline'\product(' \textit{term}, \textit{term},
-  \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
-  & $\mid$ & \lstinline'\numof(' \textit{term}, \textit{term},
-  \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
-  & $\mid$ & \textit{term} \texttt{?} \textit{term} \texttt{:} \textit{term} \\
-  & $\mid$ & \lstinline'\old(' \textit{term} \lstinline')' \\
-  & $\mid$ & \lstinline'\null' \\
-  & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
-  \textit{pred} & ::= & \lstinline'\true' \\
-  & $\mid$ & \lstinline'\false' \\
-  & $\mid$ & \lstinline'\valid(' \textit{term} \lstinline')' \\
-  & $\mid$ & \lstinline'\forall integer' \textit{id};
-  \textit{pred} \lstinline'==>' \textit{pred} \\
-  & $\mid$ & \lstinline'\exists integer' \textit{id};
-  \textit{pred} \lstinline'&&' \textit{pred} \\
-  & $\mid$ & ! \textit{pred} \\
-  & $\mid$ & \textit{pred} \lstinline'&&' \textit{pred} \\
-  & $\mid$ & \textit{pred} \lstinline'||' \textit{pred} \\
-  & $\mid$ & \textit{pred} \lstinline'==>' \textit{pred} \\
-  & $\mid$ & \textit{pred} \lstinline'<==>' \textit{pred} \\
-  & $\mid$ & \textit{term} ? \textit{pred} : \textit{pred} \\
-  & $\mid$ & \textit{term} \textit{relation} \textit{term} \\
-  \textit{annot} & ::= & \lstinline'assert' \textit{pred} \\
-  & $\mid$ & \lstinline'requires' \textit{pred} \\
-  & $\mid$ & \lstinline'typically' \textit{pred} \\
-  & $\mid$ & \lstinline'ensures' \textit{pred} \\
-  & $\mid$ & \lstinline'loop invariant' \textit{pred} \\
-  & $\mid$ & \lstinline'loop variant' \textit{term}
-\end{tabular}
-%\end{figure}
+\begin{figure}[tb]
+  \begin{tabular}{lrl}
+    \textit{unop} & ::= & \lstinline'-' $\mid$ \lstinline'*' $\mid$
+    \lstinline'!' $\mid$ \lstinline'~' \\
+    \textit{binop} & ::= & \lstinline'+' $\mid$ \lstinline'-' $\mid$
+    \lstinline'*' $\mid$ \lstinline'/' $\mid$ \lstinline'%' $\mid$
+    \lstinline'>' $\mid$ \lstinline'>=' $\mid$ \lstinline'<' $\mid$
+    \lstinline'<=' $\mid$ \lstinline'==' $\mid$ \lstinline'!=' \\
+    \textit{term} & ::= & \textit{cst} \\
+    & $\mid$ & \textit{lvalue} \\
+    & $\mid$ & \textit{unop} \textit{term} \\
+    & $\mid$ & \textit{term} \textit{binop} \textit{term} \\
+    & $\mid$ & \lstinline'\abs(' \textit{term} \lstinline')' \\
+    & $\mid$ & \lstinline'\sum(' \textit{term}$,$ \textit{term}$,$
+    \lstinline'\lambda integer' \textit{id}$;$ \textit{term} \lstinline')' \\
+    & $\mid$ & \lstinline'\product(' \textit{term}, \textit{term},
+    \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
+    & $\mid$ & \lstinline'\numof(' \textit{term}, \textit{term},
+    \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
+    & $\mid$ & \textit{term} \texttt{?} \textit{term} \texttt{:} \textit{term}\\
+    & $\mid$ & \lstinline'\old(' \textit{term} \lstinline')' \\
+    & $\mid$ & \lstinline'\null' \\
+    & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
+    \textit{relation} & ::= & \lstinline'>' $\mid$ \lstinline'>=' $\mid$
+    \lstinline'<' $\mid$ \lstinline'<=' $\mid$ \lstinline'==' $\mid$
+    \lstinline'!=' \\
+    \textit{pred} & ::= & \lstinline'\true' \\
+    & $\mid$ & \lstinline'\false' \\
+    & $\mid$ & \lstinline'\valid(' \textit{term} \lstinline')' \\
+    & $\mid$ & \lstinline'\forall integer' \textit{id};
+    \textit{pred} \lstinline'==>' \textit{pred} \\
+    & $\mid$ & \lstinline'\exists integer' \textit{id};
+    \textit{pred} \lstinline'&&' \textit{pred} \\
+    & $\mid$ & ! \textit{pred} \\
+    & $\mid$ & \textit{pred} \lstinline'&&' \textit{pred} \\
+    & $\mid$ & \textit{pred} \lstinline'||' \textit{pred} \\
+    & $\mid$ & \textit{pred} \lstinline'==>' \textit{pred} \\
+    & $\mid$ & \textit{pred} \lstinline'<==>' \textit{pred} \\
+    & $\mid$ & \textit{term} ? \textit{pred} : \textit{pred} \\
+    & $\mid$ & \textit{term} \textit{relation} \textit{term} \\
+    \textit{assert} & ::= & \lstinline'assert' \textit{pred} \\
+    \textit{requires} & ::= & \lstinline'requires' \textit{pred} \\
+    \textit{typically} & ::= & \lstinline'typically' \textit{pred} \\
+    \textit{ensures} & ::= & \lstinline'ensures' \textit{pred} \\
+    \textit{assigns} & ::= & \lstinline'assigns' \textit{term}$^{+}$ \\
+    \textit{loop-invariant} & ::= & \lstinline'loop invariant' \textit{pred} \\
+    \textit{loop-variant} & ::= & \lstinline'loop variant' \textit{term} \\
+    \textit{loop-assigns} & ::= & \lstinline'loop assigns' \textit{term}$^{+}$
+  \end{tabular}
+  \label{fig:sem-eacsl}
+  \caption{Sémantique des termes, prédicats et annotations \eacsl}
+\end{figure}
+
+\begin{figure}[tb]
+  \begin{tabular}{lrl}
+    \textit{exp} & ::= & \textit{cst} \\
+    & $\mid$ & \textit{lvalue} \\
+    & $\mid$ & \textit{unop} \textit{exp} \\
+    & $\mid$ & \textit{exp} \textit{binop} \textit{exp} \\
+    & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
+    \textit{instr} & ::= & ; \\
+    & $\mid$ & \textit{lval} \lstinline'=' \textit{exp}; \\
+    & $\mid$ & \textit{id} (\textit{exp}$^{*}$); \\
+    & $\mid$ & \textit{lval} \lstinline'=' \textit{id} (\textit{exp}$^{*}$); \\
+    & $\mid$ & \lstinline'return' \textit{exp}; \\
+    & $\mid$ & \lstinline'if(' \textit{exp} \lstinline')'
+    $\bopen$ \textit{instr}$^*$ $\bclose$
+    \lstinline'else' $\bopen$ \textit{instr}$^*$ $\bclose$ \\
+    \textit{loop-instr} & ::= & \lstinline'while(' \textit{exp} \lstinline')'
+    $\bopen$ \textit{instr}$^*$ $\bclose$ \\
+    \textit{annot-instr} & ::= & \lstinline'/*@' \textit{assert} \lstinline'*/'
+    \textit{instr} \\
+    & $\mid$ & \lstinline'/*@' \textit{loop-invariant} \textit{loop-variant}
+    \textit{loop-assigns} \lstinline'*/' \textit{loop-instr} \\
+    \textit{function} & ::= & \lstinline'/*@' \textit{requires} \textit{assigns}
+    \textit{ensures} \lstinline'*/' \textit{type} \textit{id}
+    (\textit{type} \textit{lvalue}$^{*}$)
+    $\bopen$ \textit{decl}$^{*}$ \textit{annot-instr}$^{*}$
+    $\bclose$
+  \end{tabular}
+  \label{fig:sem-c}
+  \caption{Sémantique des expressions et instructions C}
+\end{figure}
 
 
-\section{Semantics of Instructions}
+
+\section{Semantique des instructions}
 \label{sec:semantics}
 
 
 \begin{notation}
+
   ~
   \begin{itemize}
-  \item \eval{$t$}{sto} is the evaluation of $t$ in the environment $sto$
-  \item \comp{$\Gamma$}{sto} computes a new environment by executing the
-    $\Gamma$ instructions from $sto$
-  \item $update(sto, var, val)$ is the environment containing the same
-    bindings (variable, value) as $sto$, with the extra binding ($var$, $val$)
-  \item $undef$ is a special value that is used as uninitialized or freed value
-    in bindings
-  \item an underlined instruction \underline{\lstinline{instr}} means that the
-    unbounded arithmetics is used
-  \item $\Zinit$\underline{\lstinline{v}} means that the integer variable
-    \lstinline'v' is allocated and ready for use
-  \item \underline{\lstinline{v}}$\Zclear$ means that the integer variable
-    \lstinline'v' is freed
+  \item $x$, $y$ et $z$ sont des identificateurs de variable
+  \item $v$ est une valeur
+  \item \eval{$t$}{env} est l'évaluation du terme \eacsl ou de l'expression C
+    $t$ dans l'environnement $env$
+  \item \comp{$\Gamma$}{env} calcule a nouvel environnement résultant de
+    l'exécution des instructions $\Gamma$ dans l'environnement $env$
+  \item $update(env, x, v)$ est l'environnement contenant les mêmes
+    relations (variable, valeur) que $env$, et la relation supplémentaire
+    ($x$, $v$)
+  \item $update(env, x, v)(x) = v$
+  \item $update(env, x, v)(y) = env(y)$ si $x \neq y$
+  \item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
+    ou plus initialisée
+  \item une instruction soulignée \underline{\lstinline{instr}} est une
+    instruction utilisant la sémantique des entiers non bornés
+  \item $\Zinit$\underline{\lstinline{x}} signifie que la variable entière
+    \lstinline'x' est allouée et prête à être utilisée
+  \item \underline{\lstinline{x}}$\Zclear$ signifie que la variable entière
+    \lstinline'x' est désallouée.
   \end{itemize}
 \end{notation}
 
 
-\begin{tabular}{rclr}
-  \comp{A $\cdot$ B}{sto} &=& \comp{B}{(\comp{A}{sto})} & C-0\\
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{sto}
-  &=& update(sto, a, \eval{b}{sto}) & C-1\\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{sto}
-  &=& update(sto, a, undef) & C-2\\
-  \comp{\lstinline|a = b;|}{sto}
-  &=& updataSto(sto, a, \eval{b}{sto}) & C-3\\
-  \comp{\lstinline|if(x) A else B|}{sto}
-  &=& \comp{A}{sto} \text{ when \eval{x}{sto} = true} & C-4\\
-  &=& \comp{B}{sto} \text{ when \eval{x}{sto} = false} & C-5\\
-  \comp{\lstinline|while(x) A|}{sto}
-  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{sto})}
-  \text{ when \eval{x}{sto} = true} & C-6\\
-  &=& sto \text{ when \eval{x}{sto} = false} & C-7\\
-\end{tabular}
+\subsection{Sémantique des termes, prédicats et expressions}
 
 \begin{tabular}{rclr}
-  \eval{cst}{sto} &=& cst & E-0\\
-  \eval{x}{update(sto, x, y)} &=& \eval{y}{sto} & E-1\\
-  \eval{x}{update(sto, a, b)} &=& \eval{x}{sto} & E-2\\
-  \eval{\lstinline|x op y|}{sto} &=& \eval{\lstinline|x|}{sto}~\lstinline|op|~\eval{\lstinline|y|}{sto} & E-3\\
+  \eval{cst}{env} &=& cst & E-0\\
+  \eval{x}{update(env, x, y)} &=& \eval{y}{env} & E-1\\
+  \eval{x}{update(env, a, b)} &=& \eval{x}{env} & E-2\\
+  \eval{\lstinline|x op y|}{env}
+  &=& (\eval{\lstinline|x|}{env}) \lstinline|op| (\eval{\lstinline|y|}{env})
+  & E-3\\
+\end{tabular}
+
+
+\subsection{Sémantique des instructions}
+
+\begin{tabular}{rclr}
+  \comp{A $\cdot$ B}{env} &=& \comp{B}{(\comp{A}{env})} & C-0\\
+  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{env}
+  &=& update(env, a, \eval{b}{env}) & C-1\\
+  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{env}
+  &=& update(env, a, $\bot$) & C-2\\
+  \comp{\lstinline|a = b;|}{env}
+  &=& update(env, a, \eval{b}{env}) & C-3\\
+  \comp{\lstinline|if(x) A else B|}{env}
+  &=& \comp{A}{env} \textit{when \eval{x}{env} = true} & C-4\\
+  &=& \comp{B}{env} \textit{when \eval{x}{env} = false} & C-5\\
+  \comp{\lstinline|while(x) A|}{env}
+  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{env})}
+  \textit{when \eval{x}{env} = true} & C-6\\
+  &=& env \textit{when \eval{x}{env} = false} & C-7\\
 \end{tabular}
 
 
@@ -115,26 +168,24 @@ respectively on terms, on predicates and on annotations.
 \label{sec:properties}
 
 \begin{notation}
-  Let $a$ be an \textsc{ACSL} annotation, such as \lstinline{assert p},
-  \lstinline{requires p}, \lstinline{ensures p}, \lstinline{loop invariant p}
-  where $p$ is a predicate, or \lstinline{loop variant t} where $t$ is a term.
-  Let $A$ be a set of annotations.
-  Let $P$ be a syntactically correct C program containing \textsc{ACSL}
-  annotations.
-  Let $P'$ be the instrumented program obtained after translation of the
-  annotations $A$ of the program $P$.
+  Soit $P$ un programme C correct syntaxiquement selon la grammaire définie en
+  figure~\ref{fig:sem-eacsl} et~\ref{fig:sem-c}.
+  Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
 \end{notation}
 
 
 
-\begin{theorem}%{Invalid annotations trigger errors in generated code}
-  If $a$ is invalid, then the execution of the instruction obtained from the
-  translation of $a$ will trigger an error.
+\begin{theorem}
+  Si une annotation $a$ est invalide, alors l'exécution dans le programme $P$
+  des instructions obtenues par instrumentation provoque une erreur dans le
+  programme instrumenté $P'$.
+  \commentGP{une propriété pour chaque type d'annotation ?}
 \end{theorem}
 
-\begin{theorem}%{The program has the same semantics if all annotations are valid}
-  If all annotations $A$ of a program are valid, the instrumented program $P'$
-  has the same semantics as $P$ and their executions do not differ.
+\begin{theorem}
+  Si toutes les annotations d'un programme $P$ sont valides, alors $P$ et $P'$
+  (obtenu après instrumentation de $P$) ont la même sémantique, et le même
+  comportement est observable à l'exécution.
 \end{theorem}
 
 
@@ -148,18 +199,18 @@ respectively on terms, on predicates and on annotations.
   \begin{itemize}
   \item \openpar \lstinline'instr;' \closepar{i_n} means that this instruction
     is labeled $i_n$
-  \item $sto_{i_n}$ denotes the environement obtained after computation of the
-    instruction labeled $i_n$ (\comp{$i_n$}{sto} = $sto_{i_n}$)
+  \item $env_{i_n}$ denotes the environement obtained after computation of the
+    instruction labeled $i_n$ (\comp{$i_n$}{env} = $env_{i_n}$)
   \end{itemize}
 \end{notation}
 
 
-\begin{lemma}
-  Let $t$ be a term that is translated into $(\Gamma, t')$ by the
-  instrumentation. This translation is correct if and only if $\forall$
-  environment $sto$:
+\begin{lemma}\label{lem:term-correct}
+  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(\Gamma, t')$.
+  La traduction est correcte si et seulement si, pour n'importe quel
+  environnement $env$ :
 
-  \eval{$t'$}{\comp{$\Gamma$}{sto}} = \eval{$t$}{sto}.
+  \eval{$t'$}{\comp{$\Gamma$}{env}} = \eval{$t$}{env}.
 \end{lemma}
 
 
@@ -167,16 +218,19 @@ respectively on terms, on predicates and on annotations.
 
 {\myinference[CST]
   {}
-  { (cst : \mathbb{Z}) \mapsto \Zinit\underline{\mathtt{var = cst}}, var }
+  { (v : \mathbb{Z}) \rulearrow (\Zinit\underline{\mathtt{x = v}}, x) }
 }
+
+Pour n'importe quel environnement $env$, nous prouvons que :
+
+\eval{x}{\comp{$\Zinit$\underline{$\mathtt{x = v}$}}{env}} = \eval{v}{env}.
+
 
 \begin{proof}
   \begin{tabular}{rclr}
-    \comp{$\Zinit$\underline{\lstinline|var = cst|}}{sto}
-    &$\eq{def}$& update(sto, var, \eval{cst}{sto}) & 1\\
-    \eval{var}{\comp{$\Zinit$\underline{\lstinline|var = cst|}}{sto}} \\
-    &$\eq{(1)}$ & \eval{var}{update(sto, var, \eval{cst}{sto})} & \\
-    &$\eq{def}$ & \eval{cst}{sto} &
+    \eval{x}{\comp{$\Zinit$\underline{$\mathtt{x = v}$}}{env}}
+    & $\eq{C-1}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
+    & $\eq{E-1}$ & \eval{v}{env} &
   \end{tabular}
 \end{proof}
 
@@ -185,59 +239,60 @@ respectively on terms, on predicates and on annotations.
 \label{sec:predicate-translation}
 
 
-\begin{lemma}
-  Let $p$ be a terpredicate that is translated into $(\Gamma, p')$ by the
-  instrumentation. This translation is correct if and only if $\forall$
-  environment $sto$:
+\begin{lemma}\label{lem:pred-correct}
+  Soit $p$ un prédicat qui se traduit en $(\Gamma, p')$.
+  La traduction est correct si et seulement si, pour n'importe quel
+  environnement $env$ :
 
-  \eval{$p'$}{\comp{$\Gamma$}{sto}} = \eval{$p$}{sto}.
+  \eval{$p'$}{\comp{$\Gamma$}{env}} = \eval{$p$}{env}.
 \end{lemma}
 
 
 \subsection{And Predicate}
 
 {\myinference[AND]
-  { p_1 \mapsto \Gamma_1, e_1 \& p_2 \mapsto \Gamma_2, e_2 }
-  { \mathtt|p_1\ \&\&\ p_2| \mapsto \Gamma, var }
+  { p_1 \rulearrow (\Gamma_1, e_1) \\
+    p_2 \rulearrow (\Gamma_2, e_2) }
+  { \mathtt{p_1\ \&\&\ p_2} \rulearrow (\Gamma, var) }
 }~\\
 
 where
 \(
 \Gamma = \Gamma_1
-\cdot \openpar \mathtt|int var = e_1;| \closepar{i_1}
-\cdot \openpar \mathtt|if(var)| \bopen
+\cdot \openpar \mathtt{int\ var = e_1;} \closepar{i_1}
+\cdot \openpar \mathtt{if(var)} \bopen
 \Gamma_2
-\cdot \openpar \mathtt|var = e_2;| \closepar{i_3}
+\cdot \openpar \mathtt{var = e_2;} \closepar{i_3}
 \bclose \closepar{i_2}
 \)
 
 \begin{proof}
   \begin{tabular}{rclr}
-    \comp{$\Gamma_1$}{sto}
-    &$\eq{hyp}$& update(sto, $e_1$, \eval{$p_1$}{sto}) = sto$_{e_1}$ & 1\\
-    \comp{$i_1$}{sto$_{e_1}$}
-    &$\eq{def}$& update(sto$_{i_1}$, var, \eval{$e_1$}{sto$_{e_1}$})&\\
-    &$\eq{(1)}$& update(sto$_{i_1}$, var, \eval{$p_1$}{sto}) = sto$_{i_2}$ & 3\\
-    \comp{$\Gamma_2$}{sto$_{i_1}$}
-    &$\eq{hyp}$& update(sto$_{i_2}$, $e_2$, \eval{$p_2$}{sto}) = sto$_{e_2}$ & 2\\
-    \comp{$i_3$}{sto$_{e_2}$}
-    &$\eq{def}$& update(sto$_{e_2}$, var, \eval{$e_2$}{sto$_{e_2}$})&\\
-    &$\eq{(2)}$& update(sto$_{e_2}$, var, \eval{$p_2$}{sto}) = sto$_{i_3}$ & 5\\
-    \eval{var}{sto$_{i_2}$} &$\eq{(3)}$ \eval{$p_1$}{sto}&\\
-    \comp{$i_2$}{sto$_{i_1}$}
-    &$\eq{def}$& sto$_{i_3}$ \text{if}\ \eval{$p_1$}{sto} = true,
-    sto$_{i_1}$ \text{otherwise}
+    \comp{$\Gamma_1$}{env}
+    &$\eq{hyp}$& update(env, $e_1$, \eval{$p_1$}{env}) = env$_{e_1}$ & 1\\
+    \comp{$i_1$}{env$_{e_1}$}
+    &$\eq{def}$& update(env$_{i_1}$, var, \eval{$e_1$}{env$_{e_1}$})&\\
+    &$\eq{(1)}$& update(env$_{i_1}$, var, \eval{$p_1$}{env}) = env$_{i_2}$ & 3\\
+    \comp{$\Gamma_2$}{env$_{i_1}$}
+    &$\eq{hyp}$& update(env$_{i_2}$, $e_2$, \eval{$p_2$}{env}) = env$_{e_2}$ & 2\\
+    \comp{$i_3$}{env$_{e_2}$}
+    &$\eq{def}$& update(env$_{e_2}$, var, \eval{$e_2$}{env$_{e_2}$})&\\
+    &$\eq{(2)}$& update(env$_{e_2}$, var, \eval{$p_2$}{env}) = env$_{i_3}$ & 5\\
+    \eval{var}{env$_{i_2}$} &$\eq{(3)}$& \eval{$p_1$}{env}&\\
+    \comp{$i_2$}{env$_{i_1}$}
+    &$\eq{def}$& env$_{i_3}$ \text{if}\ \eval{$p_1$}{env} = true,
+    env$_{i_1}$ \text{otherwise}
     &4\\
-    when \eval{$p_1$}{sto} = true: &6\\
-    \eval{var}{\comp{$\Gamma$}{sto}}
-    &$\eq{(4)}$& \eval{var}{sto$_{i_3}$} $\eq{(5)}$ \eval{$p_2$}{sto}&\\
-    &$\eq{(6)}$& \eval{$p_1$}{sto} $\land$ \eval{$p_2$}{sto}
-    $\eq{def}$ \eval{$p_1 \&\& p_2$}{sto}\\
-    when \eval{$p_1$}{sto} = false: &7&\\
-    \eval{var}{\comp{$\Gamma$}{sto}}
-    &$\eq{(4)}$& \eval{var}{sto$_{i_1}$} $\eq{(3)}$ \eval{$p_1$}{sto}&\\
-    &$\eq{(7)}$& \eval{$p_1$}{sto} $\land$ \eval{$p_2$}{sto}&\\
-    &$\eq{def}$& \eval{$p_1 \&\& p_2$}{sto}&
+    when \eval{$p_1$}{env} = true: &&&6\\
+    \eval{var}{\comp{$\Gamma$}{env}}
+    &$\eq{(4)}$& \eval{var}{env$_{i_3}$} $\eq{(5)}$ \eval{$p_2$}{env}&\\
+    &$\eq{(6)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}
+    $\eq{def}$ \eval{$p_1 \&\& p_2$}{env}\\
+    when \eval{$p_1$}{env} = false: &&&7\\
+    \eval{var}{\comp{$\Gamma$}{env}}
+    &$\eq{(4)}$& \eval{var}{env$_{i_1}$} $\eq{(3)}$ \eval{$p_1$}{env}&\\
+    &$\eq{(7)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}&\\
+    &$\eq{def}$& \eval{$p_1 \&\& p_2$}{env}&
   \end{tabular}
 \end{proof}
 
@@ -246,11 +301,12 @@ where
 
 {\myinference[FORALL]
   {
-    (t_1 : \mathbb{Z}) \mapsto \Gamma_1, e_1 \\
-    (t_2 : \mathbb{Z}) \mapsto \Gamma_2, e_2 \\
-    p \mapsto \Gamma_3, e
+    (t_1 : \mathbb{Z}) \rulearrow (\Gamma_1, e_1) \\
+    (t_2 : \mathbb{Z}) \rulearrow (\Gamma_2, e_2) \\
+    p \rulearrow (\Gamma_3, e)
   }
-  { \mathtt|\backslash forall integer id; t_1 <= id < t_2 ==> p| \mapsto \Gamma, var }
+  { \mathtt{\backslash forall\ integer\ id;\ t_1 <= id < t_2 ==> p}
+    \rulearrow (\Gamma, var) }
 }~\\
 
 
@@ -276,98 +332,104 @@ where
 
 \begin{proof}
   \begin{tabular}{rclr}
-    \comp{$\Gamma_1$}{sto}
-    &=& update(sto, $e_1$, \eval{$t_1$}{sto}) = sto$_{e_1}$ &\\
-    \comp{$\Gamma_2$}{sto$_{e_1}$}
-    &=& update(sto$_{e_1}$, $e_2$, \eval{$t_2$}{sto}) = sto$_{e_2}$ &\\
-    \comp{$i_1$}{sto$_{e_2}$} &=& update(sto$_{e_2}$, var, 1) = sto$_{i_1}$ &\\
-    \comp{$i_2$}{sto$_{i_1}$} &=& update(sto$_{i_1}$, id, \eval{$e_1$}{sto$_{i_1}$})&\\
-    &=& update(sto$_{i_1}$, id, \eval{$t_1$}{sto}) = sto$_{i_2}$ &\\
-    \eval{$var$}{sto$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{sto}
+    \comp{$\Gamma_1$}{env}
+    &=& update(env, $e_1$, \eval{$t_1$}{env}) = env$_{e_1}$ &\\
+    \comp{$\Gamma_2$}{env$_{e_1}$}
+    &=& update(env$_{e_1}$, $e_2$, \eval{$t_2$}{env}) = env$_{e_2}$ &\\
+    \comp{$i_1$}{env$_{e_2}$} &=& update(env$_{e_2}$, var, 1) = env$_{i_1}$ &\\
+    \comp{$i_2$}{env$_{i_1}$} &=& update(env$_{i_1}$, id, \eval{$e_1$}{env$_{i_1}$})&\\
+    &=& update(env$_{i_1}$, id, \eval{$t_1$}{env}) = env$_{i_2}$ &\\
+    \eval{$var$}{env$_{i_3}$}
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
     & (Lemma 4.2) \\
-    \comp{$i_6$}{sto$_{i_3}$} &=& update(sto$_{i_3}$, id, undef) = sto$_{i_6}$ &\\
-    \comp{$i_7$}{sto$_{i_6}$} &=& update(sto$_{i_6}$, $e_1$, undef) = sto$_{i_7}$ &\\
-    \comp{$i_8$}{i$_7$} &=& update(sto$_{i_7}$, $e_2$, undef) = sto$_{i_8}$ &\\
-    \eval{$var$}{\comp{$\Gamma$}{sto}} &=& \eval{$var$}{sto$_{i_3}$} &\\
-    &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{sto} &
+    \comp{$i_6$}{env$_{i_3}$} &=& update(env$_{i_3}$, id, $\bot$) = env$_{i_6}$ &\\
+    \comp{$i_7$}{env$_{i_6}$} &=& update(env$_{i_6}$, $e_1$, $\bot$) = env$_{i_7}$ &\\
+    \comp{$i_8$}{i$_7$} &=& update(env$_{i_7}$, $e_2$, $\bot$) = env$_{i_8}$ &\\
+    \eval{$var$}{\comp{$\Gamma$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
+    &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} &
   \end{tabular}
 \end{proof}
 
 
 
 \begin{lemma}
-  \eval{$var$}{sto$_{i_3}$}
-  = \eval{\lstinline{\\forall integer i; t_1 <= i < t_2 ==> p}}{sto}
+  \eval{$var$}{env$_{i_3}$}
+  = \eval{\lstinline{\\forall integer i; t_1 <= i < t_2 ==> p}}{env}
 \end{lemma}
+
+Supposons l'hypothèse de récurrence H suivante :
+
+\eval{$var$}{env'}
+= \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}.
 
 \begin{proof}
   \begin{tabular}{rclr}
-    \text{Suppose the induction hypothesis H}:&&& \\
-    \eval{$var$}{sto'}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'} &(H) \\
-    \comp{$\Gamma_3$}{sto'} &=& update(sto', e, \eval{$p$}{sto'}) = sto$_e$& \\
-    \comp{$i_4$}{sto$_e$} &=& update(sto$_e$, var, \eval{$e$}{sto$_e$}) &\\
-    &=& update(sto$_e$, var, \eval{$p$}{sto'}) = sto$_{i_4}$ &\\
-    \eval{$var$}{sto$_{i_4}$} &=& \eval{$var$}{sto'} $\land$ \eval{$var$}{sto$_{i_4}$} &\\
-    & &the loop condition is true, so \eval{$var$}{sto'} is true as well&\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'} $\land$ \eval{$p$}{sto'} &\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'}& \\
-    & & $\land$ \eval{\lstinline'\\forall integer i; i = id ==> p'}{sto'} &\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i <= id ==> p'}{sto'} &\\
-    \comp{$i_5$}{sto$_{i_4}$}
-    &=& update(sto$_{i_4}$, id, \eval{$id$}{sto$_{i_4}$} + 1) = sto$_{i_5}$& \\
-    \eval{$var$}{sto$_{i_5}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'} &\\
-    & & because \eval{$id$}{sto$_{i_5}$} = \eval{$id$}{sto$_{i_4}$} + 1 & \\
+    \comp{$\Gamma_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
+    \comp{$i_4$}{env$_e$} &=& update(env$_e$, var, \eval{$e$}{env$_e$}) &\\
+    &=& update(env$_e$, var, \eval{$p$}{env'}) = env$_{i_4}$ &\\
+    \eval{$var$}{env$_{i_4}$} &=& \eval{$var$}{env'} $\land$ \eval{$var$}{env$_{i_4}$} &\\
+    & &the loop condition is true, so \eval{$var$}{env'} is true as well&\\
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} $\land$ \eval{$p$}{env'} &\\
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}& \\
+    & & $\land$ \eval{\lstinline'\\forall integer i; i = id ==> p'}{env'} &\\
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i <= id ==> p'}{env'} &\\
+    \comp{$i_5$}{env$_{i_4}$}
+    &=& update(env$_{i_4}$, id, \eval{$id$}{env$_{i_4}$} + 1) = env$_{i_5}$& \\
+    \eval{$var$}{env$_{i_5}$}
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
+    & & because \eval{$id$}{env$_{i_5}$} = \eval{$id$}{env$_{i_4}$} + 1 & \\
     & & so (H) is maintained after each iteration of the loop & \\
-    \eval{$var$}{sto$_{i_3}$} &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'} &\\
-    \eval{$t_1 \le id \le t_2$}{sto$_{i_3}$} &=& 1 & Lemma 4.3 \\
-    \eval{\underline{id < $e_2$}\lstinline' \&\& var'}{sto$_{i_3}$} &=& 0 & \\
-    \eval{$id$}{sto$_{i_3}$} < \eval{$e_2$}{sto$_{i_3}$} $\land$ \eval{$var$}{sto$_{i_3}$}
+    \eval{$var$}{env$_{i_3}$} &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
+    \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} &=& 1 & Lemma 4.3 \\
+    \eval{\underline{id < $e_2$}\lstinline' \&\& var'}{env$_{i_3}$} &=& 0 & \\
+    \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} $\land$ \eval{$var$}{env$_{i_3}$}
     &=& 0 &\\
-    If \eval{$id$}{sto$_{i_3}$} < \eval{$e_2$}{sto$_{i_3}$} = 0:&&& \\
-    \eval{$id$}{sto$_{i_3}$} $\ge$ \eval{$e_2$}{sto$_{i_3}$} &=& 1 &\\
-    \eval{$id$}{sto$_{i_3}$} $\ge$ \eval{$t_2$}{sto} &=& 1& \\
-    \eval{$id$}{sto$_{i_3}$} &=& \eval{$t_2$}{sto} & thanks to Lemma 4.3 \\
-    \eval{$var$}{sto$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{sto} &\\
-    If \eval{$var$}{sto$_{i_3}$} = 0:&&& \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{sto'} &=& 0& \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{sto'} &=& 0 & thanks to Lemma 4.3 \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{sto}
-    &=& \eval{$var$}{sto$_{i_3}$} &\\
-    So we have: \eval{$var$}{sto$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{sto}&
+    If \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} = 0:&&& \\
+    \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$e_2$}{env$_{i_3}$} &=& 1 &\\
+    \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$t_2$}{env} &=& 1& \\
+    \eval{$id$}{env$_{i_3}$} &=& \eval{$t_2$}{env} & thanks to Lemma 4.3 \\
+    \eval{$var$}{env$_{i_3}$}
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env} &\\
+    If \eval{$var$}{env$_{i_3}$} = 0:&&& \\
+    \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &=& 0& \\
+    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env'} &=& 0 & thanks to Lemma 4.3 \\
+    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
+    &=& \eval{$var$}{env$_{i_3}$} &\\
+    So we have: \eval{$var$}{env$_{i_3}$}
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}&
   \end{tabular}
 \end{proof}
 
 
 \begin{lemma}
-  \eval{$t_1 \le id \le t_2$}{sto$_{i_3}$} = 1
+  \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1
 \end{lemma}
+
+
+Supposons l'hypothèse de récurrence H' suivante :
+
+\eval{$t_1 \le id \le t_2$}{env'} = 1.
 
 \begin{proof}
   \begin{tabular}{rclr}
-    & \text{Suppose we have the following induction hypothesis H'}: \\
-    \eval{$t_1 \le id \le t_2$}{sto'} &= 1 \\
-    \eval{$t_1 \le id \le t_2$}{sto$_e$} &= \eval{$t_1 \le id \le t_2$}{sto$_{i_4}$}
-    = \eval{$t_1 \le id \le t_2$}{sto'} \\
-    \eval{$t_1$}{sto$_{i_5}$} $\le$ \eval{$id$}{sto$_{i_5}$}
-    &= \eval{$t_1$}{sto$_{i_4}$} $\le$ \eval{$id$}{sto$_{i_5}$} \\
-    &= \eval{$t_1$}{sto$_{i_4}$} $\le$ \eval{$id$}{sto$_{i_4}$} + 1 \\
-    &= 1\ \text{due to H'} \\
-    \eval{$id$}{sto$_{i_5}$} $\le$ \eval{$t_2$}{sto$_{i_5}$}
-    &= \eval{$id$}{sto$_{i_5}$} - 1 < \eval{$t_2$}{sto$_{i_5}$} \\
-    &= \eval{$id$}{sto$_{i_4}$} < \eval{$t_2$}{sto$_{i_5}$} \\
-    &= \eval{$id$}{sto$_{i_4}$} < \eval{$t_2$}{sto$_{i_4}$} \\
-    &= 1\ \text{due to the loop condition} \\
-    & \text{So we have \eval{$t_1 \le id \le t_2$}{sto$_{i_5}$} = 1} \\
-    & \text{So H' is maintained after each loop iteration} \\
-    & \text{So we have \eval{$t_1 \le id \le t_2$}{sto$_{i_3}$} = 1}
+    \eval{$t_1 \le id \le t_2$}{env$_e$}
+    &=& \eval{$t_1 \le id \le t_2$}{env$_{i_4}$}\\
+    &=& \eval{$t_1 \le id \le t_2$}{env'} &\\
+    \eval{$t_1$}{env$_{i_5}$} $\le$ \eval{$id$}{env$_{i_5}$}
+    &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_5}$}& \\
+    &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_4}$} + 1 &\\
+    &=& 1\ \text{due to H'} &\\
+    \eval{$id$}{env$_{i_5}$} $\le$ \eval{$t_2$}{env$_{i_5}$}
+    &=& \eval{$id$}{env$_{i_5}$} - 1 < \eval{$t_2$}{env$_{i_5}$}& \\
+    &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_5}$} &\\
+    &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_4}$} &\\
+    &=& 1 & (loop condition)
   \end{tabular}
 \end{proof}
 
+So we have \eval{$t_1 \le id \le t_2$}{env$_{i_5}$} = 1.
+So H' is maintained after each loop iteration.
+So we have \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1.
 
 
 \section{Annotation translation}
