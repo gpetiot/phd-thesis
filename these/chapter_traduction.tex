@@ -1,28 +1,41 @@
 
-\chapter{Traduction pour le test}
+\chapter{Traduction en C des Annotations pour le Test}
 \label{sec:traduction}
 
 \chapterintro
 
 
-Ce chapitre détaille les règles à appliquer pour traduire des annotations \eacsl
-en code C sémantiquement équivalent.
-Cette méthode permet d'utiliser un outil de génération de tests prenant des
-programmes C en entrée, sans que ce outils n'aient à traiter les annotations
-\eacsl.
-Le processus de traduction est présenté dans sa généralité, puis sont détaillées
-les règles de traduction (du niveau le plus bas vers le niveau le plus haut) des
-termes, des prédicats et des annotations \eacsl.
-Enfin, nous abordons les différences entre une traduction pour le test et une
-traduction pour la validation à l'exécution.
+Ce chapitre présente la transformation d'un programme C annoté avec \eacsl en un
+programme C appelé programme instrumenté.
+Les annotations \eacsl ont été traduites en fragments de programme C ajoutés au
+programme initial.
+Ces fragments mettent en \oe{}uvre les annotations \eacsl afin de générer des
+tests satisfaisant et violant ces annotations.
+
+Ce chapitre présente les règles de traduction des annotations \eacsl en code C
+sémantiquement équivalent afin d'utiliser un générateur de tests qui prend en
+entrée des programmes C.
+L'instrumentation permet de l'utiliser pour traiter des programmes C annotés
+sans que cet outil n'ait à traiter les annotations dans leur format d'origine,
+il les traite via leur instrumentation en C.
+
+Dans un premier temps nous présentons le langage des programmes annotés pris en
+compte.
+Puis nous présentons les principes généraux de la traduction.
+Ensuite nous détaillons les règles de traduction des éléments les plus simples
+que sont les termes, aux éléments les plus complexes que sont les annotations,
+en passant par les prédicats.
+Enfin, nous discutons les différences et les similitudes entre l'instrumentation
+pour la génération de tests et l'instrumentation pour la validation à
+l'exécution.
 
 
-\section{Processus de transformation de programme}
+\section{Processus de transformation de programmes}
 
 
 \input{figures/fig_grammar}
 
-Cette section présent le processus d'instrumentation des fonctions C annotées
+Cette section présente le processus d'instrumentation des fonctions C annotées
 avec le langage d'annotations \eacsl pour la génération de tests.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
 instruction et annotation à l'intérieur d'une fonction.
@@ -33,7 +46,7 @@ déclarations de variables ou l'accolade fermante ``$\bclose$'' en C, mais
 cette limitation peut être contournée par l'ajout d'une instruction ``skip''
 (``\lstinline{;}'') après ces labels.)
 Nous supposons que les fonctions respectent la forme normale définie par
-l'entité syntactique \textit{function} de la grammaire définie
+l'entité syntaxique \textit{function} de la grammaire définie
 figure~\ref{fig:grammar}. 
 Dans cette figure, la notation ``${\textit{as}\;X}$'' en exposant signifie que
 chaque occurrence de $X$ dans la règle courante doit être remplacée par la
@@ -43,12 +56,17 @@ règle $function$, les labels $\texttt{Beg}_f$ et $\texttt{End}_f$ dans le corps
 de cette fonction sont remplacés par $\texttt{Beg}_{\texttt{foo}}$ et
 $\texttt{End}_{\texttt{foo}}$, ce qui assure des labels uniques au début et à la
 fin du corps de la fonction.
+Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
+de chaque fonction, que la variable retournée s'appelle \lstinline'res' et que
+cette variable n'entre pas en conflit avec une autre variable du programme.
 Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
 Les symboles terminaux sont présentés en police \texttt{typewriter}.
 Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
 font partie des langages C ou \eacsl.
-$Termes$ et $predicats$ sont des expressions \eacsl qui sont décrits en
-section~\ref{sec:term} et section~\ref{sec:pred}.
+\textit{\underline{not\_while\_stmt}} est toute instruction du C qui n'est pas
+une boucle.
+\textit{\underline{term}} et \textit{\underline{predicate}} sont des expressions
+\eacsl qui sont décrites en section~\ref{sec:term} et section~\ref{sec:pred}.
 
 
 \subsection{Sous-langage considéré}
@@ -88,7 +106,8 @@ mathématiques et la non-définition (nous utiliserons le terme anglais
 
 
 En plus des entiers machine, les termes \eacsl peuvent être des entiers
-mathématiques de type \lstinline{integer} : les constantes entières, les
+mathématiques de type \lstinline{integer} qui sont définis sur l'ensemble
+$\mathbb{Z}$ : les constantes entières, les
 opérations sur les entiers, ainsi que les variables logiques sont de type
 \lstinline{integer}.
 L'arithmétique entière est non bornée et donc les débordements d'entier
@@ -131,7 +150,7 @@ tri-valuée~\cite{Konikowska/91} comme \spark~\cite{\citespark} ou
 \jml \cite{\citejml}.
 Il est de la responsibilité des outils interprétant \eacsl de s'assurer que les
 termes indéfinis ne sont jamais évalués.
-Une conséquence indirecte de ce choix est qie les opérateurs \lstinline{&&}\,,
+Une conséquence indirecte de ce choix est que les opérateurs \lstinline{&&}\,,
 \ \lstinline{||}\,, \ \lstinline{_?_:_} \ et\ \lstinline{==>} sont
 ``paresseux'' (comme leur équivalent C pour les trois premiers).
 
@@ -191,12 +210,12 @@ notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
 \lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
 à la fin du code inséré.
 Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
-(affectation, comparaison, \dots) utilise l'arithmétique non bornée est doit
+(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
 être traduite en utilisant les fonctions correspondantes d'une bibliothèque
 comme GMP.
 Les lignes 12--13 du listing~\ref{lst:Z:1} illustrent la notation abrégée de 
 l'instrumentation des lignes 6--9.
-\framac explicite les conversion de type implicites dans les annotations, donc
+\framac explicite les conversions de type implicites dans les annotations, donc
 le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
 \lstinline'(integer)(x+1)'.
 
@@ -205,8 +224,8 @@ le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
 \label{sec:principles}
 
 
-\lstinputlisting[style=c,escapechar=§,caption={Instrumented version of program
-    of Listing~\ref{lst:normalized}},label=lst:abbrv]
+\lstinputlisting[style=c,escapechar=§,caption={Version instrumentée du programme
+    du listing~\ref{lst:normalized}},label=lst:abbrv]
                 {listings/is_present_instrumented.c}
 
 
@@ -233,7 +252,7 @@ Deuxièmement, toute annotation \eacsl de la forme \lstinline'kwd w' (où
 \lstinline|loop invariant|, \lstinline|assigns|, \lstinline|loop assigns|
 $\bclose$ et \lstinline'w' est un terme ou un prédicat) est traduite.
 D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
-obtenues à partir du fragment \eacsl décrit.
+obtenues à partir du fragment \eacsl considéré.
 Par exemple, les behaviors peuvent être réécrits comme des implications dans les
 clauses \lstinline'ensures' et les contrats d'instruction peuvent être réécrits
 comme des implications dans des assertions.
@@ -295,13 +314,14 @@ en C sans les renommer.
 \label{sec:translation-example}
 
 
-\lstinputlisting[style=c,escapechar=§,caption={Annotated C function deciding if
-    \lstinline{v} is present in array \lstinline{t} of size \lstinline{n}},
+\lstinputlisting[style=c,escapechar=§,caption={Function C annotée décidant si
+    \lstinline{v} est présent dans le tableau \lstinline{t} de taille
+    \lstinline{n}},
   label=lst:normalized]{listings/is_present_normalized.c}
 
 Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
 test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
-Elle retourne $1$ quand la valeur $v$ en paramètre est présente dans le tabbleau
+Elle retourne $1$ quand la valeur $v$ en paramètre est présente dans le tableau
 $t$ en paramètre, ou $0$ sinon.
 Le programme instrumenté obtenu après traduction des annotations de cette
 fonction est présenté (utilisant la notation abrégée pour les entiers non
@@ -331,20 +351,19 @@ aux lignes 13--14 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
 vrai avant la première itération (établissement), et aux lignes 21--22 du
 listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
 chaque itération.
-(Un invariant de boucle supplémentaire 
-\lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|
-nécessaire pour prouver formellement la postcondition n'est pas inclus dans cet
-exemple simplifié).
+Notons que pour prouver formellement la postcondition, un invariant de boucle
+supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
+: \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|.
 Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit à la
 ligne 15 du listing~\ref{lst:abbrv} pour vérifier que le variant est positif ou
 nul avant chaque itération de la boucle, à la ligne 18 du
 listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
 boucle, et aux lignes 23--25 du listing~\ref{lst:abbrv} pour vérifier que le
-variant décroisse strictement après chaque itération, assurant ainsi la
+variant décroît strictement après chaque itération, assurant ainsi la
 terminaison de la boucle.
 La postcondition des lignes 4-5 du listing~\ref{lst:normalized} est traduite aux
-lignes 28--32 du listing~\ref{lst:abbrv}, définit que \lstinline|\result| est
-non nul si et seulement si il existe un élément de \lstinline|t| égal à
+lignes 28--32 du listing~\ref{lst:abbrv}, elle définit que \lstinline|\result|
+est non nul si et seulement si il existe un élément de \lstinline|t| égal à
 \lstinline|v|.
 Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
 sont mémorisées lignes 10--11 du listing~\ref{lst:abbrv}, un nouveau tableau
@@ -363,13 +382,10 @@ $(l, t:T) \rulearrow ((l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n,
 une instance de la fonction partielle $\tau$ qui à un terme \eacsl $t$ de type
 $T$ au label $l$ associe la paire $(I, e)$ où $I$ est une liste d'insertions de
 code $(l_i, c_i)$, $e$ est une expression C, et $T$ peut être $\mathbb{Z}$
-(\lstinline'integer') or $ctype$.
-Nous considérons comme étant inclus dans $ctype$ les types suivants : $ptr$,
-type pointeur pointant vers n'importe quel type du C, et le type C
-\lstinline'int'.
-Les autres types C tels \lstinline'char', \lstinline'long',
-\lstinline'unsigned', etc. peuvent être supportés de manière similaire, mais ne
-sont pas abordés pour des raisons de simplicité et lisibilité.
+(\lstinline'integer') ou $ctype$.
+Les insertions de code sont les instructions C nécessaires à l'évaluation du
+terme, elles permettent notamment d'évaluer les termes auxiliaires dont est
+composé le terme $t$.
 L'expression $e$ est pure (elle ne provoque pas d'effet de bord) et correspond
 à l'évaluation du term $t$ au point de programme donné $l$.
 L'évaluation de $e$ requiert le plus souvent plusieurs opérations, qui sont
@@ -379,7 +395,13 @@ Par exemple, un terme quantifié (comme une somme : \lstinline'sum') a besoin de
 plusieurs instructions pour être évalué, et notamment d'une boucle (voir la
 figure~\ref{fig:builtin}).
 Dans ce cas, le second élément de la paire retournée, $e$ est la valeur de la
-variable calculée par le boucle.
+variable calculée par la boucle.
+Nous considérons comme étant inclus dans $ctype$ les types suivants : $ptr$,
+type pointeur pointant vers n'importe quel type du C, et le type C
+\lstinline'int'.
+Les autres types C tels \lstinline'char', \lstinline'long',
+\lstinline'unsigned', etc. peuvent être supportés de manière similaire, mais ne
+sont pas abordés pour des raisons de simplicité et lisibilité.
 Quand un terme $t$ peut être traduit directement sans nécessiter de code C
 supplémentaire, la séquence d'insertions de code est vide et notée $\emptyset$.
 Pour un terme $t:\mathbb{Z}$, le resultat de traduction $e$ est toujours une
@@ -429,7 +451,7 @@ droite est de type \lstinline'int'.
 comparaison sur les entiers et le résultat de la comparaison est stocké dans un
 \lstinline|int|.
 \textsc{$\tau$-binop$_3$} traite les opérations arithmétiques entières (les
-opérandes et le résultat sont des entiers), $op$ est des opérateurs
+opérandes et le résultat sont des entiers), $op$ est un des opérateurs
 arithmétiques suivants : \lstinline|+|, \lstinline|-|, \lstinline|/|,
 \lstinline|%|, \lstinline|<<|, \lstinline|>>|, \lstinline{|}, \lstinline|&|,
 \lstinline|^|.
@@ -458,9 +480,12 @@ non nulle.
 
 De manière similaire à la fonction de traduction $\tau$ pour les termes
 (section~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
-est définie comme une fonction partielle qui, à un label et un prédicat \eacsl,
-associe une séquence d'insertions de code $(l_i, c_i)$ et une expression C
-$e \in \{0, 1\}$.
+est définie comme une fonction partielle qui, à un label et un prédicat \eacsl
+$p$, associe une séquence d'insertions de code $(l_i, c_i)$ et une expression C
+$e \in \{0, 1\}$ (que nous encoderons dans un \lstinline'int').
+Les insertions de code sont les instructions C nécessaires à l'évaluation du
+prédicat, elles permettent notamment d'évaluer les termes et prédicats
+auxiliaires dont est composé le prédicat $p$.
 Quand un prédicat $p$ peut être traduit directement et ne nécessite pas la
 création d'instructions C, la séquence d'insertions est vide et notée
 $\emptyset$.
@@ -502,12 +527,13 @@ case mémoire valide et peut être déréférencé.
 \lstinline'\valid(t)' exprime la validité d'un seul pointeur et
 \lstinline'\valid(t1+(t2..t3))' exprime la validité du pointeur \lstinline't1'
 dans l'intervalle d'offsets \lstinline't2..t3', ce qui veut dire que
-\lstinline't1+t2', \dots, \lstinline't1+t3' sont valides.
+\lstinline'(t1+t2)', \lstinline'(t1+t2+1)' \dots, \lstinline'(t1+t3)' sont
+valides.
 Les règles \textsc{$\pi$-valid} et \textsc{$\pi$-valid-range} couvrent les deux
 cas.
 On suppose que l'évaluation de la validité d'un pointeur est possible au moyen
 d'une fonction \lstinline'fvalid' et que l'évaluation d'un pointeur sur un
-intervalle d'offsets est peut se faire au moyen d'une fonction
+intervalle d'offsets peut se faire au moyen d'une fonction
 \lstinline'validr'.
 Le support de ces prédicats nécessite une représentation précise de la mémoire
 du programme, la réalisation de telles fonctions est abordée dans le
@@ -527,7 +553,7 @@ Cette règle permet aussi de traduire le prédicat universellement quantifié
 \lstinline{! (\exists integer i; t1<=i<t2 && !p)}.
 Dans le listing~\ref{lst:normalized}, le prédicat
 \lstinline{\exists integer i; 0<=i<n && *(t+i)==v} de la ligne 4 est traduit
-au lignes 29--31 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
+aux lignes 29--31 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
 valeur du prédicat après évaluation est \lstinline|var_35| (déclarée à la
 ligne 29).
 
@@ -559,7 +585,7 @@ Les règles sont de la forme suivante :
 
 Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
 traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
-\lstinline'kwd k;' au point de programme $l$ est traduite par composition
+\lstinline'kwd w;' au point de programme $l$ est traduite par composition
 des insertions de code $I_i$ et des expressions $e_i$.
 Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
 l'annotation.
@@ -627,7 +653,7 @@ Les règles de traduction pour les invariants de boucle
 (\textsc{$\alpha$-check-loop-assigns} et \textsc{$\alpha$-assume-loop-assigns})
 pour une boucle au label $l$ sont présentées dans la
 figure~\ref{fig:loop-annot}.
-La règle \textsc{$\alpha$-check-loop-assigns} vérifie que es l-values qui ne
+La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
 sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
 boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
 chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
@@ -640,7 +666,7 @@ avant la boucle et après chaque itération de la boucle.
 La règle \textsc{$\alpha$-assume-invariant-1} a vocation à remplacer toute la
 boucle, elle suppose que le prédicat de l'invariant est vrai, ainsi que la
 négation de la condition de boucle (appelée ici \lstinline'loopcond').
-La règle \textsc{$\alpha$-assume-invariant-2} permet de suppose que la boucle
+La règle \textsc{$\alpha$-assume-invariant-2} permet de supposer que la boucle
 a déjà itéré un certain nombre de fois, elle suppose que l'invariant est vrai
 avant la boucle, et vérifie l'invariant à la fin de chaque itération.
 La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
@@ -656,8 +682,8 @@ ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 17--18 et
 23--24 du listing~\ref{lst:abbrv}.
 
 
-\section{Similarités et Différences entre le Test et la Validation à
-  l'Exécution}
+\section[ Test vs. Validation à l'Exécution]{Similarités et Différences selon
+  l'objectif Test vs. Validation à l'Exécution}
 
 
 La traduction d'annotations \eacsl en code C a été implémentée dans deux
@@ -673,9 +699,19 @@ La traduction pour la génération de test et la traduction pour la validation �
 l'exécution ont toutes deux besoin de générer du code exécutable, c'est pourquoi
 un sous-ensemble exécutable du langage de spécification est considéré dans les
 deux cas.
-De plus, la plupart des règles définies dans les sections~\ref{sec:term},
-\ref{sec:pred} et \ref{sec:annot} sont autant valable pour la validation à
-l'exécution que pour le test.
+La plupart des règles définies dans les sections~\ref{sec:term},
+\ref{sec:pred} et \ref{sec:annot} sont autant valables pour la validation à
+l'exécution que pour le test, le code généré devant être correct vis-à-vis de la
+sémantique des annotations.
+Cependant, il y a plusieurs différences liées à la différence d'objectif.
+Les quatre différences sont :
+\begin{itemize}
+\item la manière de considérer la précondition de la fonction sous test;
+\item la manière de traiter les annotations liées au modèle mémoire;
+\item la manière de traiter les fonctions sur les entiers mathématiques;
+\item et la manière de traiter les potentielles erreurs à l'exécution
+  introduites par les fragments de code résultant de la traduction.
+\end{itemize}
 
 
 \textbf{Précondition de la fonction sous test.}
@@ -684,7 +720,7 @@ test.
 En vérification à l'exécution, elle est vérifiée comme n'importe quelle autre
 annotation.
 En génération de tests, la précondition est utilisée pour éviter de tester le
-programmes avec des valeurs d'entrées incorrectes, pour lesquelles le bon
+programme avec des valeurs d'entrées incorrectes, pour lesquelles le bon
 fonctionnement du programme n'est pas garanti.
 La préconditon de la fonction sous test est donc supposée vraie pour la
 génération de tests, afin de s'assurer que toutes les entrées générées par le
@@ -753,7 +789,7 @@ GMP par $0$, débordement pendant une conversion
 \lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) ne sont pas traités
 par \rte mais ces erreurs peuvent être évitées en ajoutant les gardes
 nécessaires aux règles de traduction.
-Par exemple, le cast d'un term $t$ d'\lstinline'integer' vers \lstinline'int'
+Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
 (voir la règle \textsc{$\tau$-coerce$_1$} de la figure~\ref{fig:coerce}) peut
 être gardée en ajoutant
 \lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{ && }\underline{\lstinline{e <= INT\_MAX}}\lstinline{)} avant l'affectation

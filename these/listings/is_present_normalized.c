@@ -12,7 +12,7 @@ int is_present(int* t, int n, int v) {
     §$BegIter_{l_0}:$§
     if(*(t+i) == v) { res = 1; break; }
     i++;
-    §$EndIter_{l_0}:$§
+    §$EndIter_{l_0}:$§ ;
   }
  §$End_{\texttt{is\_present}}:$§ return res;
 }

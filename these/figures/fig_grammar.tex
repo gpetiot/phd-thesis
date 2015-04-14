@@ -2,16 +2,16 @@
 \begin{tabular}{lrl}
 %\textit{globals}  & ::= & \textit{decl}$^*$ \\
 \textit{function}  & ::= 
-   & \texttt{/*@}  (\texttt{requires}
+   & \texttt{/*@}  (\lstinline'requires'
    \textit{\underline{predicate}}\texttt{;})*
 \\
- & & \texttt{\phantom{/*@}} (\texttt{typically}
+ & & \texttt{\phantom{/*@}} (\lstinline'typically'
        \textit{\underline{predicate}}\texttt{;})*
 \\
- & & \texttt{\phantom{/*@}} (\texttt{assigns}
-       \textit{\underline{term}}\texttt{;})*
+ & & \texttt{\phantom{/*@}} (\lstinline'assigns'
+       \textit{\underline{term}}$^{*}$\texttt{;})*
 \\
- & & \texttt{\phantom{/*@}} (\texttt{ensures}
+ & & \texttt{\phantom{/*@}} (\lstinline'ensures'
        \textit{\underline{predicate}}\texttt{;})* \texttt{~*/}
 \\
  & & \textit{\underline{type}}$^{\textit{as}\;T}$
@@ -19,35 +19,35 @@
      \{ \\
      & &   \textit{Beg}$_f$ : $T$ \texttt{res;} \\
      & & \textit{decl}$^{*}$ \quad \textit{stmt}$^{*}$ \\
-     & & \textit{End}$_f$ : \texttt{return res;} \}
+     & & \textit{End}$_f$ : \lstinline'return res;' \}
 \\
 \textit{decl}  & ::= 
- & \textit{\underline{type}} \textit{\underline{id}}\texttt{;} \\
+ & \textit{\underline{type}} \textit{\underline{id}}
+       [= \textit{\underline{exp}}] \texttt{;} \\
 \textit{stmt}  & ::=
  &   \textit{\underline{label}} :
-    \texttt{assert} \textit{\underline{predicate}}\texttt{;}
+    \lstinline'assert' \textit{\underline{predicate}}\texttt{;}
 \\
  & $\mid$ & \textit{\underline{label}}$^{\textit{as}\;l}$ :
      (\texttt{/*@} \textit{loop\_annot} \texttt{*/})$^?$
 \\
  & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
-        \texttt{while} ( \textit{\underline{bool\_expr}} ) \{
+        \lstinline'while' ( \textit{\underline{bool\_expr}} ) \{
 \\
  & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
         \quad \textit{BegIter}$_l$ : \quad \textit{stmt}$^{*}$
 \\
  & &  \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :}   
-        \quad \textit{EndIter}$_l$ : \}
+        \quad \textit{EndIter}$_l$ :  \lstinline';' \}
 \\
- & $\mid$ & (\textit{\underline{label}} :)$^?$ 
-    \textit{\underline{not\_while\_stmt}}
+ & $\mid$ & \textit{\underline{label}} : \textit{\underline{not\_while\_stmt}}
 \\
 \textit{loop\_annot}  & ::= 
- & (\texttt{loop invariant} \textit{\underline{predicate}}\texttt{;})* 
+ & (\lstinline'loop invariant' \textit{\underline{predicate}}\texttt{;})* 
 \\
- & &  (\texttt{loop assigns} \textit{\underline{term}}\texttt{;})* 
+ & &  (\lstinline'loop assigns' \textit{\underline{term}}\texttt{;})* 
 \\
- & &  (\texttt{loop variant} \textit{\underline{term}}\texttt{;})$^?$
+ & &  (\lstinline'loop variant' \textit{\underline{term}}$^{*}$\texttt{;})$^?$
 \end{tabular}
 \vspace{-1mm}
 \caption{Grammaire d'une fonction C annotée \label{fig:grammar}}
