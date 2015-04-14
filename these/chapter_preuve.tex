@@ -271,11 +271,11 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     \eval{$e_1$}{\comp{$I_1$}{$env$}}
     & = & \eval{$p_1$}{$env$} & (h1) \\
     $\equiv$ \comp{$I_1$}{$env$}
-    & = & $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}] & (h1') \\
+    & = & $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}] & \\
     \eval{$e_2$}{\comp{$I_2$}{$env$}}
     & = & \eval{$p_2$}{$env$} & (h2) \\
     $\equiv$ \comp{$I_2$}{$env$}
-    & = & $env$[$e_2 \mapsto$ \eval{$p_2$}{$env$}] & (h2') \\
+    & = & $env$[$e_2 \mapsto$ \eval{$p_2$}{$env$}] & \\
   \end{tabular}
 
   On doit prouver l'égalité suivante :
@@ -284,34 +284,96 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   $\eq{?}$ \eval{\lstinline'p1 && p2'}{$env$}
 
   Développons le membre gauche :
+  
+  \begin{tabular}{rcl}
+    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    & = & (\comp{$I$}{$env$})(e) \\
+    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+      (l, \lstinline'e = e_2;') $\bclose$ }{
+      (\comp{\lstinline'int e = e1;'}{
+        (\comp{$I_1$}{$env$})
+      })
+    })(e) \\
+    & $\eq{h1}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+      (l, \lstinline'e = e_2;') $\bclose$ }{
+      (\comp{\lstinline'int e = e1;'}{
+        ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])
+      })
+    })(e) \\
+    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+      (l, \lstinline'e = e_2;') $\bclose$ }{
+      (
+      ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])[$e \mapsto$
+        \eval{$e_1$}{$env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}]}]
+      )
+    })(e) \\
+    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+      (l, \lstinline'e = e_2;') $\bclose$ }{
+      (
+      $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
+      )
+    })(e) \\
 
-  \commentGP{redo}
+    %% cas true
+    \multicolumn{3}{l}{
+      Quand \eval{e}{(
+        $env$
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+        [$e \mapsto$ \eval{$p_1$}{$env$}]
+      )} = true : (h3)}\\
+    & = & (\comp{$I_2 \concat$
+      (l, \lstinline'e = e_2;')  }{
+      (
+      $env$
+      [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+      [$e \mapsto$ \eval{$p_1$}{$env$}]
+      )
+    })(e) \\
+    & = & (\comp{\lstinline'e = e_2;'}{
+      (\comp{$I_2$}{
+        (
+        $env$
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+        [$e \mapsto$ \eval{$p_1$}{$env$}]
+        )
+      })
+    })(e) \\
+    & $\eq{h2}$ & (\comp{\lstinline'e = e_2;'}{
+      (
+      $env$
+      [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+      [$e \mapsto$ \eval{$p_1$}{$env$}]
+      [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
+      )
+    })(e) \\
+    & = & ($env$
+                [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+                [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
+                [$e \mapsto$ \eval{$p_2$}{$env$}]
+                ) (e) \\
+    & = & \eval{$p_2$}{$env$} \\
+    & = & true $\land$ \eval{$p_2$}{$env$} \\
+    & $\eq{h3}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
+    & = & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
 
-  \begin{tabular}{rclr}
-    \comp{$I_1$}{env}
-    &$\eq{hyp}$& update(env, $e_1$, \eval{$p_1$}{env}) = env$_{e_1}$ & \\
-    \comp{$i_1$}{env$_{e_1}$}
-    &$\eq{def}$& update(env$_{i_1}$, var, \eval{$e_1$}{env$_{e_1}$})&\\
-    &$\eq{(1)}$& update(env$_{i_1}$, var, \eval{$p_1$}{env}) = env$_{i_3}$ & \\
-    \comp{$I_2$}{env$_{i_1}$}
-    &$\eq{hyp}$& update(env$_{i_3}$, $e_2$, \eval{$p_2$}{env}) = env$_{e_2}$ & \\
-    \comp{$i_2$}{env$_{e_2}$}
-    &$\eq{def}$& update(env$_{e_2}$, var, \eval{$e_2$}{env$_{e_2}$})&\\
-    &$\eq{(2)}$& update(env$_{e_2}$, var, \eval{$p_2$}{env}) = env$_{i_2}$ & \\
-    \eval{var}{env$_{i_3}$} &$\eq{(3)}$& \eval{$p_1$}{env}&\\
-    \comp{$i_3$}{env$_{i_1}$}
-    &$\eq{def}$& env$_{i_2}$ \text{if}\ \eval{$p_1$}{env} = true,
-    env$_{i_1}$ \text{otherwise} &\\
-    when \eval{$p_1$}{env} = true: &&&\\
-    \eval{var}{\comp{$I$}{env}}
-    &$\eq{(4)}$& \eval{var}{env$_{i_2}$} $\eq{(5)}$ \eval{$p_2$}{env}&\\
-    &$\eq{(6)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}
-    $\eq{def}$ \eval{$p_1 \&\& p_2$}{env}\\
-    when \eval{$p_1$}{env} = false: &&&\\
-    \eval{var}{\comp{$I$}{env}}
-    &$\eq{(4)}$& \eval{var}{env$_{i_1}$} $\eq{(3)}$ \eval{$p_1$}{env}&\\
-    &$\eq{(7)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}&\\
-    &$\eq{def}$& \eval{$p_1 \&\& p_2$}{env}& \\
+    %% cas false
+    \multicolumn{3}{l}{
+      Quand \eval{e}{(
+        $env$
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
+        [$e \mapsto$ \eval{$p_1$}{$env$}]
+        )} = false : (h4)}\\
+    & = & (
+    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
+    ) (e) \\
+    & = & (
+    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
+    ) (e) \\
+    & = & \eval{$p_1$}{$env$} \\
+    & $\eq{h4}$ & false \\
+    & = & false $\land$ \eval{$p_2$}{$env$} \\
+    & $\eq{h4}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
+    & = & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
   \end{tabular}
 \end{proof}
 
