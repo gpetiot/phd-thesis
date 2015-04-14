@@ -207,18 +207,19 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 {\myinference[CST]
   {}
-  { (l, v : \mathbb{Z}) \rulearrow ((l, \Zinit\underline{\mathtt{x = v}}), x) }
+  { (l, v : \mathbb{Z}) \rulearrow
+    ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), x) }
 }
 
 Pour n'importe quel environnement $env$, nous prouvons que :
 
-\eval{x}{\comp{$\Zinit$\underline{$\mathtt{x = v}$}}{env}} = \eval{v}{env}.
+\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}} = \eval{v}{env}.
 
 
 \begin{proof}
   ~\\
   \begin{tabular}{rclr}
-    \eval{x}{\comp{$\Zinit$\underline{$\mathtt{x = v}$}}{env}}
+    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}}
     & $\eq{C-1}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
     & $\eq{E-1}$ & \eval{v}{env} &
   \end{tabular}
@@ -242,16 +243,16 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 {\myinference[AND]
   { (l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2) }
-  { (l, \mathtt{p_1\ \&\&\ p_2}) \rulearrow
+  { (l, \mbox{\lstinline'p_1 && p_2'}) \rulearrow
     (
     \underbracket{
       I_1 \cdot
-      \underbracket{ (l, \mathtt{int\ e = e_1;}) }_{i_1}
+      \underbracket{ (l, \mbox{\lstinline'int e = e_1;'}) }_{i_1}
       \cdot
-      \underbracket{ (l, \mathtt{if(e)})
+      \underbracket{ (l, \mbox{\lstinline'if(e)'})
         \bopen
         I_2 \cdot
-        \underbracket{ (l, \mathtt{e = e_2;}) }_{i_2}
+        \underbracket{ (l, \mbox{\lstinline'e = e_2;'}) }_{i_2}
         \bclose }_{i_3}
       }_{I},
     e) }
@@ -388,30 +389,35 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   }
   {
     \splitfrac {
-      (l, \mathtt{\backslash forall\ integer\ id;\ t_1 <= id < t_2 ==> p})
+      (l, \mbox{\lstinline'\\forall integer id; t_1 <= id < t_2 ==> p'})
       \rulearrow
     } {
       \splitfrac {
         (I_1 \cdot I_2
-        \cdot \underbracket{ (l, \mathtt{int e = 1;}) }_{i_1}
-        \cdot \underbracket{ (l, \Zinit \underline{\mathtt{id = e_1;}} ) }_{i_2}
+        \cdot \underbracket{ (l, \mbox{\lstinline'int e = 1;'}) }_{i_1}
+        \cdot
+        \underbracket{
+          (l, \Zinit \underline{\mbox{\lstinline'id = e_1;'}} ) }_{i_2}
       } {
         \cdot
         \underbracket{
-          (l, \mathtt{while(}
-          \underline{\mathtt{id < e_2}}~ \mathtt{\&\& var)}
+          (l, \mbox{\lstinline'while('}
+          \underline{\mbox{\lstinline'id < e_2'}}~ \mbox{\lstinline'&& var')}
           \bopen
           I_3
-          \cdot \underbracket{ \mathtt{e = e_3;} }_{i_4}
-          \cdot \underbracket{ \underline{\mathtt{id++;}} }_{i_5}
+          \cdot \underbracket{ \mbox{\lstinline'e = e_3;'} }_{i_4}
+          \cdot \underbracket{ \underline{\mbox{\lstinline'id++;'}} }_{i_5}
           \bclose )
         }_{i_3}
         \cdot
-        \underbracket{ (l, \underline{\mathtt{id}} \Zclear \semicolon ) }_{i_6}
+        \underbracket{
+          (l, \underline{\mbox{\lstinline'id'}} \Zclear \semicolon ) }_{i_6}
         \cdot
-        \underbracket{ (l, \underline{\mathtt{e_1}} \Zclear \semicolon ) }_{i_7}
+        \underbracket{
+          (l, \underline{\mbox{\lstinline'e_1'}} \Zclear \semicolon ) }_{i_7}
         \cdot
-        \underbracket{ (l, \underline{\mathtt{e_2}} \Zclear \semicolon ) }_{i_8},
+        \underbracket{
+          (l, \underline{\mbox{\lstinline'e_2'}} \Zclear \semicolon ) }_{i_8},
         e)
       }
     }
