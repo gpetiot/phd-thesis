@@ -154,68 +154,72 @@
 \end{figure*}
 
 \begin{figure*}[bt]
-\scriptsize{
-{\myinference[$\tau$-sum]
-  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-    (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
-  {
-    \splitfrac
-        {(l, (\mathtt{\backslash sum(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
-          \rulearrow}
-        {
-          (I_1 \concat I_2
-          \concat
-          (l, \underline{\Zinit \mathtt{var_n = 0}} \semicolon\
-          \mathtt{ for(}
-          \underline{\Zinit \mathtt{i_n = e1} \Zclear}\semicolon\
-          \underline{\mathtt{i_n <= e2} \Zclear}\semicolon\
-          \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{)} \bopen )
-          \concat I_3
-          \concat
-          (l,
-          \underline{\mathtt{var_n += e3} \Zclear}\semicolon
-          \bclose
-          ),
-          \mathtt{var_n})
-        }
-  }
-}
+  \scriptsize{
+    {\myinference[$\tau$-sum]
+      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+        (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
+      {
+        \splitfrac
+            {(l,
+              (\mbox{\lstinline'\\sum(t1, t2, \\lambda integer i; t3)'}):
+              \mathbb{Z})
+              \rulearrow}
+            {
+              (I_1 \concat I_2
+              \concat
+              (l, \underline{\Zinit \mbox{\lstinline'var_n = 0'}} \semicolon
+              \mbox{\lstinline' for('}
+              \underline{\Zinit \mbox{\lstinline'i_n = e1'} \Zclear}\semicolon
+              \underline{\mbox{\lstinline'i_n <= e2'} \Zclear}\semicolon
+              \underline{\mbox{\lstinline'i_n++'} \Zclear}
+              \mbox{\lstinline')'} \bopen )
+              \concat I_3
+              \concat
+              (l,
+              \underline{\mbox{\lstinline'var_n += e3'} \Zclear}\semicolon
+              \bclose
+              ),
+              \mbox{\lstinline'var_n'})
+            }
+      }
+    }
 
-{\myinference[$\tau$-numof]
-  {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-    (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-    (l, t_3:int) \rulearrow (I_3, e_3)}
-  {
-    \splitfrac
-        {(l, (\mathtt{\backslash numof(t1, t2, \backslash lambda\ integer\ i;\ t3)}):\mathbb{Z})
-          \rulearrow}
-        {
-          (I_1 \concat I_2
-          \concat
-          (l,
-          \underline{\Zinit \mathtt{var_n = 0}}
-          \semicolon\
-          \mathtt{ for(}
-          \underline{\Zinit \mathtt{i_n = e1} \Zclear}
-          \semicolon\
-          \underline{\mathtt{i_n <= e2} \Zclear}
-          \semicolon\
-          \underline{\mathtt{i_n++} \Zclear}
-          \mathtt{)} \bopen
-          \concat I_3
-          \concat (l,
-          \mathtt{if(e3)}\
-          \underline{\mathtt{var_n++}}
-          \semicolon
-          \bclose
-          ),
-          \mathtt{var_n})
-        }
+    {\myinference[$\tau$-numof]
+      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+        (l, t_3:int) \rulearrow (I_3, e_3)}
+      {
+        \splitfrac
+            {(l,
+              (\mbox{\lstinline'\\numof(t1, t2, \\lambda integer i; t3)'}):
+              \mathbb{Z})
+              \rulearrow}
+            {
+              (I_1 \concat I_2
+              \concat
+              (l,
+              \underline{\Zinit \mbox{\lstinline'var_n = 0'}}
+              \semicolon
+              \mbox{\lstinline' for('}
+              \underline{\Zinit \mbox{\lstinline'i_n = e1'} \Zclear}
+              \semicolon
+              \underline{\mbox{\lstinline'i_n <= e2'} \Zclear}
+              \semicolon
+              \underline{\mbox{\lstinline'i_n++'} \Zclear}
+              \mbox{\lstinline')'} \bopen )
+              \concat I_3
+              \concat (l,
+              \mbox{\lstinline'if(e3)'}
+              \underline{\mbox{\lstinline'var_n++'}}
+              \semicolon
+              \bclose
+              ),
+              \mbox{\lstinline'var_n'})
+            }
+      }
+    }
   }
-}
-}
 \caption{Translation rules for builtin logic functions}
 \label{fig:builtin}
 \end{figure*}
@@ -224,55 +228,60 @@
 \scriptsize{
   {\myinference[$\pi$-equiv]
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 <==> p2})
+    {(l, \mbox{\lstinline'p1 <==> p2'})
       \rulearrow
-      (I_1 \concat I_2, \mathtt{((!e1 || e2) \&\& (!e2 || e1))})}
+      (I_1 \concat I_2, \mbox{\lstinline'((!e1 || e2) && (!e2 || e1))'})}
   }
 
   \vspace{-1mm}
   {\myinference[$\pi$-and]
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 \&\& p2})
+    {(l, \mbox{\lstinline'p1 && p2'})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(var_n)} \bopen)
+      (I_1 \concat (l, \mbox{\lstinline'int var_n = e1; if(var_n)'} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+      \concat (l, \mbox{\lstinline'var_n = e2;'} \bclose),
+      \mbox{\lstinline'var_n'})
     }
   }
   {\myinference[$\pi$-true]
     {}
-    {(l, \mathtt{\backslash true}) \rulearrow (\emptyset, \mathtt{1})}
+    {(l, \mbox{\lstinline'\\true'}) \rulearrow
+      (\emptyset, \mbox{\lstinline'1'})}
   }
 
   \vspace{-3mm}
   {\myinference[$\pi$-or]
     {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 || p2})
+    {(l, \mbox{\lstinline'p1 || p2'})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = e1; if(!var_n)} \bopen)
+      (I_1 \concat (l, \mbox{\lstinline'int var_n = e1; if(!var_n)'} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+      \concat (l, \mbox{\lstinline'var_n = e2;'} \bclose),
+      \mbox{\lstinline'var_n'})
     }
   }
   {\myinference[$\pi$-false]
     {}
-    {(l, \mathtt{\backslash false}) \rulearrow (\emptyset, \mathtt{0})}
+    {(l, \mbox{\lstinline'\\false'}) \rulearrow
+      (\emptyset, \mbox{\lstinline'0'})}
   }
 
   \vspace{-3mm}
   {\myinference[$\pi$-impl]
     {(l, p_1) \rulearrow (I_1, e_1) \\
       (l, p_2) \rulearrow (I_2, e_2)}
-    {(l, \mathtt{p1 ==> p2})
+    {(l, \mbox{\lstinline'p1 ==> p2'})
       \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n = 1; if(e1)} \bopen)
+      (I_1 \concat (l, \mbox{\lstinline'int var_n = 1; if(e1)'} \bopen)
       \concat I_2
-      \concat (l, \mathtt{var_n = e2;} \bclose), \mathtt{var_n})
+      \concat (l, \mbox{\lstinline'var_n = e2;'} \bclose),
+      \mbox{\lstinline'var_n'})
     }
   }
   {\myinference[$\pi$-not]
     {(l, p) \rulearrow (I, e)}
-    {(l, \mathtt{!p}) \rulearrow (I, \mathtt{!e})}
+    {(l, \mbox{\lstinline'\!p'}) \rulearrow (I, \mbox{\lstinline'\!e'})}
   }
   \vspace{-3mm}
 
@@ -281,13 +290,14 @@
       (l, p_2) \rulearrow (I_2, e_2) \\
       (l, p_3) \rulearrow (I_3, e_3)}
     {
-      (l, \mathtt{t ? p2 : p3}) \rulearrow
-      (I_1 \concat (l, \mathtt{int\ var_n; if(}
-      \underline{\mathtt{e1}\Zclear\ \mathtt{ != 0}}
-      \mathtt{)} \bopen)
-      \concat I_2 \concat (l, \mathtt{var_n=e2;} \bclose \mathtt{else} \bopen)
-      \concat I_3 \concat (l, \mathtt{var_n=e3;} \bclose),
-      \mathtt{var_n})
+      (l, \mbox{\lstinline't ? p2 : p3'}) \rulearrow
+      (I_1 \concat (l, \mbox{\lstinline'int var_n; if('}
+      \underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline' \!= 0'}}
+      \mbox{\lstinline')'} \bopen)
+      \concat I_2 \concat (l, \mbox{\lstinline'var_n=e2;'} \bclose
+      \mbox{\lstinline'else'} \bopen)
+      \concat I_3 \concat (l, \mbox{\lstinline'var_n=e3;'} \bclose),
+      \mbox{\lstinline'var_n'})
     }
   }
   \vspace{-0.5mm}
@@ -297,12 +307,13 @@
       (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
       op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
       \mathtt{==}, \mathtt{!=}\}}
-    {(l, \mathtt{t1\ op\ t2}) \rulearrow
+    {(l, \mbox{\lstinline't1 op t2'}) \rulearrow
       (I_1 \concat I_2 \concat (l,
-      \mathtt{int\ var_n =}\
-      \underline{\mathtt{ e1} \Zclear\ \mathtt{ op\ e2} \Zclear}
+      \mbox{\lstinline'int var_n ='}
+      \underline{\mbox{\lstinline' e1'} \Zclear \mbox{\lstinline' op e2'}
+        \Zclear}
       \semicolon
-      ), \mathtt{var_n})}
+      ), \mbox{\lstinline'var_n'})}
   }
 }
   \caption{Translation rules for simplest predicates}
@@ -313,9 +324,8 @@
 \scriptsize{
   {\myinference[$\pi$-valid]
     {(l, t:ptr) \rulearrow (I, e) }
-    {(l, \mathtt{\backslash valid(t)})
-      \rulearrow
-      (I, \mathtt{fvalid(e)})
+    {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
+      (I, \mbox{\lstinline'fvalid(e)'})
     }
   }
   {\myinference[$\pi$-valid-range]
@@ -323,8 +333,8 @@
       (l, t_2:int) \rulearrow (I_2, e_2) \\
       (l, t_3:int) \rulearrow (I_3, e_3)}
     {
-      (l, \mathtt{\backslash valid(t1+(t2..t3))}) \rulearrow
-      (I_1 \concat I_2 \concat I_3,\mathtt{fvalidr(e1,e2,e3)})
+      (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
+      (I_1 \concat I_2 \concat I_3,\mbox{\lstinline'fvalidr(e1,e2,e3)'})
     }
   }
 }
@@ -333,33 +343,33 @@
 \end{figure*}
 
 \begin{figure*}[bt]
-\scriptsize{
-  {\myinference[$\pi$-exists]
-    {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-      (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-      (l, p) \rulearrow (I, e)}
-    {
-      \splitfrac
-          {(l, \mathtt{\backslash exists\ integer\ i;\ t1 <= i < t2\ \&\&\ p})
-            \rulearrow
-          }
-          {
-            (I_1 \concat I_2\concat
-            (l,
-            \mathtt{int\ var_n = 0; for(}
-            \underline{\Zinit \mathtt{i_n = e1} \Zclear}
-            \semicolon\
-            \underline{\mathtt{i_n < e2} \Zclear}\
-            \mathtt{ \&\&\ !var_n;}\
-            \underline{\mathtt{i_n++} \Zclear}
-            \mathtt{)} \bopen)
-            \concat I \concat (l,
-            \mathtt{var_n = e;} \bclose),
-            \mathtt{var_n})
-          }
+  \scriptsize{
+    {\myinference[$\pi$-exists]
+      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
+        (l, p) \rulearrow (I, e)}
+      {
+        \splitfrac
+            {(l, \mbox{\lstinline'\\exists integer i; t1 <= i < t2 && p'})
+              \rulearrow
+            }
+            {
+              (I_1 \concat I_2\concat
+              (l,
+              \mbox{\lstinline'int var_n = 0; for('}
+              \underline{\Zinit \mbox{\lstinline'i_n = e1'} \Zclear}
+              \semicolon
+              \underline{\mbox{\lstinline'i_n < e2'} \Zclear}
+              \mbox{\lstinline' && !var_n;'}
+              \underline{\mbox{\lstinline'i_n++'} \Zclear}
+              \mbox{\lstinline')'} \bopen)
+              \concat I \concat (l,
+              \mbox{\lstinline'var_n = e;'} \bclose),
+              \mbox{\lstinline'var_n'})
+            }
+      }
     }
   }
-}
   \caption{Translation rule for quantified predicate}
   \label{fig:quantif}
 \end{figure*}
@@ -368,60 +378,59 @@
 \scriptsize{
   {\myinference[$\alpha$-assert]
     {(l, p) \rulearrow (I, e)}
-    {(l, \mathtt{assert\ p;})
-      \rulearrow
-      I \concat (l, \mathtt{fassert(e);})}
+    {(l, \mbox{\lstinline'assert p;'})
+      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
   }
   \vspace{-1mm}
 
   {\myinference[$\alpha$-check-pre\hspace{-2mm}]
     {(Beg_f, p) \rulearrow (I, e)}
-    {(Beg_f, \mathtt{requires\ p;}
+    {(Beg_f, \mbox{\lstinline'requires p;'}
       \rulearrow
-      I \concat (Beg_f, \mathtt{fassert(e);})}
+      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
   }
   {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
     {(Beg_f, p) \rulearrow (I, e)}
     {(Beg_f, \left \{\hspace{-2mm}
       \begin{array}{r}
-        \mathtt{typically\ p;} \\
-        \mathtt{requires\ p;}
+        \mbox{\lstinline'typically p;'} \\
+        \mbox{\lstinline'requires p;'}
       \end{array} \right. \hspace{-2mm}
       )
       \rulearrow
-      I \concat (Beg_f, \mathtt{fassume(e);})}
+      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
   }
   \vspace{-1mm}
 
   {\myinference[$\alpha$-check-assigns]
     {(End_f, x) \rulearrow (I, e)}
-    {(End_f, \mathtt{assigns\ X;})
+    {(End_f, \mbox{\lstinline'assigns X;'})
       \rulearrow
       I \concat
       \forall (x:ctype) \not \in X:
-      (Beg_f, \mathtt{ctype\ assigns_x = e;})
-      \concat (End_f, \mathtt{fassert(e == assigns_x);})
+      (Beg_f, \mbox{\lstinline'ctype assigns_x = e;'})
+      \concat (End_f, \mbox{\lstinline'fassert(e == assigns_x);'})
     }
   }
   {\myinference[$\alpha$-assume-assigns]
     {(End_f, x) \rulearrow (I, e)}
-    {(End_f, \mathtt{assigns\ x;})
+    {(End_f, \mbox{\lstinline'assigns x;'})
       \rulearrow
-      I \concat (End_f, \mathtt{e = nondet();})}
+      I \concat (End_f, \mbox{\lstinline'e = nondet();'})}
   }
   \vspace{-1mm}
 
   {\myinference[$\alpha$-check-post]
     {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mathtt{ensures\ p;})
+    {(End_f, \mbox{\lstinline'ensures p;'})
       \rulearrow
-      I \concat (End_f, \mathtt{fassert(e);})}
+      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
   }
   {\myinference[$\alpha$-assume-post]
     {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mathtt{ensures\ p;})
+    {(End_f, \mbox{\lstinline'ensures p;'})
       \rulearrow
-      I \concat (End_f, \mathtt{fassume(e);})}
+      I \concat (End_f, \mbox{\lstinline'fassume(e);'})}
   }
 }
   \caption{Translation rules for assert, postcondition and precondition}
@@ -435,21 +444,21 @@
     {
       \splitfrac
       {
-        (l, \mathtt{loop\ assigns\ X;}) \rulearrow
+        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
       }
       {
         I \concat
         \forall (x:ctype) \not \in X:
-        (BegIter_l, \mathtt{ctype\ assigns_x = e;})
-        \concat (EndIter_l, \mathtt{fassert(e == assigns_x);})
+        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
       }
     }
   }
   {\myinference[$\alpha$-assume-loop-assigns]
     {(l, x) \rulearrow (I, e)}
-    {(l, \mathtt{loop\ assigns\ x;})
+    {(l, \mbox{\lstinline'loop assigns x;'})
       \rulearrow
-      I \concat (l, \mathtt{e = nondet();})}
+      I \concat (l, \mbox{\lstinline'e = nondet();'})}
   }
   \vspace{-1mm}
 
@@ -457,55 +466,56 @@
     {(l, p) \rulearrow (I_1, e_1) \\
       (EndIter_l, p) \rulearrow (I_2, e_2)}
     {
-      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
-      I_1 \concat (l, \mathtt{fassert(e1);})
-      \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
     }
   }
 
  {\myinference[$\alpha$-assume-invariant-1]
     {(l, p) \rulearrow (I, e)}
     {
-      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
-      I \concat (l, \mathtt{fassume(e\ \&\&\ !loopcond);})
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
     }
   }
  {\myinference[$\alpha$-assume-invariant-2]
     {(l, p) \rulearrow (I_1, e_1) \\
       (EndIter_l, p) \rulearrow (I_2, e_2)}
     {
-      (l, \mathtt{loop\ invariant\ p;}) \rulearrow
-      I_1 \concat (l, \mathtt{fassume(e1);})
-      \concat I_2 \concat (EndIter_l, \mathtt{fassert(e2);})
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
     }
   }
  \vspace{-1mm}
 
-  {\myinference[$\alpha$-variant]
-    {
-      (BegIter_l, t) \rulearrow (I_1, e_1) \\
-      (EndIter_l, t) \rulearrow (I_2, e_2)
-    }
-    {
-      \splitfrac
-          {
-            (l, \mathtt{loop\ variant\ t;}) \rulearrow
-          }
-          {
-              I_1 \concat ((BegIter_l,
-              \mathtt{fassert(}
-              \underline{\mathtt{0 <= e1}}
-              \mathtt{);\ }
-              \underline{\Zinit \mathtt{oldvariant = e1} \Zclear}
-              \semicolon)
-              \concat I_2
-              \concat(EndIter_l,
-              \mathtt{fassert(}
-              \underline{\mathtt{e2}\Zclear\mathtt{< oldvariant} \Zclear}
-              \mathtt{);})
-          }
-    }
-  }
+ {\myinference[$\alpha$-variant]
+   {
+     (BegIter_l, t) \rulearrow (I_1, e_1) \\
+     (EndIter_l, t) \rulearrow (I_2, e_2)
+   }
+   {
+     \splitfrac
+         {
+           (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
+         }
+         {
+           I_1 \concat ((BegIter_l,
+           \mbox{\lstinline'fassert('}
+           \underline{\mbox{\lstinline'0 <= e1'}}
+           \mbox{\lstinline');' }
+           \underline{\Zinit \mbox{\lstinline'oldvariant = e1'} \Zclear}
+           \semicolon)
+           \concat I_2
+           \concat(EndIter_l,
+           \mbox{\lstinline'fassert('}
+           \underline{\mbox{\lstinline'e2'}\Zclear
+             \mbox{\lstinline'< oldvariant'} \Zclear}
+           \mbox{\lstinline');'})
+         }
+   }
+ }
   }
   \caption{Transformation rules for loop annotations: invariant and variant}
   \label{fig:loop-annot}
