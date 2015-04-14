@@ -682,7 +682,7 @@ ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 17--18 et
 23--24 du listing~\ref{lst:abbrv}.
 
 
-\section[ Test vs. Validation à l'Exécution]{Similarités et Différences selon
+\section[Test vs. Validation à l'Exécution]{Similarités et Différences selon
   l'objectif Test vs. Validation à l'Exécution}
 
 
@@ -807,3 +807,22 @@ Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
 %% $false$, a test case activating the \lstinline|fassert| thus
 %% violating the corresponding annotation is generated. In other terms, a
 %% counter-example for that annotation is generated if such inputs exist.
+
+\section*{Conclusion du chapitre}
+
+L'objectif de ce chapitre était de définir une traduction en C des annotations
+\eacsl pour la génération de tests.
+Nous avons tout d'abord présenté le processus de la traduction dans sa
+généralité.
+Puis nous avons défini les règles permettant pour chaque terme et prédicat
+\eacsl d'obtenir un code C calculant cette expression tout en préservant la
+sémantique d'\eacsl.
+Ces règles nous ont permis de définir différentes manières de traduire les
+annotations \eacsl : \lstinline'assert', \lstinline'requires',
+\lstinline'typically', \lstinline'assigns', \lstinline'ensures',
+\lstinline'loop invariant', \lstinline'loop assigns' et
+\lstinline'loop variant'.
+Ces différentes instrumentations des annotations nous permettront par la suite
+de détecter différentes erreurs dans le code et la spécification.
+Le chapitre suivant aborde la preuve de correction des règles de traduction des
+termes, prédicats et annotations.
