@@ -113,8 +113,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
   \item $v$ est une valeur
   \item \eval{$t$}{env} est l'évaluation du terme \eacsl ou de l'expression C
     $t$ dans l'environnement $env$
-  \item \comp{$\Gamma$}{env} calcule a nouvel environnement résultant de
-    l'exécution des instructions $\Gamma$ dans l'environnement $env$
+  \item \comp{$I$}{env} calcule a nouvel environnement résultant de
+    l'exécution des instructions $I$ dans l'environnement $env$
   \item $update(env, x, v)$ est l'environnement contenant les mêmes
     relations (variable, valeur) que $env$, et la relation supplémentaire
     ($x$, $v$)
@@ -194,23 +194,12 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \label{sec:term-translation}
 
 
-\begin{notation}
-  ~
-  \begin{itemize}
-  \item \openpar \lstinline'instr;' \closepar{i_n} means that this instruction
-    is labeled $i_n$
-  \item $env_{i_n}$ denotes the environement obtained after computation of the
-    instruction labeled $i_n$ (\comp{$i_n$}{env} = $env_{i_n}$)
-  \end{itemize}
-\end{notation}
-
-
 \begin{lemma}\label{lem:term-correct}
-  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(\Gamma, t')$.
+  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(I, t')$.
   La traduction est correcte si et seulement si, pour n'importe quel
   environnement $env$ :
 
-  \eval{$t'$}{\comp{$\Gamma$}{env}} = \eval{$t$}{env}.
+  \eval{$t'$}{\comp{$I$}{env}} = \eval{$t$}{env}.
 \end{lemma}
 
 
@@ -218,7 +207,7 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 {\myinference[CST]
   {}
-  { (v : \mathbb{Z}) \rulearrow (\Zinit\underline{\mathtt{x = v}}, x) }
+  { (l, v : \mathbb{Z}) \rulearrow ((l, \Zinit\underline{\mathtt{x = v}}), x) }
 }
 
 Pour n'importe quel environnement $env$, nous prouvons que :
@@ -227,6 +216,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 
 \begin{proof}
+  ~\\
   \begin{tabular}{rclr}
     \eval{x}{\comp{$\Zinit$\underline{$\mathtt{x = v}$}}{env}}
     & $\eq{C-1}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
@@ -240,59 +230,88 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 
 \begin{lemma}\label{lem:pred-correct}
-  Soit $p$ un prédicat qui se traduit en $(\Gamma, p')$.
+  Soit $p$ un prédicat qui se traduit en $(I, p')$.
   La traduction est correct si et seulement si, pour n'importe quel
   environnement $env$ :
 
-  \eval{$p'$}{\comp{$\Gamma$}{env}} = \eval{$p$}{env}.
+  \eval{$p'$}{\comp{$I$}{env}} = \eval{$p$}{env}.
 \end{lemma}
 
 
 \subsection{And Predicate}
 
 {\myinference[AND]
-  { p_1 \rulearrow (\Gamma_1, e_1) \\
-    p_2 \rulearrow (\Gamma_2, e_2) }
-  { \mathtt{p_1\ \&\&\ p_2} \rulearrow (\Gamma, var) }
+  { (l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2) }
+  { (l, \mathtt{p_1\ \&\&\ p_2}) \rulearrow
+    (
+    \underbracket{
+      I_1 \cdot
+      \underbracket{ (l, \mathtt{int\ e = e_1;}) }_{i_1}
+      \cdot
+      \underbracket{ (l, \mathtt{if(e)})
+        \bopen
+        I_2 \cdot
+        \underbracket{ (l, \mathtt{e = e_2;}) }_{i_2}
+        \bclose }_{i_3}
+      }_{I},
+    e) }
 }~\\
 
-where
-\(
-\Gamma = \Gamma_1
-\cdot \openpar \mathtt{int\ var = e_1;} \closepar{i_1}
-\cdot \openpar \mathtt{if(var)} \bopen
-\Gamma_2
-\cdot \openpar \mathtt{var = e_2;} \closepar{i_3}
-\bclose \closepar{i_2}
-\)
+Pour n'importe quel environnement $env$, nous prouvons que :
+
+\eval{\lstinline'e'}{\comp{$I$}{$env$}} = \eval{\lstinline'p1 && p2'}{$env$}.
+
 
 \begin{proof}
+  ~\\
+  Hypothèses : $p_1$ et $p_2$ sont correctement instrumentés.
+  Pour tout environnement $env$ :
+
   \begin{tabular}{rclr}
-    \comp{$\Gamma_1$}{env}
-    &$\eq{hyp}$& update(env, $e_1$, \eval{$p_1$}{env}) = env$_{e_1}$ & 1\\
+    \eval{$e_1$}{\comp{$I_1$}{$env$}}
+    & = & \eval{$p_1$}{$env$} & (h1) \\
+    $\equiv$ \comp{$I_1$}{$env$}
+    & = & $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}] & (h1') \\
+    \eval{$e_2$}{\comp{$I_2$}{$env$}}
+    & = & \eval{$p_2$}{$env$} & (h2) \\
+    $\equiv$ \comp{$I_2$}{$env$}
+    & = & $env$[$e_2 \mapsto$ \eval{$p_2$}{$env$}] & (h2') \\
+  \end{tabular}
+
+  On doit prouver l'égalité suivante :
+
+  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+  $\eq{?}$ \eval{\lstinline'p1 && p2'}{$env$}
+
+  Développons le membre gauche :
+
+  \commentGP{redo}
+
+  \begin{tabular}{rclr}
+    \comp{$I_1$}{env}
+    &$\eq{hyp}$& update(env, $e_1$, \eval{$p_1$}{env}) = env$_{e_1}$ & \\
     \comp{$i_1$}{env$_{e_1}$}
     &$\eq{def}$& update(env$_{i_1}$, var, \eval{$e_1$}{env$_{e_1}$})&\\
-    &$\eq{(1)}$& update(env$_{i_1}$, var, \eval{$p_1$}{env}) = env$_{i_2}$ & 3\\
-    \comp{$\Gamma_2$}{env$_{i_1}$}
-    &$\eq{hyp}$& update(env$_{i_2}$, $e_2$, \eval{$p_2$}{env}) = env$_{e_2}$ & 2\\
-    \comp{$i_3$}{env$_{e_2}$}
+    &$\eq{(1)}$& update(env$_{i_1}$, var, \eval{$p_1$}{env}) = env$_{i_3}$ & \\
+    \comp{$I_2$}{env$_{i_1}$}
+    &$\eq{hyp}$& update(env$_{i_3}$, $e_2$, \eval{$p_2$}{env}) = env$_{e_2}$ & \\
+    \comp{$i_2$}{env$_{e_2}$}
     &$\eq{def}$& update(env$_{e_2}$, var, \eval{$e_2$}{env$_{e_2}$})&\\
-    &$\eq{(2)}$& update(env$_{e_2}$, var, \eval{$p_2$}{env}) = env$_{i_3}$ & 5\\
-    \eval{var}{env$_{i_2}$} &$\eq{(3)}$& \eval{$p_1$}{env}&\\
-    \comp{$i_2$}{env$_{i_1}$}
-    &$\eq{def}$& env$_{i_3}$ \text{if}\ \eval{$p_1$}{env} = true,
-    env$_{i_1}$ \text{otherwise}
-    &4\\
-    when \eval{$p_1$}{env} = true: &&&6\\
-    \eval{var}{\comp{$\Gamma$}{env}}
-    &$\eq{(4)}$& \eval{var}{env$_{i_3}$} $\eq{(5)}$ \eval{$p_2$}{env}&\\
+    &$\eq{(2)}$& update(env$_{e_2}$, var, \eval{$p_2$}{env}) = env$_{i_2}$ & \\
+    \eval{var}{env$_{i_3}$} &$\eq{(3)}$& \eval{$p_1$}{env}&\\
+    \comp{$i_3$}{env$_{i_1}$}
+    &$\eq{def}$& env$_{i_2}$ \text{if}\ \eval{$p_1$}{env} = true,
+    env$_{i_1}$ \text{otherwise} &\\
+    when \eval{$p_1$}{env} = true: &&&\\
+    \eval{var}{\comp{$I$}{env}}
+    &$\eq{(4)}$& \eval{var}{env$_{i_2}$} $\eq{(5)}$ \eval{$p_2$}{env}&\\
     &$\eq{(6)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}
     $\eq{def}$ \eval{$p_1 \&\& p_2$}{env}\\
-    when \eval{$p_1$}{env} = false: &&&7\\
-    \eval{var}{\comp{$\Gamma$}{env}}
+    when \eval{$p_1$}{env} = false: &&&\\
+    \eval{var}{\comp{$I$}{env}}
     &$\eq{(4)}$& \eval{var}{env$_{i_1}$} $\eq{(3)}$ \eval{$p_1$}{env}&\\
     &$\eq{(7)}$& \eval{$p_1$}{env} $\land$ \eval{$p_2$}{env}&\\
-    &$\eq{def}$& \eval{$p_1 \&\& p_2$}{env}&
+    &$\eq{def}$& \eval{$p_1 \&\& p_2$}{env}& \\
   \end{tabular}
 \end{proof}
 
@@ -301,40 +320,49 @@ where
 
 {\myinference[FORALL]
   {
-    (t_1 : \mathbb{Z}) \rulearrow (\Gamma_1, e_1) \\
-    (t_2 : \mathbb{Z}) \rulearrow (\Gamma_2, e_2) \\
-    p \rulearrow (\Gamma_3, e)
+    (l, t_1 : \mathbb{Z}) \rulearrow (I_1, e_1) \\
+    (l, t_2 : \mathbb{Z}) \rulearrow (I_2, e_2) \\
+    (l, p) \rulearrow (I_3, e_3)
   }
-  { \mathtt{\backslash forall\ integer\ id;\ t_1 <= id < t_2 ==> p}
-    \rulearrow (\Gamma, var) }
+  {
+    \splitfrac {
+      (l, \mathtt{\backslash forall\ integer\ id;\ t_1 <= id < t_2 ==> p})
+      \rulearrow
+    } {
+      \splitfrac {
+        (I_1 \cdot I_2
+        \cdot \underbracket{ (l, \mathtt{int e = 1;}) }_{i_1}
+        \cdot \underbracket{ (l, \Zinit \underline{\mathtt{id = e_1;}} ) }_{i_2}
+      } {
+        \cdot
+        \underbracket{
+          (l, \mathtt{while(}
+          \underline{\mathtt{id < e_2}}~ \mathtt{\&\& var)}
+          \bopen
+          I_3
+          \cdot \underbracket{ \mathtt{e = e_3;} }_{i_4}
+          \cdot \underbracket{ \underline{\mathtt{id++;}} }_{i_5}
+          \bclose )
+        }_{i_3}
+        \cdot
+        \underbracket{ (l, \underline{\mathtt{id}} \Zclear \semicolon ) }_{i_6}
+        \cdot
+        \underbracket{ (l, \underline{\mathtt{e_1}} \Zclear \semicolon ) }_{i_7}
+        \cdot
+        \underbracket{ (l, \underline{\mathtt{e_2}} \Zclear \semicolon ) }_{i_8},
+        e)
+      }
+    }
+  }
 }~\\
 
 
-where
-\begin{tabular}{rclr}
-  $\Gamma$ &=& $\Gamma_1$ $\cdot$ $\Gamma_2$
-  $\cdot$ \openpar \lstinline|int var = 1;| \closepar{i_1}
-  $\cdot$ \openpar $\Zinit$ \underline{\lstinline|id = e_1|} $\semicolon$
-  \closepar{i_2}&\\
-  && $\cdot$ \openpar \lstinline|while(|
-  \underline{\lstinline|id < e_2|}~ \lstinline|&& var)|
-  $\bopen$
-  $\Gamma_3$
-  $\cdot$ \openpar \lstinline|var = e;| \closepar{i_4}
-  $\cdot$ \openpar \underline{\lstinline|id++|} $\semicolon$ \closepar{i_5}
-  $\bclose$
-  \closepar{i_3}&\\
-  && $\cdot$ \openpar \underline{\lstinline|id|} $\Zclear$ $\semicolon$ \closepar{i_6}
-  $\cdot$ \openpar \underline{\lstinline|e_1|}$\Zclear$ $\semicolon$ \closepar{i_7}
-  $\cdot$ \openpar \underline{\lstinline|e_2|}$\Zclear$ $\semicolon$ \closepar{i_8}&
-\end{tabular}
-
-
 \begin{proof}
+  ~\\
   \begin{tabular}{rclr}
-    \comp{$\Gamma_1$}{env}
+    \comp{$I_1$}{env}
     &=& update(env, $e_1$, \eval{$t_1$}{env}) = env$_{e_1}$ &\\
-    \comp{$\Gamma_2$}{env$_{e_1}$}
+    \comp{$I_2$}{env$_{e_1}$}
     &=& update(env$_{e_1}$, $e_2$, \eval{$t_2$}{env}) = env$_{e_2}$ &\\
     \comp{$i_1$}{env$_{e_2}$} &=& update(env$_{e_2}$, var, 1) = env$_{i_1}$ &\\
     \comp{$i_2$}{env$_{i_1}$} &=& update(env$_{i_1}$, id, \eval{$e_1$}{env$_{i_1}$})&\\
@@ -345,8 +373,8 @@ where
     \comp{$i_6$}{env$_{i_3}$} &=& update(env$_{i_3}$, id, $\bot$) = env$_{i_6}$ &\\
     \comp{$i_7$}{env$_{i_6}$} &=& update(env$_{i_6}$, $e_1$, $\bot$) = env$_{i_7}$ &\\
     \comp{$i_8$}{i$_7$} &=& update(env$_{i_7}$, $e_2$, $\bot$) = env$_{i_8}$ &\\
-    \eval{$var$}{\comp{$\Gamma$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
-    &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} &
+    \eval{$var$}{\comp{$I$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
+    &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} & \\
   \end{tabular}
 \end{proof}
 
@@ -363,8 +391,9 @@ Supposons l'hypothèse de récurrence H suivante :
 = \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}.
 
 \begin{proof}
+  ~\\
   \begin{tabular}{rclr}
-    \comp{$\Gamma_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
+    \comp{$I_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
     \comp{$i_4$}{env$_e$} &=& update(env$_e$, var, \eval{$e$}{env$_e$}) &\\
     &=& update(env$_e$, var, \eval{$p$}{env'}) = env$_{i_4}$ &\\
     \eval{$var$}{env$_{i_4}$} &=& \eval{$var$}{env'} $\land$ \eval{$var$}{env$_{i_4}$} &\\
@@ -396,7 +425,7 @@ Supposons l'hypothèse de récurrence H suivante :
     \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
     &=& \eval{$var$}{env$_{i_3}$} &\\
     So we have: \eval{$var$}{env$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}&
+    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}& \\
   \end{tabular}
 \end{proof}
 
@@ -411,6 +440,7 @@ Supposons l'hypothèse de récurrence H' suivante :
 \eval{$t_1 \le id \le t_2$}{env'} = 1.
 
 \begin{proof}
+  ~\\
   \begin{tabular}{rclr}
     \eval{$t_1 \le id \le t_2$}{env$_e$}
     &=& \eval{$t_1 \le id \le t_2$}{env$_{i_4}$}\\
@@ -423,7 +453,7 @@ Supposons l'hypothèse de récurrence H' suivante :
     &=& \eval{$id$}{env$_{i_5}$} - 1 < \eval{$t_2$}{env$_{i_5}$}& \\
     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_5}$} &\\
     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_4}$} &\\
-    &=& 1 & (loop condition)
+    &=& 1 & (loop condition) \\
   \end{tabular}
 \end{proof}
 
