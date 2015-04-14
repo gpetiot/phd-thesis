@@ -135,32 +135,32 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \subsection{Sémantique des termes, prédicats et expressions}
 
 \begin{tabular}{rclr}
-  \eval{cst}{env} &=& cst & E-0\\
-  \eval{x}{update(env, x, y)} &=& \eval{y}{env} & E-1\\
-  \eval{x}{update(env, a, b)} &=& \eval{x}{env} & E-2\\
+  \eval{cst}{env} &=& cst & \eqlabel{E-0} \\
+  \eval{x}{update(env, x, y)} &=& \eval{y}{env} & \eqlabel{E-1} \\
+  \eval{x}{update(env, a, b)} &=& \eval{x}{env} & \eqlabel{E-2} \\
   \eval{\lstinline|x op y|}{env}
   &=& (\eval{\lstinline|x|}{env}) \lstinline|op| (\eval{\lstinline|y|}{env})
-  & E-3\\
+  & \eqlabel{E-3} \\
 \end{tabular}
 
 
 \subsection{Sémantique des instructions}
 
 \begin{tabular}{rclr}
-  \comp{A $\cdot$ B}{env} &=& \comp{B}{(\comp{A}{env})} & C-0\\
+  \comp{A $\cdot$ B}{env} &=& \comp{B}{(\comp{A}{env})} & \eqlabel{C-0} \\
   \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{env}
-  &=& update(env, a, \eval{b}{env}) & C-1\\
+  &=& update(env, a, \eval{b}{env}) & \eqlabel{C-1} \\
   \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{env}
-  &=& update(env, a, $\bot$) & C-2\\
+  &=& update(env, a, $\bot$) & \eqlabel{C-2} \\
   \comp{\lstinline|a = b;|}{env}
-  &=& update(env, a, \eval{b}{env}) & C-3\\
+  &=& update(env, a, \eval{b}{env}) & \eqlabel{C-3} \\
   \comp{\lstinline|if(x) A else B|}{env}
-  &=& \comp{A}{env} \textit{when \eval{x}{env} = true} & C-4\\
-  &=& \comp{B}{env} \textit{when \eval{x}{env} = false} & C-5\\
+  &=& \comp{A}{env} \textit{when \eval{x}{env} = true} & \eqlabel{C-4} \\
+  &=& \comp{B}{env} \textit{when \eval{x}{env} = false} & \eqlabel{C-5} \\
   \comp{\lstinline|while(x) A|}{env}
   &=& \comp{\lstinline|while(x) A|}{(\comp{A}{env})}
-  \textit{when \eval{x}{env} = true} & C-6\\
-  &=& env \textit{when \eval{x}{env} = false} & C-7\\
+  \textit{when \eval{x}{env} = true} & \eqlabel{C-6} \\
+  &=& env \textit{when \eval{x}{env} = false} & \eqlabel{C-7} \\
 \end{tabular}
 
 
@@ -269,11 +269,11 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
   \begin{tabular}{rclr}
     \eval{$e_1$}{\comp{$I_1$}{$env$}}
-    & = & \eval{$p_1$}{$env$} & (h1) \\
+    & = & \eval{$p_1$}{$env$} & \eqlabel{h1} \\
     $\equiv$ \comp{$I_1$}{$env$}
     & = & $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}] & \\
     \eval{$e_2$}{\comp{$I_2$}{$env$}}
-    & = & \eval{$p_2$}{$env$} & (h2) \\
+    & = & \eval{$p_2$}{$env$} & \eqlabel{h2} \\
     $\equiv$ \comp{$I_2$}{$env$}
     & = & $env$[$e_2 \mapsto$ \eval{$p_2$}{$env$}] & \\
   \end{tabular}
@@ -320,7 +320,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         $env$
         [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
         [$e \mapsto$ \eval{$p_1$}{$env$}]
-      )} = true : (h3)}\\
+      )} = true : ~~\eqlabel{h3}}\\
     & = & (\comp{$I_2 \concat$
       (l, \lstinline'e = e_2;')  }{
       (
@@ -362,7 +362,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         $env$
         [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
         [$e \mapsto$ \eval{$p_1$}{$env$}]
-        )} = false : (h4)}\\
+        )} = false : ~~\eqlabel{h4}}\\
     & = & (
     $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
     ) (e) \\
