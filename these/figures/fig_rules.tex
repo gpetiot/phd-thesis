@@ -31,8 +31,8 @@
   }
 }
   \vspace{-5mm}
-  \caption{Translation rules for constants, identifiers, and
-    \textbf{$\backslash$\lstinline{old}} terms}
+  \caption{Règles de traduction pour les constantes, identificateurs,
+    \lstinline'result' et \lstinline'old'}
   \label{fig:const-id}
 \end{figure*}
 
@@ -57,7 +57,7 @@
         ), \mbox{\lstinline'var_n'})}
     }
   }
-  \caption{Translation rules for coercions}
+  \caption{Règles de traduction pour les conversions}
   \label{fig:coerce}
 \end{figure*}
 
@@ -149,7 +149,7 @@
     }
   }
 }
-  \caption{Translation rules for unary and binary operations}
+  \caption{Règles de traduction pour les opérations unaires et binaires}
   \label{fig:op}
 \end{figure*}
 
@@ -220,7 +220,8 @@
       }
     }
   }
-\caption{Translation rules for builtin logic functions}
+\caption{Règles de traduction pour les fonctions logiques \lstinline'sum' et
+  \lstinline'numof'}
 \label{fig:builtin}
 \end{figure*}
 
@@ -316,7 +317,7 @@
       ), \mbox{\lstinline'var_n'})}
   }
 }
-  \caption{Translation rules for simplest predicates}
+  \caption{Règles de traduction pour les prédicats simples}
   \label{fig:pred-logic}
 \end{figure*}
 
@@ -338,7 +339,7 @@
     }
   }
 }
-  \caption{Translation rules for memory validity predicate}
+  \caption{Règles de traduction pour les prédicats de validité mémoire}
   \label{fig:valid}
 \end{figure*}
 
@@ -370,7 +371,7 @@
       }
     }
   }
-  \caption{Translation rule for quantified predicate}
+  \caption{Règles de traduction pour les prédicats quantifiés}
   \label{fig:quantif}
 \end{figure*}
 
@@ -433,7 +434,8 @@
       I \concat (End_f, \mbox{\lstinline'fassume(e);'})}
   }
 }
-  \caption{Translation rules for assert, postcondition and precondition}
+  \caption{Règles de traduction pour les assertions, pré-/postconditions et
+    assigns}
   \label{fig:annot}
 \end{figure}
 
@@ -517,6 +519,7 @@
    }
  }
   }
-  \caption{Transformation rules for loop annotations: invariant and variant}
+  \caption{Règles de traduction pour les annotations de boucle : invariants,
+    variant et assigns}
   \label{fig:loop-annot}
 \end{figure*}
