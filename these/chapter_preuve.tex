@@ -45,9 +45,11 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \lstinline'\false' \\
     & $\mid$ & \lstinline'\valid(' \textit{term} \lstinline')' \\
     & $\mid$ & \lstinline'\forall integer' \textit{id};
-    \textit{pred} \lstinline'==>' \textit{pred} \\
+    \textit{term} <= \textit{id} <= \textit{term}
+    \lstinline'==>' \textit{pred} \\
     & $\mid$ & \lstinline'\exists integer' \textit{id};
-    \textit{pred} \lstinline'&&' \textit{pred} \\
+    \textit{term} <= \textit{id} <= \textit{term}
+    \lstinline'&&' \textit{pred} \\
     & $\mid$ & ! \textit{pred} \\
     & $\mid$ & \textit{pred} \lstinline'&&' \textit{pred} \\
     & $\mid$ & \textit{pred} \lstinline'||' \textit{pred} \\
@@ -64,8 +66,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     \textit{loop-variant} & ::= & \lstinline'loop variant' \textit{term} \\
     \textit{loop-assigns} & ::= & \lstinline'loop assigns' \textit{term}$^{+}$
   \end{tabular}
-  \label{fig:sem-eacsl}
-  \caption{Sémantique des termes, prédicats et annotations \eacsl}
+  \caption{Grammaire des termes, prédicats et annotations \eacsl}
+  \label{fig:gram-eacsl}
 \end{figure}
 
 \begin{figure}[tb]
@@ -95,8 +97,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     $\bopen$ \textit{decl}$^{*}$ \textit{annot-instr}$^{*}$
     $\bclose$
   \end{tabular}
-  \label{fig:sem-c}
-  \caption{Sémantique des expressions et instructions C}
+  \caption{Grammaire des expressions et instructions C}
+  \label{fig:gram-c}
 \end{figure}
 
 
@@ -228,7 +230,7 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 \begin{notation}
   Soit $P$ un programme C correct syntaxiquement selon la grammaire définie en
-  figure~\ref{fig:sem-eacsl} et~\ref{fig:sem-c}.
+  figure~\ref{fig:gram-eacsl} et~\ref{fig:gram-c}.
   Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
 \end{notation}
 
