@@ -135,34 +135,34 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \subsection{Sémantique des termes \eacsl et expression C}
 
 \begin{tabular}{rclr}
-  \eval{cst}{$env$} &=& cst & \eqlabel{E-0} \\
-  \eval{lvalue}{$env$} &=& $env$(lvalue) & \eqlabel{E-1} \\
+  \eval{cst}{$env$} &=& cst & \eqlabel{E-cst} \\
+  \eval{lvalue}{$env$} &=& $env$(lvalue) & \eqlabel{E-lval} \\
   \eval{\lstinline|unop x|}{$env$}
-  &=& \lstinline|unop| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-2} \\
+  &=& \lstinline|unop| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-unop} \\
   \eval{\lstinline|x binop y|}{$env$}
   &=& (\eval{\lstinline|x|}{$env$}) \lstinline|binop|
-  (\eval{\lstinline|y|}{$env$}) & \eqlabel{E-3} \\
+  (\eval{\lstinline|y|}{$env$}) & \eqlabel{E-binop} \\
   \eval{\lstinline'\\abs(t)'}{$env$} &=&
-  $\lvert$ \eval{\lstinline't'}{$env$} $\rvert$ & \eqlabel{E-4} \\
+  $\lvert$ \eval{\lstinline't'}{$env$} $\rvert$ & \eqlabel{E-abs} \\
   \eval{\lstinline'\\sum(x, y, \\lambda integer k; z)'}{$env$} &=&
   $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
-  & \eqlabel{E-5} \\
+  & \eqlabel{E-sum} \\
   \eval{\lstinline'\\product(x, y, \\lambda integer k; z)'}{$env$} &=&
   $\prod_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
-  & \eqlabel{E-6} \\
+  & \eqlabel{E-prod} \\
   \eval{\lstinline'\\numof(x, y, \\lambda integer k; z)'}{$env$} &=&
   $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z ? 1 : 0'}{$env$}}$
-  & \eqlabel{E-7} \\
+  & \eqlabel{E-num} \\
   \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
-  si (\eval{\lstinline'x'}{$env$}) $\neq$ 0 & \eqlabel{E-8} \\
+  si (\eval{\lstinline'x'}{$env$}) $\neq$ 0 & \eqlabel{E-tif} \\
   &=& \eval{\lstinline'z'}{$env$}
-  si (\eval{\lstinline'x'}{$env$}) = 0 & \eqlabel{E-8'} \\
+  si (\eval{\lstinline'x'}{$env$}) = 0 & \eqlabel{E-tif'} \\
   \eval{\lstinline'\\old(t)'}{$env$} &=&
-  \eval{\lstinline't'}{($env$ au début de la fonction courante)}
-  & \eqlabel{E-9} \\
-  \eval{\lstinline'\\null'}{$env$} &=& \lstinline'NULL' & \eqlabel{E-10} \\
+  \eval{\lstinline't'}{($env$ en début de fonction)}
+  & \eqlabel{E-old} \\
+  \eval{\lstinline'\\null'}{$env$} &=& \lstinline'NULL' & \eqlabel{E-null} \\
   \eval{\lstinline|(type) x|}{$env$}
-  &=& \lstinline|(type)| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-11} \\
+  &=& \lstinline|(type)| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-cast} \\
 \end{tabular}
 
 
@@ -170,56 +170,56 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
 \begin{tabular}{rclr}
-  \eval{\lstinline'\\true'}{$env$} &=& \textit{true} & \eqlabel{P-0} \\
-  \eval{\lstinline'\\false'}{$env$} &=& \textit{false} & \eqlabel{P-1} \\
+  \eval{\lstinline'\\true'}{$env$} &=& \textit{true} & \eqlabel{P-true} \\
+  \eval{\lstinline'\\false'}{$env$} &=& \textit{false} & \eqlabel{P-false} \\
   \eval{\lstinline'\\valid(t)'}{$env$} &=&
-  "\lstinline'*t' est défini dans $env$" & \eqlabel{P-2} \\
+  "\lstinline'*t' est défini dans $env$" & \eqlabel{P-valid} \\
   \eval{\lstinline'\\forall integer k; a <= k <= b ==> y'}{$env$} &=&
   $\forall_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
-  & \eqlabel{P-3} \\
+  & \eqlabel{P-forall} \\
   \eval{\lstinline'\\exists integer k; a <= k <= b \&\& y'}{$env$} &=&
   $\exists_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
-  & \eqlabel{P-4} \\
+  & \eqlabel{P-exists} \\
   \eval{\lstinline'\! p'}{$env$} &=& $\lnot$ (\eval{\lstinline'p'}{$env$})
-  & \eqlabel{P-5} \\
+  & \eqlabel{P-not} \\
   \eval{\lstinline'p \&\& q'}{$env$} &=&
   (\eval{\lstinline'p'}{$env$}) $\land$ (\eval{\lstinline'q'}{$env$})
-  & \eqlabel{P-6} \\
+  & \eqlabel{P-and} \\
   \eval{\lstinline'p || q'}{$env$} &=&
   (\eval{\lstinline'p'}{$env$}) $\lor$ (\eval{\lstinline'q'}{$env$})
-  & \eqlabel{P-7} \\
+  & \eqlabel{P-or} \\
   \eval{\lstinline'p ==> q'}{$env$} &=&
   (\eval{\lstinline'p'}{$env$}) $\Rightarrow$ (\eval{\lstinline'q'}{$env$})
-  & \eqlabel{P-8} \\
+  & \eqlabel{P-impl} \\
   \eval{\lstinline'p <==> q'}{$env$} &=&
   (\eval{\lstinline'p'}{$env$}) $\Leftrightarrow$ (\eval{\lstinline'q'}{$env$})
-  & \eqlabel{P-9} \\
+  & \eqlabel{P-eq} \\
   \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
-  si \eval{\lstinline'x'}{$env$} & \eqlabel{P-10} \\
-  &=& \eval{\lstinline'z'}{$env$} sinon & \eqlabel{P-10'} \\
+  si \eval{\lstinline'x'}{$env$} & \eqlabel{P-pif} \\
+  &=& \eval{\lstinline'z'}{$env$} sinon & \eqlabel{P-pif'} \\
   \eval{\lstinline|x rel y|}{$env$}
   &=& (\eval{\lstinline|x|}{$env$}) \lstinline|rel|
-  (\eval{\lstinline|y|}{$env$}) & \eqlabel{P-11} \\
+  (\eval{\lstinline|y|}{$env$}) & \eqlabel{P-rel} \\
 \end{tabular}
 
 
 \subsection{Sémantique des instructions}
 
 \begin{tabular}{rclr}
-  \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-0} \\
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
-  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-1} \\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
-  &=& update($env$, a, $\bot$) & \eqlabel{C-2} \\
+  \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-seq} \\
   \comp{\lstinline|a = b;|}{$env$}
-  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-3} \\
+  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-assign} \\
+  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
+  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-assign'} \\
+  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
+  &=& update($env$, a, $\bot$) & \eqlabel{C-unset} \\
   \comp{\lstinline|if(x) A else B|}{$env$}
-  &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-4} \\
-  &=& \comp{B}{$env$} sinon & \eqlabel{C-5} \\
+  &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-if} \\
+  &=& \comp{B}{$env$} sinon & \eqlabel{C-if'} \\
   \comp{\lstinline|while(x) A|}{$env$}
   &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
-  si \eval{x}{$env$} & \eqlabel{C-6} \\
-  &=& $env$ sinon & \eqlabel{C-7} \\
+  si \eval{x}{$env$} & \eqlabel{C-while} \\
+  &=& $env$ sinon & \eqlabel{C-while'} \\
 \end{tabular}
 
 
@@ -279,8 +279,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   ~\\
   \begin{tabular}{rclr}
     \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}}
-    & $\eq{C-1}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
-    & $\eq{E-1}$ & \eval{v}{env} &
+    & $\eq{C-assign'}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
+    & $\eq{E-lval}$ & \eval{v}{env} &
   \end{tabular}
 \end{proof}
 
@@ -348,7 +348,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   \begin{tabular}{rcl}
     \eval{\lstinline'e'}{\comp{$I$}{$env$}}
     & = & (\comp{$I$}{$env$})(e) \\
-    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+    & $\eq{C-seq}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (\comp{\lstinline'int e = e1;'}{
         (\comp{$I_1$}{$env$})
@@ -360,14 +360,14 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])
       })
     })(e) \\
-    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
-      (l, \lstinline'e = e_2;') $\bclose$ }{
-      (
-      ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])[$e \mapsto$
-        \eval{$e_1$}{$env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}]}]
-      )
-    })(e) \\
-    & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+    %% & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
+    %%   (l, \lstinline'e = e_2;') $\bclose$ }{
+    %%   (
+    %%   ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])[$e \mapsto$
+    %%     \eval{$e_1$}{$env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}]}]
+    %%   )
+    %% })(e) \\
+    & $\eq{C-assign}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (
       $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
@@ -380,8 +380,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         $env$
         [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
         [$e \mapsto$ \eval{$p_1$}{$env$}]
-      )} = true : ~~\eqlabel{h3}}\\
-    & = & (\comp{$I_2 \concat$
+      )} = \textit{true} : ~~\eqlabel{h3}}\\
+    & $\eq{C-if}$ & (\comp{$I_2 \concat$
       (l, \lstinline'e = e_2;')  }{
       (
       $env$
@@ -389,7 +389,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       [$e \mapsto$ \eval{$p_1$}{$env$}]
       )
     })(e) \\
-    & = & (\comp{\lstinline'e = e_2;'}{
+    & $\eq{C-seq}$ & (\comp{\lstinline'e = e_2;'}{
       (\comp{$I_2$}{
         (
         $env$
@@ -406,7 +406,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
       )
     })(e) \\
-    & = & ($env$
+    & $\eq{C-assign}$ & ($env$
                 [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
                 [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
                 [$e \mapsto$ \eval{$p_2$}{$env$}]
@@ -414,7 +414,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     & = & \eval{$p_2$}{$env$} \\
     & = & true $\land$ \eval{$p_2$}{$env$} \\
     & $\eq{h3}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
-    & = & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
+    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
 
     %% cas false
     \multicolumn{3}{l}{
@@ -422,18 +422,15 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         $env$
         [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
         [$e \mapsto$ \eval{$p_1$}{$env$}]
-        )} = false : ~~\eqlabel{h4}}\\
-    & = & (
-    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
-    ) (e) \\
-    & = & (
+        )} = \textit{false} : ~~\eqlabel{h4}}\\
+    & $\eq{C-if'}$ & (
     $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
     ) (e) \\
     & = & \eval{$p_1$}{$env$} \\
     & $\eq{h4}$ & false \\
     & = & false $\land$ \eval{$p_2$}{$env$} \\
     & $\eq{h4}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
-    & = & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
+    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
   \end{tabular}
 \end{proof}
 
