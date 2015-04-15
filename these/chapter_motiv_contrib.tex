@@ -7,6 +7,33 @@
 \section{Motivations}
 
 
+\begin{figure}[bt]
+  \begin{center}
+    \begin{tikzpicture}[>=latex,font=\scriptsize]
+      \node[] at (0,0) (Bob) {\includegraphics[scale=0.15]{figures/user_m.png}};
+      \node[below right of=Bob] {\textbf{Bob}, dev. engineer};
+      \node[draw=greenv,thick,minimum width=6.7cm,rounded corners,
+        align=center] (spec) at (2,1.9) {Requirements/Informal Specification};
+      \node[above of=Bob,draw,node distance=1cm,thick,
+        rounded corners,minimum width=2.65cm] (code) {Code};
+      \node[right of=Bob,node distance=4cm] (Alice) {
+        \includegraphics[scale=0.15]{figures/user_f.png}};
+      \node[below right of=Alice] {\textbf{Alice}, validation engineer};
+      \node[above of=Alice,draw,node distance=1cm,thick,
+        rounded corners,minimum width=2.65cm] (annot) {
+        Formal Specification};
+      \node[draw,dotted,thick,fit=(code) (annot)] (code-annot) {};
+      \node[right of=code-annot,draw,node distance=6.5cm,thick,
+        rounded corners,minimum width=2.65cm,align=center] (wp) {
+        Deductive Verification};
+      \draw[->,thick] (code-annot.east) to[out=0,in=90] (wp);
+      \draw[->,thick,color=orange] (wp.south) to[out=-90,in=0]
+      node[above=.2cm]{unknown}(Alice.east);
+    \end{tikzpicture}
+  \end{center}
+\end{figure}
+
+
 \section{Contributions}
 
 Liste des contributions :

@@ -7,7 +7,9 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_add_patricia_trie.tex \
 	figures/fig_rem_patricia_trie.tex \
 	figures/fig_grammar.tex \
-	figures/fig_rules.tex
+	figures/fig_rules.tex \
+	figures/user_f.png \
+	figures/user_m.png
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
@@ -20,7 +22,7 @@ CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
 
 all_DEPS=chapter.tex header.tex $(BIB) style_listings.tex commands.tex
 chapter_ce_DEPS=
-chapter_motiv_contrib_DEPS=
+chapter_motiv_contrib_DEPS=figures/user_f.png figures/user_m.png
 chapter_scenarios_DEPS=
 chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
 		figures/fig_rem_patricia_trie.tex
