@@ -101,7 +101,7 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
 
-\section{Semantique des instructions}
+\section{Semantique du langage C annoté avec \eacsl}
 \label{sec:semantics}
 
 
@@ -132,35 +132,94 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \end{notation}
 
 
-\subsection{Sémantique des termes, prédicats et expressions}
+\subsection{Sémantique des termes \eacsl et expression C}
 
 \begin{tabular}{rclr}
-  \eval{cst}{env} &=& cst & \eqlabel{E-0} \\
-  \eval{x}{update(env, x, y)} &=& \eval{y}{env} & \eqlabel{E-1} \\
-  \eval{x}{update(env, a, b)} &=& \eval{x}{env} & \eqlabel{E-2} \\
-  \eval{\lstinline|x op y|}{env}
-  &=& (\eval{\lstinline|x|}{env}) \lstinline|op| (\eval{\lstinline|y|}{env})
-  & \eqlabel{E-3} \\
+  \eval{cst}{$env$} &=& cst & \eqlabel{E-0} \\
+  \eval{lvalue}{$env$} &=& $env$(lvalue) & \eqlabel{E-1} \\
+  \eval{\lstinline|unop x|}{$env$}
+  &=& \lstinline|unop| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-2} \\
+  \eval{\lstinline|x binop y|}{$env$}
+  &=& (\eval{\lstinline|x|}{$env$}) \lstinline|binop|
+  (\eval{\lstinline|y|}{$env$}) & \eqlabel{E-3} \\
+  \eval{\lstinline'\\abs(t)'}{$env$} &=&
+  $\lvert$ \eval{\lstinline't'}{$env$} $\rvert$ & \eqlabel{E-4} \\
+  \eval{\lstinline'\\sum(x, y, \\lambda integer k; z)'}{$env$} &=&
+  $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
+  & \eqlabel{E-5} \\
+  \eval{\lstinline'\\product(x, y, \\lambda integer k; z)'}{$env$} &=&
+  $\prod_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
+  & \eqlabel{E-6} \\
+  \eval{\lstinline'\\numof(x, y, \\lambda integer k; z)'}{$env$} &=&
+  $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z ? 1 : 0'}{$env$}}$
+  & \eqlabel{E-7} \\
+  \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
+  si (\eval{\lstinline'x'}{$env$}) $\neq$ 0 & \eqlabel{E-8} \\
+  &=& \eval{\lstinline'z'}{$env$}
+  si (\eval{\lstinline'x'}{$env$}) = 0 & \eqlabel{E-8'} \\
+  \eval{\lstinline'\\old(t)'}{$env$} &=&
+  \eval{\lstinline't'}{($env$ au début de la fonction courante)}
+  & \eqlabel{E-9} \\
+  \eval{\lstinline'\\null'}{$env$} &=& \lstinline'NULL' & \eqlabel{E-10} \\
+  \eval{\lstinline|(type) x|}{$env$}
+  &=& \lstinline|(type)| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-11} \\
+\end{tabular}
+
+
+\subsection{Sémantique des prédicats \eacsl}
+
+
+\begin{tabular}{rclr}
+  \eval{\lstinline'\\true'}{$env$} &=& \textit{true} & \eqlabel{P-0} \\
+  \eval{\lstinline'\\false'}{$env$} &=& \textit{false} & \eqlabel{P-1} \\
+  \eval{\lstinline'\\valid(t)'}{$env$} &=&
+  "\lstinline'*t' est défini dans $env$" & \eqlabel{P-2} \\
+  \eval{\lstinline'\\forall integer k; a <= k <= b ==> y'}{$env$} &=&
+  $\forall_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
+  & \eqlabel{P-3} \\
+  \eval{\lstinline'\\exists integer k; a <= k <= b \&\& y'}{$env$} &=&
+  $\exists_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
+  & \eqlabel{P-4} \\
+  \eval{\lstinline'\! p'}{$env$} &=& $\lnot$ (\eval{\lstinline'p'}{$env$})
+  & \eqlabel{P-5} \\
+  \eval{\lstinline'p \&\& q'}{$env$} &=&
+  (\eval{\lstinline'p'}{$env$}) $\land$ (\eval{\lstinline'q'}{$env$})
+  & \eqlabel{P-6} \\
+  \eval{\lstinline'p || q'}{$env$} &=&
+  (\eval{\lstinline'p'}{$env$}) $\lor$ (\eval{\lstinline'q'}{$env$})
+  & \eqlabel{P-7} \\
+  \eval{\lstinline'p ==> q'}{$env$} &=&
+  (\eval{\lstinline'p'}{$env$}) $\Rightarrow$ (\eval{\lstinline'q'}{$env$})
+  & \eqlabel{P-8} \\
+  \eval{\lstinline'p <==> q'}{$env$} &=&
+  (\eval{\lstinline'p'}{$env$}) $\Leftrightarrow$ (\eval{\lstinline'q'}{$env$})
+  & \eqlabel{P-9} \\
+  \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
+  si \eval{\lstinline'x'}{$env$} & \eqlabel{P-10} \\
+  &=& \eval{\lstinline'z'}{$env$} sinon & \eqlabel{P-10'} \\
+  \eval{\lstinline|x rel y|}{$env$}
+  &=& (\eval{\lstinline|x|}{$env$}) \lstinline|rel|
+  (\eval{\lstinline|y|}{$env$}) & \eqlabel{P-11} \\
 \end{tabular}
 
 
 \subsection{Sémantique des instructions}
 
 \begin{tabular}{rclr}
-  \comp{A $\cdot$ B}{env} &=& \comp{B}{(\comp{A}{env})} & \eqlabel{C-0} \\
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{env}
-  &=& update(env, a, \eval{b}{env}) & \eqlabel{C-1} \\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{env}
-  &=& update(env, a, $\bot$) & \eqlabel{C-2} \\
-  \comp{\lstinline|a = b;|}{env}
-  &=& update(env, a, \eval{b}{env}) & \eqlabel{C-3} \\
-  \comp{\lstinline|if(x) A else B|}{env}
-  &=& \comp{A}{env} \textit{when \eval{x}{env} = true} & \eqlabel{C-4} \\
-  &=& \comp{B}{env} \textit{when \eval{x}{env} = false} & \eqlabel{C-5} \\
-  \comp{\lstinline|while(x) A|}{env}
-  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{env})}
-  \textit{when \eval{x}{env} = true} & \eqlabel{C-6} \\
-  &=& env \textit{when \eval{x}{env} = false} & \eqlabel{C-7} \\
+  \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-0} \\
+  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
+  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-1} \\
+  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
+  &=& update($env$, a, $\bot$) & \eqlabel{C-2} \\
+  \comp{\lstinline|a = b;|}{$env$}
+  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-3} \\
+  \comp{\lstinline|if(x) A else B|}{$env$}
+  &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-4} \\
+  &=& \comp{B}{$env$} sinon & \eqlabel{C-5} \\
+  \comp{\lstinline|while(x) A|}{$env$}
+  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
+  si \eval{x}{$env$} & \eqlabel{C-6} \\
+  &=& $env$ sinon & \eqlabel{C-7} \\
 \end{tabular}
 
 
