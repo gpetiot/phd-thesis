@@ -29,10 +29,10 @@
     \lstinline'assert' \textit{\underline{predicate}}\texttt{;}
 \\
  & $\mid$ & \textit{\underline{label}}$^{\textit{as}\;l}$ :
-     (\texttt{/*@} \textit{loop\_annot} \texttt{*/})$^?$
+     (\texttt{/*@} \textit{loop-annot} \texttt{*/})$^?$
 \\
  & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
-        \lstinline'while' ( \textit{\underline{bool\_expr}} ) \{
+        \lstinline'while' ( \textit{\underline{bool-expr}} ) \{
 \\
  & & \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :} 
         \quad \textit{BegIter}$_l$ : \quad \textit{stmt}$^{*}$
@@ -40,9 +40,9 @@
  & &  \phantom{\textit{\underline{label}}$^{\textit{as}\;l}$ :}   
         \quad \textit{EndIter}$_l$ :  \lstinline';' \}
 \\
- & $\mid$ & \textit{\underline{label}} : \textit{\underline{not\_while\_stmt}}
+ & $\mid$ & \textit{\underline{label}} : \textit{\underline{not-while-stmt}}
 \\
-\textit{loop\_annot}  & ::= 
+\textit{loop-annot}  & ::=
  & (\lstinline'loop invariant' \textit{\underline{predicate}}\texttt{;})* 
 \\
  & &  (\lstinline'loop assigns' \textit{\underline{term}}\texttt{;})* 
