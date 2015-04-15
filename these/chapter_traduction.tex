@@ -239,12 +239,6 @@ Pour chaque tableau ou pointeur \lstinline'x', les valeurs pointées sont
 mémorisées dans un tableau alloué dynamiquement \lstinline'old_val_x' dont la
 taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose la
 présence en précondition de la fonction sous test.
-%% We also generate an additional function named \lstinline'f_precond'
-%% that is used to check the precondition of the FUT. For the  FUT  we ensure
-%% that the precondition is assumed by inserting 
-%% \lstinline|fassume(f_precond(x1, ..., xn));| 
-%% at label $Beg_{f}$
-%% (cf line 11 in Listing~\ref{lst:abbrv}).
 
 Deuxièmement, toute annotation \eacsl de la forme \lstinline'kwd w' (où
 \lstinline'kwd' $\in$ $\bopen$ \lstinline|assert|, \lstinline|requires|,
@@ -256,10 +250,6 @@ obtenues à partir du fragment \eacsl considéré.
 Par exemple, les behaviors peuvent être réécrits comme des implications dans les
 clauses \lstinline'ensures' et les contrats d'instruction peuvent être réécrits
 comme des implications dans des assertions.
-%% global (resp., loop or statement)
-%% \lstinline|assigns| clauses can be rewritten as postconditions
-%% (resp., loop invariants or assertions)
-%% checking the non-modification of some variables.
 
 Chaque paire, $(label, annotation)$ est traduite en une séquence
 d'\emph{insertions de code}
@@ -326,18 +316,14 @@ $t$ en paramètre, ou $0$ sinon.
 Le programme instrumenté obtenu après traduction des annotations de cette
 fonction est présenté (utilisant la notation abrégée pour les entiers non
 bornés) dans le listing~\ref{lst:abbrv}.
-La fonction précondition générée est définie lignes 1--6
-(listing~\ref{lst:abbrv}), elle retourne une valeur non nulle quand la
-précondition est vraie.
 La clause \lstinline'requires' de la ligne 1 (listing~\ref{lst:normalized})
 indique que la taille du tableau \lstinline|n| est positive, elle est traduite
-en conditionnelle ligne 3 du listing~\ref{lst:abbrv}.
+à la ligne 6 du listing~\ref{lst:abbrv}.
 La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) 
-indique que \lstinline|(t+0)|$, ..., $\lstinline|(t+(n-1))| sont des pointeurs
-valides, elle est traduite en conditionnelle ligne 4 du
-listing~\ref{lst:abbrv}).
+indique que \lstinline|(t+0)|, \ldots, \lstinline|(t+(n-1))| sont des pointeurs
+valides, elle est traduite à la ligne 7 du listing~\ref{lst:abbrv}).
 La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
-(traduite ligne 5 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
+(traduite ligne 8 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
 d'\eacsl définissant une précondition pour le test.
 Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
 chemins à explorer par la génération de tests, elle permet d'obtenir une
@@ -347,28 +333,28 @@ Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
 \lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
 \cite{\citekorat}).
 L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
-aux lignes 13--14 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
-vrai avant la première itération (établissement), et aux lignes 21--22 du
+aux lignes 10--12 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
+vrai avant la première itération (établissement), et aux lignes 20--24 du
 listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
 chaque itération.
 Notons que pour prouver formellement la postcondition, un invariant de boucle
 supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
 : \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|.
-Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit à la
-ligne 15 du listing~\ref{lst:abbrv} pour vérifier que le variant est positif ou
-nul avant chaque itération de la boucle, à la ligne 18 du
+Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit aux
+lignes 15--16 du listing~\ref{lst:abbrv} pour vérifier que le variant est
+positif ou nul avant chaque itération de la boucle, à la ligne 17 du
 listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
-boucle, et aux lignes 23--25 du listing~\ref{lst:abbrv} pour vérifier que le
+boucle, et aux lignes 25--26 du listing~\ref{lst:abbrv} pour vérifier que le
 variant décroît strictement après chaque itération, assurant ainsi la
 terminaison de la boucle.
-La postcondition des lignes 4-5 du listing~\ref{lst:normalized} est traduite aux
-lignes 28--32 du listing~\ref{lst:abbrv}, elle définit que \lstinline|\result|
-est non nul si et seulement si il existe un élément de \lstinline|t| égal à
-\lstinline|v|.
+La postcondition des lignes 4--5 du listing~\ref{lst:normalized} est traduite
+aux lignes 29--34 du listing~\ref{lst:abbrv}, elle définit que
+\lstinline|\result| est non nul si et seulement si il existe un élément de
+\lstinline|t| égal à \lstinline|v|.
 Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
-sont mémorisées lignes 10--11 du listing~\ref{lst:abbrv}, un nouveau tableau
+sont mémorisées lignes 3--5 du listing~\ref{lst:abbrv}, un nouveau tableau
 \lstinline|old_val_t| stocke les anciennes valeurs contenues dans \lstinline|t|,
-il est alloué ligne 10, rempli ligne 11 et désalloué ligne 33.
+il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
 
 
 \section{Traduction des termes \eacsl}
@@ -516,7 +502,7 @@ la traduction des prédicats \lstinline|\result != 0| et
 et \lstinline|var_35|.
 Ces deux prédicats sont assemblés pour construire la traduction du prédicat
 composé, d'après la règle \textsc{$\pi$-equiv},:
-\lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 32 du
+\lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 34 du
 listing~\ref{lst:abbrv}).
 Dans la règle \textsc{$\pi$-rel}, \lstinline|op| est un des opérateurs suivants
 : \lstinline[style=c]{<, <=, >, >=, ==, !=}.
@@ -540,7 +526,7 @@ du programme, la réalisation de telles fonctions est abordée dans le
 chapitre~\ref{sec:runtime}.
 Dans notre exemple du listing~\ref{lst:normalized}, le prédicat
 \lstinline|\valid(t+(0..n-1))| de la clause \lstinline|requires| de la ligne 2
-est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 4 du
+est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 7 du
 listing~\ref{lst:abbrv}).
 
 La règle \textsc{$\pi$-exists} (figure~\ref{fig:quantif}) aborde la traduction
@@ -553,9 +539,9 @@ Cette règle permet aussi de traduire le prédicat universellement quantifié
 \lstinline{! (\exists integer i; t1<=i<t2 && !p)}.
 Dans le listing~\ref{lst:normalized}, le prédicat
 \lstinline{\exists integer i; 0<=i<n && *(t+i)==v} de la ligne 4 est traduit
-aux lignes 29--31 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
+aux lignes 29--33 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
 valeur du prédicat après évaluation est \lstinline|var_35| (déclarée à la
-ligne 29).
+ligne 31).
 
 
 \section{Traduction des annotations \eacsl}
@@ -621,30 +607,13 @@ une nouvelle valeur non déterministe à chacune d'elle à la fin de la fonction
 La règle \textsc{$\alpha$-check-post} vérifie le prédicat et la règle
 \textsc{$\alpha$-assume-post} suppose sa validité à la fin de la fonction
 instrumentée.
-%% The rule \textsc{$\alpha$-pre} checks
-%% the predicate of a precondition in a separate function that we call
-%% \lstinline'f_precond', returning $0$ if one of the \lstinline|requires| or
-%% \lstinline|typically| clauses does not hold, or $1$ otherwise. This function
-%% has to be called with the same formal parameters as the function
-%% being translated.
-%% Since the precondition is \emph{assumed} for the function under test
-%% and must be \emph{ensured} for a called function,
-%% its result has to be {\em asserted} in the case
-%% of a {\em callee}  and {\em assumed} in the case of the function under
-%% test.
-%% So for each function, a check 
-%% \lstinline|fassert(h_precond(x1, x2, ..., xn));| (resp.
-%% \lstinline|fassume(h_precond(x1, x2, ..., xn));|) is inserted at the label
-%% $Beg_h$ if $h$ is a {\em callee} (resp. FUT), where
-%% $x_1, x_2, ..., x_n$ are the formal parameters of $h$, and
-%% the \lstinline|fassume| function restricts 
-%% test generation to input values for which it returns true.
-%% In the example of Listing~\ref{lst:normalized}, the
-%% \lstinline|requires| clause lines 1-2 and the \lstinline|typically| clause line
-%% 3 are translated to the lines 3--5 of Listing~\ref{lst:abbrv}. The validity of the
-%% \lstinline'is_present_precond' precondition is {\em assumed} line 11 of
-%% Listing~\ref{lst:abbrv}. Finally, the \lstinline|ensures| clause lines 4-5 is
-%% translated as lines 28--32 in Listing~\ref{lst:abbrv}. 
+Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
+et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
+règle \textsc{$\alpha$-assume-pre}) respectivement aux lignes 6, 7 et 8 du
+listing~\ref{lst:abbrv}.
+La postcondition aux lignes 4--5 du listing~\ref{lst:normalized} est traduite
+en utilisant la règle \textsc{$\alpha$-check-post} aux lignes 29--34 du
+listing~\ref{lst:abbrv}.
 
 Les règles de traduction pour les invariants de boucle
 (\textsc{$\alpha$-check-invariant}, \textsc{$\alpha$-assume-invariant-1} et
@@ -676,10 +645,10 @@ fin de chaque itération que le variant décroît strictement (par rapport à sa
 valeur au début de l'itération).
 Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
 \lstinline'loop invariant' de la ligne 9 par la règle
-\textsc{$\alpha$-check-invariant} donne les lignes 13--14 et 21--22 du
+\textsc{$\alpha$-check-invariant} donne les lignes 10--12 et 20--24 du
 listing~\ref{lst:abbrv}, tandis que la traduction du \lstinline'loop variant'
-ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 17--18 et
-23--24 du listing~\ref{lst:abbrv}.
+ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 15--17 et
+25--26 du listing~\ref{lst:abbrv}.
 
 
 \section[Test vs. Validation à l'Exécution]{Similarités et Différences selon
