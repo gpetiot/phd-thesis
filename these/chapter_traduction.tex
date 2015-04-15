@@ -255,13 +255,32 @@ Chaque paire, $(label, annotation)$ est traduite en une séquence
 d'\emph{insertions de code}
 $(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$, qui 
 represente une liste de fragments de programmes C $c_1, c_2, \ldots, c_n$ où
-le fragment $c_i$ sera inséré dans le programme instrumenté au label $l_i$.
+le fragment $c_i$ sera inséré dans le programme instrumenté au label $l_i$ :
+
+\[
+(l, annotation) \rulearrow \underbracket{(l_1, c_1) \concat (l_2, c_2) \concat
+  \ldots \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}
+\]
+
+\input{figures/fig_code_gen}
+
+Les fragments de programmes -- ou insertions de code -- sont les instructions
+nécessaires à l'évalutation d'une annotation, d'un prédicat ou d'un terme
+\eacsl.
+La figure~\ref{fig:code-gen} montre quelles insertions de code sont nécessaires
+à la traduction d'un invariant de boucle \lstinline'loop invariant x<y' à un
+label quelconque $L$.
+
+\input{figures/fig_code_ins}
+
 Les annotations \eacsl sont traduites séparément et les séquences de fragments
 résultant de la traduction sont traitées en suivant l'ordre des annotations dans
 le programme.
 Quand plusieurs fragments doivent être insérés au même endroit $l$, ils sont
 insérés en respectant leur ordre dans la séquence (l'ordre dans lequel ils ont
 été générés).
+La figure~\ref{fig:code-ins} illustre ce principe sur les insertions de code
+générées dans la figure~\ref{fig:code-gen}.
 
 La traduction d'annotations est définie par les règles de la
 section~\ref{sec:annot}.

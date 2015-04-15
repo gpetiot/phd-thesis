@@ -9,7 +9,9 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_grammar.tex \
 	figures/fig_rules.tex \
 	figures/user_f.png \
-	figures/user_m.png
+	figures/user_m.png \
+	figures/fig_code_gen.tex \
+	figures/fig_code_ins.tex
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
@@ -37,7 +39,9 @@ chapter_traduction_DEPS=figures/fig_grammar.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
 			listings/is_present_normalized.c \
-			listings/is_present_instrumented.c
+			listings/is_present_instrumented.c \
+			figures/fig_code_gen.tex \
+			figures/fig_code_ins.tex
 
 all: main.pdf $(CHAPTERS_PDF)
 

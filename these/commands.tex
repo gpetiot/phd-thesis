@@ -25,8 +25,8 @@
 \tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
 \tikzstyle{eqlabel-style}=[inner sep=.5mm,draw,thick,rectangle,rounded corners,
   color=white,fill=blue,font=\bfseries]
-\newcommand{\insertball}[1]{
-  \tikzinsert{}{#1}{ball,node distance=.5cm,xshift=.15cm,yshift=.1cm}~~~~}
+\newcommand{\insertball}[2][]{
+  \tikzinsert{}{#2}{ball,node distance=.5cm,xshift=.15cm,yshift=.1cm,#1}~~~~}
 
 \newcommand{\ce}[1]{{\scriptsize{$\langle$}}#1{\scriptsize{$\rangle$}}}
 \newcommand{\fassert}{\lstinline'fassert'\xspace}
