@@ -481,109 +481,109 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 }~\\
 
 
-\begin{proof}
-  ~\\
-  \begin{tabular}{rclr}
-    \comp{$I_1$}{env}
-    &=& update(env, $e_1$, \eval{$t_1$}{env}) = env$_{e_1}$ &\\
-    \comp{$I_2$}{env$_{e_1}$}
-    &=& update(env$_{e_1}$, $e_2$, \eval{$t_2$}{env}) = env$_{e_2}$ &\\
-    \comp{$i_1$}{env$_{e_2}$} &=& update(env$_{e_2}$, var, 1) = env$_{i_1}$ &\\
-    \comp{$i_2$}{env$_{i_1}$} &=& update(env$_{i_1}$, id, \eval{$e_1$}{env$_{i_1}$})&\\
-    &=& update(env$_{i_1}$, id, \eval{$t_1$}{env}) = env$_{i_2}$ &\\
-    \eval{$var$}{env$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
-    & (Lemma 4.2) \\
-    \comp{$i_6$}{env$_{i_3}$} &=& update(env$_{i_3}$, id, $\bot$) = env$_{i_6}$ &\\
-    \comp{$i_7$}{env$_{i_6}$} &=& update(env$_{i_6}$, $e_1$, $\bot$) = env$_{i_7}$ &\\
-    \comp{$i_8$}{i$_7$} &=& update(env$_{i_7}$, $e_2$, $\bot$) = env$_{i_8}$ &\\
-    \eval{$var$}{\comp{$I$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
-    &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} & \\
-  \end{tabular}
-\end{proof}
+%% \begin{proof}
+%%   ~\\
+%%   \begin{tabular}{rclr}
+%%     \comp{$I_1$}{env}
+%%     &=& update(env, $e_1$, \eval{$t_1$}{env}) = env$_{e_1}$ &\\
+%%     \comp{$I_2$}{env$_{e_1}$}
+%%     &=& update(env$_{e_1}$, $e_2$, \eval{$t_2$}{env}) = env$_{e_2}$ &\\
+%%     \comp{$i_1$}{env$_{e_2}$} &=& update(env$_{e_2}$, var, 1) = env$_{i_1}$ &\\
+%%     \comp{$i_2$}{env$_{i_1}$} &=& update(env$_{i_1}$, id, \eval{$e_1$}{env$_{i_1}$})&\\
+%%     &=& update(env$_{i_1}$, id, \eval{$t_1$}{env}) = env$_{i_2}$ &\\
+%%     \eval{$var$}{env$_{i_3}$}
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
+%%     & (Lemma 4.2) \\
+%%     \comp{$i_6$}{env$_{i_3}$} &=& update(env$_{i_3}$, id, $\bot$) = env$_{i_6}$ &\\
+%%     \comp{$i_7$}{env$_{i_6}$} &=& update(env$_{i_6}$, $e_1$, $\bot$) = env$_{i_7}$ &\\
+%%     \comp{$i_8$}{i$_7$} &=& update(env$_{i_7}$, $e_2$, $\bot$) = env$_{i_8}$ &\\
+%%     \eval{$var$}{\comp{$I$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
+%%     &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} & \\
+%%   \end{tabular}
+%% \end{proof}
 
 
 
-\begin{lemma}
-  \eval{$var$}{env$_{i_3}$}
-  = \eval{\lstinline{\\forall integer i; t_1 <= i < t_2 ==> p}}{env}
-\end{lemma}
+%% \begin{lemma}
+%%   \eval{$var$}{env$_{i_3}$}
+%%   = \eval{\lstinline{\\forall integer i; t_1 <= i < t_2 ==> p}}{env}
+%% \end{lemma}
 
-Supposons l'hypothèse de récurrence H suivante :
+%% Supposons l'hypothèse de récurrence H suivante :
 
-\eval{$var$}{env'}
-= \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}.
+%% \eval{$var$}{env'}
+%% = \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}.
 
-\begin{proof}
-  ~\\
-  \begin{tabular}{rclr}
-    \comp{$I_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
-    \comp{$i_4$}{env$_e$} &=& update(env$_e$, var, \eval{$e$}{env$_e$}) &\\
-    &=& update(env$_e$, var, \eval{$p$}{env'}) = env$_{i_4}$ &\\
-    \eval{$var$}{env$_{i_4}$} &=& \eval{$var$}{env'} $\land$ \eval{$var$}{env$_{i_4}$} &\\
-    & &the loop condition is true, so \eval{$var$}{env'} is true as well&\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} $\land$ \eval{$p$}{env'} &\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}& \\
-    & & $\land$ \eval{\lstinline'\\forall integer i; i = id ==> p'}{env'} &\\
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i <= id ==> p'}{env'} &\\
-    \comp{$i_5$}{env$_{i_4}$}
-    &=& update(env$_{i_4}$, id, \eval{$id$}{env$_{i_4}$} + 1) = env$_{i_5}$& \\
-    \eval{$var$}{env$_{i_5}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
-    & & because \eval{$id$}{env$_{i_5}$} = \eval{$id$}{env$_{i_4}$} + 1 & \\
-    & & so (H) is maintained after each iteration of the loop & \\
-    \eval{$var$}{env$_{i_3}$} &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
-    \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} &=& 1 & Lemma 4.3 \\
-    \eval{\underline{id < $e_2$}\lstinline' \&\& var'}{env$_{i_3}$} &=& 0 & \\
-    \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} $\land$ \eval{$var$}{env$_{i_3}$}
-    &=& 0 &\\
-    If \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} = 0:&&& \\
-    \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$e_2$}{env$_{i_3}$} &=& 1 &\\
-    \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$t_2$}{env} &=& 1& \\
-    \eval{$id$}{env$_{i_3}$} &=& \eval{$t_2$}{env} & thanks to Lemma 4.3 \\
-    \eval{$var$}{env$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env} &\\
-    If \eval{$var$}{env$_{i_3}$} = 0:&&& \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &=& 0& \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env'} &=& 0 & thanks to Lemma 4.3 \\
-    \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
-    &=& \eval{$var$}{env$_{i_3}$} &\\
-    So we have: \eval{$var$}{env$_{i_3}$}
-    &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}& \\
-  \end{tabular}
-\end{proof}
-
-
-\begin{lemma}
-  \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1
-\end{lemma}
+%% \begin{proof}
+%%   ~\\
+%%   \begin{tabular}{rclr}
+%%     \comp{$I_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
+%%     \comp{$i_4$}{env$_e$} &=& update(env$_e$, var, \eval{$e$}{env$_e$}) &\\
+%%     &=& update(env$_e$, var, \eval{$p$}{env'}) = env$_{i_4}$ &\\
+%%     \eval{$var$}{env$_{i_4}$} &=& \eval{$var$}{env'} $\land$ \eval{$var$}{env$_{i_4}$} &\\
+%%     & &the loop condition is true, so \eval{$var$}{env'} is true as well&\\
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} $\land$ \eval{$p$}{env'} &\\
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}& \\
+%%     & & $\land$ \eval{\lstinline'\\forall integer i; i = id ==> p'}{env'} &\\
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i <= id ==> p'}{env'} &\\
+%%     \comp{$i_5$}{env$_{i_4}$}
+%%     &=& update(env$_{i_4}$, id, \eval{$id$}{env$_{i_4}$} + 1) = env$_{i_5}$& \\
+%%     \eval{$var$}{env$_{i_5}$}
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
+%%     & & because \eval{$id$}{env$_{i_5}$} = \eval{$id$}{env$_{i_4}$} + 1 & \\
+%%     & & so (H) is maintained after each iteration of the loop & \\
+%%     \eval{$var$}{env$_{i_3}$} &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
+%%     \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} &=& 1 & Lemma 4.3 \\
+%%     \eval{\underline{id < $e_2$}\lstinline' \&\& var'}{env$_{i_3}$} &=& 0 & \\
+%%     \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} $\land$ \eval{$var$}{env$_{i_3}$}
+%%     &=& 0 &\\
+%%     If \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} = 0:&&& \\
+%%     \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$e_2$}{env$_{i_3}$} &=& 1 &\\
+%%     \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$t_2$}{env} &=& 1& \\
+%%     \eval{$id$}{env$_{i_3}$} &=& \eval{$t_2$}{env} & thanks to Lemma 4.3 \\
+%%     \eval{$var$}{env$_{i_3}$}
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env} &\\
+%%     If \eval{$var$}{env$_{i_3}$} = 0:&&& \\
+%%     \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &=& 0& \\
+%%     \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env'} &=& 0 & thanks to Lemma 4.3 \\
+%%     \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
+%%     &=& \eval{$var$}{env$_{i_3}$} &\\
+%%     So we have: \eval{$var$}{env$_{i_3}$}
+%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}& \\
+%%   \end{tabular}
+%% \end{proof}
 
 
-Supposons l'hypothèse de récurrence H' suivante :
+%% \begin{lemma}
+%%   \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1
+%% \end{lemma}
 
-\eval{$t_1 \le id \le t_2$}{env'} = 1.
 
-\begin{proof}
-  ~\\
-  \begin{tabular}{rclr}
-    \eval{$t_1 \le id \le t_2$}{env$_e$}
-    &=& \eval{$t_1 \le id \le t_2$}{env$_{i_4}$}\\
-    &=& \eval{$t_1 \le id \le t_2$}{env'} &\\
-    \eval{$t_1$}{env$_{i_5}$} $\le$ \eval{$id$}{env$_{i_5}$}
-    &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_5}$}& \\
-    &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_4}$} + 1 &\\
-    &=& 1\ \text{due to H'} &\\
-    \eval{$id$}{env$_{i_5}$} $\le$ \eval{$t_2$}{env$_{i_5}$}
-    &=& \eval{$id$}{env$_{i_5}$} - 1 < \eval{$t_2$}{env$_{i_5}$}& \\
-    &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_5}$} &\\
-    &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_4}$} &\\
-    &=& 1 & (loop condition) \\
-  \end{tabular}
-\end{proof}
+%% Supposons l'hypothèse de récurrence H' suivante :
 
-So we have \eval{$t_1 \le id \le t_2$}{env$_{i_5}$} = 1.
-So H' is maintained after each loop iteration.
-So we have \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1.
+%% \eval{$t_1 \le id \le t_2$}{env'} = 1.
+
+%% \begin{proof}
+%%   ~\\
+%%   \begin{tabular}{rclr}
+%%     \eval{$t_1 \le id \le t_2$}{env$_e$}
+%%     &=& \eval{$t_1 \le id \le t_2$}{env$_{i_4}$}\\
+%%     &=& \eval{$t_1 \le id \le t_2$}{env'} &\\
+%%     \eval{$t_1$}{env$_{i_5}$} $\le$ \eval{$id$}{env$_{i_5}$}
+%%     &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_5}$}& \\
+%%     &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_4}$} + 1 &\\
+%%     &=& 1\ \text{due to H'} &\\
+%%     \eval{$id$}{env$_{i_5}$} $\le$ \eval{$t_2$}{env$_{i_5}$}
+%%     &=& \eval{$id$}{env$_{i_5}$} - 1 < \eval{$t_2$}{env$_{i_5}$}& \\
+%%     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_5}$} &\\
+%%     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_4}$} &\\
+%%     &=& 1 & (loop condition) \\
+%%   \end{tabular}
+%% \end{proof}
+
+%% So we have \eval{$t_1 \le id \le t_2$}{env$_{i_5}$} = 1.
+%% So H' is maintained after each loop iteration.
+%% So we have \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1.
 
 
 \section{Annotation translation}
