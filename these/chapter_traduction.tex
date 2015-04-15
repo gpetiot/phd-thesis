@@ -364,7 +364,11 @@ il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
 \input{figures/fig_rules}
 
 Soit
-$(l, t:T) \rulearrow ((l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n), e)$
+\[
+(l, t:T) \rulearrow (\underbracket{(l_1, c_1) \concat (l_2, c_2) \concat \ldots
+  \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}, e)
+\]
+
 une instance de la fonction partielle $\tau$ qui à un terme \eacsl $t$ de type
 $T$ au label $l$ associe la paire $(I, e)$ où $I$ est une liste d'insertions de
 code $(l_i, c_i)$, $e$ est une expression C, et $T$ peut être $\mathbb{Z}$
@@ -468,7 +472,13 @@ De manière similaire à la fonction de traduction $\tau$ pour les termes
 (section~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
 est définie comme une fonction partielle qui, à un label et un prédicat \eacsl
 $p$, associe une séquence d'insertions de code $(l_i, c_i)$ et une expression C
-$e \in \{0, 1\}$ (que nous encoderons dans un \lstinline'int').
+$e \in \{0, 1\}$ (que nous encoderons dans un \lstinline'int') :
+
+\[
+(l, p) \rulearrow (\underbracket{(l_1, c_1) \concat (l_2, c_2) \concat \ldots
+  \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}, e)
+\]
+
 Les insertions de code sont les instructions C nécessaires à l'évaluation du
 prédicat, elles permettent notamment d'évaluer les termes et prédicats
 auxiliaires dont est composé le prédicat $p$.
@@ -555,10 +565,9 @@ condition est inséré dans le programme.
 Le générateur de tests essaiera de couvrir tous les chemins d'exécution
 faisables, donc s'il existe des entrées permettant de provoquer un échec de la
 condition de l'annotation, l'erreur sera trouvée.
-Les règles sont de la forme suivante :
+Les règles sont de la forme :
 
 
-\vspace{-4mm}
 \[
 \dfrac
     {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
@@ -566,7 +575,6 @@ Les règles sont de la forme suivante :
     {(l, \mbox{\lstinline'kwd w;'}) \rulearrow
       g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
 \]
-\vspace{-4mm}
 
 
 Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
