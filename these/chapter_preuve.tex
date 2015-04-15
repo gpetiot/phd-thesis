@@ -447,7 +447,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   }
   {
     \splitfrac {
-      (l, \mbox{\lstinline'\\forall integer id; t_1 <= id < t_2 ==> p'})
+      (l, \mbox{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'})
       \rulearrow
     } {
       \splitfrac {
@@ -455,21 +455,22 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         \cdot \underbracket{ (l, \mbox{\lstinline'int e = 1;'}) }_{i_1}
         \cdot
         \underbracket{
-          (l, \Zinit \underline{\mbox{\lstinline'id = e_1;'}} ) }_{i_2}
+          (l, \Zinit \underline{\mbox{\lstinline'k = e_1;'}} ) }_{i_2}
       } {
         \cdot
         \underbracket{
           (l, \mbox{\lstinline'while('}
-          \underline{\mbox{\lstinline'id < e_2'}}~ \mbox{\lstinline'&& var')}
+          \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
           \bopen
           I_3
           \cdot \underbracket{ \mbox{\lstinline'e = e_3;'} }_{i_4}
-          \cdot \underbracket{ \underline{\mbox{\lstinline'id++;'}} }_{i_5}
+          \cdot
+          \underbracket{ \underline{\mbox{\lstinline'k++'}} \semicolon }_{i_5}
           \bclose )
         }_{i_3}
         \cdot
         \underbracket{
-          (l, \underline{\mbox{\lstinline'id'}} \Zclear \semicolon ) }_{i_6}
+          (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) }_{i_6}
         \cdot
         \underbracket{
           (l, \underline{\mbox{\lstinline'e_1'}} \Zclear \semicolon ) }_{i_7}
@@ -481,6 +482,41 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     }
   }
 }~\\
+
+
+Pour n'importe quel environnement $env$, nous prouvons que :
+
+\eval{\lstinline'e'}{\comp{$I$}{$env$}} =
+\eval{\lstinline'\\forall integer ; t_1 <= k <= t_2 ==> p'}{$env$}.
+
+
+\begin{proof}
+  ~\\
+  Hypothèses : $t_1$, $t_2$ et $p$ sont correctement instrumentés.
+  Pour tout environnement $env$ :
+
+  \begin{tabular}{rclr}
+    \eval{$e_1$}{\comp{$I_1$}{$env$}}
+    & = & \eval{$t_1$}{$env$} & \eqlabel{h1} \\
+    $\equiv$ \comp{$I_1$}{$env$}
+    & = & $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$}] & \\
+    \eval{$e_2$}{\comp{$I_2$}{$env$}}
+    & = & \eval{$t_2$}{$env$} & \eqlabel{h2} \\
+    $\equiv$ \comp{$I_2$}{$env$}
+    & = & $env$[$e_2 \mapsto$ \eval{$t_2$}{$env$}] & \\
+    \eval{$e_3$}{\comp{$I_3$}{$env$}}
+    & = & \eval{$p$}{$env$} & \eqlabel{h3} \\
+    $\equiv$ \comp{$I_3$}{$env$}
+    & = & $env$[$e_3 \mapsto$ \eval{$p$}{$env$}] & \\
+  \end{tabular}
+
+  On doit prouver l'égalité suivante :
+
+  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+  $\eq{?}$ \eval{\lstinline'\\forall integer ; t_1 <= k <= t_2 ==> p'}{$env$}
+
+  \commentGP{TODO}
+\end{proof}
 
 
 %% \begin{proof}
