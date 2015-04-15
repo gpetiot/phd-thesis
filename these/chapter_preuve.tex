@@ -372,7 +372,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     & $\eq{C-assign}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (
-      $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
+      $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}, $e \mapsto$ \eval{$p_1$}{$env$}]
       )
     })(e) \\
 
@@ -380,38 +380,38 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     \multicolumn{3}{l}{
       Quand \eval{e}{(
         $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-        [$e \mapsto$ \eval{$p_1$}{$env$}]
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+          $e \mapsto$ \eval{$p_1$}{$env$}]
       )} = \textit{true} : ~~\eqlabel{h3}}\\
     & $\eq{C-if}$ & (\comp{$I_2 \concat$
       (l, \lstinline'e = e_2;')  }{
       (
       $env$
-      [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-      [$e \mapsto$ \eval{$p_1$}{$env$}]
+      [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+        $e \mapsto$ \eval{$p_1$}{$env$}]
       )
     })(e) \\
     & $\eq{C-seq}$ & (\comp{\lstinline'e = e_2;'}{
       (\comp{$I_2$}{
         (
         $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-        [$e \mapsto$ \eval{$p_1$}{$env$}]
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+          $e \mapsto$ \eval{$p_1$}{$env$}]
         )
       })
     })(e) \\
     & $\eq{h2}$ & (\comp{\lstinline'e = e_2;'}{
       (
       $env$
-      [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-      [$e \mapsto$ \eval{$p_1$}{$env$}]
-      [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
+      [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+        $e \mapsto$ \eval{$p_1$}{$env$},
+        $e_2 \mapsto$ \eval{$p_2$}{$env$}]
       )
     })(e) \\
     & $\eq{C-assign}$ & ($env$
-                [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-                [$e_2 \mapsto$ \eval{$p_2$}{$env$}]
-                [$e \mapsto$ \eval{$p_2$}{$env$}]
+                [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+                $e_2 \mapsto$ \eval{$p_2$}{$env$},
+                  $e \mapsto$ \eval{$p_2$}{$env$}]
                 ) (e) \\
     & = & \eval{$p_2$}{$env$} \\
     & = & true $\land$ \eval{$p_2$}{$env$} \\
@@ -422,11 +422,11 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     \multicolumn{3}{l}{
       Quand \eval{e}{(
         $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$}]
-        [$e \mapsto$ \eval{$p_1$}{$env$}]
+        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
+          $e \mapsto$ \eval{$p_1$}{$env$}]
         )} = \textit{false} : ~~\eqlabel{h4}}\\
     & $\eq{C-if'}$ & (
-    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}][$e \mapsto$ \eval{$p_1$}{$env$}]
+    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}, $e \mapsto$ \eval{$p_1$}{$env$}]
     ) (e) \\
     & = & \eval{$p_1$}{$env$} \\
     & $\eq{h4}$ & false \\
