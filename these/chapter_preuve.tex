@@ -38,6 +38,13 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \lstinline'\old(' \textit{term} \lstinline')' \\
     & $\mid$ & \lstinline'\null' \\
     & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
+  \end{tabular}
+  \caption{Grammaire des termes \eacsl}
+  \label{fig:gram-term}
+\end{figure}
+
+\begin{figure}[tb]
+  \begin{tabular}{lrl}
     \textit{relation} & ::= & \lstinline'>' $\mid$ \lstinline'>=' $\mid$
     \lstinline'<' $\mid$ \lstinline'<=' $\mid$ \lstinline'==' $\mid$
     \lstinline'!=' \\
@@ -57,6 +64,13 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \textit{pred} \lstinline'<==>' \textit{pred} \\
     & $\mid$ & \textit{term} ? \textit{pred} : \textit{pred} \\
     & $\mid$ & \textit{term} \textit{relation} \textit{term} \\
+  \end{tabular}
+  \caption{Grammaire des prédicats \eacsl}
+  \label{fig:gram-pred}
+\end{figure}
+
+\begin{figure}[tb]
+  \begin{tabular}{lrl}
     \textit{assert} & ::= & \lstinline'assert' \textit{pred} \\
     \textit{requires} & ::= & \lstinline'requires' \textit{pred} \\
     \textit{typically} & ::= & \lstinline'typically' \textit{pred} \\
@@ -66,8 +80,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     \textit{loop-variant} & ::= & \lstinline'loop variant' \textit{term} \\
     \textit{loop-assigns} & ::= & \lstinline'loop assigns' \textit{term}$^{+}$
   \end{tabular}
-  \caption{Grammaire des termes, prédicats et annotations \eacsl}
-  \label{fig:gram-eacsl}
+  \caption{Grammaire des annotations \eacsl}
+  \label{fig:gram-annot}
 \end{figure}
 
 \begin{figure}[tb]
@@ -102,10 +116,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \end{figure}
 
 
-
-\section{Semantique du langage C annoté avec \eacsl}
-\label{sec:semantics}
-
+\section{Notations}
+\label{sec:notations}
 
 \begin{notation}
 
@@ -132,6 +144,10 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     \lstinline'x' est désallouée.
   \end{itemize}
 \end{notation}
+
+
+\section{Semantique du langage C annoté avec \eacsl}
+\label{sec:semantics}
 
 
 \subsection{Sémantique des termes \eacsl et expression C}
@@ -229,8 +245,9 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \label{sec:properties}
 
 \begin{notation}
-  Soit $P$ un programme C correct syntaxiquement selon la grammaire définie en
-  figure~\ref{fig:gram-eacsl} et~\ref{fig:gram-c}.
+  Soit $P$ un programme C correct syntaxiquement selon la grammaire définie dans
+  les figures~\ref{fig:gram-term}, \ref{fig:gram-pred}, \ref{fig:gram-annot}
+  et~\ref{fig:gram-c}.
   Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
 \end{notation}
 
