@@ -706,7 +706,9 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$} :
 
   \begin{tabular}{rcl}
-    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+    \multicolumn{3}{l}{
+      \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+    } \\
     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{$env$} \\
     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{$env$} \\
     &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{$env$} \\
