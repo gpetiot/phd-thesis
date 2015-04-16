@@ -119,8 +119,11 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \section{Notations}
 \label{sec:notations}
 
-\begin{notation}
 
+Nous définissons les fonctions et symboles qui sont utilisés dans la suite du
+chapitre.
+
+\begin{notation}
   ~
   \begin{itemize}
   \item $x$, $y$ et $z$ sont des identificateurs de variable
@@ -129,11 +132,6 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     $t$ dans l'environnement $env$
   \item \comp{$I$}{env} calcule a nouvel environnement résultant de
     l'exécution des instructions $I$ dans l'environnement $env$
-  \item $update(env, x, v)$ est l'environnement contenant les mêmes
-    relations (variable, valeur) que $env$, et la relation supplémentaire
-    ($x$, $v$)
-  \item $update(env, x, v)(x) = v$
-  \item $update(env, x, v)(y) = env(y)$ si $x \neq y$
   \item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
     ou plus initialisée
   \item une instruction soulignée \underline{\lstinline{instr}} est une
@@ -144,6 +142,29 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     \lstinline'x' est désallouée.
   \end{itemize}
 \end{notation}
+
+
+\subsection{Environnements}
+
+Un environnement $env$ est une fonction partielle $env : ID \mapsto VAL$ des
+identificateurs de variables dans le domaine sémantique qui des valeurs
+possibles.
+
+Le domaine des valeurs est défini comme l'union des types logiques que peuvent
+prendre les termes et prédicats \eacsl et des types C que peuvent prendre les
+variables C :
+$VAL = \mathbb{Z}~\cup~\mathbb{B}~\cup~\mbox{\lstinline'int'}~\cup~\ldots$
+
+La notation $env$[$x \mapsto v$] est désigne un nouvel environnement,
+correspondant à l'environnement $env$ auquel la relation $(x, v)$ a été ajoutée,
+ce qui signifie que la variable $x$ a la valeur $v$ dans ce nouvel
+environnement.
+
+L'accès à la valeur d'une variable dans un environnement est défini par :
+\begin{itemize}
+\item ($env$[$x \mapsto v$])($x$) = $v$
+\item ($env$[$x \mapsto v$])($y$) = $env$($y$) si $x \neq y$
+\end{itemize}
 
 
 \section{Semantique du langage C annoté avec \eacsl}
@@ -298,7 +319,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   ~\\
   \begin{tabular}{rclr}
     \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}}
-    & $\eq{C-assign'}$ & \eval{x}{update(env, x, \eval{v}{env})} & \\
+    & $\eq{C-assign'}$ & \eval{x}{($env$[$x \mapsto$ \eval{v}{$env$}])} & \\
     & $\eq{E-lval}$ & \eval{v}{env} &
   \end{tabular}
 \end{proof}
