@@ -347,7 +347,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
   Développons le membre gauche :
   
-  \begin{tabular}{rcl}
+  \begin{tabular}{p{3cm} p{.5cm} p{12cm}}
     \eval{\lstinline'e'}{\comp{$I$}{$env$}}
     & = & (\comp{$I$}{$env$})(e) \\
     & $\eq{C-seq}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
@@ -492,7 +492,9 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 \begin{proof}
   ~\\
-  Hypothèses : $t_1$, $t_2$ et $p$ sont correctement instrumentés.
+  Hypothèses : $t_1$, $t_2$ et $p$ sont correctement instrumentés et $t_1$ est
+  inférieur ou égal à $t_2$ (dans le cas contraire la quantification $\forall$
+  est trivialement vraie, ce qui ne nous intéresse pas).
   Pour tout environnement $env$ :
 
   \begin{tabular}{rclr}
@@ -508,120 +510,498 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     & = & \eval{$p$}{$env$} & \eqlabel{h3} \\
     $\equiv$ \comp{$I_3$}{$env$}
     & = & $env$[$e_3 \mapsto$ \eval{$p$}{$env$}] & \\
+    \eval{$t_1$}{$env$} & $\le$ & \eval{$t_2$}{$env$} & \eqlabel{h4} \\
   \end{tabular}
 
   On doit prouver l'égalité suivante :
 
   \eval{\lstinline'e'}{\comp{$I$}{$env$}}
-  $\eq{?}$ \eval{\lstinline'\\forall integer ; t_1 <= k <= t_2 ==> p'}{$env$}
+  $\eq{?}$ \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{$env$}
 
-  \commentGP{TODO}
+  Développons le membre gauche :
+  
+  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
+    \eval{\lstinline'e'}{\comp{$I$}{$env$}} &=& (\comp{$I$}{$env$})(e) \\
+    & = &
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
+              (\comp{$\mbox{\lstinline'int e = 1;'}$}{
+                (\comp{$I_2$}{(\comp{$I_1$}{$env$})})
+              })
+            })
+          })
+        })
+      })
+    })(e) \\
+    & = &
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
+              (\comp{$\mbox{\lstinline'int e = 1;'}$}{
+                (\comp{$I_2$}{($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$}])})
+              })
+            })
+          })
+        })
+      })
+    })(e) \\
+    & = &
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
+              (\comp{$\mbox{\lstinline'int e = 1;'}$}{
+                ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+                  $e_2 \mapsto$ \eval{$t_2$}{$env$}])
+              })
+            })
+          })
+        })
+      })
+    })(e) \\
+    & = &
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
+              ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+                $e_2 \mapsto$ \eval{$t_2$}{$env$},
+                $e \mapsto$ 1])
+            })
+          })
+        })
+      })
+    })(e) \\
+    & = &
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+              $e_2 \mapsto$ \eval{$t_2$}{$env$},
+              $e \mapsto$ 1,
+              $k \mapsto$ \eval{$t_1$}{$env$}])
+          })
+        })
+      })
+    })(e) \\
+  \end{tabular}
+
+  Montrons que pour tout environnement $env$ :
+
+  \begin{tabular}{rclr}
+    \multicolumn{3}{c}{
+      \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
+    }
+    & \eqlabel{inv-1} \\
+    \eval{$e$}{$env$} &=&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+    & \eqlabel{inv-2} \\
+  \end{tabular}
+
+  sont des invariants de la boucle
+  $\mbox{\lstinline'while('}
+  \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+  \bopen
+  I_3
+  \cdot \mbox{\lstinline'e = e_3;'}
+  \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$.
+
+  Montrons que ces invariants sont établis avant la première itération :
+
+  Développons
+  \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1 :
+
+  \begin{tabular}{rcl}
+    \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
+    &=& \eval{$t_1$}{$env$} $\le$ \eval{$t_1$}{$env$}
+    $\le$ \eval{$t_2$}{$env$} + 1 \\
+    &=& \eval{$t_1$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1 \\
+    &$\eq{h4}$& \textit{true} \\
+  \end{tabular}
+
+  Développons le membre droit de
+
+  \eval{$e$}{$env$} =
+  \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$} :
+
+  \begin{tabular}{rcl}
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\true'}{$env$} \\
+    &=& 1 \\
+    &=& \eval{$e$}{$env$} \\
+  \end{tabular}
+
+  Ces deux invariants sont établis avant la première itération, montrons qu'ils
+  sont maintenus après chaque itération.
+  On suppose donc que ces invariants sont vrais après une itération quelconque
+  et sont donc des hypothèses.
+  Soit $env$ l'environnement au début de l'itération.
+
+  Prouvons que le premier invariant est maintenu après chaque itération :
+
+  On a :
+
+  \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
+  
+  Ce qui peut être réécrit en :
+
+  \eval{$t_1 \le k \le t_2 + 1$}{$env$} = \textit{true}
+
+  Montrons :
+
+  \eval{$t_1 \le k \le t_2 + 1$}{\comp{
+      $I_3 \cdot \mbox{\lstinline'e = e_3;'}
+      \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
+    }{
+      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e \mapsto$
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+    }} = \textit{true}
+
+  Développons le membre gauche :
+
+  \begin{tabular}{p{6cm} p{.5cm} p{9cm}}
+    \eval{$t_1 \le k \le t_2 + 1$}{\comp{
+      $I_3 \cdot \mbox{\lstinline'e = e_3;'}
+      \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
+    }{
+      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e \mapsto$
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+    }}
+    &=&
+    \eval{$t_1 \le k \le t_2 + 1$}{
+      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
+        $e \mapsto$ \eval{\lstinline'p'}{$env$},
+        $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1]
+    } \\
+    &=&
+    \eval{$t_1 \le k+1 \le t_2 + 1$}{
+      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
+        $e \mapsto$ \eval{\lstinline'p'}{$env$},
+        $k \mapsto$ (\eval{\lstinline'k'}{$env$})]
+    } \\
+    &=& \eval{$t_1 \le k+1 \le t_2 + 1$}{$env$} \\
+    &=& \eval{$t_1 \le k+1$}{$env$} $\land$ \eval{$k+1 \le t_2 + 1$}{$env$} \\
+    &=& \eval{$t_1 \le k+1$}{$env$} $\land$ \eval{$k \le t_2$}{$env$} \\
+    &=& \textit{true} $\land$ \eval{$k \le t_2$}{$env$} \\
+    \multicolumn{3}{c}{par hypothèse de récurrence} \\
+    &=& \eval{$k \le t_2$}{$env$} \\
+    &=& \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} \\
+    &=& \eval{$k$}{$env$} $\le$ \eval{$e_2$}{$env$} \\
+    &=& \eval{$k \le e_2$}{$env$} \\
+    &=& \textit{true} \\
+    \multicolumn{3}{c}{la condition de boucle est vraie sinon on n'exécuterait
+      pas le code de la boucle} \\
+  \end{tabular}
+  
+  Le premier invariant est donc maintenu après chaque itération.
+  Prouvons maintenant que le deuxième invariant est maintenu après chaque
+  itération.
+  Développons le membre gauche :
+
+  \begin{tabular}{p{6cm} p{.5cm} p{9cm}}
+    (\comp{
+      $I_3 \cdot \mbox{\lstinline'e = e_3;'}
+      \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
+    }{
+      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e \mapsto$
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+    })(e)
+    &=&
+    (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
+      \comp{\lstinline'e = e_3;'}{(
+        \comp{$I_3$}{(
+          $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e \mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}]
+          )}
+        )}
+      )}
+    )(e) \\
+    &=&
+    (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
+      \comp{\lstinline'e = e_3;'}{(
+        $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+          $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          $e \mapsto$
+          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$},
+          $e_3 \mapsto$ \eval{\lstinline'p'}{$env$}]
+        )}
+      )}
+    )(e) \\
+    &=&
+    (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
+      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
+        $e \mapsto$ \eval{\lstinline'p'}{$env$}]
+      )}
+    )(e) \\
+    &=&
+    ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+      $e_2 \mapsto$ \eval{$t_2$}{$env$},
+      $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
+      $e \mapsto$ \eval{\lstinline'p'}{$env$},
+      $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1]
+    )(e) \\
+    &=& \eval{\lstinline'p'}{$env$} \\
+    &=& \eval{\lstinline'e'}{$env$} $\land$ \eval{\lstinline'p'}{$env$} \\
+    \multicolumn{3}{c}{\eval{\lstinline'e'}{$env$} est vrai sinon on
+      n'exécuterait pas le code de la boucle} \\
+  \end{tabular}
+
+  Développons le membre droit :
+
+  \begin{tabular}{p{5cm} p{.5cm} p{9cm}}
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{
+      (\comp{
+        $I_3 \cdot \mbox{\lstinline'e = e_3;'}
+        \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
+      }{
+        ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+          $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          $e \mapsto$
+          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+      })
+    }
+    &=&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{
+      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
+        $e \mapsto$ \eval{\lstinline'p'}{$env$},
+        $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1])
+    } \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z < k+1 ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k ==> p'}{$env$} \\
+    &=&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$} \newline
+    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$env$} \\
+    &=&
+    \eval{\lstinline'e'}{$env$}
+    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$env$} \\
+    &=& \eval{\lstinline'e'}{$env$} $\land$ \eval{\lstinline'p'}{$env$} \\
+    \multicolumn{3}{c}{car \eval{\lstinline'p'}{$env$} est la valeur de $p$ pour
+    le $k$ courant} \\
+  \end{tabular}
+
+  Le deuxième invariant est donc lui aussi maintenu après chaque itération.
+
+  Maintenant que les deux invariants ont été prouvés, reprenons notre preuve :
+
+  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
+    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
+          \comp{
+            $\mbox{\lstinline'while('}
+            \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+            \bopen
+            I_3
+            \cdot \mbox{\lstinline'e = e_3;'}
+            \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
+          }{
+            ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+              $e_2 \mapsto$ \eval{$t_2$}{$env$},
+              $e \mapsto$ 1,
+              $k \mapsto$ \eval{$t_1$}{$env$}])
+          })
+        })
+      })
+    })(e) \\
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e\mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+        })
+      })
+    })(e) \\
+  \end{tabular}
+
+  Notons $env'$ = $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+    $e_2 \mapsto$ \eval{$t_2$}{$env$},
+    $e\mapsto$
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}].
+
+  Rappelons que
+  \eval{$t_1$}{$env'$} $\le$ \eval{$k$}{$env'$} $\le$ \eval{$t_2$}{$env'$} + 1
+  (premier invariant de boucle).
+
+  On sait que la condition de boucle est fausse dans cet environnement $env'$ :
+
+  \eval{\lstinline'k <= e_2 && e'}{$env'$} = \textit{false}
+
+  Cas \eval{$k \le e_2$}{$env'$} = \textit{false}, soit
+  \eval{$k > t_2$}{$env'$} = \textit{true} :
+  
+  On sait que \eval{$k > t_2$}{$env'$} et \eval{$k \le t_2+1$}{$env'$}, donc on
+  a \eval{k}{$env'$} = \eval{$t_2+1$}{$env'$}.
+  Avec cette nouvelle connaissance, on a :
+
+  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
+    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e\mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+        })
+      })
+    })(e) \\
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e\mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{$env$},
+            $k \mapsto$ \eval{$t_2+1$}{$env$}])
+        })
+      })
+    })(e) \\
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e\mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
+            $k \mapsto$ \eval{$t_2+1$}{$env$}])
+        })
+      })
+    })(e) \\
+    &=&
+    ($env$[$e\mapsto$
+      \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
+      $k \mapsto \bot$,
+      $e_1 \mapsto \bot$,
+      $e_2 \mapsto \bot$]) (e) \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$} \\
+  \end{tabular}
+
+  Cas \eval{$e$}{$env'$} = \textit{false} :
+
+  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
+    \eval{$e$}{$env'$} = \textit{false}
+    &$\equiv$&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env'$}
+    = \textit{false} \\
+    &$\equiv$&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{$env'$}
+    = \textit{false} \\
+    \multicolumn{3}{c}{car \eval{$k$}{$env'$} $\le$ \eval{$t_2+1$}{$env'$}} \\
+    &$\equiv$&
+    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env'$}
+    = \textit{false} \\
+    &$\equiv$&
+    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}
+    = \textit{false} \\
+    \multicolumn{3}{c}{
+      car (\eval{$t_1$}{$env$}) = (\eval{$t_1$}{$env'$}) et
+      (\eval{$t_2$}{$env$}) = (\eval{$t_2$}{$env'$})
+    } \\
+  \end{tabular}
+
+  Donc on a :
+  \eval{$e$}{$env'$} $\equiv$
+  \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}.
+
+  Reprenons la preuve principale dans le cas
+  \eval{$e$}{$env'$} = \textit{false} :
+
+  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
+    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    &=&
+    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
+            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            $e\mapsto$
+            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}])
+        })
+      })
+    })(e) \\
+    &=&
+    ($env$[\eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
+      $k \mapsto \bot$,
+      $e_1 \mapsto \bot$,
+      $e_2 \mapsto \bot$]) (e) \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$} \\
+  \end{tabular}
+
+  On a bien réussi à prouver que pour tout environnement $env$ :
+
+  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+  = \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{$env$}
 \end{proof}
-
-
-%% \begin{proof}
-%%   ~\\
-%%   \begin{tabular}{rclr}
-%%     \comp{$I_1$}{env}
-%%     &=& update(env, $e_1$, \eval{$t_1$}{env}) = env$_{e_1}$ &\\
-%%     \comp{$I_2$}{env$_{e_1}$}
-%%     &=& update(env$_{e_1}$, $e_2$, \eval{$t_2$}{env}) = env$_{e_2}$ &\\
-%%     \comp{$i_1$}{env$_{e_2}$} &=& update(env$_{e_2}$, var, 1) = env$_{i_1}$ &\\
-%%     \comp{$i_2$}{env$_{i_1}$} &=& update(env$_{i_1}$, id, \eval{$e_1$}{env$_{i_1}$})&\\
-%%     &=& update(env$_{i_1}$, id, \eval{$t_1$}{env}) = env$_{i_2}$ &\\
-%%     \eval{$var$}{env$_{i_3}$}
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
-%%     & (Lemma 4.2) \\
-%%     \comp{$i_6$}{env$_{i_3}$} &=& update(env$_{i_3}$, id, $\bot$) = env$_{i_6}$ &\\
-%%     \comp{$i_7$}{env$_{i_6}$} &=& update(env$_{i_6}$, $e_1$, $\bot$) = env$_{i_7}$ &\\
-%%     \comp{$i_8$}{i$_7$} &=& update(env$_{i_7}$, $e_2$, $\bot$) = env$_{i_8}$ &\\
-%%     \eval{$var$}{\comp{$I$}{env}} &=& \eval{$var$}{env$_{i_3}$} &\\
-%%     &=& \eval{\lstinline'\\forall integer id; t_1 <= id < t2 ==> p'}{env} & \\
-%%   \end{tabular}
-%% \end{proof}
-
-
-
-%% \begin{lemma}
-%%   \eval{$var$}{env$_{i_3}$}
-%%   = \eval{\lstinline{\\forall integer i; t_1 <= i < t_2 ==> p}}{env}
-%% \end{lemma}
-
-%% Supposons l'hypothèse de récurrence H suivante :
-
-%% \eval{$var$}{env'}
-%% = \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}.
-
-%% \begin{proof}
-%%   ~\\
-%%   \begin{tabular}{rclr}
-%%     \comp{$I_3$}{env'} &=& update(env', e, \eval{$p$}{env'}) = env$_e$& \\
-%%     \comp{$i_4$}{env$_e$} &=& update(env$_e$, var, \eval{$e$}{env$_e$}) &\\
-%%     &=& update(env$_e$, var, \eval{$p$}{env'}) = env$_{i_4}$ &\\
-%%     \eval{$var$}{env$_{i_4}$} &=& \eval{$var$}{env'} $\land$ \eval{$var$}{env$_{i_4}$} &\\
-%%     & &the loop condition is true, so \eval{$var$}{env'} is true as well&\\
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} $\land$ \eval{$p$}{env'} &\\
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'}& \\
-%%     & & $\land$ \eval{\lstinline'\\forall integer i; i = id ==> p'}{env'} &\\
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i <= id ==> p'}{env'} &\\
-%%     \comp{$i_5$}{env$_{i_4}$}
-%%     &=& update(env$_{i_4}$, id, \eval{$id$}{env$_{i_4}$} + 1) = env$_{i_5}$& \\
-%%     \eval{$var$}{env$_{i_5}$}
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
-%%     & & because \eval{$id$}{env$_{i_5}$} = \eval{$id$}{env$_{i_4}$} + 1 & \\
-%%     & & so (H) is maintained after each iteration of the loop & \\
-%%     \eval{$var$}{env$_{i_3}$} &=& \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &\\
-%%     \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} &=& 1 & Lemma 4.3 \\
-%%     \eval{\underline{id < $e_2$}\lstinline' \&\& var'}{env$_{i_3}$} &=& 0 & \\
-%%     \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} $\land$ \eval{$var$}{env$_{i_3}$}
-%%     &=& 0 &\\
-%%     If \eval{$id$}{env$_{i_3}$} < \eval{$e_2$}{env$_{i_3}$} = 0:&&& \\
-%%     \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$e_2$}{env$_{i_3}$} &=& 1 &\\
-%%     \eval{$id$}{env$_{i_3}$} $\ge$ \eval{$t_2$}{env} &=& 1& \\
-%%     \eval{$id$}{env$_{i_3}$} &=& \eval{$t_2$}{env} & thanks to Lemma 4.3 \\
-%%     \eval{$var$}{env$_{i_3}$}
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env} &\\
-%%     If \eval{$var$}{env$_{i_3}$} = 0:&&& \\
-%%     \eval{\lstinline'\\forall integer i; t_1 <= i < id ==> p'}{env'} &=& 0& \\
-%%     \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env'} &=& 0 & thanks to Lemma 4.3 \\
-%%     \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}
-%%     &=& \eval{$var$}{env$_{i_3}$} &\\
-%%     So we have: \eval{$var$}{env$_{i_3}$}
-%%     &=& \eval{\lstinline'\\forall integer i; t_1 <= i < t_2 ==> p'}{env}& \\
-%%   \end{tabular}
-%% \end{proof}
-
-
-%% \begin{lemma}
-%%   \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1
-%% \end{lemma}
-
-
-%% Supposons l'hypothèse de récurrence H' suivante :
-
-%% \eval{$t_1 \le id \le t_2$}{env'} = 1.
-
-%% \begin{proof}
-%%   ~\\
-%%   \begin{tabular}{rclr}
-%%     \eval{$t_1 \le id \le t_2$}{env$_e$}
-%%     &=& \eval{$t_1 \le id \le t_2$}{env$_{i_4}$}\\
-%%     &=& \eval{$t_1 \le id \le t_2$}{env'} &\\
-%%     \eval{$t_1$}{env$_{i_5}$} $\le$ \eval{$id$}{env$_{i_5}$}
-%%     &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_5}$}& \\
-%%     &=& \eval{$t_1$}{env$_{i_4}$} $\le$ \eval{$id$}{env$_{i_4}$} + 1 &\\
-%%     &=& 1\ \text{due to H'} &\\
-%%     \eval{$id$}{env$_{i_5}$} $\le$ \eval{$t_2$}{env$_{i_5}$}
-%%     &=& \eval{$id$}{env$_{i_5}$} - 1 < \eval{$t_2$}{env$_{i_5}$}& \\
-%%     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_5}$} &\\
-%%     &=& \eval{$id$}{env$_{i_4}$} < \eval{$t_2$}{env$_{i_4}$} &\\
-%%     &=& 1 & (loop condition) \\
-%%   \end{tabular}
-%% \end{proof}
-
-%% So we have \eval{$t_1 \le id \le t_2$}{env$_{i_5}$} = 1.
-%% So H' is maintained after each loop iteration.
-%% So we have \eval{$t_1 \le id \le t_2$}{env$_{i_3}$} = 1.
 
 
 \section{Annotation translation}
