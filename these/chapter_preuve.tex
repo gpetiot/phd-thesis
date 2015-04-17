@@ -130,8 +130,6 @@ chapitre.
   \item $v$ est une valeur
   \item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
     ou plus initialisée
-  \item une instruction soulignée \underline{\lstinline{instr}} est une
-    instruction utilisant la sémantique des entiers non bornés
   \end{itemize}
 \end{notation}
 
@@ -168,6 +166,8 @@ Cette fonction associe à une expression C (ou un terme ou prédicat \eacsl) dan
 un environnement une valeur, à condition que cette expression ne génère pas
 d'effet de bord, ce qui est le cas sur le langage considéré après normalisation
 du code par \framac.
+Une expression C \underline{soulignée} utilise la sémantique des entiers non
+bornés.
 
 La sémantique des expressions C et des termes \eacsl est définie ci-dessous :
 
@@ -245,6 +245,8 @@ $\mathcal{C} : INSTR \mapsto ENV \mapsto ENV$.
 Cette fonction associe à une instruction $i$ et un environnement $env$ un nouvel
 environnement qui prend en compte les modifications effectuées par $i$ dans
 l'environnement $env$.
+Une instruction \underline{soulignée} utilise la sémantique des entiers non
+bornés.
 
 La sémantique des instructions C est définie ci-dessous :
 
@@ -338,7 +340,7 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
   La traduction est correcte si et seulement si, pour n'importe quel
   environnement $env$ :
 
-  \eval{$t'$}{\comp{$I$}{env}} = \eval{$t$}{env}.
+  \eval{$t'$}{\comp{$I$}{$env$}} = \eval{$t$}{$env$}.
 \end{lemma}
 
 
@@ -352,15 +354,16 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 Pour n'importe quel environnement $env$, nous prouvons que :
 
-\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}} = \eval{v}{env}.
+\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{$env$}}
+= \eval{v}{$env$}.
 
 
 \begin{proof}
   ~\\
   \begin{tabular}{rclr}
-    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{env}}
+    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{$env$}}
     & $\eq{C-assign'}$ & \eval{x}{($env$[$x \mapsto$ \eval{v}{$env$}])} & \\
-    & $\eq{E-lval}$ & \eval{v}{env} &
+    & $\eq{E-lval}$ & \eval{v}{$env$} &
   \end{tabular}
 \end{proof}
 
@@ -374,7 +377,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   La traduction est correct si et seulement si, pour n'importe quel
   environnement $env$ :
 
-  \eval{$p'$}{\comp{$I$}{env}} = \eval{$p$}{env}.
+  \eval{$p'$}{\comp{$I$}{$env$}} = \eval{$p$}{$env$}.
 \end{lemma}
 
 
