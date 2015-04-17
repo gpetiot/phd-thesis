@@ -128,18 +128,10 @@ chapitre.
   \begin{itemize}
   \item $x$, $y$ et $z$ sont des identificateurs de variable
   \item $v$ est une valeur
-  \item \eval{$t$}{env} est l'évaluation du terme \eacsl ou de l'expression C
-    $t$ dans l'environnement $env$
-  \item \comp{$I$}{env} calcule a nouvel environnement résultant de
-    l'exécution des instructions $I$ dans l'environnement $env$
   \item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
     ou plus initialisée
   \item une instruction soulignée \underline{\lstinline{instr}} est une
     instruction utilisant la sémantique des entiers non bornés
-  \item $\Zinit$\underline{\lstinline{x}} signifie que la variable entière
-    \lstinline'x' est allouée et prête à être utilisée
-  \item \underline{\lstinline{x}}$\Zclear$ signifie que la variable entière
-    \lstinline'x' est désallouée.
   \end{itemize}
 \end{notation}
 
@@ -167,11 +159,17 @@ L'accès à la valeur d'une variable dans un environnement est défini par :
 \end{itemize}
 
 
-\section{Semantique du langage C annoté avec \eacsl}
-\label{sec:semantics}
+\subsection{Sémantique Dénotationnelle des Expressions}
 
+La sémantique dénotationnelle des expressions C et des termes et prédicats
+\eacsl est exprimée avec la fonction
+$\mathcal{E} : EXP \mapsto ENV \mapsto VAL$.
+Cette fonction associe à une expression C (ou un terme ou prédicat \eacsl) dans
+un environnement une valeur, à condition que cette expression ne génère pas
+d'effet de bord, ce qui est le cas sur le langage considéré après normalisation
+du code par \framac.
 
-\subsection{Sémantique des termes \eacsl et expression C}
+La sémantique des expressions C et des termes \eacsl est définie ci-dessous :
 
 \begin{tabular}{rclr}
   \eval{cst}{$env$} &=& cst & \eqlabel{E-cst} \\
@@ -204,9 +202,7 @@ L'accès à la valeur d'une variable dans un environnement est défini par :
   &=& \lstinline|(type)| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-cast} \\
 \end{tabular}
 
-
-\subsection{Sémantique des prédicats \eacsl}
-
+La sémantique des prédicats \eacsl est définie ci-dessous :
 
 \begin{tabular}{rclr}
   \eval{\lstinline'\\true'}{$env$} &=& \textit{true} & \eqlabel{P-true} \\
@@ -242,24 +238,68 @@ L'accès à la valeur d'une variable dans un environnement est défini par :
 \end{tabular}
 
 
-\subsection{Sémantique des instructions}
+\subsection{Sémantique Dénotationnelle des Instructions}
+
+La sémantique dénotationnelle des instructions C est exprimée avec la fonction
+$\mathcal{C} : INSTR \mapsto ENV \mapsto ENV$.
+Cette fonction associe à une instruction $i$ et un environnement $env$ un nouvel
+environnement qui prend en compte les modifications effectuées par $i$ dans
+l'environnement $env$.
+
+La sémantique des instructions C est définie ci-dessous :
 
 \begin{tabular}{rclr}
   \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-seq} \\
   \comp{\lstinline|a = b;|}{$env$}
-  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-assign} \\
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
-  &=& update($env$, a, \eval{b}{$env$}) & \eqlabel{C-assign'} \\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
-  &=& update($env$, a, $\bot$) & \eqlabel{C-unset} \\
+  &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. bornée)}
+  & \eqlabel{C-assign} \\
   \comp{\lstinline|if(x) A else B|}{$env$}
   &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-if} \\
   &=& \comp{B}{$env$} sinon & \eqlabel{C-if'} \\
   \comp{\lstinline|while(x) A|}{$env$}
   &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
   si \eval{x}{$env$} & \eqlabel{C-while} \\
-  &=& $env$ sinon & \eqlabel{C-while'} \\
+  &=& $env$ sinon & \eqlabel{C-while'} \\ \\
+
+  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
+  &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. non bornée)}
+  & \eqlabel{C-assign'} \\
+  \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est allouée et
+    on lui affecte la valeur de \lstinline'b'} \\ \\
+  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
+  &=& $env$[$a \mapsto \bot$] & \eqlabel{C-unset} \\
+  \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est désallouée} \\
 \end{tabular}
+
+
+\subsection{Définition des listes d'insertions de code}
+
+Une insertion de code est un couple $(LABEL \times INSTR)$.
+Une liste (ou séquence) d'insertions de code résulte de la traduction d'un
+terme, prédicat ou d'une annotation \eacsl.
+
+Par exemple, la règle suivante montre la séquence d'insertions de code $I$
+générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
+
+{\myinference[AND]
+  { (l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2) }
+  { (l, \mbox{\lstinline'p_1 && p_2'}) \rulearrow
+    (
+    \underbracket{
+      I_1 \cdot
+      \underbracket{ (l, \mbox{\lstinline'int e = e_1;'}) }_{i_1}
+      \cdot
+      \underbracket{ (l, \mbox{\lstinline'if(e)'})
+        \bopen
+        I_2 \cdot
+        \underbracket{ (l, \mbox{\lstinline'e = e_2;'}) }_{i_2}
+        \bclose }_{i_3}
+      }_{I},
+    e) }
+}~\\
+
+Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
+$I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 
 \section{Properties}
