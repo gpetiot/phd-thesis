@@ -238,7 +238,7 @@ bornés.
 
 La sémantique des instructions C est définie ci-dessous :
 
-\begin{tabular}{rclr}
+\begin{tabular}{p{5cm} p{.5cm} p{9cm} p{2cm}}
   \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-seq} \\
   \comp{\lstinline|a = b;|}{$env$}
   &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. bornée)}
@@ -246,10 +246,29 @@ La sémantique des instructions C est définie ci-dessous :
   \comp{\lstinline|if(x) A else B|}{$env$}
   &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-if} \\
   &=& \comp{B}{$env$} sinon & \eqlabel{C-if'} \\
+  \comp{\lstinline'/*@ assert P; */ A'}{$env$}
+  &=& \comp{A}{$env$} si \eval{P}{$env$} & \eqlabel{C-assert-OK} \\
+  &=& erreur sinon & \eqlabel{C-assert-KO} \\
   \comp{\lstinline|while(x) A|}{$env$}
   &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
   si \eval{x}{$env$} & \eqlabel{C-while} \\
-  &=& $env$ sinon & \eqlabel{C-while'} \\ \\
+  &=& $env$ sinon & \eqlabel{C-while'} \\
+  \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{$env$}
+  & = & erreur si $\lnot$ \eval{I}{$env$}
+  & \eqlabel{C-inv-not-esta} \\
+  & = & $env$ si \eval{\lstinline'e == 0'}{$env$}
+  & \eqlabel{C-exit-loop} \\
+  & = & erreur si $\lnot$ \eval{\lstinline'v >= 0'}{$env$}
+  & \eqlabel{C-variant-not-pos} \\
+  & = & erreur si $\lnot$ \eval{I}{\comp{A}{$env$}}
+  & \eqlabel{C-inv-not-pres} \\
+  & = & erreur si \eval{v}{\comp{A}{$env$}} $\ge$ \eval{v}{$env$}
+  & \eqlabel{C-variant-not-dec} \\
+  & = & erreur si $\exists x \not \in X.$ \eval{x}{\comp{A}{$env$}} $\ne$ \eval{x}{$env$}
+  & \eqlabel{C-loop-assigns} \\
+  & = & \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{\comp{A}{$env$}} sinon
+  & \eqlabel{C-loop} \\
+  \\
 
   \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
   &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. non bornée)}
