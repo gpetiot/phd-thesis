@@ -52,10 +52,10 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \lstinline'\false' \\
     & $\mid$ & \lstinline'\valid(' \textit{term} \lstinline')' \\
     & $\mid$ & \lstinline'\forall integer' \textit{id};
-    \textit{term} <= \textit{id} <= \textit{term}
+    (\textit{term} \lstinline'<=' \textit{id} \lstinline'<=' \textit{term})
     \lstinline'==>' \textit{pred} \\
     & $\mid$ & \lstinline'\exists integer' \textit{id};
-    \textit{term} <= \textit{id} <= \textit{term}
+    (\textit{term} \lstinline'<=' \textit{id} \lstinline'<=' \textit{term})
     \lstinline'&&' \textit{pred} \\
     & $\mid$ & ! \textit{pred} \\
     & $\mid$ & \textit{pred} \lstinline'&&' \textit{pred} \\
@@ -67,21 +67,6 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
   \end{tabular}
   \caption{Grammaire des prédicats \eacsl}
   \label{fig:gram-pred}
-\end{figure}
-
-\begin{figure}[tb]
-  \begin{tabular}{lrl}
-    \textit{assert} & ::= & \lstinline'assert' \textit{pred} \\
-    \textit{requires} & ::= & \lstinline'requires' \textit{pred} \\
-    \textit{typically} & ::= & \lstinline'typically' \textit{pred} \\
-    \textit{ensures} & ::= & \lstinline'ensures' \textit{pred} \\
-    \textit{assigns} & ::= & \lstinline'assigns' \textit{term}$^{+}$ \\
-    \textit{loop-invariant} & ::= & \lstinline'loop invariant' \textit{pred} \\
-    \textit{loop-variant} & ::= & \lstinline'loop variant' \textit{term} \\
-    \textit{loop-assigns} & ::= & \lstinline'loop assigns' \textit{term}$^{+}$
-  \end{tabular}
-  \caption{Grammaire des annotations \eacsl}
-  \label{fig:gram-annot}
 \end{figure}
 
 \begin{figure}[tb]
@@ -99,17 +84,20 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \lstinline'if(' \textit{exp} \lstinline')'
     $\bopen$ \textit{instr}$^*$ $\bclose$
     \lstinline'else' $\bopen$ \textit{instr}$^*$ $\bclose$ \\
-    \textit{loop-instr} & ::= & \lstinline'while(' \textit{exp} \lstinline')'
-    $\bopen$ \textit{instr}$^*$ $\bclose$ \\
-    \textit{annot-instr} & ::= & \lstinline'/*@' \textit{assert} \lstinline'*/'
+    & $\mid$ & \lstinline'/*@ assert' \textit{pred}; \lstinline'*/'
     \textit{instr} \\
-    & $\mid$ & \lstinline'/*@' \textit{loop-invariant} \textit{loop-variant}
-    \textit{loop-assigns} \lstinline'*/' \textit{loop-instr} \\
-    \textit{function} & ::= & \lstinline'/*@' \textit{requires} \textit{assigns}
-    \textit{ensures} \lstinline'*/' \textit{type} \textit{id}
-    (\textit{type} \textit{lvalue}$^{*}$)
-    $\bopen$ \textit{decl}$^{*}$ \textit{annot-instr}$^{*}$
-    $\bclose$
+    & $\mid$ & \lstinline'/*@ loop invariant' \textit{pred}; \\
+    &        & \lstinline'    loop assigns' \textit{term}$^{+}$; \\
+    &        & \lstinline'    loop variant' \textit{term}; \lstinline'*/' \\
+    &        & \lstinline'while(' \textit{exp} \lstinline')'
+    $\bopen$ \textit{block} $\bclose$ \\
+    \textit{block} & ::= & \textit{decl}$^{*}$ \textit{instr}$^{*}$ \\
+    \textit{function} & ::= & \lstinline'/*@ requires' \textit{pred}; \\
+                      &     & \lstinline'    assigns' \textit{term}$^{+}$; \\
+                      &     & \lstinline'    ensures' \textit{pred};
+    \lstinline'*/'\\
+                      &     & \textit{type} \textit{id}
+    (\textit{type} \textit{lvalue}$^{*}$) $\bopen$ \textit{block} $\bclose$ \\
   \end{tabular}
   \caption{Grammaire des expressions et instructions C}
   \label{fig:gram-c}
@@ -309,8 +297,7 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 \begin{notation}
   Soit $P$ un programme C correct syntaxiquement selon la grammaire définie dans
-  les figures~\ref{fig:gram-term}, \ref{fig:gram-pred}, \ref{fig:gram-annot}
-  et~\ref{fig:gram-c}.
+  les figures~\ref{fig:gram-term}, \ref{fig:gram-pred} et~\ref{fig:gram-c}.
   Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
 \end{notation}
 
