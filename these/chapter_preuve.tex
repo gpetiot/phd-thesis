@@ -434,8 +434,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
   Développons le membre gauche :
   
-  \begin{tabular}{p{3cm} p{.5cm} p{12cm}}
-    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+  \begin{tabular}{rcl}
+    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{$env$}}} \\
     & = & (\comp{$I$}{$env$})(e) \\
     & $\eq{C-seq}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
@@ -607,8 +607,9 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
   Développons le membre gauche :
   
-  \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-    \eval{\lstinline'e'}{\comp{$I$}{$env$}} &=& (\comp{$I$}{$env$})(e) \\
+  \begin{tabular}{p{.5cm} p{.5cm} p{11.5cm}}
+    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{$env$}}} \\
+    &=& (\comp{$I$}{$env$})(e) \\
     & = &
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
