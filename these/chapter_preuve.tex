@@ -84,8 +84,7 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \lstinline'if(' \textit{exp} \lstinline')'
     $\bopen$ \textit{instr}$^*$ $\bclose$
     \lstinline'else' $\bopen$ \textit{instr}$^*$ $\bclose$ \\
-    & $\mid$ & \lstinline'/*@ assert' \textit{pred}; \lstinline'*/'
-    \textit{instr} \\
+    & $\mid$ & \lstinline'/*@ assert' \textit{pred}; \lstinline'*/' \\
     & $\mid$ & \lstinline'/*@ loop invariant' \textit{pred}; \\
     &        & \lstinline'    loop assigns' \textit{term}$^{+}$; \\
     &        & \lstinline'    loop variant' \textit{term}; \lstinline'*/' \\
@@ -238,7 +237,7 @@ bornés.
 
 La sémantique des instructions C est définie ci-dessous :
 
-\begin{tabular}{p{5cm} p{.5cm} p{9cm} p{2cm}}
+\begin{tabular}{p{4cm} p{.5cm} p{9cm} p{2cm}}
   \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-seq} \\
   \comp{\lstinline|a = b;|}{$env$}
   &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. bornée)}
@@ -246,9 +245,15 @@ La sémantique des instructions C est définie ci-dessous :
   \comp{\lstinline|if(x) A else B|}{$env$}
   &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-if} \\
   &=& \comp{B}{$env$} sinon & \eqlabel{C-if'} \\
-  \comp{\lstinline'/*@ assert P; */ A'}{$env$}
-  &=& \comp{A}{$env$} si \eval{P}{$env$} & \eqlabel{C-assert-OK} \\
+  \comp{\lstinline'/*@ assert P; */'}{$env$}
+  &=& $env$ si \eval{P}{$env$} & \eqlabel{C-assert-OK} \\
   &=& erreur sinon & \eqlabel{C-assert-KO} \\
+  \comp{\lstinline'fassert(e);'}{$env$}
+  &=& $env$ si \eval{e}{$env$} & \eqlabel{C-fassert-OK} \\
+  &=& erreur sinon & \eqlabel{C-fassert-KO} \\
+  \comp{\lstinline'fassume(e);'}{$env$}
+  &=& $env$ si \eval{e}{$env$} & \eqlabel{C-fassume-OK} \\
+  &=& contradiction sinon & \eqlabel{C-fassume-KO} \\
   \comp{\lstinline|while(x) A|}{$env$}
   &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
   si \eval{x}{$env$} & \eqlabel{C-while} \\
@@ -266,7 +271,7 @@ La sémantique des instructions C est définie ci-dessous :
   & \eqlabel{C-variant-not-dec} \\
   & = & erreur si $\exists x \not \in X.$ \eval{x}{\comp{A}{$env$}} $\ne$ \eval{x}{$env$}
   & \eqlabel{C-loop-assigns} \\
-  & = & \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{\comp{A}{$env$}} sinon
+  & = & \comp{\lstinline'/*@ ... */ while(e) A'}{\comp{A}{$env$}} sinon
   & \eqlabel{C-loop} \\
   \\
 
@@ -1096,3 +1101,119 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 \section{Annotation translation}
 \label{sec:annotation-translation}
+
+
+\subsection{Assertions}
+
+
+{\scriptsize
+  {\myinference[$\alpha$-assert]
+    {(l, p) \rulearrow (I, e)}
+    {(l, \mbox{\lstinline'assert p;'})
+      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+  }
+}
+
+
+Pour n'importe quel environnement $env$, nous prouvons que :
+
+\comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
+
+
+\begin{proof}
+  ~\\
+  On sait que \eval{e}{\comp{$I$}{$env$}} = \eval{P}{$env$} par hypothèse que
+  la traduction des prédicats est correcte.
+
+  Cas \eval{P}{$env$} = \textit{true} :
+
+  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = $env$
+  donc \comp{\lstinline'/*@ assert P; */ ;'}{$env$} $\not \equiv$ erreur
+
+  \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
+  = \comp{$I$}{$env$}.
+
+  \commentGP{Prouver que \comp{$I$}{$env$} ne génère pas d'erreur.}
+
+  Cas \eval{P}{$env$} = \textit{false} :
+
+  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+
+  \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
+  = erreur.
+
+  On a donc bien :
+
+  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur.
+\end{proof}
+
+
+\subsection{Vérification de contrat de boucle}
+
+
+{\scriptsize
+  {\myinference[$\alpha$-check-loop-assigns]
+    {(l, x) \rulearrow (I, e)}
+    {
+      \splitfrac
+          {
+            (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
+          }
+          {
+            I \concat
+            \forall (x:ctype) \not \in X:
+            (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+            \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+          }
+    }
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-check-invariant]
+    {(l, p) \rulearrow (I_1, e_1) \\
+      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
+    }
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-variant]
+    {
+      (BegIter_l, t) \rulearrow (I_1, e_1) \\
+      (EndIter_l, t) \rulearrow (I_2, e_2)
+    }
+    {
+      \splitfrac
+          {
+            (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
+          }
+          {
+            I_1 \concat ((BegIter_l,
+            \mbox{\lstinline'fassert('}
+            \underline{\mbox{\lstinline'0 <= e1'}}
+            \mbox{\lstinline');' }
+            \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
+            \semicolon)
+            \concat I_2
+            \concat(EndIter_l,
+            \mbox{\lstinline'fassert('}
+            \underline{\mbox{\lstinline'e2'}\Zclear
+              \mbox{\lstinline'< old_variant'} \Zclear}
+            \mbox{\lstinline');'})
+          }
+    }
+  }
+}
+
+\commentGP{même chose que pour les assertions}
+
+\commentGP{faire aussi l'instrumentation pour CWD ?}
