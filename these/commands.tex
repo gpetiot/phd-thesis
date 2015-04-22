@@ -21,7 +21,7 @@
 \tikzstyle{precond}=[draw,text width=2em,fill=gray!20,minimum height=1.5em]
 
 \newcommand{\tikzinsert}[3]{%
-  \tikz[remember picture,overlay]\node[#3] (#1) {#2};}
+  \tikz[remember picture,overlay]{\node[#3] (#1) {#2};}}
 \tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
 \tikzstyle{eqlabel-style}=[inner sep=.5mm,draw,thick,rectangle,rounded corners,
   color=white,fill=blue,font=\bfseries]
