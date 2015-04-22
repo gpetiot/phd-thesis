@@ -42,7 +42,7 @@ instruction et annotation à l'intérieur d'une fonction.
 Considérons aussi la présence d'un label au début et à la fin de chaque corps de
 boucle.
 (Strictement parlant, les labels ne peuvent pas être placés juste avant les
-déclarations de variables ou l'accolade fermante ``$\bclose$'' en C, mais
+déclarations de variables ou l'accolade fermante ``\bclose'' en C, mais
 cette limitation peut être contournée par l'ajout d'une instruction ``skip''
 (``\lstinline{;}'') après ces labels.)
 Nous supposons que les fonctions respectent la forme normale définie par
@@ -69,168 +69,133 @@ une boucle.
 \eacsl qui sont décrites en section~\ref{sec:term} et section~\ref{sec:pred}.
 
 
-\subsection{Sous-langage considéré}
-
-Le langage de spécification \eacsl est un sous-langage exécutable d'\acsl, qui
-est un langage de spécification comportementale implémenté dans \framac.
-Premièrement, étant un sous-ensemble d'\acsl, \eacsl préserve la sémantique
-d'\acsl, ce qui implique que les greffons de \framac existants supportant \acsl
-peuvent être utilisés avec \eacsl sans modification.
-Deuxièmement, le langage \eacsl est \textit{exécutable}, ce qui veut dire que
-toutes les annotations peuvent être traduites en C et exécutées, il peut donc
-être utilisé pour l'analyse dynamique et le \textit{monitoring} (surveillance
-d'exécution).
-
-\eacsl est basé sur une logique du premier ordre typée dans laquelle chaque
-terme peut contenir des expressions C pures (sans effets de bord) et des
-mots-clés du langage.
-Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
-résultat d'une fonction, \lstinline{\valid} est un prédicat qui renvoie vrai si
-son argument est un pointeur valide (se référer au manuel du
-langage~\cite{\citeacsl}).
-Les quantificateurs existentiels et universels sont bornées par des contraintes
-de domaines finis d'entiers afin de rester exécutable.
-Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
-chaque fonction pour spécifier les pré- et postconditions.
-Ces contrats peuvent définir des comportements (\lstinline{behaviors}) gardés et
-nommés, pour lesquels l'exhaustivité (\textit{completeness}) et/ou la séparation
-(\textit{disjointness}) peut être requise.
-Les assertions, les invariants de boucle et les variants peuvent aussi être
-associés aux instructions.
-Abordons maintenant deux des choix les plus importants du langage: les entiers
-mathématiques et la non-définition (nous utiliserons le terme anglais
-\textit{undefinedness}).
+\subsection{Exemple}
+\label{sec:translation-example}
 
 
-\subsubsection{Entiers mathématiques}\label{sec:eacsl-integers}
+\lstinputlisting[style=c,escapechar=§,caption={Function C annotée décidant si
+    \lstinline{v} est présent dans le tableau \lstinline{t} de taille
+    \lstinline{n}},
+  label=lst:normalized]{listings/is_present_normalized.c}
+
+Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
+test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
+Elle retourne $1$ quand la valeur $v$ en paramètre est présente dans le tableau
+$t$ en paramètre, ou $0$ sinon.
+
+[[ AG: dans ce qui suit, garder ici ce qui explique l'exemple et reporter dans
+les parties suivantes ce qui explique la traduction de ses annotations. ]] 
+
+ Le programme instrumenté obtenu après traduction des annotations de
+cette fonction est présenté (utilisant la notation abrégée pour les entiers non
+bornés) dans le listing~\ref{lst:abbrv}.
+La clause \lstinline'requires' de la ligne 1 (listing~\ref{lst:normalized})
+indique que la taille du tableau \lstinline|n| est positive, elle est traduite
+à la ligne 6 du listing~\ref{lst:abbrv}.
+La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) 
+indique que \lstinline|(t+0)|, \ldots, \lstinline|(t+(n-1))| sont des pointeurs
+valides, elle est traduite à la ligne 7 du listing~\ref{lst:abbrv}).
+La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
+(traduite ligne 8 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
+d'\eacsl définissant une précondition pour le test.
+Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
+chemins à explorer par la génération de tests, elle permet d'obtenir une
+couverture partielle des chemins : seuls les chemins satisfaisant cette clause
+sont considérés.
+Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
+\lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
+\cite{\citekorat}).
+L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
+aux lignes 10--12 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
+vrai avant la première itération (établissement), et aux lignes 20--24 du
+listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
+chaque itération.
+Notons que pour prouver formellement la postcondition, un invariant de boucle
+supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
+: \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|.
+Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit aux
+lignes 15--16 du listing~\ref{lst:abbrv} pour vérifier que le variant est
+positif ou nul avant chaque itération de la boucle, à la ligne 17 du
+listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
+boucle, et aux lignes 25--26 du listing~\ref{lst:abbrv} pour vérifier que le
+variant décroît strictement après chaque itération, assurant ainsi la
+terminaison de la boucle.
+La postcondition des lignes 4--5 du listing~\ref{lst:normalized} est traduite
+aux lignes 29--34 du listing~\ref{lst:abbrv}, elle définit que
+\lstinline|\result| est non nul si et seulement si il existe un élément de
+\lstinline|t| égal à \lstinline|v|.
+Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
+sont mémorisées lignes 3--5 du listing~\ref{lst:abbrv}, un nouveau tableau
+\lstinline|old_val_t| stocke les anciennes valeurs contenues dans \lstinline|t|,
+il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
 
 
-En plus des entiers machine, les termes \eacsl peuvent être des entiers
-mathématiques de type \lstinline{integer} qui sont définis sur l'ensemble
-$\mathbb{Z}$ : les constantes entières, les
-opérations sur les entiers, ainsi que les variables logiques sont de type
-\lstinline{integer}.
-L'arithmétique entière est non bornée et donc les débordements d'entier
-(\textit{overflows}) sont impossibles.
-\eacsl dispose d'un système de sous-typage pour convertir automatiquement les
-types entiers du C vers les entiers mathématiques.
-Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
-\lstinline{x+1} et \lstinline{1} sont de type \lstinline{integer} et une
-conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
-dans ce contexte quand la variable \lstinline{x} est typée.
-Ce choix a été fait pour plusieurs raisons.
-Premièrement, un des buts principaux de \framac est la preuve de programmes par
-appels à des prouveurs externes, la plupart de ces prouveurs fonctionnent mieux
-avec l'arithmétique entière qu'avec l'arithmétique bornée (ou modulaire).
-Deuxièmement, les spécifications sont habituellement écrites sans se préoccuper
-des détails d'implémentation, et les débordements d'entiers sont des détails
-d'implémentation.
-Troisièmement, il reste possible d'utiliser l'arithmétique bornée si besoin en
-utilisant des conversions explicites (\textit{casts}).
-Par exemple, \lstinline{(int)(INT_MAX + 1)} est égal à \lstinline{INT_MIN}, la
-plus petite valeur représentable de type \lstinline{int}.
-Quatrièmement, ce choix facilite l'expression des débordements potentiels dans
-les spécifications : par exemple, grâce à l'arithmétique entière,
-\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} est le moyen le plus simple
-de spécifier que \lstinline{x+y} ne déborde pas.
-Dans la suite, sauf mention contraire, ``entier'' fait référence à
-``entier non-borné''.
 
 
-\subsubsection{Undefinedness}\label{sec:undefined}
 
 
-\eacsl est exécutable.
-Cependant, l'évaluation de termes indéfinis comme \lstinline{1/0} n'est pas
-possible.
-Pour résoudre ce problème, \eacsl suit la sémantique de vérification à
-l'exécution définie par Chalin~\cite{Chalin/10}, selon laquelle la sémantique de
-tels termes est ``indéfinie'' (\textit{undefined}) : \eacsl utilise une logique
-tri-valuée~\cite{Konikowska/91} comme \spark~\cite{\citespark} ou
-\jml \cite{\citejml}.
-Il est de la responsibilité des outils interprétant \eacsl de s'assurer que les
-termes indéfinis ne sont jamais évalués.
-Une conséquence indirecte de ce choix est que les opérateurs \lstinline{&&}\,,
-\ \lstinline{||}\,, \ \lstinline{_?_:_} \ et\ \lstinline{==>} sont
-``paresseux'' (comme leur équivalent C pour les trois premiers).
 
-
-\subsection{Support des entiers mathématiques}\label{sec:integers}
-
-
-\lstinputlisting[style=c,escapechar=§,caption={Propriétés des entiers : faux
-    négatif dû à une traduction naïve},label=lst:Z:1]
-                {listings/naive_false_negative.c}
-
-\lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
-    une traduction naïve},label=lst:Z:2]
-                {listings/naive_false_positive.c}
-
-
-Le listing~\ref{lst:Z:1} et le listing~\ref{lst:Z:2} montrent deux exemples où
-une traduction naïve des annotations contenant des entiers mathématiques mènent
-à un résultat incorrect.
-Soit \lstinline'x' de type \lstinline'int'.
-L'assertion ligne 1 du listing~\ref{lst:Z:1} est fausse lorsque
-\lstinline'x = INT_MAX'.
-La traduction naïve de cette assertion (ligne 3) utilise les entiers machine
-avec arithmétique modulaire (supposons une architecture 32 bits), donc
-\lstinline'x+1' reste inférieur ou égal à \lstinline'INT_MAX' pour toute valeur
-de \lstinline'x', rendant tout échec de l'assertion impossible.
-La traduction correcte pour cette annotation (lignes 6--9) conserve la
-sémantique de l'arithmétique entière non bornée en utilisant une bibliothèque
-externe (nous avons choisi GMP, la bibliothèque GNU Multi-Precision) pour
-représenter les valeurs pouvant provoquer un débordement d'entier (ici
-\lstinline'INT_MAX+1').
-Les variables nécessaires pour la gestion des entiers non bornés sont crées et
-initialisées, puis le résultat est calculé et les comparaisons sont faites en
-tant qu'entier non borné.
-Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \eacsl (ligne 2)
-qui est toujours correcte : pour tout entier positif \lstinline'x', son
-successeur est aussi positif.
-Une traduction naïve de cette annotation (ligne 3) génèrera une erreur à
-l'exécution pour \lstinline'x = INT_MAX' : en arithmétique modulaire
-\lstinline'x+1' déborde et devient négatif, violant l'assertion ligne 2.
-Une traduction correcte utilisant les entiers non bornés (non présentée ici)
-conserve le comportement attendu : l'assertion est vraie pour tout entier
-positif \lstinline'x'.
-Une traduction naïve des annotations dans ces deux exemples résulterait en un
-faux négatif dans le premier cas et en un faux positif dans le deuxième cas, ce
-qui porterait atteinte à la correction et à la précision de notre méthode.
-Les règles de traduction pour les constructions \eacsl que nous présentons
-respectent la sémantique des entiers non bornés d'\eacsl et suppose
-l'utilisation d'une bibilothèque externe telle GMP, comme illustré dans le
-listing~\ref{lst:Z:1}.
-
-Pour simplifier la lecture des insertions de code générées par la traduction,
-nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
-que la variable \lstinline{var} doit être déclarée et allouée (avec
-\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
-notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
-\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
-à la fin du code inséré.
-Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
-(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
-être traduite en utilisant les fonctions correspondantes d'une bibliothèque
-comme GMP.
-Les lignes 12--13 du listing~\ref{lst:Z:1} illustrent la notation abrégée de 
-l'instrumentation des lignes 6--9.
-\framac explicite les conversions de type implicites dans les annotations, donc
-le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
-\lstinline'(integer)(x+1)'.
-
-
-\subsection{Principes généraux}
+\subsection{Principes généraux de la traduction}
 \label{sec:principles}
+
+
+Présentons maintenant les principes de la traduction d'une fonction $f$ annotée
+respectant la grammaire de la figure~\ref{fig:grammar}.
+
+Le programme instrumenté obtenu après traduction des annotations de la fonction
+du listing ?? est présenté dans le listing~\ref{lst:abbrv}.
+[[ AG : à déplacer plus loin : ``(utilisant la notation abrégée pour les entiers
+non bornés)''. ]] Les principes de la traduction sont illustrés par des
+extraits de ce listing, au fur et à mesure de leur présentation. [[ AG: à faire
+comme indiqué. ]]
+
+ La clause \lstinline'requires' de la ligne 1
+(listing~\ref{lst:normalized}) indique que la taille du tableau \lstinline|n| est positive, elle est traduite
+à la ligne 6 du listing~\ref{lst:abbrv}.
+La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) 
+indique que \lstinline|(t+0)|, \ldots, \lstinline|(t+(n-1))| sont des pointeurs
+valides, elle est traduite à la ligne 7 du listing~\ref{lst:abbrv}).
+La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
+(traduite ligne 8 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
+d'\eacsl définissant une précondition pour le test.
+Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
+chemins à explorer par la génération de tests, elle permet d'obtenir une
+couverture partielle des chemins : seuls les chemins satisfaisant cette clause
+sont considérés.
+Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
+\lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
+\cite{\citekorat}).
+L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
+aux lignes 10--12 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
+vrai avant la première itération (établissement), et aux lignes 20--24 du
+listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
+chaque itération.
+Notons que pour prouver formellement la postcondition, un invariant de boucle
+supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
+: \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|.
+Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit aux
+lignes 15--16 du listing~\ref{lst:abbrv} pour vérifier que le variant est
+positif ou nul avant chaque itération de la boucle, à la ligne 17 du
+listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
+boucle, et aux lignes 25--26 du listing~\ref{lst:abbrv} pour vérifier que le
+variant décroît strictement après chaque itération, assurant ainsi la
+terminaison de la boucle.
+La postcondition des lignes 4--5 du listing~\ref{lst:normalized} est traduite
+aux lignes 29--34 du listing~\ref{lst:abbrv}, elle définit que
+\lstinline|\result| est non nul si et seulement si il existe un élément de
+\lstinline|t| égal à \lstinline|v|.
+Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
+sont mémorisées lignes 3--5 du listing~\ref{lst:abbrv}, un nouveau tableau
+\lstinline|old_val_t| stocke les anciennes valeurs contenues dans \lstinline|t|,
+il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
+
 
 
 \lstinputlisting[style=c,escapechar=§,caption={Version instrumentée du programme
     du listing~\ref{lst:normalized}},label=lst:abbrv]
                 {listings/is_present_instrumented.c}
-
-
-Présentons maintenant les principes de la traduction d'une fonction $f$ annotée
-respectant la grammaire de la figure~\ref{fig:grammar}.
+                
+ 
 Premièrement, chaque valeur d'entrée \lstinline'x' (un paramètre formel de la
 liste $params$ ou une variable globale) de type $T$ est mémorisée par
 l'instruction \lstinline|T old_x = x;| au début de la fonction sous test
@@ -241,10 +206,10 @@ taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose l
 présence en précondition de la fonction sous test.
 
 Deuxièmement, toute annotation \eacsl de la forme \lstinline'kwd w' (où
-\lstinline'kwd' $\in$ $\bopen$ \lstinline|assert|, \lstinline|requires|,
+\lstinline'kwd' $\in$ \bopen \lstinline|assert|, \lstinline|requires|,
 \lstinline|typically|, \lstinline|ensures|, \lstinline|loop variant|,
 \lstinline|loop invariant|, \lstinline|assigns|, \lstinline|loop assigns|
-$\bclose$ et \lstinline'w' est un terme ou un prédicat) est traduite.
+\bclose et \lstinline'w' est un terme ou un prédicat) est traduite.
 D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
 obtenues à partir du fragment \eacsl considéré.
 Par exemple, les behaviors peuvent être réécrits comme des implications dans les
@@ -318,67 +283,115 @@ liées dans les annotations et toutes les variables du programme sont
 différentes, ceci nous permet en particulier de traduire les variables logiques
 en C sans les renommer.
 
+\section{Traduction des annotations \eacsl}
+\label{sec:annot}
 
-\subsubsection*{Exemple}
-\label{sec:translation-example}
+
+Définissons maintenant les règles de traduction de haut niveau pour les
+annotations, qui permettent de mettre en évidence les échecs d'annotation.
+Pour chaque annotation, un fragment de programme C se terminant par une
+condition est inséré dans le programme.
+Le générateur de tests essaiera de couvrir tous les chemins d'exécution
+faisables, donc s'il existe des entrées permettant de provoquer un échec de la
+condition de l'annotation, l'erreur sera trouvée.
+Les règles sont de la forme :
 
 
-\lstinputlisting[style=c,escapechar=§,caption={Function C annotée décidant si
-    \lstinline{v} est présent dans le tableau \lstinline{t} de taille
-    \lstinline{n}},
-  label=lst:normalized]{listings/is_present_normalized.c}
+\[
+\dfrac
+    {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
+      (l_n, w) \rulearrow (I_n, e_n)}
+    {(l, \mbox{\lstinline'kwd w;'}) \rulearrow
+      g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
+\]
 
-Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
-test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
-Elle retourne $1$ quand la valeur $v$ en paramètre est présente dans le tableau
-$t$ en paramètre, ou $0$ sinon.
-Le programme instrumenté obtenu après traduction des annotations de cette
-fonction est présenté (utilisant la notation abrégée pour les entiers non
-bornés) dans le listing~\ref{lst:abbrv}.
-La clause \lstinline'requires' de la ligne 1 (listing~\ref{lst:normalized})
-indique que la taille du tableau \lstinline|n| est positive, elle est traduite
-à la ligne 6 du listing~\ref{lst:abbrv}.
-La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) 
-indique que \lstinline|(t+0)|, \ldots, \lstinline|(t+(n-1))| sont des pointeurs
-valides, elle est traduite à la ligne 7 du listing~\ref{lst:abbrv}).
-La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
-(traduite ligne 8 du listing~\ref{lst:abbrv}), est une extension de la syntaxe
-d'\eacsl définissant une précondition pour le test.
-Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
-chemins à explorer par la génération de tests, elle permet d'obtenir une
-couverture partielle des chemins : seuls les chemins satisfaisant cette clause
-sont considérés.
-Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
-\lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
-\cite{\citekorat}).
-L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
-aux lignes 10--12 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
-vrai avant la première itération (établissement), et aux lignes 20--24 du
-listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
-chaque itération.
-Notons que pour prouver formellement la postcondition, un invariant de boucle
-supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
-: \lstinline|\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;|.
-Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit aux
-lignes 15--16 du listing~\ref{lst:abbrv} pour vérifier que le variant est
-positif ou nul avant chaque itération de la boucle, à la ligne 17 du
-listing~\ref{lst:abbrv} pour mémoriser la valeur du variant au début de la
-boucle, et aux lignes 25--26 du listing~\ref{lst:abbrv} pour vérifier que le
-variant décroît strictement après chaque itération, assurant ainsi la
-terminaison de la boucle.
-La postcondition des lignes 4--5 du listing~\ref{lst:normalized} est traduite
-aux lignes 29--34 du listing~\ref{lst:abbrv}, elle définit que
-\lstinline|\result| est non nul si et seulement si il existe un élément de
-\lstinline|t| égal à \lstinline|v|.
-Les valeurs des paramètres formels \lstinline|t|, \lstinline|n| et \lstinline|v|
-sont mémorisées lignes 3--5 du listing~\ref{lst:abbrv}, un nouveau tableau
-\lstinline|old_val_t| stocke les anciennes valeurs contenues dans \lstinline|t|,
-il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
+
+Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
+traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
+\lstinline'kwd w;' au point de programme $l$ est traduite par composition
+des insertions de code $I_i$ et des expressions $e_i$.
+Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
+l'annotation.
+La figure~\ref{fig:annot} et la figure~\ref{fig:loop-annot} présentent les
+règles de traduction pour chaque annotation.
+Soit la condition $e$ qui doit être testée pour chaque annotation, qui
+correspond au statut de validité de l'annotation en question.
+Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
+d'une expression, cette fonction correspond à un \lstinline'if' dont la branche
+\lstinline'else' génère une erreur et la rapporte.
+Nous définissons également une fonction \lstinline'fassume' permettant de tester
+la valeur d'une expression, cette fonction correspond à un \lstinline'if' dont
+la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
+la branche \lstinline'else' est activée sont ignorées.
+
+La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
+(\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
+\textsc{$\alpha$-assume-pre}), les assigns (\textsc{$\alpha$-check-assigns} et
+\textsc{$\alpha$-assume-assigns}) et les postconditions
+(\textsc{$\alpha$-check-post} et \textsc{$\alpha$-assume-post}).
+La règle \textsc{$\alpha$-assert} vérifie simplement la valeur du prédicat
+traduit au label $l$ avec la fonction \lstinline'fassert'.
+La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
+\textsc{$\alpha$-assume-pre} suppose sa validité au début de la fonction
+intrumentée.
+La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
+pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
+Pour chacune de ces l-value, une sauvegarde est faite au début de la fonction,
+puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
+La règle \textsc{$\alpha$-assume-assigns} suppose que toutes les l-values
+présentes dans la clause \lstinline'assigns' ont changé de valeur : elle affecte
+une nouvelle valeur non déterministe à chacune d'elle à la fin de la fonction.
+La règle \textsc{$\alpha$-check-post} vérifie le prédicat et la règle
+\textsc{$\alpha$-assume-post} suppose sa validité à la fin de la fonction
+instrumentée.
+Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
+et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
+règle \textsc{$\alpha$-assume-pre}) respectivement aux lignes 6, 7 et 8 du
+listing~\ref{lst:abbrv}.
+La postcondition aux lignes 4--5 du listing~\ref{lst:normalized} est traduite
+en utilisant la règle \textsc{$\alpha$-check-post} aux lignes 29--34 du
+listing~\ref{lst:abbrv}.
+
+Les règles de traduction pour les invariants de boucle
+(\textsc{$\alpha$-check-invariant}, \textsc{$\alpha$-assume-invariant-1} et
+\textsc{$\alpha$-assume-invariant-2}), les variants de boucle
+(\textsc{$\alpha$-variant}) et les loop assigns
+(\textsc{$\alpha$-check-loop-assigns} et \textsc{$\alpha$-assume-loop-assigns})
+pour une boucle au label $l$ sont présentées dans la
+figure~\ref{fig:loop-annot}.
+La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
+sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
+boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
+chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
+boucle.
+La règle \textsc{$\alpha$-assume-loop-assigns} suppose que toutes les l-values
+présentes dans la clause \lstinline'loop assigns' ont changé de valeur : une
+nouvelle valeur non déterministe est affectée à chacune d'elle.
+La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
+avant la boucle et après chaque itération de la boucle.
+La règle \textsc{$\alpha$-assume-invariant-1} a vocation à remplacer toute la
+boucle, elle suppose que le prédicat de l'invariant est vrai, ainsi que la
+négation de la condition de boucle (appelée ici \lstinline'loopcond').
+La règle \textsc{$\alpha$-assume-invariant-2} permet de supposer que la boucle
+a déjà itéré un certain nombre de fois, elle suppose que l'invariant est vrai
+avant la boucle, et vérifie l'invariant à la fin de chaque itération.
+La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
+au début de chaque itération, puis mémorise la valeur du terme au début de la
+boucle dans une variable fraîche \lstinline|old_variant|. Enfin, on vérifie à la
+fin de chaque itération que le variant décroît strictement (par rapport à sa
+valeur au début de l'itération).
+Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
+\lstinline'loop invariant' de la ligne 9 par la règle
+\textsc{$\alpha$-check-invariant} donne les lignes 10--12 et 20--24 du
+listing~\ref{lst:abbrv}, tandis que la traduction du \lstinline'loop variant'
+ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 15--17 et
+25--26 du listing~\ref{lst:abbrv}.
+
+
 
 
 \section{Traduction des termes \eacsl}
 \label{sec:term}
-
 
 \input{figures/fig_rules}
 
@@ -573,109 +586,161 @@ valeur du prédicat après évaluation est \lstinline|var_35| (déclarée à la
 ligne 31).
 
 
-\section{Traduction des annotations \eacsl}
-\label{sec:annot}
+
+\section{Détails}
+\subsection{Sous-langage considéré}
+
+Le langage de spécification \eacsl est un sous-langage exécutable d'\acsl, qui
+est un langage de spécification comportementale implémenté dans \framac.
+Premièrement, étant un sous-ensemble d'\acsl, \eacsl préserve la sémantique
+d'\acsl, ce qui implique que les greffons de \framac existants supportant \acsl
+peuvent être utilisés avec \eacsl sans modification.
+Deuxièmement, le langage \eacsl est \textit{exécutable}, ce qui veut dire que
+toutes les annotations peuvent être traduites en C et exécutées, il peut donc
+être utilisé pour l'analyse dynamique et le \textit{monitoring} (surveillance
+d'exécution).
+
+\eacsl est basé sur une logique du premier ordre typée dans laquelle chaque
+terme peut contenir des expressions C pures (sans effets de bord) et des
+mots-clés du langage.
+Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
+résultat d'une fonction, \lstinline{\valid} est un prédicat qui renvoie vrai si
+son argument est un pointeur valide (se référer au manuel du
+langage~\cite{\citeacsl}).
+Les quantificateurs existentiels et universels sont bornées par des contraintes
+de domaines finis d'entiers afin de rester exécutable.
+Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
+chaque fonction pour spécifier les pré- et postconditions.
+Ces contrats peuvent définir des comportements (\lstinline{behaviors}) gardés et
+nommés, pour lesquels l'exhaustivité (\textit{completeness}) et/ou la séparation
+(\textit{disjointness}) peut être requise.
+Les assertions, les invariants de boucle et les variants peuvent aussi être
+associés aux instructions.
+Abordons maintenant deux des choix les plus importants du langage: les entiers
+mathématiques et la non-définition (nous utiliserons le terme anglais
+\textit{undefinedness}).
 
 
-Définissons maintenant les règles de traduction de haut niveau pour les
-annotations, qui permettent de mettre en évidence les échecs d'annotation.
-Pour chaque annotation, un fragment de programme C se terminant par une
-condition est inséré dans le programme.
-Le générateur de tests essaiera de couvrir tous les chemins d'exécution
-faisables, donc s'il existe des entrées permettant de provoquer un échec de la
-condition de l'annotation, l'erreur sera trouvée.
-Les règles sont de la forme :
+\subsubsection{Entiers mathématiques}\label{sec:eacsl-integers}
 
 
-\[
-\dfrac
-    {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
-      (l_n, w) \rulearrow (I_n, e_n)}
-    {(l, \mbox{\lstinline'kwd w;'}) \rulearrow
-      g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
-\]
+En plus des entiers machine, les termes \eacsl peuvent être des entiers
+mathématiques de type \lstinline{integer} qui sont définis sur l'ensemble
+$\mathbb{Z}$ : les constantes entières, les
+opérations sur les entiers, ainsi que les variables logiques sont de type
+\lstinline{integer}.
+L'arithmétique entière est non bornée et donc les débordements d'entier
+(\textit{overflows}) sont impossibles.
+\eacsl dispose d'un système de sous-typage pour convertir automatiquement les
+types entiers du C vers les entiers mathématiques.
+Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
+\lstinline{x+1} et \lstinline{1} sont de type \lstinline{integer} et une
+conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
+dans ce contexte quand la variable \lstinline{x} est typée.
+Ce choix a été fait pour plusieurs raisons.
+Premièrement, un des buts principaux de \framac est la preuve de programmes par
+appels à des prouveurs externes, la plupart de ces prouveurs fonctionnent mieux
+avec l'arithmétique entière qu'avec l'arithmétique bornée (ou modulaire).
+Deuxièmement, les spécifications sont habituellement écrites sans se préoccuper
+des détails d'implémentation, et les débordements d'entiers sont des détails
+d'implémentation.
+Troisièmement, il reste possible d'utiliser l'arithmétique bornée si besoin en
+utilisant des conversions explicites (\textit{casts}).
+Par exemple, \lstinline{(int)(INT_MAX + 1)} est égal à \lstinline{INT_MIN}, la
+plus petite valeur représentable de type \lstinline{int}.
+Quatrièmement, ce choix facilite l'expression des débordements potentiels dans
+les spécifications : par exemple, grâce à l'arithmétique entière,
+\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} est le moyen le plus simple
+de spécifier que \lstinline{x+y} ne déborde pas.
+Dans la suite, sauf mention contraire, ``entier'' fait référence à
+``entier non-borné''.
 
 
-Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
-traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
-\lstinline'kwd w;' au point de programme $l$ est traduite par composition
-des insertions de code $I_i$ et des expressions $e_i$.
-Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
-l'annotation.
-La figure~\ref{fig:annot} et la figure~\ref{fig:loop-annot} présentent les
-règles de traduction pour chaque annotation.
-Soit la condition $e$ qui doit être testée pour chaque annotation, qui
-correspond au statut de validité de l'annotation en question.
-Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
-d'une expression, cette fonction correspond à un \lstinline'if' dont la branche
-\lstinline'else' génère une erreur et la rapporte.
-Nous définissons également une fonction \lstinline'fassume' permettant de tester
-la valeur d'une expression, cette fonction correspond à un \lstinline'if' dont
-la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
-la branche \lstinline'else' est activée sont ignorées.
+\subsubsection{Undefinedness}\label{sec:undefined}
 
-La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
-(\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
-\textsc{$\alpha$-assume-pre}), les assigns (\textsc{$\alpha$-check-assigns} et
-\textsc{$\alpha$-assume-assigns}) et les postconditions
-(\textsc{$\alpha$-check-post} et \textsc{$\alpha$-assume-post}).
-La règle \textsc{$\alpha$-assert} vérifie simplement la valeur du prédicat
-traduit au label $l$ avec la fonction \lstinline'fassert'.
-La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
-\textsc{$\alpha$-assume-pre} suppose sa validité au début de la fonction
-intrumentée.
-La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
-pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
-Pour chacune de ces l-value, une sauvegarde est faite au début de la fonction,
-puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
-La règle \textsc{$\alpha$-assume-assigns} suppose que toutes les l-values
-présentes dans la clause \lstinline'assigns' ont changé de valeur : elle affecte
-une nouvelle valeur non déterministe à chacune d'elle à la fin de la fonction.
-La règle \textsc{$\alpha$-check-post} vérifie le prédicat et la règle
-\textsc{$\alpha$-assume-post} suppose sa validité à la fin de la fonction
-instrumentée.
-Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
-et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
-règle \textsc{$\alpha$-assume-pre}) respectivement aux lignes 6, 7 et 8 du
-listing~\ref{lst:abbrv}.
-La postcondition aux lignes 4--5 du listing~\ref{lst:normalized} est traduite
-en utilisant la règle \textsc{$\alpha$-check-post} aux lignes 29--34 du
-listing~\ref{lst:abbrv}.
 
-Les règles de traduction pour les invariants de boucle
-(\textsc{$\alpha$-check-invariant}, \textsc{$\alpha$-assume-invariant-1} et
-\textsc{$\alpha$-assume-invariant-2}), les variants de boucle
-(\textsc{$\alpha$-variant}) et les loop assigns
-(\textsc{$\alpha$-check-loop-assigns} et \textsc{$\alpha$-assume-loop-assigns})
-pour une boucle au label $l$ sont présentées dans la
-figure~\ref{fig:loop-annot}.
-La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
-sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
-boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
-chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
-boucle.
-La règle \textsc{$\alpha$-assume-loop-assigns} suppose que toutes les l-values
-présentes dans la clause \lstinline'loop assigns' ont changé de valeur : une
-nouvelle valeur non déterministe est affectée à chacune d'elle.
-La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
-avant la boucle et après chaque itération de la boucle.
-La règle \textsc{$\alpha$-assume-invariant-1} a vocation à remplacer toute la
-boucle, elle suppose que le prédicat de l'invariant est vrai, ainsi que la
-négation de la condition de boucle (appelée ici \lstinline'loopcond').
-La règle \textsc{$\alpha$-assume-invariant-2} permet de supposer que la boucle
-a déjà itéré un certain nombre de fois, elle suppose que l'invariant est vrai
-avant la boucle, et vérifie l'invariant à la fin de chaque itération.
-La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
-au début de chaque itération, puis mémorise la valeur du terme au début de la
-boucle dans une variable fraîche \lstinline|old_variant|. Enfin, on vérifie à la
-fin de chaque itération que le variant décroît strictement (par rapport à sa
-valeur au début de l'itération).
-Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
-\lstinline'loop invariant' de la ligne 9 par la règle
-\textsc{$\alpha$-check-invariant} donne les lignes 10--12 et 20--24 du
-listing~\ref{lst:abbrv}, tandis que la traduction du \lstinline'loop variant'
-ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 15--17 et
-25--26 du listing~\ref{lst:abbrv}.
+\eacsl est exécutable.
+Cependant, l'évaluation de termes indéfinis comme \lstinline{1/0} n'est pas
+possible.
+Pour résoudre ce problème, \eacsl suit la sémantique de vérification à
+l'exécution définie par Chalin~\cite{Chalin/10}, selon laquelle la sémantique de
+tels termes est ``indéfinie'' (\textit{undefined}) : \eacsl utilise une logique
+tri-valuée~\cite{Konikowska/91} comme \spark~\cite{\citespark} ou
+\jml \cite{\citejml}.
+Il est de la responsibilité des outils interprétant \eacsl de s'assurer que les
+termes indéfinis ne sont jamais évalués.
+Une conséquence indirecte de ce choix est que les opérateurs \lstinline{&&}\,,
+\ \lstinline{||}\,, \ \lstinline{_?_:_} \ et\ \lstinline{==>} sont
+``paresseux'' (comme leur équivalent C pour les trois premiers).
+
+
+
+
+\subsection{Support des entiers mathématiques}\label{sec:integers}
+
+
+\lstinputlisting[style=c,escapechar=§,caption={Propriétés des entiers : faux
+    négatif dû à une traduction naïve},label=lst:Z:1]
+                {listings/naive_false_negative.c}
+
+\lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
+    une traduction naïve},label=lst:Z:2]
+                {listings/naive_false_positive.c}
+
+
+Le listing~\ref{lst:Z:1} et le listing~\ref{lst:Z:2} montrent deux exemples où
+une traduction naïve des annotations contenant des entiers mathématiques mènent
+à un résultat incorrect.
+Soit \lstinline'x' de type \lstinline'int'.
+L'assertion ligne 1 du listing~\ref{lst:Z:1} est fausse lorsque
+\lstinline'x = INT_MAX'.
+La traduction naïve de cette assertion (ligne 3) utilise les entiers machine
+avec arithmétique modulaire (supposons une architecture 32 bits), donc
+\lstinline'x+1' reste inférieur ou égal à \lstinline'INT_MAX' pour toute valeur
+de \lstinline'x', rendant tout échec de l'assertion impossible.
+La traduction correcte pour cette annotation (lignes 6--9) conserve la
+sémantique de l'arithmétique entière non bornée en utilisant une bibliothèque
+externe (nous avons choisi GMP, la bibliothèque GNU Multi-Precision) pour
+représenter les valeurs pouvant provoquer un débordement d'entier (ici
+\lstinline'INT_MAX+1').
+Les variables nécessaires pour la gestion des entiers non bornés sont crées et
+initialisées, puis le résultat est calculé et les comparaisons sont faites en
+tant qu'entier non borné.
+Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \eacsl (ligne 2)
+qui est toujours correcte : pour tout entier positif \lstinline'x', son
+successeur est aussi positif.
+Une traduction naïve de cette annotation (ligne 3) génèrera une erreur à
+l'exécution pour \lstinline'x = INT_MAX' : en arithmétique modulaire
+\lstinline'x+1' déborde et devient négatif, violant l'assertion ligne 2.
+Une traduction correcte utilisant les entiers non bornés (non présentée ici)
+conserve le comportement attendu : l'assertion est vraie pour tout entier
+positif \lstinline'x'.
+Une traduction naïve des annotations dans ces deux exemples résulterait en un
+faux négatif dans le premier cas et en un faux positif dans le deuxième cas, ce
+qui porterait atteinte à la correction et à la précision de notre méthode.
+Les règles de traduction pour les constructions \eacsl que nous présentons
+respectent la sémantique des entiers non bornés d'\eacsl et suppose
+l'utilisation d'une bibilothèque externe telle GMP, comme illustré dans le
+listing~\ref{lst:Z:1}.
+
+Pour simplifier la lecture des insertions de code générées par la traduction,
+nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
+que la variable \lstinline{var} doit être déclarée et allouée (avec
+\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
+notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
+\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
+à la fin du code inséré.
+Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
+(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
+être traduite en utilisant les fonctions correspondantes d'une bibliothèque
+comme GMP.
+Les lignes 12--13 du listing~\ref{lst:Z:1} illustrent la notation abrégée de 
+l'instrumentation des lignes 6--9.
+\framac explicite les conversions de type implicites dans les annotations, donc
+le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
+\lstinline'(integer)(x+1)'.
+
+
 
 
 \section[Test vs. Validation à l'Exécution]{Similarités et Différences selon
