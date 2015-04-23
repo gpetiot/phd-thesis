@@ -5,68 +5,72 @@
 \chapterintro
 
 
-Ce chapitre présente la transformation d'un programme C annoté avec \eacsl en un
-programme C appelé programme instrumenté.
-Les annotations \eacsl ont été traduites en fragments de programme C ajoutés au
-programme initial.
+Ce chapitre présente une transformation d'un programme C annoté avec \eacsl en
+un programme C, appelé programme instrumenté, dans lequel les annotations
+\eacsl du programme initial ont été traduites en fragments de programme C
+ajoutés au programme initial.
 Ces fragments mettent en \oe{}uvre les annotations \eacsl afin de générer des
 tests satisfaisant et violant ces annotations.
 
-Ce chapitre présente les règles de traduction des annotations \eacsl en code C
-sémantiquement équivalent afin d'utiliser un générateur de tests qui prend en
-entrée des programmes C.
-L'instrumentation permet de l'utiliser pour traiter des programmes C annotés
-sans que cet outil n'ait à traiter les annotations dans leur format d'origine,
-il les traite via leur instrumentation en C.
+Le programme instrumenté est analysé dynamiquement par un générateur de tests
+structurels qui prend en entrée des programmes C.
+L'instrumentation permet de l'utiliser pour détecter des erreurs dans les
+programmes C annotés sans que cet outil n'ait à traiter les annotations dans
+leur format d'origine.
+Il détecte ces erreurs par analyse du code C produit par l'instrumentation.
 
-Dans un premier temps nous présentons le langage des programmes annotés pris en
-compte.
-Puis nous présentons les principes généraux de la traduction.
-Ensuite nous détaillons les règles de traduction des éléments les plus simples
-que sont les termes, aux éléments les plus complexes que sont les annotations,
-en passant par les prédicats.
-Enfin, nous discutons les différences et les similitudes entre l'instrumentation
-pour la génération de tests et l'instrumentation pour la validation à
-l'exécution.
+Dans la partie~\ref{sec:process} nous présentons le langage des programmes
+annotés pris en compte et les principes généraux de la traduction.
+Ensuite nous détaillons les règles de traduction des annotations \eacsl en code
+C.
+Les règles de traduction pour les annotations sont dans la
+partie~\ref{sec:annot}.
+Elles reposent sur les règles de traduction des termes et des prédicats, qui
+sont détaillées dans les parties~\ref{sec:term} et~\ref{sec:pred}.
+Quelques détails de l'instrumentation sont abordés en partie~\ref{sec:details}.
+Enfin, nous discutons dans la partie~\ref{sec:rac} les différences et les
+similitudes entre l'instrumentation pour la génération de tests et
+l'instrumentation pour la validation à l'exécution.
 
 
 \section{Processus de transformation de programmes}
+\label{sec:process}
 
 
 \input{figures/fig_grammar}
 
-Cette section présente le processus d'instrumentation des fonctions C annotées
+Cette partie présente le processus d'instrumentation des fonctions C annotées
 avec le langage d'annotations \eacsl pour la génération de tests.
+Nous supposons que les fonctions respectent la forme normale définie par
+l'entité syntaxique \textit{function} de la grammaire définie dans la
+figure~\ref{fig:grammar}.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
 instruction et annotation à l'intérieur d'une fonction.
 Considérons aussi la présence d'un label au début et à la fin de chaque corps de
 boucle.
-(Strictement parlant, les labels ne peuvent pas être placés juste avant les
-déclarations de variables ou l'accolade fermante ``\bclose'' en C, mais
-cette limitation peut être contournée par l'ajout d'une instruction ``skip''
-(``\lstinline{;}'') après ces labels.)
-Nous supposons que les fonctions respectent la forme normale définie par
-l'entité syntaxique \textit{function} de la grammaire définie
-figure~\ref{fig:grammar}. 
-Dans cette figure, la notation ``${\textit{as}\;X}$'' en exposant signifie que
-chaque occurrence de $X$ dans la règle courante doit être remplacée par la
-chaîne à laquelle on fait référence en exposant.
-Par exemple, si \texttt{foo} est le nom ($id$) de la fonction sous test dans la
-règle $function$, les labels $\texttt{Beg}_f$ et $\texttt{End}_f$ dans le corps
-de cette fonction sont remplacés par $\texttt{Beg}_{\texttt{foo}}$ et
-$\texttt{End}_{\texttt{foo}}$, ce qui assure des labels uniques au début et à la
-fin du corps de la fonction.
+%% (Strictement parlant, les labels ne peuvent pas être placés juste avant les
+%% déclarations de variables ou l'accolade fermante ``\bclose'' en C, mais
+%% cette limitation peut être contournée par l'ajout d'une instruction ``skip''
+%% (``\lstinline{;}'') après ces labels.)
+Dans la figure~\ref{fig:grammar}, la notation ``${\textit{as}\;X}$'' en exposant
+signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
+par la chaîne à laquelle on fait référence en exposant.
+Par exemple, si \texttt{foo} est le nom (\textit{id}) de la fonction sous test,
+la règle \textit{function} indique que les labels $\texttt{Beg}_f$ et
+$\texttt{End}_f$ dans le corps de cette fonction doivent être
+$\texttt{Beg}_{\texttt{foo}}$ et $\texttt{End}_{\texttt{foo}}$, ce qui assure des
+labels uniques au début et à la fin du corps de la fonction.
 Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
-de chaque fonction, que la variable retournée s'appelle \lstinline'res' et que
+de chaque fonction, qu'elle retourne une variable appelée \lstinline'res' et que
 cette variable n'entre pas en conflit avec une autre variable du programme.
 Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
-Les symboles terminaux sont présentés en police \texttt{typewriter}.
+Les symboles terminaux sont présentés en police \lstinline{typewriter}.
 Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
 font partie des langages C ou \eacsl.
 \textit{\underline{not-while-stmt}} est toute instruction du C qui n'est pas
-une boucle.
+une boucle ni \lstinline'return'.
 \textit{\underline{term}} et \textit{\underline{predicate}} sont des expressions
-\eacsl qui sont décrites en section~\ref{sec:term} et section~\ref{sec:pred}.
+\eacsl qui sont décrites dans les parties~\ref{sec:term} et~\ref{sec:pred}.
 
 
 \subsection{Exemple}
@@ -248,9 +252,9 @@ La figure~\ref{fig:code-ins} illustre ce principe sur les insertions de code
 générées dans la figure~\ref{fig:code-gen}.
 
 La traduction d'annotations est définie par les règles de la
-section~\ref{sec:annot}.
+partie~\ref{sec:annot}.
 Cela requiert de traduire les termes et les prédicats \eacsl.
-Ces transformations sont décrites par les règles des sections~\ref{sec:term}
+Ces transformations sont décrites par les règles des parties~\ref{sec:term}
 et~\ref{sec:pred}.
 Dans ces règles, les notations suivantes sont utilisées :
 \begin{itemize}
@@ -442,7 +446,7 @@ début de la fonction.
 Appliquée à un accès mémoire (règle \textsc{$\tau$-old-val}), on utilise le
 tableau alloué dynamiquement \lstinline|old_val_x| qui contient les valeurs du
 tableau ou pointeur \lstinline'x' au début de la fonction (se référer à la
-section~\ref{sec:principles}).
+partie~\ref{sec:principles}).
 Le terme \lstinline|\result| est traduit par la règle \textsc{$\tau$-res}, il
 fait référence à la valeur de retour de la fonction en \eacsl qui est écrite
 dans la variable \lstinline|res|.
@@ -501,7 +505,7 @@ non nulle.
 
 
 De manière similaire à la fonction de traduction $\tau$ pour les termes
-(section~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
+(partie~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
 est définie comme une fonction partielle qui, à un label et un prédicat \eacsl
 $p$, associe une séquence d'insertions de code $(l_i, c_i)$ et une expression C
 $e \in \{0, 1\}$ (que nous encoderons dans un \lstinline'int') :
@@ -535,7 +539,7 @@ reflètent l'évaluation paresseuse de ces opérateurs selon la sémantique d'\e
 : le premier opérande est toujours évalué (en $I_1$) mais le deuxième n'est
 évalué (en $I_2$) que si nécessaire.
 La règle \textsc{$\pi$-if} est similaire à \textsc{$\tau$-if} (voir
-section~\ref{sec:term}).
+partie~\ref{sec:term}).
 Dans l'exemple du listing~\ref{lst:normalized}, la traduction de la
 postcondition
 \lstinline{\result != 0 <==> \exists integer i; 0<=i<n && *(t+i)==v} requiert
@@ -588,6 +592,7 @@ ligne 31).
 
 
 \section{Détails}
+\label{sec:details}
 \subsection{Sous-langage considéré}
 
 Le langage de spécification \eacsl est un sous-langage exécutable d'\acsl, qui
@@ -596,8 +601,8 @@ Premièrement, étant un sous-ensemble d'\acsl, \eacsl préserve la sémantique
 d'\acsl, ce qui implique que les greffons de \framac existants supportant \acsl
 peuvent être utilisés avec \eacsl sans modification.
 Deuxièmement, le langage \eacsl est \textit{exécutable}, ce qui veut dire que
-toutes les annotations peuvent être traduites en C et exécutées, il peut donc
-être utilisé pour l'analyse dynamique et le \textit{monitoring} (surveillance
+toutes les annotations peuvent être traduites en C et leur traduction peut être
+exécutée pour l'analyse dynamique et le \textit{monitoring} (surveillance
 d'exécution).
 
 \eacsl est basé sur une logique du premier ordre typée dans laquelle chaque
@@ -607,15 +612,16 @@ Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
 résultat d'une fonction, \lstinline{\valid} est un prédicat qui renvoie vrai si
 son argument est un pointeur valide (se référer au manuel du
 langage~\cite{\citeacsl}).
-Les quantificateurs existentiels et universels sont bornées par des contraintes
-de domaines finis d'entiers afin de rester exécutable.
+Les quantifications existentielles et universelles doivent ported sur des
+domaines finis d'entiers.
 Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
 chaque fonction pour spécifier les pré- et postconditions.
 Ces contrats peuvent définir des comportements (\lstinline{behaviors}) gardés et
-nommés, pour lesquels l'exhaustivité (\textit{completeness}) et/ou la séparation
-(\textit{disjointness}) peut être requise.
-Les assertions, les invariants de boucle et les variants peuvent aussi être
-associés aux instructions.
+nommés, pour lesquels l'exhaustivité (\textit{completeness}) -- au moins un
+comportement s'applique -- et/ou la séparation (\textit{disjointness}) -- au
+plus un comportement s'applique -- peut être requise.
+Les assertions peuvent être associées à des instructions quelconques.
+Les invariants de boucle et les variants peuvent être associés aux boucles.
 Abordons maintenant deux des choix les plus importants du langage: les entiers
 mathématiques et la non-définition (nous utiliserons le terme anglais
 \textit{undefinedness}).
@@ -639,7 +645,8 @@ conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
 dans ce contexte quand la variable \lstinline{x} est typée.
 Ce choix a été fait pour plusieurs raisons.
 Premièrement, un des buts principaux de \framac est la preuve de programmes par
-appels à des prouveurs externes, la plupart de ces prouveurs fonctionnent mieux
+appels à des prouveurs externes.
+Or, la plupart de ces prouveurs fonctionnent mieux
 avec l'arithmétique entière qu'avec l'arithmétique bornée (ou modulaire).
 Deuxièmement, les spécifications sont habituellement écrites sans se préoccuper
 des détails d'implémentation, et les débordements d'entiers sont des détails
@@ -689,7 +696,7 @@ Une conséquence indirecte de ce choix est que les opérateurs \lstinline{&&}\,,
 
 
 Le listing~\ref{lst:Z:1} et le listing~\ref{lst:Z:2} montrent deux exemples où
-une traduction naïve des annotations contenant des entiers mathématiques mènent
+une traduction naïve des annotations contenant des entiers mathématiques mène
 à un résultat incorrect.
 Soit \lstinline'x' de type \lstinline'int'.
 L'assertion ligne 1 du listing~\ref{lst:Z:1} est fausse lorsque
@@ -720,7 +727,7 @@ faux négatif dans le premier cas et en un faux positif dans le deuxième cas, c
 qui porterait atteinte à la correction et à la précision de notre méthode.
 Les règles de traduction pour les constructions \eacsl que nous présentons
 respectent la sémantique des entiers non bornés d'\eacsl et suppose
-l'utilisation d'une bibilothèque externe telle GMP, comme illustré dans le
+l'utilisation d'une bibliothèque externe telle GMP, comme illustré dans le
 listing~\ref{lst:Z:1}.
 
 Pour simplifier la lecture des insertions de code générées par la traduction,
@@ -734,8 +741,7 @@ Nous soulignons les fragments de code afin d'indiquer que l'opération effectué
 (affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
 être traduite en utilisant les fonctions correspondantes d'une bibliothèque
 comme GMP.
-Les lignes 12--13 du listing~\ref{lst:Z:1} illustrent la notation abrégée de 
-l'instrumentation des lignes 6--9.
+Cette notation est utilisée aux lignes 12--13 du listing~\ref{lst:Z:1}.
 \framac explicite les conversions de type implicites dans les annotations, donc
 le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
 \lstinline'(integer)(x+1)'.
@@ -745,6 +751,7 @@ le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
 
 \section[Test vs. Validation à l'Exécution]{Similarités et Différences selon
   l'objectif Test vs. Validation à l'Exécution}
+\label{sec:rac}
 
 
 La traduction d'annotations \eacsl en code C a été implémentée dans deux
@@ -753,14 +760,14 @@ greffons \framac : \eacsltoc \cite{Delahaye/SAC13,Kosmatov/RV13} et \stady
 Le premier génère un programme instrumenté pour la validation d'assertions à
 l'exécution, le second génère un programme instrumenté pour la génération de
 tests avec \pathcrawler \cite{\citepathcrawler}.
-Cette section discute les similarités et les différences entre ces deux façons
+Cette partie discute les similarités et les différences entre ces deux façons
 d'instrumenter.
 
 La traduction pour la génération de test et la traduction pour la validation à
 l'exécution ont toutes deux besoin de générer du code exécutable, c'est pourquoi
 un sous-ensemble exécutable du langage de spécification est considéré dans les
 deux cas.
-La plupart des règles définies dans les sections~\ref{sec:term},
+La plupart des règles définies dans les parties~\ref{sec:term},
 \ref{sec:pred} et \ref{sec:annot} sont autant valables pour la validation à
 l'exécution que pour le test, le code généré devant être correct vis-à-vis de la
 sémantique des annotations.
@@ -839,7 +846,7 @@ traiter.
 \textbf{Erreurs à l'exécution.}
 La traduction d'annotations en C peut introduire des erreurs à l'exécution dues
 aux termes dont la sémantique est indéfinie dans les annotations, comme
-\lstinline'1/0' (voir section~\ref{sec:undefined}).
+\lstinline'1/0' (voir partie~\ref{sec:undefined}).
 Ce problème peut être évité pour la génération de tests comme proposé dans
 \cite{Delahaye/SAC13} pour la validation à l'exécution, en utilisant le greffon
 \rte \cite{\citeframac} sur le code résultant de l'instrumentation, celui-ci va
