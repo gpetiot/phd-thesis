@@ -123,6 +123,18 @@ du listing~\ref{lst:normalized} est présenté dans le listing~\ref{lst:abbrv}.
 Les principes de la traduction sont illustrés par des extraits de ce listing,
 au fur et à mesure de leur présentation.
 
+Pour simplifier la lecture des insertions de code générées par la traduction,
+nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
+que la variable \lstinline{var} doit être déclarée et allouée (avec
+\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
+notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
+\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
+à la fin du code inséré.
+Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
+(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
+être traduite en utilisant les fonctions correspondantes d'une bibliothèque
+comme GMP.
+
 
 \lstinputlisting[style=c,escapechar=§,caption={Version instrumentée du programme
     du listing~\ref{lst:normalized}},label=lst:abbrv]
@@ -687,22 +699,6 @@ Les règles de traduction pour les constructions \eacsl que nous présentons
 respectent la sémantique des entiers non bornés d'\eacsl et suppose
 l'utilisation d'une bibliothèque externe telle GMP, comme illustré dans le
 listing~\ref{lst:Z:1}.
-
-Pour simplifier la lecture des insertions de code générées par la traduction,
-nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
-que la variable \lstinline{var} doit être déclarée et allouée (avec
-\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
-notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
-\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
-à la fin du code inséré.
-Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
-(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
-être traduite en utilisant les fonctions correspondantes d'une bibliothèque
-comme GMP.
-Cette notation est utilisée aux lignes 12--13 du listing~\ref{lst:Z:1}.
-\framac explicite les conversions de type implicites dans les annotations, donc
-le terme \lstinline'x+1' ligne 1 du listing~\ref{lst:Z:1} devient
-\lstinline'(integer)(x+1)'.
 
 
 
