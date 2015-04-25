@@ -1,79 +1,91 @@
 \begin{figure}[bt]
-  \lstinline'L', \lstinline'loop invariant x<y'
-  $\mapsto$\\
-  (\lstinline'L',\insertball[fill=blue!40]{1})
-  (\lstinline'L',\insertball[fill=red!40]{2})
-  (\lstinline'L',\insertball[fill=greenv!40]{3})
-  (\lstinline'L',\insertball[fill=orange!40]{4})
-  (\lstinline'EndIter_L',\insertball[fill=gray!40]{5})
-  (\lstinline'EndIter_L',\insertball[fill=gray!40]{6})
-  (\lstinline'EndIter_L',\insertball[fill=gray!40]{7})
-  (\lstinline'EndIter_L',\insertball[fill=gray!40]{8})
-  \begin{itemize}
-  \item \lstinline'L', \lstinline'x<y'
-    $\mapsto$
-    (\lstinline'L',\insertball[fill=blue!40]{1})
-    (\lstinline'L',\insertball[fill=red!40]{2})
-    (\lstinline'L',\insertball[fill=greenv!40]{3}),
-    \lstinline'v3'
-    \begin{itemize}
-    \item \lstinline'L', ($\mathbb{Z}$)\lstinline'x'
-      $\mapsto$
-      (\lstinline'L',\insertball[fill=blue!40]{1}),
-      \lstinline'v1'
-      \begin{itemize}
-      \item \lstinline'L', \lstinline'x' $\mapsto$ ($\emptyset$, \lstinline'x')
-      \end{itemize}
-    \item \lstinline'L', ($\mathbb{Z}$)\lstinline'y'
-      $\mapsto$
-      (\lstinline'L',\insertball[fill=red!40]{2}),
-      \lstinline'v2'
-      \begin{itemize}
-      \item \lstinline'L', \lstinline'y' $\mapsto$ ($\emptyset$, \lstinline'y')
-      \end{itemize}
-    \end{itemize}
-  \item \lstinline'EndIter_L', \lstinline'x<y'
-    $\mapsto$
-    (\lstinline'EndIter_L',\insertball[fill=gray!40]{5})
-    (\lstinline'EndIter_L',\insertball[fill=gray!40]{6})
-    (\lstinline'EndIter_L',\insertball[fill=gray!40]{7}),
-    \lstinline'v6'
-  \end{itemize}~\\
-
-  \centering
-  \begin{tikzpicture}%[remember picture,overlay,font=\scriptsize]
-    \tikzstyle{ins}=[rounded corners,inner sep=.5mm,thick,node distance=.5cm]
+  \begin{minipage}{0.49\textwidth}
+  \begin{tabular}{c|c}
+    au label $L$ & au label $EndIter_L$ \\
+    \hline
+    $
+    \underbracket{
+      \underbracket{
+        (\mathbb{Z})
+        \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
+      }_{\insertball[fill=blue!40]{1},~ \mbox{\lstinline'v1'}}
+      \mbox{\lstinline'<'}
+      \underbracket{
+        (\mathbb{Z})
+        \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
+      }_{\insertball[fill=red!40]{2},~ \mbox{\lstinline'v2'}}
+    }_{
+      \insertball[fill=blue!40]{1}~
+      \insertball[fill=red!40]{2}~
+      \insertball[fill=greenv!40]{3},~
+      \mbox{\lstinline'v3'}
+    }
+    $
+    &
+    $
+    \underbracket{
+      \underbracket{
+        (\mathbb{Z})
+        \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
+      }_{\insertball[fill=gray!40]{5},~ \mbox{\lstinline'v4'}}
+      \mbox{\lstinline'<'}
+      \underbracket{
+        (\mathbb{Z})
+        \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
+      }_{\insertball[fill=gray!40]{6},~ \mbox{\lstinline'v5'}}
+    }_{
+      \insertball[fill=gray!40]{5}~
+      \insertball[fill=gray!40]{6}~
+      \insertball[fill=gray!40]{7},~
+      \mbox{\lstinline'v6'}
+    }
+    $
+    \\
+  \end{tabular}~\\
+  \end{minipage}\hfill
+  \begin{minipage}{0.49\textwidth}
+  \begin{tikzpicture}[font=\scriptsize]
+    \tikzstyle{ins}=[rounded corners,inner sep=.5mm,thick,node distance=.6cm]
     \node[ins,draw=blue] at (-2.5,2) (ins1) {
-      \lstinline{mpz_t v1; __gmpz_init_set_si(v1,x);}};
+      \lstinline{mpz_t v1; __gmpz_init_set_si(v1,x);}
+      \insertball[fill=blue!40]{1}};
     \node[left of=ins1,node distance=3.5cm] (l1) {\texttt{L},};
     \node[ins,draw=red,below of=ins1] (ins2) {
-      \lstinline{mpz_t v2; __gmpz_init_set_si(v2,y);}};
+      \lstinline{mpz_t v2; __gmpz_init_set_si(v2,y);}
+      \insertball[fill=red!40]{2}};
     \node[left of=ins2,node distance=3.5cm] (l2) {\texttt{L},};
     \node[ins,inner sep=0,below of=ins2] (ins3a) {
       \lstinline{int v3; __gmpz_cmp(v1, v2)<0;}};
     \node[inner sep=0,below of=ins3a,node distance=.3cm] (ins3b) {
-      \lstinline{__gmpz_clear(v1); __gmpz_clear(v2);}};
+      \lstinline{__gmpz_clear(v1); __gmpz_clear(v2);}
+      \insertball[fill=greenv!40]{3}};
     \node[ins,draw=greenv,fit=(ins3a)(ins3b)] (ins3) {};
     \node[left of=ins3a,node distance=3.5cm] (l3) {\texttt{L},};
     \node[ins,draw=gray,below of=ins3] (ins4) {
-      \lstinline{mpz_t v4; __gmpz_init_set_si(v4,x);}};
+      \lstinline{mpz_t v4; __gmpz_init_set_si(v4,x);}
+      \insertball[fill=gray!40]{5}};
     \node[ins,draw=gray,below of=ins4] (ins5) {
-      \lstinline{mpz_t v5; __gmpz_init_set_si(v5,y);}};
+      \lstinline{mpz_t v5; __gmpz_init_set_si(v5,y);}
+      \insertball[fill=gray!40]{6}};
     \node[ins,inner sep=0,below of=ins5] (ins6a) {
       \lstinline{int v6; __gmpz_cmp(v4, v5)<0;}};
     \node[inner sep=0,below of=ins6a,node distance=.3cm] (ins6b) {
-      \lstinline{__gmpz_clear(v4); __gmpz_clear(v5);}};
+      \lstinline{__gmpz_clear(v4); __gmpz_clear(v5);}
+      \insertball[fill=gray!40]{7}};
     \node[ins,draw=gray,fit=(ins6a)(ins6b)] (ins6) {};
     \node[left of=ins4,node distance=4.45cm] (l5) {\texttt{EndIter\_L},};
     \node[left of=ins5,node distance=4.45cm] (l6) {\texttt{EndIter\_L},};
     \node[left of=ins6a,node distance=4.45cm] (l7) {\texttt{EndIter\_L},};
-    \node[ins,draw=orange,below of=ins6] (ins7) {\lstinline{assert(v3);}};
-    \node[ins,draw=gray,below of=ins7] (ins8) {\lstinline{assert(v6);}};
+    \node[ins,draw=orange,below of=ins6] (ins7) {
+      \lstinline{assert(v3);}\insertball[fill=orange!40]{4}};
+    \node[ins,draw=gray,below of=ins7] (ins8) {
+      \lstinline{assert(v6);}\insertball[fill=gray!40]{8}};
     \node[left of=ins7,node distance=3.5cm] (l4) {\texttt{L},};
     \node[left of=ins8,node distance=4.45cm] (l8) {\texttt{EndIter\_L},};
     \node[draw,thick,dotted,fit=(l1)(ins1)(ins8)(l8)] (ins) {};
-    \node[below of=ins,node distance=2.5cm] {code à insérer};
+    \node[below of=ins,node distance=2.9cm] {code à insérer};
   \end{tikzpicture}
+  \end{minipage}
   \caption{Génération d'insertions de code à partir d'un invariant de boucle}
   \label{fig:code-gen}
 \end{figure}

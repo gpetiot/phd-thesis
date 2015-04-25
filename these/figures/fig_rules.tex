@@ -1,14 +1,164 @@
+\begin{figure}[t]
+\scriptsize{
+  {\myinference[$\alpha$-assert]
+    {(l, p) \rulearrow (I, e)}
+    {(l, \mbox{\lstinline'assert p;'})
+      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+  }
+  \vspace{-1mm}
+
+  {\myinference[$\alpha$-check-pre\hspace{-2mm}]
+    {(Beg_f, p) \rulearrow (I, e)}
+    {(Beg_f, \mbox{\lstinline'requires p;'})
+      \rulearrow
+      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
+  }
+  {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
+    {(Beg_f, p) \rulearrow (I, e)}
+    {(Beg_f, \left \{\hspace{-2mm}
+      \begin{array}{r}
+        \mbox{\lstinline'typically'} \\
+        \mbox{\lstinline'requires'}
+      \end{array} \mbox{\lstinline'p;'} \right. %\hspace{-2mm}
+      )
+      \rulearrow
+      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
+  }
+  \vspace{-1mm}
+
+  {\myinference[$\alpha$-check-assigns]
+    {(End_f, x) \rulearrow (I, e)}
+    {(End_f, \mbox{\lstinline'assigns X;'})
+      \rulearrow
+      I \concat
+      \forall (x:ctype) \not \in X:
+      (Beg_f, \mbox{\lstinline'ctype assigns_x = e;'})
+      \concat (End_f, \mbox{\lstinline'fassert(e == assigns_x);'})
+    }
+  }
+  {\myinference[$\alpha$-assume-assigns]
+    {(End_f, x) \rulearrow (I, e)}
+    {(End_f, \mbox{\lstinline'assigns x;'})
+      \rulearrow
+      I \concat (End_f, \mbox{\lstinline'e = nondet();'})}
+  }
+  \vspace{-1mm}
+
+  {\myinference[$\alpha$-check-post]
+    {(End_f, p) \rulearrow (I, e)}
+    {(End_f, \mbox{\lstinline'ensures p;'})
+      \rulearrow
+      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
+  }
+  {\myinference[$\alpha$-assume-post]
+    {(End_f, p) \rulearrow (I, e)}
+    {(End_f, \mbox{\lstinline'ensures p;'})
+      \rulearrow
+      I \concat (End_f, \mbox{\lstinline'fassume(e);'})}
+  }
+}
+  \caption{Règles de traduction pour les assertions, pré-/postconditions et
+    assigns}
+  \label{fig:annot}
+\end{figure}
+
+\begin{figure*}[tb]
+  \scriptsize{
+  {\myinference[$\alpha$-check-loop-assigns]
+    {(l, x) \rulearrow (I, e)}
+    {
+      \splitfrac
+      {
+        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
+      }
+      {
+        I \concat
+        \forall (x:ctype) \not \in X:
+        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+      }
+    }
+  }
+  {\myinference[$\alpha$-assume-loop-assigns]
+    {(l, x) \rulearrow (I, e)}
+    {(l, \mbox{\lstinline'loop assigns x;'})
+      \rulearrow
+      I \concat (l, \mbox{\lstinline'e = nondet();'})}
+  }
+  \vspace{-1mm}
+
+ {\myinference[$\alpha$-check-invariant]
+    {(l, p) \rulearrow (I_1, e_1) \\
+      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
+    }
+  }
+
+ {\myinference[$\alpha$-assume-invariant-1]
+    {(l, p) \rulearrow (I, e)}
+    {
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
+    }
+  }
+ {\myinference[$\alpha$-assume-invariant-2]
+    {(l, p) \rulearrow (I_1, e_1) \\
+      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
+    }
+  }
+ \vspace{-1mm}
+
+ {\myinference[$\alpha$-variant]
+   {
+     (BegIter_l, t) \rulearrow (I_1, e_1) \\
+     (EndIter_l, t) \rulearrow (I_2, e_2)
+   }
+   {
+     \splitfrac
+         {
+           (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
+         }
+         {
+           I_1 \concat ((BegIter_l,
+           \mbox{\lstinline'fassert('}
+           \underline{\mbox{\lstinline'0 <= e1'}}
+           \mbox{\lstinline');' }
+           \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
+           \semicolon)
+           \concat I_2
+           \concat(EndIter_l,
+           \mbox{\lstinline'fassert('}
+           \underline{\mbox{\lstinline'e2'}\Zclear
+             \mbox{\lstinline'< old_variant'} \Zclear}
+           \mbox{\lstinline');'})
+         }
+   }
+ }
+  }
+  \caption{Règles de traduction pour les annotations de boucle : invariants,
+    variant et assigns}
+  \label{fig:loop-annot}
+\end{figure*}
+
+
 \begin{figure*}[t]
 \scriptsize{
   {\myinference[$\tau$-old\hspace{-2mm}{}]
     {}
     {(l, \mbox{\lstinline'\\old(x)'}:ctype) \rulearrow
-      (\emptyset, \mbox{\lstinline'old_x'})}
+      (\emptylist, \mbox{\lstinline'old_x'})}
   }
   {\myinference[$\tau$-var\hspace{-2mm}{}]
     {}
     {(l, \mbox{\lstinline'x'}:ctype) \rulearrow
-      (\emptyset, \mbox{\lstinline'x'})}
+      (\emptylist, \mbox{\lstinline'x'})}
   }
   \vspace{-2mm}
 
@@ -21,7 +171,7 @@
   {\myinference[$\tau$-res\hspace{-2mm}{}]
     {}
     {(l, \mbox{\lstinline'\\result'}:ctype) \rulearrow
-      (\emptyset, \mbox{\lstinline'res'})}
+      (\emptylist, \mbox{\lstinline'res'})}
   }
   {\myinference[$\tau$-const\hspace{-1mm}{}]
     {}
@@ -248,7 +398,7 @@
   {\myinference[$\pi$-true]
     {}
     {(l, \mbox{\lstinline'\\true'}) \rulearrow
-      (\emptyset, \mbox{\lstinline'1'})}
+      (\emptylist, \mbox{\lstinline'1'})}
   }
 
   \vspace{-3mm}
@@ -265,7 +415,7 @@
   {\myinference[$\pi$-false]
     {}
     {(l, \mbox{\lstinline'\\false'}) \rulearrow
-      (\emptyset, \mbox{\lstinline'0'})}
+      (\emptylist, \mbox{\lstinline'0'})}
   }
 
   \vspace{-3mm}
@@ -373,153 +523,4 @@
   }
   \caption{Règles de traduction pour les prédicats quantifiés}
   \label{fig:quantif}
-\end{figure*}
-
-\begin{figure}[t]
-\scriptsize{
-  {\myinference[$\alpha$-assert]
-    {(l, p) \rulearrow (I, e)}
-    {(l, \mbox{\lstinline'assert p;'})
-      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
-  }
-  \vspace{-1mm}
-
-  {\myinference[$\alpha$-check-pre\hspace{-2mm}]
-    {(Beg_f, p) \rulearrow (I, e)}
-    {(Beg_f, \mbox{\lstinline'requires p;'}
-      \rulearrow
-      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
-  }
-  {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
-    {(Beg_f, p) \rulearrow (I, e)}
-    {(Beg_f, \left \{\hspace{-2mm}
-      \begin{array}{r}
-        \mbox{\lstinline'typically p;'} \\
-        \mbox{\lstinline'requires p;'}
-      \end{array} \right. \hspace{-2mm}
-      )
-      \rulearrow
-      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
-  }
-  \vspace{-1mm}
-
-  {\myinference[$\alpha$-check-assigns]
-    {(End_f, x) \rulearrow (I, e)}
-    {(End_f, \mbox{\lstinline'assigns X;'})
-      \rulearrow
-      I \concat
-      \forall (x:ctype) \not \in X:
-      (Beg_f, \mbox{\lstinline'ctype assigns_x = e;'})
-      \concat (End_f, \mbox{\lstinline'fassert(e == assigns_x);'})
-    }
-  }
-  {\myinference[$\alpha$-assume-assigns]
-    {(End_f, x) \rulearrow (I, e)}
-    {(End_f, \mbox{\lstinline'assigns x;'})
-      \rulearrow
-      I \concat (End_f, \mbox{\lstinline'e = nondet();'})}
-  }
-  \vspace{-1mm}
-
-  {\myinference[$\alpha$-check-post]
-    {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mbox{\lstinline'ensures p;'})
-      \rulearrow
-      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
-  }
-  {\myinference[$\alpha$-assume-post]
-    {(End_f, p) \rulearrow (I, e)}
-    {(End_f, \mbox{\lstinline'ensures p;'})
-      \rulearrow
-      I \concat (End_f, \mbox{\lstinline'fassume(e);'})}
-  }
-}
-  \caption{Règles de traduction pour les assertions, pré-/postconditions et
-    assigns}
-  \label{fig:annot}
-\end{figure}
-
-\begin{figure*}[tb]
-  \scriptsize{
-  {\myinference[$\alpha$-check-loop-assigns]
-    {(l, x) \rulearrow (I, e)}
-    {
-      \splitfrac
-      {
-        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
-      }
-      {
-        I \concat
-        \forall (x:ctype) \not \in X:
-        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
-        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
-      }
-    }
-  }
-  {\myinference[$\alpha$-assume-loop-assigns]
-    {(l, x) \rulearrow (I, e)}
-    {(l, \mbox{\lstinline'loop assigns x;'})
-      \rulearrow
-      I \concat (l, \mbox{\lstinline'e = nondet();'})}
-  }
-  \vspace{-1mm}
-
- {\myinference[$\alpha$-check-invariant]
-    {(l, p) \rulearrow (I_1, e_1) \\
-      (EndIter_l, p) \rulearrow (I_2, e_2)}
-    {
-      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
-      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
-      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
-    }
-  }
-
- {\myinference[$\alpha$-assume-invariant-1]
-    {(l, p) \rulearrow (I, e)}
-    {
-      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
-      I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
-    }
-  }
- {\myinference[$\alpha$-assume-invariant-2]
-    {(l, p) \rulearrow (I_1, e_1) \\
-      (EndIter_l, p) \rulearrow (I_2, e_2)}
-    {
-      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
-      I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})
-      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
-    }
-  }
- \vspace{-1mm}
-
- {\myinference[$\alpha$-variant]
-   {
-     (BegIter_l, t) \rulearrow (I_1, e_1) \\
-     (EndIter_l, t) \rulearrow (I_2, e_2)
-   }
-   {
-     \splitfrac
-         {
-           (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
-         }
-         {
-           I_1 \concat ((BegIter_l,
-           \mbox{\lstinline'fassert('}
-           \underline{\mbox{\lstinline'0 <= e1'}}
-           \mbox{\lstinline');' }
-           \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
-           \semicolon)
-           \concat I_2
-           \concat(EndIter_l,
-           \mbox{\lstinline'fassert('}
-           \underline{\mbox{\lstinline'e2'}\Zclear
-             \mbox{\lstinline'< old_variant'} \Zclear}
-           \mbox{\lstinline');'})
-         }
-   }
- }
-  }
-  \caption{Règles de traduction pour les annotations de boucle : invariants,
-    variant et assigns}
-  \label{fig:loop-annot}
 \end{figure*}

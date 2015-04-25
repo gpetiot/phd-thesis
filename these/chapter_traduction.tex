@@ -46,8 +46,8 @@ l'entité syntaxique \textit{function} de la grammaire définie dans la
 figure~\ref{fig:grammar}.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
 instruction et annotation à l'intérieur d'une fonction.
-Considérons aussi la présence d'un label au début et à la fin de chaque corps de
-boucle.
+Nous considérons aussi qu'un label est présent au début et à la fin de chaque
+corps de boucle.
 %% (Strictement parlant, les labels ne peuvent pas être placés juste avant les
 %% déclarations de variables ou l'accolade fermante ``\bclose'' en C, mais
 %% cette limitation peut être contournée par l'ajout d'une instruction ``skip''
@@ -67,8 +67,8 @@ Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
 Les symboles terminaux sont présentés en police \lstinline{typewriter}.
 Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
 font partie des langages C ou \eacsl.
-\textit{\underline{not-while-stmt}} est toute instruction du C qui n'est ni
-une boucle ni \lstinline'return'.
+Le non-terminal \textit{\underline{not-while-stmt}} correspond à toute
+instruction du C qui n'est ni une boucle ni \lstinline'return'.
 \textit{\underline{term}} et \textit{\underline{predicate}} sont des expressions
 \eacsl qui sont décrites dans les parties~\ref{sec:term} et~\ref{sec:pred}.
 
@@ -85,7 +85,7 @@ une boucle ni \lstinline'return'.
 Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
 test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
 Elle retourne $1$ quand la valeur \lstinline'v' en paramètre est présente dans
-le tableau \lstinline't' en paramètre, ou $0$ sinon.
+le tableau \lstinline't' en paramètre, et $0$ sinon.
 
 La clause \lstinline'requires' de la ligne 1 indique que la taille du tableau
 \lstinline'n' est positive.
@@ -102,12 +102,12 @@ Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
 \cite{\citekorat}).
 L'invariant de boucle de la ligne 9 spécifie des bornes pour \lstinline'i'
 sur l'ensemble des itérations de la boucle.
+Le variant de boucle ligne 10 assure la terminaison de la boucle.
+La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
+et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
 Notons que pour prouver formellement la postcondition, un invariant de boucle
 supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
 : \lstinline'\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;'.
-Le variant de boucle ligne 10 assure la terminaison de la boucle.
-La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
-et seulement si il existe un élément de \lstinline't' égal à \lstinline'v'.
 
 
 
@@ -123,17 +123,30 @@ du listing~\ref{lst:normalized} est présenté dans le listing~\ref{lst:abbrv}.
 Les principes de la traduction sont illustrés par des extraits de ce listing,
 au fur et à mesure de leur présentation.
 
+Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
+d'une expression.
+Cette fonction correspond à un \lstinline'if' dont la branche
+\lstinline'else' génère une erreur et la rapporte.
+Nous définissons également une fonction \lstinline'fassume' permettant de tester
+la valeur d'une expression.
+Cette fonction correspond à un \lstinline'if' dont
+la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
+la branche \lstinline'else' est activée sont ignorées.
+
 Pour simplifier la lecture des insertions de code générées par la traduction,
 nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
-que la variable \lstinline{var} doit être déclarée et allouée (avec
-\lstinline{Z_t var; Z_init(var);}) au début de la portion de code insérée, et la
-notation \lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable
-\lstinline{var} doit être désallouée (avec \lstinline{Z_clear(var);})
+que la variable \lstinline{var} doit être déclarée et allouée 
+%(avec \lstinline{Z_t var; Z_init(var);})
+au début de la portion de code insérée, et la notation
+\lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable \lstinline{var} doit
+être désallouée
+%(avec \lstinline{Z_clear(var);})
 à la fin du code inséré.
 Nous soulignons les fragments de code afin d'indiquer que l'opération effectuée
-(affectation, comparaison, \dots) utilise l'arithmétique non bornée et doit
-être traduite en utilisant les fonctions correspondantes d'une bibliothèque
-comme GMP.
+(affectation, comparaison, \dots) utilise l'arithmétique non bornée (par
+opposition à l'arithmétique modulaire), et doit être traduite en utilisant une
+bibliothèque comme GMP afin de conserver la sémantique de l'arithmétique entière
+non bornée d'\eacsl et de pouvoir raisonner sur les débordements d'entiers.
 
 
 \lstinputlisting[style=c,escapechar=§,caption={Version instrumentée du programme
@@ -183,7 +196,14 @@ nécessaires à l'évalutation d'une annotation, d'un prédicat ou d'un terme
 \eacsl.
 La figure~\ref{fig:code-gen} montre quelles insertions de code sont nécessaires
 à la traduction d'un invariant de boucle \lstinline'loop invariant x<y' à un
-label quelconque $L$.
+label de boucle quelconque $L$.
+Les insertions nécessaires à l'évaluation du prédicat \lstinline'x < y' au
+label $L$ et au label $EndIter_L$ apparaissent en partie gauche de la figure,
+les symboles \insertball[fill=gray!40,xshift=-1mm,yshift=1mm]{n} dénotent les
+fragments de code et font le lien entre les deux parties de la figure.
+La partie droite de la figure montre la séquence d'insertions étiquettées par
+des labels obtenue après traduction complète de l'annotation
+\lstinline'loop invariant x<y'.
 
 \input{figures/fig_code_ins}
 
@@ -229,15 +249,15 @@ et~\ref{sec:pred}.
 Dans ces règles, les notations suivantes sont utilisées :
 \begin{itemize}
 \item $p$, $p_1$, $p_2$ et $p_3$ sont des prédicats \eacsl;
-\item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl et $w$ est un prédicat
-  ou un terme;
+\item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl;
+%\item $w$ est un prédicat ou un terme;
 \item $c$, $c_1$, $c_2$ et $c_3$ sont des fragments de programmes C;
 \item $e$, $e_1$, $e_2$ et $e_3$ sont des expressions C;
 \item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ et $EndIter_l$ sont
   des labels du programme;
 \item $i$ est un identificateur de variable liée dans un prédicat \eacsl et un
-  compteur d'itérations dans un programme C, $x$ est un identificateur de
-  variable C;
+  compteur d'itérations dans un programme C;
+\item $x$ est un identificateur de variable C;
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)$.
 \end{itemize}
@@ -268,49 +288,43 @@ condition est inséré dans le programme.
 Le générateur de tests essaiera de couvrir tous les chemins d'exécution
 faisables, donc s'il existe des entrées permettant de provoquer un échec de la
 condition de l'annotation, l'erreur sera trouvée.
-Les règles sont de la forme :
+%% Les règles sont de la forme :
 
 
-\[
-\dfrac
-    {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
-      (l_n, w) \rulearrow (I_n, e_n)}
-    {(l, \mbox{\lstinline'kwd w;'}) \rulearrow
-      g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
-\]
+%% \[
+%% \dfrac
+%%     {(l_1, w) \rulearrow (I_1, e_1) \quad \ldots \quad
+%%       (l_n, w) \rulearrow (I_n, e_n)}
+%%     {(l, \mbox{\lstinline'kwd w;'}) \rulearrow
+%%       g_{kwd} (l, (I_1, e_1), \ldots, (I_n, e_n))}
+%% \]
 
 
-Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
-traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
-\lstinline'kwd w;' au point de programme $l$ est traduite par composition
-des insertions de code $I_i$ et des expressions $e_i$.
-Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
-l'annotation.
+%% Ce schéma de traduction établit que le terme ou prédicat $w$ au label $l_i$ est
+%% traduit (par $\tau$ ou $\pi$) en $(I_i, e_i)$, puis l'annotation
+%% \lstinline'kwd w;' au point de programme $l$ est traduite par composition
+%% des insertions de code $I_i$ et des expressions $e_i$.
+%% Cette fonction de composition -- notée $g_{kwd}$ -- dépend de la nature de
+%% l'annotation.
 La figure~\ref{fig:annot} et la figure~\ref{fig:loop-annot} présentent les
 règles de traduction pour chaque annotation.
-Soit la condition $e$ qui doit être testée pour chaque annotation, qui
-correspond au statut de validité de l'annotation en question.
-Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
-d'une expression, cette fonction correspond à un \lstinline'if' dont la branche
-\lstinline'else' génère une erreur et la rapporte.
-Nous définissons également une fonction \lstinline'fassume' permettant de tester
-la valeur d'une expression, cette fonction correspond à un \lstinline'if' dont
-la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
-la branche \lstinline'else' est activée sont ignorées.
+%% Soit la condition $e$ qui doit être testée pour chaque annotation, qui
+%% correspond au statut de validité de l'annotation en question.
 
 La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
 (\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
-\textsc{$\alpha$-assume-pre}), les assigns (\textsc{$\alpha$-check-assigns} et
+\textsc{$\alpha$-assume-pre}), les clauses \lstinline'assigns'
+(\textsc{$\alpha$-check-assigns} et
 \textsc{$\alpha$-assume-assigns}) et les postconditions
 (\textsc{$\alpha$-check-post} et \textsc{$\alpha$-assume-post}).
 La règle \textsc{$\alpha$-assert} vérifie simplement la valeur du prédicat
 traduit au label $l$ avec la fonction \lstinline'fassert'.
 La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
 \textsc{$\alpha$-assume-pre} suppose sa validité au début de la fonction
-intrumentée.
+instrumentée.
 La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
-Pour chacune de ces l-value, une sauvegarde est faite au début de la fonction,
+Pour chacune de ces l-values, une sauvegarde est faite au début de la fonction,
 puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
 La règle \textsc{$\alpha$-assume-assigns} suppose que toutes les l-values
 présentes dans la clause \lstinline'assigns' ont changé de valeur : elle affecte
@@ -399,7 +413,7 @@ Les autres types C tels \lstinline'char', \lstinline'long',
 \lstinline'unsigned', etc. peuvent être supportés de manière similaire, mais ne
 sont pas abordés pour des raisons de simplicité et lisibilité.
 Quand un terme $t$ peut être traduit directement sans nécessiter de code C
-supplémentaire, la séquence d'insertions de code est vide et notée $\emptyset$.
+supplémentaire, la séquence d'insertions de code est vide et notée $\emptylist$.
 Pour un terme $t:\mathbb{Z}$, le resultat de traduction $e$ est toujours une
 variable de type \lstinline'Z_t' (ce qui justifie une désallocation
 \lstinline{e}${}^{\boxtimes}$, voir figure~\ref{fig:coerce}).
@@ -490,7 +504,7 @@ prédicat, elles permettent notamment d'évaluer les termes et prédicats
 auxiliaires dont est composé le prédicat $p$.
 Quand un prédicat $p$ peut être traduit directement et ne nécessite pas la
 création d'instructions C, la séquence d'insertions est vide et notée
-$\emptyset$.
+$\emptylist$.
 
 Nous définissons dans la figure~\ref{fig:pred-logic}, la figure~\ref{fig:valid}
 et la figure~\ref{fig:quantif} les règles de traduction pour les principaux
