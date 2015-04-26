@@ -314,9 +314,8 @@ règles de traduction pour chaque annotation.
 La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
 (\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
 \textsc{$\alpha$-assume-pre}), les clauses \lstinline'assigns'
-(\textsc{$\alpha$-check-assigns} et
-\textsc{$\alpha$-assume-assigns}) et les postconditions
-(\textsc{$\alpha$-check-post} et \textsc{$\alpha$-assume-post}).
+(\textsc{$\alpha$-check-assigns}) et les postconditions
+(\textsc{$\alpha$-check-post}).
 La règle \textsc{$\alpha$-assert} vérifie simplement la valeur du prédicat
 traduit au label $l$ avec la fonction \lstinline'fassert'.
 La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
@@ -326,12 +325,8 @@ La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 Pour chacune de ces l-values, une sauvegarde est faite au début de la fonction,
 puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
-La règle \textsc{$\alpha$-assume-assigns} suppose que toutes les l-values
-présentes dans la clause \lstinline'assigns' ont changé de valeur : elle affecte
-une nouvelle valeur non déterministe à chacune d'elle à la fin de la fonction.
-La règle \textsc{$\alpha$-check-post} vérifie le prédicat et la règle
-\textsc{$\alpha$-assume-post} suppose sa validité à la fin de la fonction
-instrumentée.
+La règle \textsc{$\alpha$-check-post} vérifie la validité à de la postcondition
+à la fin de la fonction instrumentée.
 Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
 et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
 règle \textsc{$\alpha$-assume-pre}) respectivement aux lignes 6, 7 et 8 du
@@ -341,10 +336,9 @@ en utilisant la règle \textsc{$\alpha$-check-post} aux lignes 29--34 du
 listing~\ref{lst:abbrv}.
 
 Les règles de traduction pour les invariants de boucle
-(\textsc{$\alpha$-check-invariant}, \textsc{$\alpha$-assume-invariant-1} et
-\textsc{$\alpha$-assume-invariant-2}), les variants de boucle
+(\textsc{$\alpha$-check-invariant}), les variants de boucle
 (\textsc{$\alpha$-variant}) et les loop assigns
-(\textsc{$\alpha$-check-loop-assigns} et \textsc{$\alpha$-assume-loop-assigns})
+(\textsc{$\alpha$-check-loop-assigns})
 pour une boucle au label $l$ sont présentées dans la
 figure~\ref{fig:loop-annot}.
 La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
@@ -352,17 +346,8 @@ sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
 boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
 chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
 boucle.
-La règle \textsc{$\alpha$-assume-loop-assigns} suppose que toutes les l-values
-présentes dans la clause \lstinline'loop assigns' ont changé de valeur : une
-nouvelle valeur non déterministe est affectée à chacune d'elle.
 La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
 avant la boucle et après chaque itération de la boucle.
-La règle \textsc{$\alpha$-assume-invariant-1} a vocation à remplacer toute la
-boucle, elle suppose que le prédicat de l'invariant est vrai, ainsi que la
-négation de la condition de boucle (appelée ici \lstinline'loopcond').
-La règle \textsc{$\alpha$-assume-invariant-2} permet de supposer que la boucle
-a déjà itéré un certain nombre de fois, elle suppose que l'invariant est vrai
-avant la boucle, et vérifie l'invariant à la fin de chaque itération.
 La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
 au début de chaque itération, puis mémorise la valeur du terme au début de la
 boucle dans une variable fraîche \lstinline|old_variant|. Enfin, on vérifie à la
