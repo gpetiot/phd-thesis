@@ -23,8 +23,6 @@
 \newcommand{\tikzinsert}[3]{%
   \tikz[remember picture,overlay]{\node[#3] (#1) {#2};}}
 \tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
-\tikzstyle{eqlabel-style}=[inner sep=.5mm,draw,thick,rectangle,rounded corners,
-  color=white,fill=blue,font=\bfseries]
 \newcommand{\insertball}[2][]{
   \tikzinsert{}{#2}{ball,node distance=.5cm,xshift=.2cm,yshift=.05cm,font=\scriptsize\bfseries,#1}~~~~}
 
@@ -85,7 +83,7 @@
 
 \newcommand{\eval}[2]{$\mathcal{E} \llbracket$ #1 $\rrbracket$ #2}
 \newcommand{\comp}[2]{$\mathcal{C} \llbracket$ #1 $\rrbracket$ #2}
-\newcommand{\eqlabel}[1]{\tikzinsert{}{#1}{eqlabel-style,node distance=.5cm,xshift=.15cm,yshift=.1cm}~~~~}
+\newcommand{\eqlabel}[1]{{\textsc{\bfseries #1}}}
 
 %% \newcommand{\qed}{\nobreak \ifvmode \relax \else
 %%   \ifdim\lastskip<1.5em \hskip-\lastskip
