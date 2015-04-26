@@ -1,20 +1,20 @@
 \begin{figure}[bt]
   \scriptsize{
     {\myinference[$\alpha$-assert]
-      {(l, p) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'assert p;'})
         \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
     }
 
     {\myinference[$\alpha$-check-pre\hspace{-2mm}]
-      {(Beg_f, p) \rulearrow (I, e)}
+      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(Beg_f, \mbox{\lstinline'requires p;'})
         \rulearrow
         I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
     }
 
     {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
-      {(Beg_f, p) \rulearrow (I, e)}
+      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(Beg_f, \left \{\hspace{-2mm}
         \begin{array}{r}
           \mbox{\lstinline'typically'} \\
@@ -26,7 +26,7 @@
     }
 
     {\myinference[$\alpha$-check-assigns]
-      {(End_f, x) \rulearrow (I, e)}
+      {(End_f, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {
         \splitfrac{
           (End_f, \mbox{\lstinline'assigns X;'}) \rulearrow
@@ -40,7 +40,7 @@
     }
 
     {\myinference[$\alpha$-check-post]
-      {(End_f, p) \rulearrow (I, e)}
+      {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(End_f, \mbox{\lstinline'ensures p;'})
         \rulearrow
         I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
@@ -54,7 +54,7 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\alpha$-check-loop-assigns]
-      {(l, x) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {
         \splitfrac
             {
@@ -70,8 +70,9 @@
     }
 
     {\myinference[$\alpha$-check-invariant]
-      {(l, p) \rulearrow (I_1, e_1) \\
-        (EndIter_l, p) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (EndIter_l, \mbox{\lstinline'p'}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'})}
       {
         (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
         I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
@@ -81,8 +82,10 @@
 
     {\myinference[$\alpha$-variant]
       {
-        (BegIter_l, t) \rulearrow (I_1, e_1) \\
-        (EndIter_l, t) \rulearrow (I_2, e_2)
+        (BegIter_l, \mbox{\lstinline't'}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (EndIter_l, \mbox{\lstinline't'}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'})
       }
       {
         \splitfrac
@@ -126,7 +129,7 @@
     }
 
     {\myinference[$\tau$-old-val\hspace{-2mm}{}]
-      {(l, t:int) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't'}:int) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'\\old(*(x+t))'}:ctype) \rulearrow
         (I,\mbox{\lstinline'*(old_val_x+e)'})}
     }
@@ -151,7 +154,8 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\tau$-coerce$_1$]
-      {(l, t:\mathbb{Z}) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow
+        (I, \mbox{\lstinline'e'})}
       {
         (l, (int)(t : \mathbb{Z})) \rulearrow
         (I \concat (l,
@@ -162,7 +166,7 @@
       }
     }
     {\myinference[$\tau$-coerce$_2$]
-      {(l, t:int) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't'}:int) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
         \underline{\Zinit \mbox{\lstinline'var_n = e'}}
         \semicolon
@@ -176,21 +180,25 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\tau$-binop$_1$]
-      {(l, t_1:ptr) \rulearrow (I_1, e_1) \quad
-        (l, t_2:int) \rulearrow (I_2, e_2) \quad
+      {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
+        \quad
+        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
+        \quad
         op \in \{+, -\}}
       {(l, (\mbox{\lstinline't1 op t2'}):ptr) \rulearrow
         (I_1 \concat I_2, \mbox{\lstinline'e1 op e2'})}
     }
     {\myinference[$\tau$-unop$_1$]
-      {(l, t:ptr) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
         (I, \mbox{\lstinline'* e'})}
     }
 
     {\myinference[$\tau$-binop$_2$]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \quad
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \quad
         op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
         \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
         \mathtt{\&\&}\}}
@@ -202,14 +210,16 @@
         ), \mbox{\lstinline'var_n'})}
     }
     {\myinference[$\tau$-unop$_2$]
-      {(l, t:int) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't'}:int) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, (\mbox{\lstinline'\! t'}): int) \rulearrow
         (I, \mbox{\lstinline'\! e'})}
     }
 
     {\myinference[$\tau$-binop$_3$]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \quad
+        (l, \mbox{\lstinline't2'}:\mathbb{Z})
+        \rulearrow (I_2, \mbox{\lstinline'e2'}) \quad
         op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
         \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
         \mathbin{\char`\^}\}}
@@ -221,7 +231,8 @@
         ), \mbox{\lstinline'var_n'})}
     }
     {\myinference[$\tau$-unop$_3$]
-      {(l, t:\mathbb{Z}) \rulearrow (I, e) \quad
+      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
+        \quad
         op \in \{ -, \sim\}}
       {(l, (\mbox{\lstinline'op t'}):\mathbb{Z}) \rulearrow (I, \concat (l,
         \underline{\mbox{\lstinline'e = op e'}}
@@ -230,9 +241,12 @@
     }
 
     {\myinference[$\tau$-if]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-        (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline't3'}:\mathbb{Z}) \rulearrow
+        (I_3, \mbox{\lstinline'e3'})}
       {
         (l, (\mbox{\lstinline't1 ? t2 : t3'}):\mathbb{Z})
         \rulearrow
@@ -265,9 +279,12 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\tau$-sum]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-        (l, t_3:\mathbb{Z}) \rulearrow (I_3, e_3)}
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline't3'}:\mathbb{Z}) \rulearrow
+        (I_3, \mbox{\lstinline'e3'})}
       {
         \splitfrac
             {(l,
@@ -295,9 +312,11 @@
     }
 
     {\myinference[$\tau$-numof]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-        (l, t_3:int) \rulearrow (I_3, e_3)}
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline't3'}:int) \rulearrow (I_3, \mbox{\lstinline'e3'})}
       {
         \splitfrac
             {(l,
@@ -337,14 +356,16 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\pi$-equiv]
-      {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 <==> p2'})
         \rulearrow
         (I_1 \concat I_2, \mbox{\lstinline'((!e1 || e2) && (!e2 || e1))'})}
     }
 
     {\myinference[$\pi$-and]
-      {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 && p2'})
         \rulearrow
         (I_1 \concat (l, \mbox{\lstinline'int var_n = e1; if(var_n)'}
@@ -361,7 +382,8 @@
     }
 
     {\myinference[$\pi$-or]
-      {(l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 || p2'})
         \rulearrow
         (I_1 \concat (l, \mbox{\lstinline'int var_n = e1; if(!var_n)'} \bopen)
@@ -377,8 +399,8 @@
     }
 
     {\myinference[$\pi$-impl]
-      {(l, p_1) \rulearrow (I_1, e_1) \\
-        (l, p_2) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 ==> p2'})
         \rulearrow
         (I_1 \concat (l, \mbox{\lstinline'int var_n = 1; if(e1)'} \bopen)
@@ -388,14 +410,15 @@
       }
     }
     {\myinference[$\pi$-not]
-      {(l, p) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'\!p'}) \rulearrow (I, \mbox{\lstinline'\!e'})}
     }
 
     {\myinference[$\pi$-if]
-      {(l, t:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-        (l, p_2) \rulearrow (I_2, e_2) \\
-        (l, p_3) \rulearrow (I_3, e_3)}
+      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline'p3'}) \rulearrow (I_3, \mbox{\lstinline'e3'})}
       {
         (l, \mbox{\lstinline't ? p2 : p3'}) \rulearrow
         (I_1 \concat (l, \mbox{\lstinline'int var_n; if('}
@@ -409,8 +432,10 @@
     }
 
     {\myinference[$\pi$-rel]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \quad
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \quad
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \quad
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \quad
         op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
         \mathtt{==}, \mathtt{!=}\}}
       {(l, \mbox{\lstinline't1 op t2'}) \rulearrow
@@ -429,16 +454,18 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\pi$-valid]
-      {(l, t:ptr) \rulearrow (I, e) }
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
       {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
         (I, \mbox{\lstinline'fvalid(e)'})
       }
     }
     {\myinference[$\pi$-valid-range]
-      {(l, t_1:ptr) \rulearrow (I_1, e_1) \\
-        (l, t_2:int) \rulearrow (I_2, e_2) \\
-        (l, t_3:int) \rulearrow (I_3, e_3)}
-      {
+      {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
+        \\
+        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
+        \\
+        (l, \mbox{\lstinline't3'}:int) \rulearrow (I_3, \mbox{\lstinline'e3'})
+      } {
         (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
         (I_1 \concat I_2 \concat I_3,\mbox{\lstinline'fvalidr(e1,e2,e3)'})
       }
@@ -451,9 +478,11 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\pi$-exists]
-      {(l, t_1:\mathbb{Z}) \rulearrow (I_1, e_1) \\
-        (l, t_2:\mathbb{Z}) \rulearrow (I_2, e_2) \\
-        (l, p) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {
         \splitfrac
             {(l, \mbox{\lstinline'\\exists integer i; t1 <= i < t2 && p'})

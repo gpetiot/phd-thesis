@@ -12,14 +12,14 @@ TODO
 \begin{figure}[bt]
   \scriptsize{
     {\myinference[$\alpha$-assume-assigns]
-      {(End_f, x) \rulearrow (I, e)}
+      {(End_f, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(End_f, \mbox{\lstinline'assigns x;'})
         \rulearrow
         I \concat (End_f, \mbox{\lstinline'e = nondet();'})}
     }
 
     {\myinference[$\alpha$-assume-post]
-      {(End_f, p) \rulearrow (I, e)}
+      {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(End_f, \mbox{\lstinline'ensures p;'})
         \rulearrow
         I \concat (End_f, \mbox{\lstinline'fassume(e);'})}
@@ -39,14 +39,14 @@ fonction instrumentée.
 \begin{figure}[bt]
   \scriptsize{
     {\myinference[$\alpha$-assume-loop-assigns]
-      {(l, x) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'loop assigns x;'})
         \rulearrow
         I \concat (l, \mbox{\lstinline'e = nondet();'})}
     }
 
     {\myinference[$\alpha$-assume-invariant-1]
-      {(l, p) \rulearrow (I, e)}
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {
         (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
         I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
@@ -54,8 +54,9 @@ fonction instrumentée.
     }
 
     {\myinference[$\alpha$-assume-invariant-2]
-      {(l, p) \rulearrow (I_1, e_1) \\
-        (EndIter_l, p) \rulearrow (I_2, e_2)}
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+        (EndIter_l, \mbox{\lstinline'p'}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'})}
       {
         (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
         I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})

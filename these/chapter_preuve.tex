@@ -296,20 +296,21 @@ Par exemple, la règle suivante montre la séquence d'insertions de code $I$
 générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
 
 {\myinference[AND]
-  { (l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2) }
-  { (l, \mbox{\lstinline'p_1 && p_2'}) \rulearrow
+  { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+    (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
+  { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
     (
     \underbracket{
       I_1 \cdot
-      \underbracket{ (l, \mbox{\lstinline'int e = e_1;'}) }_{i_1}
+      \underbracket{ (l, \mbox{\lstinline'int e = e1;'}) }_{i_1}
       \cdot
       \underbracket{ (l, \mbox{\lstinline'if(e)'})
         \bopen
         I_2 \cdot
-        \underbracket{ (l, \mbox{\lstinline'e = e_2;'}) }_{i_2}
+        \underbracket{ (l, \mbox{\lstinline'e = e2;'}) }_{i_2}
         \bclose }_{i_3}
       }_{I},
-    e) }
+    \mbox{\lstinline'e'}) }
 }~\\
 
 Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
@@ -342,7 +343,7 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 
 
-\section{Term translation}
+\section{Traduction des termes}
 \label{sec:term-translation}
 
 
@@ -355,12 +356,12 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 \end{lemma}
 
 
-\subsection{Constant Term}
+\subsection{Traduction des constantes}
 
 {\myinference[CST]
   {}
-  { (l, v : \mathbb{Z}) \rulearrow
-    ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), x) }
+  { (l, \mbox{\lstinline'v'} : \mathbb{Z}) \rulearrow
+    ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
 }
 
 Pour n'importe quel environnement $env$, nous prouvons que :
@@ -379,7 +380,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 \end{proof}
 
 
-\section{Predicate translation}
+\section{Traduction des prédicats}
 \label{sec:predicate-translation}
 
 
@@ -392,23 +393,17 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 \end{lemma}
 
 
-\subsection{And Predicate}
+\subsection{Traduction des conjonctions}
 
 {\myinference[AND]
-  { (l, p_1) \rulearrow (I_1, e_1) \\ (l, p_2) \rulearrow (I_2, e_2) }
-  { (l, \mbox{\lstinline'p_1 && p_2'}) \rulearrow
-    (
-    \underbracket{
-      I_1 \cdot
-      \underbracket{ (l, \mbox{\lstinline'int e = e_1;'}) }_{i_1}
-      \cdot
-      \underbracket{ (l, \mbox{\lstinline'if(e)'})
-        \bopen
-        I_2 \cdot
-        \underbracket{ (l, \mbox{\lstinline'e = e_2;'}) }_{i_2}
-        \bclose }_{i_3}
-      }_{I},
-    e) }
+  { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+    (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
+  { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
+    (I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+    (l, \mbox{\lstinline'if(e)'}) \bopen I_2 \cdot
+    (l, \mbox{\lstinline'e = e2;'}) \bclose,
+    \mbox{\lstinline'e'})
+  }
 }~\\
 
 Pour n'importe quel environnement $env$, nous prouvons que :
@@ -454,13 +449,6 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])
       })
     })(e) \\
-    %% & = & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
-    %%   (l, \lstinline'e = e_2;') $\bclose$ }{
-    %%   (
-    %%   ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])[$e \mapsto$
-    %%     \eval{$e_1$}{$env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}]}]
-    %%   )
-    %% })(e) \\
     & $\eq{C-assign}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (
@@ -529,46 +517,42 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 \end{proof}
 
 
-\subsection{Forall Predicate}
+\subsection{Traduction des quantifications universelles}
 
 {\myinference[FORALL]
   {
-    (l, t_1 : \mathbb{Z}) \rulearrow (I_1, e_1) \\
-    (l, t_2 : \mathbb{Z}) \rulearrow (I_2, e_2) \\
-    (l, p) \rulearrow (I_3, e_3)
+    (l, \mbox{\lstinline't1'} : \mathbb{Z}) \rulearrow
+    (I_1, \mbox{\lstinline'e1'}) \\
+    (l, \mbox{\lstinline't2'} : \mathbb{Z}) \rulearrow
+    (I_2, \mbox{\lstinline'e2'}) \\
+    (l, \mbox{\lstinline'p'}) \rulearrow (I_3, \mbox{\lstinline'e3'})
   }
   {
     \splitfrac {
-      (l, \mbox{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'})
+      (l, \mbox{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'})
       \rulearrow
     } {
       \splitfrac {
         (I_1 \cdot I_2
-        \cdot \underbracket{ (l, \mbox{\lstinline'int e = 1;'}) }_{i_1}
+        \cdot (l, \mbox{\lstinline'int e = 1;'})
         \cdot
-        \underbracket{
-          (l, \Zinit \underline{\mbox{\lstinline'k = e_1;'}} ) }_{i_2}
+          (l, \Zinit \underline{\mbox{\lstinline'k = e1;'}} )
       } {
         \cdot
-        \underbracket{
           (l, \mbox{\lstinline'while('}
-          \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
+          \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e')}
           \bopen
           I_3
-          \cdot \underbracket{ \mbox{\lstinline'e = e_3;'} }_{i_4}
+          \cdot \mbox{\lstinline'e = e3;'}
           \cdot
-          \underbracket{ \underline{\mbox{\lstinline'k++'}} \semicolon }_{i_5}
+          \underline{\mbox{\lstinline'k++'}} \semicolon
           \bclose )
-        }_{i_3}
         \cdot
-        \underbracket{
-          (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) }_{i_6}
+          (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon )
         \cdot
-        \underbracket{
-          (l, \underline{\mbox{\lstinline'e_1'}} \Zclear \semicolon ) }_{i_7}
+          (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon )
         \cdot
-        \underbracket{
-          (l, \underline{\mbox{\lstinline'e_2'}} \Zclear \semicolon ) }_{i_8},
+          (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon ),
         e)
       }
     }
@@ -579,7 +563,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 Pour n'importe quel environnement $env$, nous prouvons que :
 
 \eval{\lstinline'e'}{\comp{$I$}{$env$}} =
-\eval{\lstinline'\\forall integer ; t_1 <= k <= t_2 ==> p'}{$env$}.
+\eval{\lstinline'\\forall integer ; t1 <= k <= t2 ==> p'}{$env$}.
 
 
 \begin{proof}
@@ -1099,7 +1083,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 \end{proof}
 
 
-\section{Annotation translation}
+\section{Traduction des annotations}
 \label{sec:annotation-translation}
 
 
@@ -1108,7 +1092,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 {\scriptsize
   {\myinference[$\alpha$-assert]
-    {(l, p) \rulearrow (I, e)}
+    {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {(l, \mbox{\lstinline'assert p;'})
       \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
   }
@@ -1117,19 +1101,19 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 Pour n'importe quel environnement $env$, nous prouvons que :
 
-\comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+\comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
 $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
 
 
 \begin{proof}
   ~\\
-  On sait que \eval{e}{\comp{$I$}{$env$}} = \eval{P}{$env$} par hypothèse que
+  On sait que \eval{e}{\comp{$I$}{$env$}} = \eval{p}{$env$} par hypothèse que
   la traduction des prédicats est correcte.
 
-  Cas \eval{P}{$env$} = \textit{true} :
+  Cas \eval{p}{$env$} = \textit{true} :
 
-  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = $env$
-  donc \comp{\lstinline'/*@ assert P; */ ;'}{$env$} $\not \equiv$ erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = $env$
+  donc \comp{\lstinline'/*@ assert p; */ ;'}{$env$} $\not \equiv$ erreur
 
   \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
   = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
@@ -1137,9 +1121,9 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
 
   \commentGP{Prouver que \comp{$I$}{$env$} ne génère pas d'erreur.}
 
-  Cas \eval{P}{$env$} = \textit{false} :
+  Cas \eval{p}{$env$} = \textit{false} :
 
-  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
 
   \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
   = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
@@ -1147,36 +1131,34 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
 
   On a donc bien :
 
-  \comp{\lstinline'/*@ assert P; */ ;'}{$env$} = erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
   $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur.
 \end{proof}
 
 
-\subsection{Vérification de contrat de boucle}
+\subsection{Vérification des contrats de boucles}
 
 
 {\scriptsize
   {\myinference[$\alpha$-check-loop-assigns]
-    {(l, x) \rulearrow (I, e)}
+    {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {
-      \splitfrac
-          {
-            (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
-          }
-          {
-            I \concat
-            \forall (x:ctype) \not \in X:
-            (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
-            \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
-          }
+      \splitfrac {
+        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
+      } {
+        I \concat
+        \forall (x:ctype) \not \in X:
+        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+      }
     }
   }
 }
 
 {\scriptsize
   {\myinference[$\alpha$-check-invariant]
-    {(l, p) \rulearrow (I_1, e_1) \\
-      (EndIter_l, p) \rulearrow (I_2, e_2)}
+    {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+      (EndIter_l, \mbox{\lstinline'p'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
     {
       (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
       I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
@@ -1188,8 +1170,9 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
 {\scriptsize
   {\myinference[$\alpha$-variant]
     {
-      (BegIter_l, t) \rulearrow (I_1, e_1) \\
-      (EndIter_l, t) \rulearrow (I_2, e_2)
+      (BegIter_l, \mbox{\lstinline't'}) \rulearrow (I_1, \mbox{\lstinline'e1'})
+      \\
+      (EndIter_l, \mbox{\lstinline't'}) \rulearrow (I_2, \mbox{\lstinline'e2'})
     }
     {
       \splitfrac
@@ -1214,6 +1197,6 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
   }
 }
 
-\commentGP{même chose que pour les assertions}
 
-\commentGP{faire aussi l'instrumentation pour CWD ?}
+\subsection{Vérification des contrats de fonctions}
+
