@@ -17,27 +17,47 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 \begin{figure}[tb]
   \begin{tabular}{lrl}
-    \textit{unop} & ::= & \lstinline'-' $\mid$ \lstinline'*' $\mid$
-    \lstinline'!' $\mid$ \lstinline'~' \\
-    \textit{binop} & ::= & \lstinline'+' $\mid$ \lstinline'-' $\mid$
-    \lstinline'*' $\mid$ \lstinline'/' $\mid$ \lstinline'%' $\mid$
-    \lstinline'>' $\mid$ \lstinline'>=' $\mid$ \lstinline'<' $\mid$
-    \lstinline'<=' $\mid$ \lstinline'==' $\mid$ \lstinline'!=' \\
+    \textit{unop} & ::= & \underline{\lstinline'-'}
+    $\mid$ \underline{\lstinline'*'}
+    $\mid$ \underline{\lstinline'\!'}
+    $\mid$ \underline{\lstinline'\~'} \\
+    \textit{binop} & ::= & \underline{\lstinline'+'}
+    $\mid$ \underline{\lstinline'-'}
+    $\mid$ \underline{\lstinline'*'}
+    $\mid$ \underline{\lstinline'/'}
+    $\mid$ \underline{\lstinline'\%'}
+    $\mid$ \underline{\lstinline'>'}
+    $\mid$ \underline{\lstinline'>='}
+    $\mid$ \underline{\lstinline'<'}
+    $\mid$ \underline{\lstinline'<='}
+    $\mid$ \underline{\lstinline'=='}
+    $\mid$ \underline{\lstinline'\!='} \\
     \textit{term} & ::= & \textit{cst} \\
     & $\mid$ & \textit{lvalue} \\
     & $\mid$ & \textit{unop} \textit{term} \\
     & $\mid$ & \textit{term} \textit{binop} \textit{term} \\
-    & $\mid$ & \lstinline'\abs(' \textit{term} \lstinline')' \\
-    & $\mid$ & \lstinline'\sum(' \textit{term}$,$ \textit{term}$,$
-    \lstinline'\lambda integer' \textit{id}$;$ \textit{term} \lstinline')' \\
-    & $\mid$ & \lstinline'\product(' \textit{term}, \textit{term},
-    \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
-    & $\mid$ & \lstinline'\numof(' \textit{term}, \textit{term},
-    \lstinline'\lambda integer' \textit{id}; \textit{term} \lstinline')' \\
-    & $\mid$ & \textit{term} \texttt{?} \textit{term} \texttt{:} \textit{term}\\
-    & $\mid$ & \lstinline'\old(' \textit{term} \lstinline')' \\
-    & $\mid$ & \lstinline'\null' \\
-    & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
+    & $\mid$
+    & \underline{\lstinline'\\abs('} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$
+    & \underline{\lstinline'\\sum('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\product('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\numof('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \textit{term} \underline{\texttt{?}} \textit{term}
+    \underline{\lstinline'\:'} \textit{term}\\
+    & $\mid$ & \underline{\lstinline'\\old('} \textit{term}
+    \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\null'} \\
+    & $\mid$ & \underline{\lstinline'('} \textit{type} \underline{\lstinline')'}
+    \textit{term} \\
   \end{tabular}
   \caption{Grammaire des termes \eacsl}
   \label{fig:gram-term}
@@ -45,24 +65,31 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 \begin{figure}[tb]
   \begin{tabular}{lrl}
-    \textit{relation} & ::= & \lstinline'>' $\mid$ \lstinline'>=' $\mid$
-    \lstinline'<' $\mid$ \lstinline'<=' $\mid$ \lstinline'==' $\mid$
-    \lstinline'!=' \\
-    \textit{pred} & ::= & \lstinline'\true' \\
-    & $\mid$ & \lstinline'\false' \\
-    & $\mid$ & \lstinline'\valid(' \textit{term} \lstinline')' \\
-    & $\mid$ & \lstinline'\forall integer' \textit{id};
-    (\textit{term} \lstinline'<=' \textit{id} \lstinline'<=' \textit{term})
-    \lstinline'==>' \textit{pred} \\
-    & $\mid$ & \lstinline'\exists integer' \textit{id};
-    (\textit{term} \lstinline'<=' \textit{id} \lstinline'<=' \textit{term})
-    \lstinline'&&' \textit{pred} \\
-    & $\mid$ & ! \textit{pred} \\
-    & $\mid$ & \textit{pred} \lstinline'&&' \textit{pred} \\
-    & $\mid$ & \textit{pred} \lstinline'||' \textit{pred} \\
-    & $\mid$ & \textit{pred} \lstinline'==>' \textit{pred} \\
-    & $\mid$ & \textit{pred} \lstinline'<==>' \textit{pred} \\
-    & $\mid$ & \textit{term} ? \textit{pred} : \textit{pred} \\
+    \textit{relation} & ::= & \underline{\lstinline'>'}
+    $\mid$ \underline{\lstinline'>='}
+    $\mid$ \underline{\lstinline'<'}
+    $\mid$ \underline{\lstinline'<='}
+    $\mid$ \underline{\lstinline'=='}
+    $\mid$ \underline{\lstinline'\!='} \\
+    \textit{pred} & ::= & \underline{\lstinline'\\true'} \\
+    & $\mid$ & \underline{\lstinline'\\false'} \\
+    & $\mid$ & \underline{\lstinline'\\valid('} \textit{term}
+    \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\forall integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline'<='}
+    \textit{id} \underline{\lstinline'<='} \textit{term}
+    \underline{\lstinline'==>'} \textit{pred} \\
+    & $\mid$ & \underline{\lstinline'\\exists integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline'<='}
+    \textit{id} \underline{\lstinline'<='} \textit{term}
+    \underline{\lstinline'&&'} \textit{pred} \\
+    & $\mid$ & \underline{\lstinline'\!'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'&&'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'||'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'==>'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'<==>'} \textit{pred} \\
+    & $\mid$ & \textit{term} \underline{\texttt{?}} \textit{pred}
+    \underline{\lstinline'\:'} \textit{pred} \\
     & $\mid$ & \textit{term} \textit{relation} \textit{term} \\
   \end{tabular}
   \caption{Grammaire des prédicats \eacsl}
@@ -75,28 +102,44 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
     & $\mid$ & \textit{lvalue} \\
     & $\mid$ & \textit{unop} \textit{exp} \\
     & $\mid$ & \textit{exp} \textit{binop} \textit{exp} \\
-    & $\mid$ & \lstinline'(' \textit{type} \lstinline')' \textit{term} \\
-    \textit{instr} & ::= & ; \\
-    & $\mid$ & \textit{lval} \lstinline'=' \textit{exp}; \\
-    & $\mid$ & \textit{id} (\textit{exp}$^{*}$); \\
-    & $\mid$ & \textit{lval} \lstinline'=' \textit{id} (\textit{exp}$^{*}$); \\
-    & $\mid$ & \lstinline'return' \textit{exp}; \\
-    & $\mid$ & \lstinline'if(' \textit{exp} \lstinline')'
-    $\bopen$ \textit{instr}$^*$ $\bclose$
-    \lstinline'else' $\bopen$ \textit{instr}$^*$ $\bclose$ \\
-    & $\mid$ & \lstinline'/*@ assert' \textit{pred}; \lstinline'*/' \\
-    & $\mid$ & \lstinline'/*@ loop invariant' \textit{pred}; \\
-    &        & \lstinline'    loop assigns' \textit{term}$^{+}$; \\
-    &        & \lstinline'    loop variant' \textit{term}; \lstinline'*/' \\
-    &        & \lstinline'while(' \textit{exp} \lstinline')'
-    $\bopen$ \textit{block} $\bclose$ \\
+    & $\mid$ & \underline{\lstinline'('} \textit{type} \underline{\lstinline')'}
+    \textit{exp} \\
+    \textit{instr} & ::= & \underline{\semicolon} \\
+    & $\mid$ & \textit{lval} \underline{\lstinline'='} \textit{exp}
+    \underline{\semicolon} \\
+    & $\mid$ & \textit{id} \underline{\lstinline'('} \textit{exp}$^{*}$
+    \underline{\lstinline');'} \\
+    & $\mid$ & \textit{lval} \underline{\lstinline'='} \textit{id}
+    \underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'} \\
+    & $\mid$ & \underline{\lstinline'return'} \textit{exp}
+    \underline{\semicolon} \\
+    & $\mid$ & \underline{\lstinline'if('} \textit{exp}
+    \underline{\lstinline')'}
+    \underline{$\bopen$} \textit{block} \underline{$\bclose$}
+    \underline{\lstinline'else'} \underline{$\bopen$} \textit{block}
+    \underline{$\bclose$} \\
+    & $\mid$ & \underline{\lstinline'/*@ assert'} \textit{pred}
+    \underline{\lstinline'\; */'} \\
+    & $\mid$ & \underline{\lstinline'/*@ loop invariant'} \textit{pred}
+    \underline{\semicolon} \\
+    &        & \underline{\lstinline'    loop assigns'} \textit{term}$^{+}$
+    \underline{\semicolon} \\
+    &        & \underline{\lstinline'    loop variant'} \textit{term}
+    \underline{\lstinline'\; */'} \\
+    &        & \underline{\lstinline'while('} \textit{exp}
+    \underline{\lstinline')'}
+    \underline{$\bopen$} \textit{block} \underline{$\bclose$} \\
     \textit{block} & ::= & \textit{decl}$^{*}$ \textit{instr}$^{*}$ \\
-    \textit{function} & ::= & \lstinline'/*@ requires' \textit{pred}; \\
-                      &     & \lstinline'    assigns' \textit{term}$^{+}$; \\
-                      &     & \lstinline'    ensures' \textit{pred};
-    \lstinline'*/'\\
+    \textit{function} & ::= & \underline{\lstinline'/*@ requires'}
+    \textit{pred} \underline{\semicolon} \\
+                      &     & \underline{\lstinline'    assigns'}
+    \textit{term}$^{+}$ \underline{\semicolon} \\
+                      &     & \underline{\lstinline'    ensures'} \textit{pred}
+    \underline{\lstinline'\; */'} \\
                       &     & \textit{type} \textit{id}
-    (\textit{type} \textit{lvalue}$^{*}$) $\bopen$ \textit{block} $\bclose$ \\
+    \underline{\lstinline'('} (\textit{type} \textit{lvalue})$^{*}$
+    \underline{\lstinline')'} \underline{$\bopen$} \textit{block}
+    \underline{$\bclose$} \\
   \end{tabular}
   \caption{Grammaire des expressions et instructions C}
   \label{fig:gram-c}
