@@ -66,15 +66,15 @@
 \newcommand{\commentNK}[1]{{{\color{blue}((NK: {#1}))\color{black}}}}
 \newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
 
-\newcommand{\semicolon}{\mathtt{;}}
+\newcommand{\semicolon}{\mbox{\lstinline';'}}
 \newcommand{\Zclear}{{^\boxtimes}}
 \newcommand{\Zinit}{{^\square}}
 \newcommand{\rulearrow}{\mapsto}
 \newcommand{\noinst}{\mathtt{;}}
 \newcommand{\concat}{\cdot}
 \newcommand{\emptylist}{\epsilon}
-\newcommand{\bopen}{\textbraceleft\xspace}
-\newcommand{\bclose}{\textbraceright\xspace}
+\newcommand{\bopen}{\mbox{\bfseries\huge\lstinline'\{'}\xspace}
+\newcommand{\bclose}{\mbox{\bfseries\huge\lstinline'\}'}\xspace}
 \newcommand{\myinference}[3][]{
   \vspace{4pt}
   $\textsc{#1} \quad \dfrac{#2}{#3}$

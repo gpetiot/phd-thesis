@@ -304,11 +304,11 @@ générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
       I_1 \cdot
       \underbracket{ (l, \mbox{\lstinline'int e = e1;'}) }_{i_1}
       \cdot
-      \underbracket{ (l, \mbox{\lstinline'if(e)'})
+      \underbracket{ (l, \mbox{\lstinline'if(e)'}
         \bopen
         I_2 \cdot
         \underbracket{ (l, \mbox{\lstinline'e = e2;'}) }_{i_2}
-        \bclose }_{i_3}
+        \bclose ) }_{i_3}
       }_{I},
     \mbox{\lstinline'e'}) }
 }~\\
@@ -400,8 +400,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
     (I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-    (l, \mbox{\lstinline'if(e)'}) \bopen I_2 \cdot
-    (l, \mbox{\lstinline'e = e2;'}) \bclose,
+    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+    (l, \mbox{\lstinline'e = e2;'}) \bclose ),
     \mbox{\lstinline'e'})
   }
 }~\\
@@ -540,12 +540,11 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       } {
         \cdot
           (l, \mbox{\lstinline'while('}
-          \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e')}
+          \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
           \bopen
           I_3
-          \cdot \mbox{\lstinline'e = e3;'}
-          \cdot
-          \underline{\mbox{\lstinline'k++'}} \semicolon
+          \cdot (l, \mbox{\lstinline'e = e3;'})
+          \cdot (l, \underline{\mbox{\lstinline'k++'}} \semicolon)
           \bclose )
         \cdot
           (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon )
@@ -553,7 +552,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
           (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon )
         \cdot
           (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon ),
-        e)
+        \mbox{\lstinline'e'})
       }
     }
   }

@@ -544,14 +544,16 @@ Dans notre exemple du listing~\ref{lst:normalized}, le prédicat
 est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 7 du
 listing~\ref{lst:abbrv}).
 
+La règle \textsc{$\pi$-forall} (figure~\ref{fig:quantif}) traite de la
+traduction du prédicat universel \lstinline'\forall', quantifié sur les entiers.
+Le code généré met à jour une variable \lstinline'var_n' (initialisée à $true$)
+à chaque itération de boucle, jusqu'à ce que toutes les valeurs de \lstinline'k'
+soient considérés ou que \lstinline'var_n' soit évalué à $false$.
 La règle \textsc{$\pi$-exists} (figure~\ref{fig:quantif}) aborde la traduction
 du prédicat existentiel \lstinline'\exists', quantifié sur les entiers.
 Le code généré met à jour une variable \lstinline'var_n' (initialement $false$)
 à chaque itération de la boucle, jusqu'à ce que toutes les valeurs de
-\lstinline'i' soient considérées ou que \lstinline'var_n' soit évalué à $true$.
-Cette règle permet aussi de traduire le prédicat universellement quantifié
-\lstinline{\forall integer i; t1<=i<t2 ==> p}, ce dernier étant équivalent à
-\lstinline{! (\exists integer i; t1<=i<t2 && !p)}.
+\lstinline'k' soient considérées ou que \lstinline'var_n' soit évalué à $true$.
 Dans le listing~\ref{lst:normalized}, le prédicat
 \lstinline{\exists integer i; 0<=i<n && *(t+i)==v} de la ligne 4 est traduit
 aux lignes 29--33 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
