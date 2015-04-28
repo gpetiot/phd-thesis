@@ -2,10 +2,17 @@
 \chapter{Preuve de correction}
 \label{sec:preuve-correction}
 
+\chapterintro
 
-La grammaire des termes et prédicats de \eacsl \cite{\citeeacsl} autorisés dans
-les annotations est détaillée dans le chapitre précédent, leur sémantique est
-présentée en partie~\ref{sec:notations}.
+L'objectif du chapitre est de prouver certaines propriétés de correction sur
+les règles de traduction présentées dans le chapitre~\ref{sec:traduction}.
+
+Nous voulons notamment nous assurer qu'une erreur est trouvée par le
+générateur de tests si et seulement si il y a une inconsistance entre le code
+et sa spécification.
+
+La sémantique des annotations, des termes et des prédicats de
+\eacsl \cite{\citeeacsl} est présentée en partie~\ref{sec:notations}.
 Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
 Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
 \ref{sec:annotation-translation} détaillent la preuve de ces propriétés
