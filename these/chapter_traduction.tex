@@ -43,7 +43,7 @@ Cette partie présente le processus d'instrumentation des fonctions C annotées
 avec le langage d'annotations \eacsl pour la génération de tests.
 Nous supposons que les fonctions respectent la forme normale définie par
 l'entité syntaxique \textit{function} de la grammaire définie dans la
-figure~\ref{fig:grammar}.
+figure~\ref{fig:gram-c}.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
 instruction et annotation à l'intérieur d'une fonction.
 Nous considérons aussi qu'un label est présent au début et à la fin de chaque
@@ -52,7 +52,7 @@ corps de boucle.
 %% déclarations de variables ou l'accolade fermante ``\bclose'' en C, mais
 %% cette limitation peut être contournée par l'ajout d'une instruction ``skip''
 %% (``\lstinline{;}'') après ces labels.)
-Dans la figure~\ref{fig:grammar}, la notation ``${\textit{as}\;X}$'' en exposant
+Dans la figure~\ref{fig:gram-c}, la notation ``${\textit{as}\;X}$'' en exposant
 signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
 par la chaîne à laquelle on fait référence en exposant.
 Par exemple, si \texttt{foo} est le nom (\textit{id}) de la fonction sous test,
@@ -64,13 +64,15 @@ Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
 de chaque fonction, qu'elle retourne une variable appelée \lstinline'res' et que
 cette variable n'entre pas en conflit avec une autre variable du programme.
 Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
-Les symboles terminaux sont présentés en police \lstinline{typewriter}.
-Les symboles non-terminaux \underline{soulignés} ne sont pas détaillés car ils
-font partie des langages C ou \eacsl.
-Le non-terminal \textit{\underline{not-while-stmt}} correspond à toute
-instruction du C qui n'est ni une boucle ni \lstinline'return'.
-\textit{\underline{term}} et \textit{\underline{predicate}} sont des expressions
-\eacsl qui sont décrites dans les parties~\ref{sec:term} et~\ref{sec:pred}.
+Les symboles terminaux sont \underline{soulignés}.
+Les symboles non-terminaux sont en \textit{italique}.
+Les non-terminaux \textit{cst}, \textit{left-value}, \textit{id}, \textit{label}
+et \textit{type} ne sont pas détaillés car ils proviennent de la grammaire du
+langage C.
+Rappelons qu'une \textit{left-value} est toute expression pouvant se trouver en
+partie gauche d'une affectation.
+La figure~\ref{fig:gram-term} présente la grammaire des termes \eacsl et la
+figure~\ref{fig:gram-pred} présente la grammaire des prédicats \eacsl.
 
 
 \subsection{Exemple}
@@ -83,7 +85,7 @@ instruction du C qui n'est ni une boucle ni \lstinline'return'.
   label=lst:normalized]{listings/is_present_normalized.c}
 
 Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
-test normalisée en suivant la grammaire de la figure~\ref{fig:grammar}.
+test normalisée en suivant la grammaire de la figure~\ref{fig:gram-c}.
 Elle retourne $1$ quand la valeur \lstinline'v' en paramètre est présente dans
 le tableau \lstinline't' en paramètre, et $0$ sinon.
 
@@ -116,7 +118,7 @@ supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifi
 
 
 Présentons maintenant les principes de la traduction d'une fonction annotée
-respectant la grammaire de la figure~\ref{fig:grammar}.
+respectant la grammaire de la figure~\ref{fig:gram-c}.
 
 Le programme instrumenté obtenu après traduction des annotations de la fonction
 du listing~\ref{lst:normalized} est présenté dans le listing~\ref{lst:abbrv}.
@@ -580,12 +582,13 @@ exécutée pour l'analyse dynamique et le \textit{monitoring} (surveillance
 d'exécution).
 
 \eacsl est basé sur une logique du premier ordre typée dans laquelle chaque
-terme peut contenir des expressions C pures (sans effets de bord) et des
-mots-clés du langage.
+terme (dont la grammaire est définie avec la figure~\ref{gram-term}) peut
+contenir des expressions C pures (sans effets de bord) et des mots-clés du
+langage.
 Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
-résultat d'une fonction, \lstinline{\valid} est un prédicat qui renvoie vrai si
-son argument est un pointeur valide (se référer au manuel du
-langage~\cite{\citeacsl}).
+résultat d'une fonction, \lstinline{\valid} est un prédicat (leur grammaire est
+définie en figure~\ref{fig:gram-pred}) qui renvoie vrai si son argument est un
+pointeur valide (se référer au manuel du langage~\cite{\citeacsl}).
 Les quantifications existentielles et universelles doivent ported sur des
 domaines finis d'entiers.
 Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
