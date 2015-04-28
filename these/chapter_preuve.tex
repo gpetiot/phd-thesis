@@ -44,7 +44,7 @@ chapitre.
 
 \subsection{Environnements}
 
-Un environnement $env$ est une fonction partielle $env : ID \mapsto VAL$ des
+Un environnement \env est une fonction partielle \env $: ID \mapsto VAL$ des
 identificateurs de variables dans le domaine sémantique qui des valeurs
 possibles.
 
@@ -53,15 +53,15 @@ prendre les termes et prédicats \eacsl et des types C que peuvent prendre les
 variables C :
 $VAL = \mathbb{Z}~\cup~\mathbb{B}~\cup~\mbox{\lstinline'int'}~\cup~\ldots$
 
-La notation $env$[$x \mapsto v$] est désigne un nouvel environnement,
-correspondant à l'environnement $env$ auquel la relation $(x, v)$ a été ajoutée,
+La notation \env[$x \mapsto v$] est désigne un nouvel environnement,
+correspondant à l'environnement \env auquel la relation $(x, v)$ a été ajoutée,
 ce qui signifie que la variable $x$ a la valeur $v$ dans ce nouvel
 environnement.
 
 L'accès à la valeur d'une variable dans un environnement est défini par :
 \begin{itemize}
-\item ($env$[$x \mapsto v$])($x$) = $v$
-\item ($env$[$x \mapsto v$])($y$) = $env$($y$) si $x \neq y$
+\item (\env[$x \mapsto v$])($x$) = $v$
+\item (\env[$x \mapsto v$])($y$) = \env($y$) si $x \neq y$
 \end{itemize}
 
 
@@ -80,69 +80,69 @@ bornés.
 La sémantique des expressions C et des termes \eacsl est définie ci-dessous :
 
 \begin{tabular}{rclr}
-  \eval{cst}{$env$} &=& cst & \eqlabel{E-cst} \\
-  \eval{lvalue}{$env$} &=& $env$(lvalue) & \eqlabel{E-lval} \\
-  \eval{\lstinline|unop x|}{$env$}
-  &=& \lstinline|unop| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-unop} \\
-  \eval{\lstinline|x binop y|}{$env$}
-  &=& (\eval{\lstinline|x|}{$env$}) \lstinline|binop|
-  (\eval{\lstinline|y|}{$env$}) & \eqlabel{E-binop} \\
-  \eval{\lstinline'\\abs(t)'}{$env$} &=&
-  $\lvert$ \eval{\lstinline't'}{$env$} $\rvert$ & \eqlabel{E-abs} \\
-  \eval{\lstinline'\\sum(x, y, \\lambda integer k; z)'}{$env$} &=&
-  $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
+  \eval{cst}{\env} &=& cst & \eqlabel{E-cst} \\
+  \eval{lvalue}{\env} &=& \env(lvalue) & \eqlabel{E-lval} \\
+  \eval{\lstinline|unop x|}{\env}
+  &=& \lstinline|unop| (\eval{\lstinline|x|}{\env}) & \eqlabel{E-unop} \\
+  \eval{\lstinline|x binop y|}{\env}
+  &=& (\eval{\lstinline|x|}{\env}) \lstinline|binop|
+  (\eval{\lstinline|y|}{\env}) & \eqlabel{E-binop} \\
+  \eval{\lstinline'\\abs(t)'}{\env} &=&
+  $\lvert$ \eval{\lstinline't'}{\env} $\rvert$ & \eqlabel{E-abs} \\
+  \eval{\lstinline'\\sum(x, y, \\lambda integer k; z)'}{\env} &=&
+  $\sum_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z'}{\env}}$
   & \eqlabel{E-sum} \\
-  \eval{\lstinline'\\product(x, y, \\lambda integer k; z)'}{$env$} &=&
-  $\prod_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z'}{$env$}}$
+  \eval{\lstinline'\\product(x, y, \\lambda integer k; z)'}{\env} &=&
+  $\prod_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z'}{\env}}$
   & \eqlabel{E-prod} \\
-  \eval{\lstinline'\\numof(x, y, \\lambda integer k; z)'}{$env$} &=&
-  $\sum_{k = \mbox{\eval{\lstinline'x'}{$env$}}}^{\mbox{\eval{\lstinline'y'}{$env$}}} \mbox{\eval{\lstinline'z ? 1 : 0'}{$env$}}$
+  \eval{\lstinline'\\numof(x, y, \\lambda integer k; z)'}{\env} &=&
+  $\sum_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z ? 1 : 0'}{\env}}$
   & \eqlabel{E-num} \\
-  \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
-  si (\eval{\lstinline'x'}{$env$}) $\neq$ 0 & \eqlabel{E-tif} \\
-  &=& \eval{\lstinline'z'}{$env$}
-  si (\eval{\lstinline'x'}{$env$}) = 0 & \eqlabel{E-tif'} \\
-  \eval{\lstinline'\\old(t)'}{$env$} &=&
-  \eval{\lstinline't'}{($env$ en début de fonction)}
+  \eval{\lstinline'x ? y : z'}{\env} &=& \eval{\lstinline'y'}{\env}
+  si (\eval{\lstinline'x'}{\env}) $\neq$ 0 & \eqlabel{E-tif} \\
+  &=& \eval{\lstinline'z'}{\env}
+  si (\eval{\lstinline'x'}{\env}) = 0 & \eqlabel{E-tif'} \\
+  \eval{\lstinline'\\old(t)'}{\env} &=&
+  \eval{\lstinline't'}{(\env en début de fonction)}
   & \eqlabel{E-old} \\
-  \eval{\lstinline'\\null'}{$env$} &=& \lstinline'NULL' & \eqlabel{E-null} \\
-  \eval{\lstinline|(type) x|}{$env$}
-  &=& \lstinline|(type)| (\eval{\lstinline|x|}{$env$}) & \eqlabel{E-cast} \\
+  \eval{\lstinline'\\null'}{\env} &=& \lstinline'NULL' & \eqlabel{E-null} \\
+  \eval{\lstinline|(type) x|}{\env}
+  &=& \lstinline|(type)| (\eval{\lstinline|x|}{\env}) & \eqlabel{E-cast} \\
 \end{tabular}
 
 La sémantique des prédicats \eacsl est définie ci-dessous :
 
 \begin{tabular}{rclr}
-  \eval{\lstinline'\\true'}{$env$} &=& \textit{true} & \eqlabel{P-true} \\
-  \eval{\lstinline'\\false'}{$env$} &=& \textit{false} & \eqlabel{P-false} \\
-  \eval{\lstinline'\\valid(t)'}{$env$} &=&
-  "\lstinline'*t' est défini dans $env$" & \eqlabel{P-valid} \\
-  \eval{\lstinline'\\forall integer k; a <= k <= b ==> y'}{$env$} &=&
-  $\forall_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
+  \eval{\lstinline'\\true'}{\env} &=& \textit{true} & \eqlabel{P-true} \\
+  \eval{\lstinline'\\false'}{\env} &=& \textit{false} & \eqlabel{P-false} \\
+  \eval{\lstinline'\\valid(t)'}{\env} &=&
+  "\lstinline'*t' est défini dans \env" & \eqlabel{P-valid} \\
+  \eval{\lstinline'\\forall integer k; a <= k <= b ==> y'}{\env} &=&
+  $\forall_{k=\mbox{\eval{\lstinline'a'}{\env}}}^{\mbox{\eval{\lstinline'b'}{\env}}} \mbox{\eval{\lstinline'y'}{\env}}$
   & \eqlabel{P-forall} \\
-  \eval{\lstinline'\\exists integer k; a <= k <= b \&\& y'}{$env$} &=&
-  $\exists_{k=\mbox{\eval{\lstinline'a'}{$env$}}}^{\mbox{\eval{\lstinline'b'}{$env$}}} \mbox{\eval{\lstinline'y'}{$env$}}$
+  \eval{\lstinline'\\exists integer k; a <= k <= b \&\& y'}{\env} &=&
+  $\exists_{k=\mbox{\eval{\lstinline'a'}{\env}}}^{\mbox{\eval{\lstinline'b'}{\env}}} \mbox{\eval{\lstinline'y'}{\env}}$
   & \eqlabel{P-exists} \\
-  \eval{\lstinline'\! p'}{$env$} &=& $\lnot$ (\eval{\lstinline'p'}{$env$})
+  \eval{\lstinline'\! p'}{\env} &=& $\lnot$ (\eval{\lstinline'p'}{\env})
   & \eqlabel{P-not} \\
-  \eval{\lstinline'p \&\& q'}{$env$} &=&
-  (\eval{\lstinline'p'}{$env$}) $\land$ (\eval{\lstinline'q'}{$env$})
+  \eval{\lstinline'p \&\& q'}{\env} &=&
+  (\eval{\lstinline'p'}{\env}) $\land$ (\eval{\lstinline'q'}{\env})
   & \eqlabel{P-and} \\
-  \eval{\lstinline'p || q'}{$env$} &=&
-  (\eval{\lstinline'p'}{$env$}) $\lor$ (\eval{\lstinline'q'}{$env$})
+  \eval{\lstinline'p || q'}{\env} &=&
+  (\eval{\lstinline'p'}{\env}) $\lor$ (\eval{\lstinline'q'}{\env})
   & \eqlabel{P-or} \\
-  \eval{\lstinline'p ==> q'}{$env$} &=&
-  (\eval{\lstinline'p'}{$env$}) $\Rightarrow$ (\eval{\lstinline'q'}{$env$})
+  \eval{\lstinline'p ==> q'}{\env} &=&
+  (\eval{\lstinline'p'}{\env}) $\Rightarrow$ (\eval{\lstinline'q'}{\env})
   & \eqlabel{P-impl} \\
-  \eval{\lstinline'p <==> q'}{$env$} &=&
-  (\eval{\lstinline'p'}{$env$}) $\Leftrightarrow$ (\eval{\lstinline'q'}{$env$})
+  \eval{\lstinline'p <==> q'}{\env} &=&
+  (\eval{\lstinline'p'}{\env}) $\Leftrightarrow$ (\eval{\lstinline'q'}{\env})
   & \eqlabel{P-eq} \\
-  \eval{\lstinline'x ? y : z'}{$env$} &=& \eval{\lstinline'y'}{$env$}
-  si \eval{\lstinline'x'}{$env$} & \eqlabel{P-pif} \\
-  &=& \eval{\lstinline'z'}{$env$} sinon & \eqlabel{P-pif'} \\
-  \eval{\lstinline|x rel y|}{$env$}
-  &=& (\eval{\lstinline|x|}{$env$}) \lstinline|rel|
-  (\eval{\lstinline|y|}{$env$}) & \eqlabel{P-rel} \\
+  \eval{\lstinline'x ? y : z'}{\env} &=& \eval{\lstinline'y'}{\env}
+  si \eval{\lstinline'x'}{\env} & \eqlabel{P-pif} \\
+  &=& \eval{\lstinline'z'}{\env} sinon & \eqlabel{P-pif'} \\
+  \eval{\lstinline|x rel y|}{\env}
+  &=& (\eval{\lstinline|x|}{\env}) \lstinline|rel|
+  (\eval{\lstinline|y|}{\env}) & \eqlabel{P-rel} \\
 \end{tabular}
 
 
@@ -150,59 +150,59 @@ La sémantique des prédicats \eacsl est définie ci-dessous :
 
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
 $\mathcal{C} : INSTR \mapsto ENV \mapsto ENV$.
-Cette fonction associe à une instruction $i$ et un environnement $env$ un nouvel
+Cette fonction associe à une instruction $i$ et un environnement \env un nouvel
 environnement qui prend en compte les modifications effectuées par $i$ dans
-l'environnement $env$.
+l'environnement \env.
 Une instruction \underline{soulignée} utilise la sémantique des entiers non
 bornés.
 
 La sémantique des instructions C est définie ci-dessous :
 
 \begin{tabular}{p{4cm} p{.5cm} p{9cm} p{2cm}}
-  \comp{A $\cdot$ B}{$env$} &=& \comp{B}{(\comp{A}{$env$})} & \eqlabel{C-seq} \\
-  \comp{\lstinline|a = b;|}{$env$}
-  &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. bornée)}
+  \comp{A $\cdot$ B}{\env} &=& \comp{B}{(\comp{A}{\env})} & \eqlabel{C-seq} \\
+  \comp{\lstinline|a = b;|}{\env}
+  &=& \env[$a \mapsto$ \eval{b}{\env}] \scriptsize{(arith. bornée)}
   & \eqlabel{C-assign} \\
-  \comp{\lstinline|if(x) A else B|}{$env$}
-  &=& \comp{A}{$env$} si \eval{x}{$env$} & \eqlabel{C-if} \\
-  &=& \comp{B}{$env$} sinon & \eqlabel{C-if'} \\
-  \comp{\lstinline'/*@ assert P; */'}{$env$}
-  &=& $env$ si \eval{P}{$env$} & \eqlabel{C-assert-OK} \\
+  \comp{\lstinline|if(x) A else B|}{\env}
+  &=& \comp{A}{\env} si \eval{x}{\env} & \eqlabel{C-if} \\
+  &=& \comp{B}{\env} sinon & \eqlabel{C-if'} \\
+  \comp{\lstinline'/*@ assert P; */'}{\env}
+  &=& \env si \eval{P}{\env} & \eqlabel{C-assert-OK} \\
   &=& erreur sinon & \eqlabel{C-assert-KO} \\
-  \comp{\lstinline'fassert(e);'}{$env$}
-  &=& $env$ si \eval{e}{$env$} & \eqlabel{C-fassert-OK} \\
+  \comp{\lstinline'fassert(e);'}{\env}
+  &=& \env si \eval{e}{\env} & \eqlabel{C-fassert-OK} \\
   &=& erreur sinon & \eqlabel{C-fassert-KO} \\
-  \comp{\lstinline'fassume(e);'}{$env$}
-  &=& $env$ si \eval{e}{$env$} & \eqlabel{C-fassume-OK} \\
+  \comp{\lstinline'fassume(e);'}{\env}
+  &=& \env si \eval{e}{\env} & \eqlabel{C-fassume-OK} \\
   &=& contradiction sinon & \eqlabel{C-fassume-KO} \\
-  \comp{\lstinline|while(x) A|}{$env$}
-  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{$env$})}
-  si \eval{x}{$env$} & \eqlabel{C-while} \\
-  &=& $env$ sinon & \eqlabel{C-while'} \\
-  \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{$env$}
-  & = & erreur si $\lnot$ \eval{I}{$env$}
+  \comp{\lstinline|while(x) A|}{\env}
+  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{\env})}
+  si \eval{x}{\env} & \eqlabel{C-while} \\
+  &=& \env sinon & \eqlabel{C-while'} \\
+  \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{\env}
+  & = & erreur si $\lnot$ \eval{I}{\env}
   & \eqlabel{C-inv-not-esta} \\
-  & = & $env$ si \eval{\lstinline'e == 0'}{$env$}
+  & = & \env si \eval{\lstinline'e == 0'}{\env}
   & \eqlabel{C-exit-loop} \\
-  & = & erreur si $\lnot$ \eval{\lstinline'v >= 0'}{$env$}
+  & = & erreur si $\lnot$ \eval{\lstinline'v >= 0'}{\env}
   & \eqlabel{C-variant-not-pos} \\
-  & = & erreur si $\lnot$ \eval{I}{\comp{A}{$env$}}
+  & = & erreur si $\lnot$ \eval{I}{\comp{A}{\env}}
   & \eqlabel{C-inv-not-pres} \\
-  & = & erreur si \eval{v}{\comp{A}{$env$}} $\ge$ \eval{v}{$env$}
+  & = & erreur si \eval{v}{\comp{A}{\env}} $\ge$ \eval{v}{\env}
   & \eqlabel{C-variant-not-dec} \\
-  & = & erreur si $\exists x \in G-X.$ \eval{x}{\comp{A}{$env$}} $\ne$ \eval{x}{$env$}
+  & = & erreur si $\exists x \in G-X.$ \eval{x}{\comp{A}{\env}} $\ne$ \eval{x}{\env}
   & \eqlabel{C-loop-assigns} \\
-  & = & \comp{\lstinline'/*@ ... */ while(e) A'}{\comp{A}{$env$}} sinon
+  & = & \comp{\lstinline'/*@ ... */ while(e) A'}{\comp{A}{\env}} sinon
   & \eqlabel{C-loop} \\
   \\
 
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{$env$}
-  &=& $env$[$a \mapsto$ \eval{b}{$env$}] \scriptsize{(arith. non bornée)}
+  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{\env}
+  &=& \env[$a \mapsto$ \eval{b}{\env}] \scriptsize{(arith. non bornée)}
   & \eqlabel{C-assign'} \\
   \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est allouée et
     on lui affecte la valeur de \lstinline'b'} \\ \\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{$env$}
-  &=& $env$[$a \mapsto \bot$] & \eqlabel{C-unset} \\
+  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{\env}
+  &=& \env[$a \mapsto \bot$] & \eqlabel{C-unset} \\
   \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est désallouée} \\
 \end{tabular}
 
@@ -271,9 +271,9 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 \begin{lemma}\label{lem:term-correct}
   Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(I, t')$.
   La traduction est correcte si et seulement si, pour n'importe quel
-  environnement $env$ :
+  environnement \env :
 
-  \eval{$t'$}{\comp{$I$}{$env$}} = \eval{$t$}{$env$}.
+  \eval{$t'$}{\comp{$I$}{\env}} = \eval{$t$}{\env}.
 \end{lemma}
 
 
@@ -285,18 +285,18 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
     ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
 }
 
-Pour n'importe quel environnement $env$, nous prouvons que :
+Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{$env$}}
-= \eval{v}{$env$}.
+\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}}
+= \eval{v}{\env}.
 
 
 \begin{proof}
   ~\\
   \begin{tabular}{rclr}
-    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{$env$}}
-    & $\eq{C-assign'}$ & \eval{x}{($env$[$x \mapsto$ \eval{v}{$env$}])} & \\
-    & $\eq{E-lval}$ & \eval{v}{$env$} &
+    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}}
+    & $\eq{C-assign'}$ & \eval{x}{(\env[$x \mapsto$ \eval{v}{\env}])} & \\
+    & $\eq{E-lval}$ & \eval{v}{\env} &
   \end{tabular}
 \end{proof}
 
@@ -308,9 +308,9 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 \begin{lemma}\label{lem:pred-correct}
   Soit $p$ un prédicat qui se traduit en $(I, p')$.
   La traduction est correct si et seulement si, pour n'importe quel
-  environnement $env$ :
+  environnement \env :
 
-  \eval{$p'$}{\comp{$I$}{$env$}} = \eval{$p$}{$env$}.
+  \eval{$p'$}{\comp{$I$}{\env}} = \eval{$p$}{\env}.
 \end{lemma}
 
 
@@ -327,113 +327,113 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   }
 }~\\
 
-Pour n'importe quel environnement $env$, nous prouvons que :
+Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{\lstinline'e'}{\comp{$I$}{$env$}} = \eval{\lstinline'p1 && p2'}{$env$}.
+\eval{\lstinline'e'}{\comp{$I$}{\env}} = \eval{\lstinline'p1 && p2'}{\env}.
 
 
 \begin{proof}
   ~\\
   Hypothèses : $p_1$ et $p_2$ sont correctement instrumentés.
-  Pour tout environnement $env$ :
+  Pour tout environnement \env :
 
   \begin{tabular}{rclr}
-    \eval{$e_1$}{\comp{$I_1$}{$env$}}
-    & = & \eval{$p_1$}{$env$} & \eqlabel{h1} \\
-    $\equiv$ \comp{$I_1$}{$env$}
-    & = & $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}] & \\
-    \eval{$e_2$}{\comp{$I_2$}{$env$}}
-    & = & \eval{$p_2$}{$env$} & \eqlabel{h2} \\
-    $\equiv$ \comp{$I_2$}{$env$}
-    & = & $env$[$e_2 \mapsto$ \eval{$p_2$}{$env$}] & \\
+    \eval{$e_1$}{\comp{$I_1$}{\env}}
+    & = & \eval{$p_1$}{\env} & \eqlabel{h1} \\
+    $\equiv$ \comp{$I_1$}{\env}
+    & = & \env[$e_1 \mapsto$ \eval{$p_1$}{\env}] & \\
+    \eval{$e_2$}{\comp{$I_2$}{\env}}
+    & = & \eval{$p_2$}{\env} & \eqlabel{h2} \\
+    $\equiv$ \comp{$I_2$}{\env}
+    & = & \env[$e_2 \mapsto$ \eval{$p_2$}{\env}] & \\
   \end{tabular}
 
   On doit prouver l'égalité suivante :
 
-  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
-  $\eq{?}$ \eval{\lstinline'p1 && p2'}{$env$}
+  \eval{\lstinline'e'}{\comp{$I$}{\env}}
+  $\eq{?}$ \eval{\lstinline'p1 && p2'}{\env}
 
   Développons le membre gauche :
   
   \begin{tabular}{rcl}
-    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{$env$}}} \\
-    & = & (\comp{$I$}{$env$})(e) \\
+    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{\env}}} \\
+    & = & (\comp{$I$}{\env})(e) \\
     & $\eq{C-seq}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (\comp{\lstinline'int e = e1;'}{
-        (\comp{$I_1$}{$env$})
+        (\comp{$I_1$}{\env})
       })
     })(e) \\
     & $\eq{h1}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (\comp{\lstinline'int e = e1;'}{
-        ($env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}])
+        (\env[$e_1 \mapsto$ \eval{$p_1$}{\env}])
       })
     })(e) \\
     & $\eq{C-assign}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
       (l, \lstinline'e = e_2;') $\bclose$ }{
       (
-      $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}, $e \mapsto$ \eval{$p_1$}{$env$}]
+      \env[$e_1 \mapsto$ \eval{$p_1$}{\env}, $e \mapsto$ \eval{$p_1$}{\env}]
       )
     })(e) \\
 
     %% cas true
     \multicolumn{3}{l}{
       Quand \eval{e}{(
-        $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-          $e \mapsto$ \eval{$p_1$}{$env$}]
+        \env
+        [$e_1 \mapsto$ \eval{$p_1$}{\env},
+          $e \mapsto$ \eval{$p_1$}{\env}]
       )} = \textit{true} : ~~\eqlabel{h3}}\\
     & $\eq{C-if}$ & (\comp{$I_2 \concat$
       (l, \lstinline'e = e_2;')  }{
       (
-      $env$
-      [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-        $e \mapsto$ \eval{$p_1$}{$env$}]
+      \env
+      [$e_1 \mapsto$ \eval{$p_1$}{\env},
+        $e \mapsto$ \eval{$p_1$}{\env}]
       )
     })(e) \\
     & $\eq{C-seq}$ & (\comp{\lstinline'e = e_2;'}{
       (\comp{$I_2$}{
         (
-        $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-          $e \mapsto$ \eval{$p_1$}{$env$}]
+        \env
+        [$e_1 \mapsto$ \eval{$p_1$}{\env},
+          $e \mapsto$ \eval{$p_1$}{\env}]
         )
       })
     })(e) \\
     & $\eq{h2}$ & (\comp{\lstinline'e = e_2;'}{
       (
-      $env$
-      [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-        $e \mapsto$ \eval{$p_1$}{$env$},
-        $e_2 \mapsto$ \eval{$p_2$}{$env$}]
+      \env
+      [$e_1 \mapsto$ \eval{$p_1$}{\env},
+        $e \mapsto$ \eval{$p_1$}{\env},
+        $e_2 \mapsto$ \eval{$p_2$}{\env}]
       )
     })(e) \\
-    & $\eq{C-assign}$ & ($env$
-                [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-                $e_2 \mapsto$ \eval{$p_2$}{$env$},
-                  $e \mapsto$ \eval{$p_2$}{$env$}]
+    & $\eq{C-assign}$ & (\env
+                [$e_1 \mapsto$ \eval{$p_1$}{\env},
+                $e_2 \mapsto$ \eval{$p_2$}{\env},
+                  $e \mapsto$ \eval{$p_2$}{\env}]
                 ) (e) \\
-    & = & \eval{$p_2$}{$env$} \\
-    & = & true $\land$ \eval{$p_2$}{$env$} \\
-    & $\eq{h3}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
-    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
+    & = & \eval{$p_2$}{\env} \\
+    & = & true $\land$ \eval{$p_2$}{\env} \\
+    & $\eq{h3}$ & \eval{$p_1$}{\env} $\land$ \eval{$p_2$}{\env} \\
+    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
 
     %% cas false
     \multicolumn{3}{l}{
       Quand \eval{e}{(
-        $env$
-        [$e_1 \mapsto$ \eval{$p_1$}{$env$},
-          $e \mapsto$ \eval{$p_1$}{$env$}]
+        \env
+        [$e_1 \mapsto$ \eval{$p_1$}{\env},
+          $e \mapsto$ \eval{$p_1$}{\env}]
         )} = \textit{false} : ~~\eqlabel{h4}}\\
     & $\eq{C-if'}$ & (
-    $env$[$e_1 \mapsto$ \eval{$p_1$}{$env$}, $e \mapsto$ \eval{$p_1$}{$env$}]
+    \env[$e_1 \mapsto$ \eval{$p_1$}{\env}, $e \mapsto$ \eval{$p_1$}{\env}]
     ) (e) \\
-    & = & \eval{$p_1$}{$env$} \\
+    & = & \eval{$p_1$}{\env} \\
     & $\eq{h4}$ & false \\
-    & = & false $\land$ \eval{$p_2$}{$env$} \\
-    & $\eq{h4}$ & \eval{$p_1$}{$env$} $\land$ \eval{$p_2$}{$env$} \\
-    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{$env$} \\
+    & = & false $\land$ \eval{$p_2$}{\env} \\
+    & $\eq{h4}$ & \eval{$p_1$}{\env} $\land$ \eval{$p_2$}{\env} \\
+    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
 \end{proof}
 
@@ -480,10 +480,10 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 }~\\
 
 
-Pour n'importe quel environnement $env$, nous prouvons que :
+Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{\lstinline'e'}{\comp{$I$}{$env$}} =
-\eval{\lstinline'\\forall integer ; t1 <= k <= t2 ==> p'}{$env$}.
+\eval{\lstinline'e'}{\comp{$I$}{\env}} =
+\eval{\lstinline'\\forall integer ; t1 <= k <= t2 ==> p'}{\env}.
 
 
 \begin{proof}
@@ -491,34 +491,34 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   Hypothèses : $t_1$, $t_2$ et $p$ sont correctement instrumentés et $t_1$ est
   inférieur ou égal à $t_2$ (dans le cas contraire la quantification $\forall$
   est trivialement vraie, ce qui ne nous intéresse pas).
-  Pour tout environnement $env$ :
+  Pour tout environnement \env :
 
   \begin{tabular}{rclr}
-    \eval{$e_1$}{\comp{$I_1$}{$env$}}
-    & = & \eval{$t_1$}{$env$} & \eqlabel{h1} \\
-    $\equiv$ \comp{$I_1$}{$env$}
-    & = & $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$}] & \\
-    \eval{$e_2$}{\comp{$I_2$}{$env$}}
-    & = & \eval{$t_2$}{$env$} & \eqlabel{h2} \\
-    $\equiv$ \comp{$I_2$}{$env$}
-    & = & $env$[$e_2 \mapsto$ \eval{$t_2$}{$env$}] & \\
-    \eval{$e_3$}{\comp{$I_3$}{$env$}}
-    & = & \eval{$p$}{$env$} & \eqlabel{h3} \\
-    $\equiv$ \comp{$I_3$}{$env$}
-    & = & $env$[$e_3 \mapsto$ \eval{$p$}{$env$}] & \\
-    \eval{$t_1$}{$env$} & $\le$ & \eval{$t_2$}{$env$} & \eqlabel{h4} \\
+    \eval{$e_1$}{\comp{$I_1$}{\env}}
+    & = & \eval{$t_1$}{\env} & \eqlabel{h1} \\
+    $\equiv$ \comp{$I_1$}{\env}
+    & = & \env[$e_1 \mapsto$ \eval{$t_1$}{\env}] & \\
+    \eval{$e_2$}{\comp{$I_2$}{\env}}
+    & = & \eval{$t_2$}{\env} & \eqlabel{h2} \\
+    $\equiv$ \comp{$I_2$}{\env}
+    & = & \env[$e_2 \mapsto$ \eval{$t_2$}{\env}] & \\
+    \eval{$e_3$}{\comp{$I_3$}{\env}}
+    & = & \eval{$p$}{\env} & \eqlabel{h3} \\
+    $\equiv$ \comp{$I_3$}{\env}
+    & = & \env[$e_3 \mapsto$ \eval{$p$}{\env}] & \\
+    \eval{$t_1$}{\env} & $\le$ & \eval{$t_2$}{\env} & \eqlabel{h4} \\
   \end{tabular}
 
   On doit prouver l'égalité suivante :
 
-  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
-  $\eq{?}$ \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{$env$}
+  \eval{\lstinline'e'}{\comp{$I$}{\env}}
+  $\eq{?}$ \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{\env}
 
   Développons le membre gauche :
   
   \begin{tabular}{p{.5cm} p{.5cm} p{11.5cm}}
-    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{$env$}}} \\
-    &=& (\comp{$I$}{$env$})(e) \\
+    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{\env}}} \\
+    &=& (\comp{$I$}{\env})(e) \\
     & = &
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
@@ -533,7 +533,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
           }{
             (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
               (\comp{$\mbox{\lstinline'int e = 1;'}$}{
-                (\comp{$I_2$}{(\comp{$I_1$}{$env$})})
+                (\comp{$I_2$}{(\comp{$I_1$}{\env})})
               })
             })
           })
@@ -554,7 +554,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
           }{
             (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
               (\comp{$\mbox{\lstinline'int e = 1;'}$}{
-                (\comp{$I_2$}{($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$}])})
+                (\comp{$I_2$}{(\env[$e_1 \mapsto$ \eval{$t_1$}{\env}])})
               })
             })
           })
@@ -575,8 +575,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
           }{
             (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
               (\comp{$\mbox{\lstinline'int e = 1;'}$}{
-                ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-                  $e_2 \mapsto$ \eval{$t_2$}{$env$}])
+                (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+                  $e_2 \mapsto$ \eval{$t_2$}{\env}])
               })
             })
           })
@@ -596,8 +596,8 @@ Pour n'importe quel environnement $env$, nous prouvons que :
             \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
           }{
             (\comp{$\Zinit \underline{\mbox{\lstinline'k = e_1;'}}$}{
-              ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-                $e_2 \mapsto$ \eval{$t_2$}{$env$},
+              (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+                $e_2 \mapsto$ \eval{$t_2$}{\env},
                 $e \mapsto$ 1])
             })
           })
@@ -616,25 +616,25 @@ Pour n'importe quel environnement $env$, nous prouvons que :
             \cdot \mbox{\lstinline'e = e_3;'}
             \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
           }{
-            ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-              $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+              $e_2 \mapsto$ \eval{$t_2$}{\env},
               $e \mapsto$ 1,
-              $k \mapsto$ \eval{$t_1$}{$env$}])
+              $k \mapsto$ \eval{$t_1$}{\env}])
           })
         })
       })
     })(e) \\
   \end{tabular}
 
-  Montrons que pour tout environnement $env$ :
+  Montrons que pour tout environnement \env :
 
   \begin{tabular}{rclr}
     \multicolumn{3}{c}{
-      \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
+      \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
     }
     & \eqlabel{inv-1} \\
-    \eval{$e$}{$env$} &=&
-    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+    \eval{$e$}{\env} &=&
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}
     & \eqlabel{inv-2} \\
   \end{tabular}
 
@@ -649,48 +649,48 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   Montrons que ces invariants sont établis avant la première itération :
 
   Développons
-  \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1 :
+  \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1 :
 
   \begin{tabular}{rcl}
-    \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
-    &=& \eval{$t_1$}{$env$} $\le$ \eval{$t_1$}{$env$}
-    $\le$ \eval{$t_2$}{$env$} + 1 \\
-    &=& \eval{$t_1$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1 \\
+    \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
+    &=& \eval{$t_1$}{\env} $\le$ \eval{$t_1$}{\env}
+    $\le$ \eval{$t_2$}{\env} + 1 \\
+    &=& \eval{$t_1$}{\env} $\le$ \eval{$t_2$}{\env} + 1 \\
     &$\eq{h4}$& \textit{true} \\
   \end{tabular}
 
   Développons le membre droit de
 
-  \eval{$e$}{$env$} =
-  \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$} :
+  \eval{$e$}{\env} =
+  \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env} :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
-      \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}
+      \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}
     } \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{$env$} \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{$env$} \\
-    &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{$env$} \\
-    &=& \eval{\lstinline'\\true'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{\env} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{\env} \\
+    &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{\env} \\
+    &=& \eval{\lstinline'\\true'}{\env} \\
     &=& 1 \\
-    &=& \eval{$e$}{$env$} \\
+    &=& \eval{$e$}{\env} \\
   \end{tabular}
 
   Ces deux invariants sont établis avant la première itération, montrons qu'ils
   sont maintenus après chaque itération.
   On suppose donc que ces invariants sont vrais après une itération quelconque
   et sont donc des hypothèses.
-  Soit $env$ l'environnement au début de l'itération.
+  Soit \env l'environnement au début de l'itération.
 
   Prouvons que le premier invariant est maintenu après chaque itération :
 
   On a :
 
-  \eval{$t_1$}{$env$} $\le$ \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} + 1
+  \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
   
   Ce qui peut être réécrit en :
 
-  \eval{$t_1 \le k \le t_2 + 1$}{$env$} = \textit{true}
+  \eval{$t_1 \le k \le t_2 + 1$}{\env} = \textit{true}
 
   Montrons :
 
@@ -698,10 +698,10 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       $I_3 \cdot \mbox{\lstinline'e = e_3;'}
       \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
     }{
-      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+      (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
         $e \mapsto$
-        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
     }} = \textit{true}
 
   Développons le membre gauche :
@@ -711,36 +711,36 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       $I_3 \cdot \mbox{\lstinline'e = e_3;'}
       \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
     }{
-      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+      (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
         $e \mapsto$
-        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
     }}
     &=&
     \eval{$t_1 \le k \le t_2 + 1$}{
-      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
-        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
-        $e \mapsto$ \eval{\lstinline'p'}{$env$},
-        $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1]
+      \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
+        $e \mapsto$ \eval{\lstinline'p'}{\env},
+        $k \mapsto$ (\eval{\lstinline'k'}{\env})+1]
     } \\
     &=&
     \eval{$t_1 \le k+1 \le t_2 + 1$}{
-      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
-        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
-        $e \mapsto$ \eval{\lstinline'p'}{$env$},
-        $k \mapsto$ (\eval{\lstinline'k'}{$env$})]
+      \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
+        $e \mapsto$ \eval{\lstinline'p'}{\env},
+        $k \mapsto$ (\eval{\lstinline'k'}{\env})]
     } \\
-    &=& \eval{$t_1 \le k+1 \le t_2 + 1$}{$env$} \\
-    &=& \eval{$t_1 \le k+1$}{$env$} $\land$ \eval{$k+1 \le t_2 + 1$}{$env$} \\
-    &=& \eval{$t_1 \le k+1$}{$env$} $\land$ \eval{$k \le t_2$}{$env$} \\
-    &=& \textit{true} $\land$ \eval{$k \le t_2$}{$env$} \\
+    &=& \eval{$t_1 \le k+1 \le t_2 + 1$}{\env} \\
+    &=& \eval{$t_1 \le k+1$}{\env} $\land$ \eval{$k+1 \le t_2 + 1$}{\env} \\
+    &=& \eval{$t_1 \le k+1$}{\env} $\land$ \eval{$k \le t_2$}{\env} \\
+    &=& \textit{true} $\land$ \eval{$k \le t_2$}{\env} \\
     \multicolumn{3}{c}{par hypothèse de récurrence} \\
-    &=& \eval{$k \le t_2$}{$env$} \\
-    &=& \eval{$k$}{$env$} $\le$ \eval{$t_2$}{$env$} \\
-    &=& \eval{$k$}{$env$} $\le$ \eval{$e_2$}{$env$} \\
-    &=& \eval{$k \le e_2$}{$env$} \\
+    &=& \eval{$k \le t_2$}{\env} \\
+    &=& \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} \\
+    &=& \eval{$k$}{\env} $\le$ \eval{$e_2$}{\env} \\
+    &=& \eval{$k \le e_2$}{\env} \\
     &=& \textit{true} \\
     \multicolumn{3}{c}{la condition de boucle est vraie sinon on n'exécuterait
       pas le code de la boucle} \\
@@ -756,19 +756,19 @@ Pour n'importe quel environnement $env$, nous prouvons que :
       $I_3 \cdot \mbox{\lstinline'e = e_3;'}
       \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
     }{
-      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
+      (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
         $e \mapsto$
-        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+        \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
     })(e)
     &=&
     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
       \comp{\lstinline'e = e_3;'}{(
         \comp{$I_3$}{(
-          $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e \mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}]
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}]
           )}
         )}
       )}
@@ -776,32 +776,32 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     &=&
     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
       \comp{\lstinline'e = e_3;'}{(
-        $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-          $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+          $e_2 \mapsto$ \eval{$t_2$}{\env},
           $e \mapsto$
-          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$},
-          $e_3 \mapsto$ \eval{\lstinline'p'}{$env$}]
+          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env},
+          $e_3 \mapsto$ \eval{\lstinline'p'}{\env}]
         )}
       )}
     )(e) \\
     &=&
     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
-      $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
-        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
-        $e \mapsto$ \eval{\lstinline'p'}{$env$}]
+      \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
+        $e \mapsto$ \eval{\lstinline'p'}{\env}]
       )}
     )(e) \\
     &=&
-    ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-      $e_2 \mapsto$ \eval{$t_2$}{$env$},
-      $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
-      $e \mapsto$ \eval{\lstinline'p'}{$env$},
-      $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1]
+    (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+      $e_2 \mapsto$ \eval{$t_2$}{\env},
+      $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
+      $e \mapsto$ \eval{\lstinline'p'}{\env},
+      $k \mapsto$ (\eval{\lstinline'k'}{\env})+1]
     )(e) \\
-    &=& \eval{\lstinline'p'}{$env$} \\
-    &=& \eval{\lstinline'e'}{$env$} $\land$ \eval{\lstinline'p'}{$env$} \\
-    \multicolumn{3}{c}{\eval{\lstinline'e'}{$env$} est vrai sinon on
+    &=& \eval{\lstinline'p'}{\env} \\
+    &=& \eval{\lstinline'e'}{\env} $\land$ \eval{\lstinline'p'}{\env} \\
+    \multicolumn{3}{c}{\eval{\lstinline'e'}{\env} est vrai sinon on
       n'exécuterait pas le code de la boucle} \\
   \end{tabular}
 
@@ -813,30 +813,30 @@ Pour n'importe quel environnement $env$, nous prouvons que :
         $I_3 \cdot \mbox{\lstinline'e = e_3;'}
         \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
       }{
-        ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-          $e_2 \mapsto$ \eval{$t_2$}{$env$},
+        (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+          $e_2 \mapsto$ \eval{$t_2$}{\env},
           $e \mapsto$
-          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+          \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
       })
     }
     &=&
     \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{
-      ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-        $e_2 \mapsto$ \eval{$t_2$}{$env$},
-        $e_3 \mapsto$ \eval{\lstinline'p'}{$env$},
-        $e \mapsto$ \eval{\lstinline'p'}{$env$},
-        $k \mapsto$ (\eval{\lstinline'k'}{$env$})+1])
+      (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+        $e_2 \mapsto$ \eval{$t_2$}{\env},
+        $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
+        $e \mapsto$ \eval{\lstinline'p'}{\env},
+        $k \mapsto$ (\eval{\lstinline'k'}{\env})+1])
     } \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z < k+1 ==> p'}{$env$} \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z < k+1 ==> p'}{\env} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k ==> p'}{\env} \\
     &=&
-    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$} \newline
-    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$env$} \\
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env} \newline
+    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{\env} \\
     &=&
-    \eval{\lstinline'e'}{$env$}
-    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$env$} \\
-    &=& \eval{\lstinline'e'}{$env$} $\land$ \eval{\lstinline'p'}{$env$} \\
-    \multicolumn{3}{c}{car \eval{\lstinline'p'}{$env$} est la valeur de $p$ pour
+    \eval{\lstinline'e'}{\env}
+    $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{\env} \\
+    &=& \eval{\lstinline'e'}{\env} $\land$ \eval{\lstinline'p'}{\env} \\
+    \multicolumn{3}{c}{car \eval{\lstinline'p'}{\env} est la valeur de $p$ pour
     le $k$ courant} \\
   \end{tabular}
 
@@ -845,7 +845,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
   Maintenant que les deux invariants ont été prouvés, reprenons notre preuve :
 
   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    \eval{\lstinline'e'}{\comp{$I$}{\env}}
     &=&
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
@@ -858,10 +858,10 @@ Pour n'importe quel environnement $env$, nous prouvons que :
             \cdot \mbox{\lstinline'e = e_3;'}
             \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$
           }{
-            ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-              $e_2 \mapsto$ \eval{$t_2$}{$env$},
+            (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+              $e_2 \mapsto$ \eval{$t_2$}{\env},
               $e \mapsto$ 1,
-              $k \mapsto$ \eval{$t_1$}{$env$}])
+              $k \mapsto$ \eval{$t_1$}{\env}])
           })
         })
       })
@@ -870,45 +870,45 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
-          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e\mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
         })
       })
     })(e) \\
   \end{tabular}
 
-  Notons $env'$ = $env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-    $e_2 \mapsto$ \eval{$t_2$}{$env$},
+  Notons \env$'$ = \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+    $e_2 \mapsto$ \eval{$t_2$}{\env},
     $e\mapsto$
-    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}].
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}].
 
   Rappelons que
-  \eval{$t_1$}{$env'$} $\le$ \eval{$k$}{$env'$} $\le$ \eval{$t_2$}{$env'$} + 1
+  \eval{$t_1$}{\env$'$} $\le$ \eval{$k$}{\env$'$} $\le$ \eval{$t_2$}{\env$'$} + 1
   (premier invariant de boucle).
 
-  On sait que la condition de boucle est fausse dans cet environnement $env'$ :
+  On sait que la condition de boucle est fausse dans cet environnement \env$'$ :
 
-  \eval{\lstinline'k <= e_2 && e'}{$env'$} = \textit{false}
+  \eval{\lstinline'k <= e_2 && e'}{\env$'$} = \textit{false}
 
-  Cas \eval{$k \le e_2$}{$env'$} = \textit{false}, soit
-  \eval{$k > t_2$}{$env'$} = \textit{true} :
+  Cas \eval{$k \le e_2$}{\env$'$} = \textit{false}, soit
+  \eval{$k > t_2$}{\env$'$} = \textit{true} :
   
-  On sait que \eval{$k > t_2$}{$env'$} et \eval{$k \le t_2+1$}{$env'$}, donc on
-  a \eval{k}{$env'$} = \eval{$t_2+1$}{$env'$}.
+  On sait que \eval{$k > t_2$}{\env$'$} et \eval{$k \le t_2+1$}{\env$'$}, donc on
+  a \eval{k}{\env$'$} = \eval{$t_2+1$}{\env$'$}.
   Avec cette nouvelle connaissance, on a :
 
   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    \eval{\lstinline'e'}{\comp{$I$}{\env}}
     &=&
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
-          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e\mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env$}])
+            \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
         })
       })
     })(e) \\
@@ -916,11 +916,11 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
-          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e\mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{$env$},
-            $k \mapsto$ \eval{$t_2+1$}{$env$}])
+            \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{\env},
+            $k \mapsto$ \eval{$t_2+1$}{\env}])
         })
       })
     })(e) \\
@@ -928,78 +928,78 @@ Pour n'importe quel environnement $env$, nous prouvons que :
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
-          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e\mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
-            $k \mapsto$ \eval{$t_2+1$}{$env$}])
+            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env},
+            $k \mapsto$ \eval{$t_2+1$}{\env}])
         })
       })
     })(e) \\
     &=&
-    ($env$[$e\mapsto$
-      \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
+    (\env[$e\mapsto$
+      \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env},
       $k \mapsto \bot$,
       $e_1 \mapsto \bot$,
       $e_2 \mapsto \bot$]) (e) \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env} \\
   \end{tabular}
 
-  Cas \eval{$e$}{$env'$} = \textit{false} :
+  Cas \eval{$e$}{\env$'$} = \textit{false} :
 
   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-    \eval{$e$}{$env'$} = \textit{false}
+    \eval{$e$}{\env$'$} = \textit{false}
     &$\equiv$&
-    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$env'$}
+    \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env$'$}
     = \textit{false} \\
     &$\equiv$&
-    \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{$env'$}
+    \eval{\lstinline'\\forall integer z; t_1 <= z < t_2+1 ==> p'}{\env$'$}
     = \textit{false} \\
-    \multicolumn{3}{c}{car \eval{$k$}{$env'$} $\le$ \eval{$t_2+1$}{$env'$}} \\
+    \multicolumn{3}{c}{car \eval{$k$}{\env$'$} $\le$ \eval{$t_2+1$}{\env$'$}} \\
     &$\equiv$&
-    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env'$}
+    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env$'$}
     = \textit{false} \\
     &$\equiv$&
-    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}
+    \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env}
     = \textit{false} \\
     \multicolumn{3}{c}{
-      car (\eval{$t_1$}{$env$}) = (\eval{$t_1$}{$env'$}) et
-      (\eval{$t_2$}{$env$}) = (\eval{$t_2$}{$env'$})
+      car (\eval{$t_1$}{\env}) = (\eval{$t_1$}{\env$'$}) et
+      (\eval{$t_2$}{\env}) = (\eval{$t_2$}{\env$'$})
     } \\
   \end{tabular}
 
   Donc on a :
-  \eval{$e$}{$env'$} $\equiv$
-  \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}.
+  \eval{$e$}{\env$'$} $\equiv$
+  \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env}.
 
   Reprenons la preuve principale dans le cas
-  \eval{$e$}{$env'$} = \textit{false} :
+  \eval{$e$}{\env$'$} = \textit{false} :
 
   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-    \eval{\lstinline'e'}{\comp{$I$}{$env$}}
+    \eval{\lstinline'e'}{\comp{$I$}{\env}}
     &=&
     (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
-          ($env$[$e_1 \mapsto$ \eval{$t_1$}{$env$},
-            $e_2 \mapsto$ \eval{$t_2$}{$env$},
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
             $e\mapsto$
-            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$}])
+            \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env}])
         })
       })
     })(e) \\
     &=&
-    ($env$[\eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$},
+    (\env[\eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env},
       $k \mapsto \bot$,
       $e_1 \mapsto \bot$,
       $e_2 \mapsto \bot$]) (e) \\
-    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{$env$} \\
+    &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_2 ==> p'}{\env} \\
   \end{tabular}
 
-  On a bien réussi à prouver que pour tout environnement $env$ :
+  On a bien réussi à prouver que pour tout environnement \env :
 
-  \eval{\lstinline'e'}{\comp{$I$}{$env$}}
-  = \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{$env$}
+  \eval{\lstinline'e'}{\comp{$I$}{\env}}
+  = \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{\env}
 \end{proof}
 
 
@@ -1019,40 +1019,40 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 }
 
 
-Pour n'importe quel environnement $env$, nous prouvons que :
+Pour n'importe quel environnement \env, nous prouvons que :
 
-\comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
-$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
+\comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur
 
 
 \begin{proof}
   ~\\
-  On sait que \eval{e}{\comp{$I$}{$env$}} = \eval{p}{$env$} par hypothèse que
+  On sait que \eval{e}{\comp{$I$}{\env}} = \eval{p}{\env} par hypothèse que
   la traduction des prédicats est correcte.
 
-  Cas \eval{p}{$env$} = \textit{true} :
+  Cas \eval{p}{\env} = \textit{true} :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = $env$
-  donc \comp{\lstinline'/*@ assert p; */ ;'}{$env$} $\not \equiv$ erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \env
+  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ erreur
 
-  \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
-  = \comp{$I$}{$env$}.
+  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
+  = \comp{$I$}{\env}.
 
-  \commentGP{Prouver que \comp{$I$}{$env$} ne génère pas d'erreur.}
+  \commentGP{Prouver que \comp{$I$}{\env} ne génère pas d'erreur.}
 
-  Cas \eval{p}{$env$} = \textit{false} :
+  Cas \eval{p}{\env} = \textit{false} :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
 
-  \comp{$I \concat$ \lstinline'fassert(e);'}{$env$}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{$env$}}
+  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
   = erreur.
 
   On a donc bien :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{$env$} = erreur
-  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur.
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur.
 \end{proof}
 
 
