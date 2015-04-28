@@ -238,6 +238,31 @@ Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
 $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 
+\subsection{Sémantique dénotationnelle des insertions de code}
+
+La sémantique dénotationnelle des insertions de code est exprimée avec la
+fonction $\mathcal{I} : list(LABEL * INSTR) \mapsto ENV \mapsto ENV$.
+À chaque séquence d'insertions de code C et un environnement est associé un
+nouvel environnement.
+
+La fonction $\mathcal{I}$ est définie comme suit :
+
+\begin{center}
+  \begin{tabular}{rclr}
+    \compi{$\emptylist$}{\env} & = & \env & \eqlabel{I-empty} \\
+    \compi{($l$, $i$) $\concat~\emptylist$}{\env}
+    & = & \comp{$i$}{\env$_l$} & \eqlabel{I-instr} \\
+    \compi{$I_1 \concat I_2$}{\env} & = & \compi{$I_2$}{(\compi{$I_1$}{\env})}
+    & \eqlabel{I-split} \\
+  \end{tabular}
+\end{center}
+
+La première règle énonce qu'une séquence vide ne modifie pas l'environnement.
+La deuxième règle évalue l'instruction $i$ au label $l$ afin de calculer le
+nouvel environnement.
+La troisième règle traite le cas de la concaténation d'insertions de code.
+
+
 \section{Properties}
 \label{sec:properties}
 
