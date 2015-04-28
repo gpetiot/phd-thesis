@@ -32,7 +32,7 @@
           (End_f, \mbox{\lstinline'assigns X;'}) \rulearrow
         } {
           I \concat
-          \forall (x:ctype) \not \in X:
+          \forall (x:ctype) \in G-X:
           (Beg_f, \mbox{\lstinline'ctype assigns_x = e;'})
           \concat (End_f, \mbox{\lstinline'fassert(e == assigns_x);'})
         }
@@ -62,7 +62,7 @@
             }
             {
               I \concat
-              \forall (x:ctype) \not \in X:
+              \forall (x:ctype) \in G-X:
               (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
               \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
             }

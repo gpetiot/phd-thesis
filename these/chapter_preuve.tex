@@ -269,7 +269,7 @@ La sémantique des instructions C est définie ci-dessous :
   & \eqlabel{C-inv-not-pres} \\
   & = & erreur si \eval{v}{\comp{A}{$env$}} $\ge$ \eval{v}{$env$}
   & \eqlabel{C-variant-not-dec} \\
-  & = & erreur si $\exists x \not \in X.$ \eval{x}{\comp{A}{$env$}} $\ne$ \eval{x}{$env$}
+  & = & erreur si $\exists x \in G-X.$ \eval{x}{\comp{A}{$env$}} $\ne$ \eval{x}{$env$}
   & \eqlabel{C-loop-assigns} \\
   & = & \comp{\lstinline'/*@ ... */ while(e) A'}{\comp{A}{$env$}} sinon
   & \eqlabel{C-loop} \\
@@ -1146,7 +1146,7 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{$env$} = erreur
         (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
       } {
         I \concat
-        \forall (x:ctype) \not \in X:
+        \forall (x:ctype) \in G-X:
         (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
         \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
       }

@@ -323,6 +323,9 @@ La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
 instrumentée.
 La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
+L'ensemble des l-values considérées est la différence $G-X$, où $G$ est
+l'ensemble des l-values dans le contexte courant et $X$ est l'ensemble des
+l-values de la clausse \lstinline'assigns'.
 Pour chacune de ces l-values, une sauvegarde est faite au début de la fonction,
 puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité à de la postcondition
@@ -343,16 +346,16 @@ pour une boucle au label $l$ sont présentées dans la
 figure~\ref{fig:loop-annot}.
 La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
 sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
-boucle. Pour chacune de ces l-values, une sauvegarde est faite au début de
-chaque itération, puis on vérifie que la valeur n'a pas été modifiée en fin de
 boucle.
+Pour chacune de ces l-values, une sauvegarde est faite au début de chaque
+itération, puis on vérifie que la valeur n'a pas été modifiée en fin de boucle.
 La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
 avant la boucle et après chaque itération de la boucle.
 La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
 au début de chaque itération, puis mémorise la valeur du terme au début de la
-boucle dans une variable fraîche \lstinline|old_variant|. Enfin, on vérifie à la
-fin de chaque itération que le variant décroît strictement (par rapport à sa
-valeur au début de l'itération).
+boucle dans une variable fraîche \lstinline|old_variant|.
+Enfin, on vérifie à la fin de chaque itération que le variant décroît
+strictement (par rapport à sa valeur au début de l'itération).
 Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
 \lstinline'loop invariant' de la ligne 9 par la règle
 \textsc{$\alpha$-check-invariant} donne les lignes 10--12 et 20--24 du
