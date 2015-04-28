@@ -295,7 +295,7 @@ terme, prédicat ou d'une annotation \eacsl.
 Par exemple, la règle suivante montre la séquence d'insertions de code $I$
 générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
 
-{\myinference[AND]
+{\myinference[$\pi$-and]
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
@@ -358,7 +358,7 @@ $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
 
 \subsection{Traduction des constantes}
 
-{\myinference[CST]
+{\myinference[$\tau$-const]
   {}
   { (l, \mbox{\lstinline'v'} : \mathbb{Z}) \rulearrow
     ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
@@ -395,7 +395,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 \subsection{Traduction des conjonctions}
 
-{\myinference[AND]
+{\myinference[$\pi$-and]
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
@@ -519,7 +519,7 @@ Pour n'importe quel environnement $env$, nous prouvons que :
 
 \subsection{Traduction des quantifications universelles}
 
-{\myinference[FORALL]
+{\myinference[$\pi$-forall]
   {
     (l, \mbox{\lstinline't1'} : \mathbb{Z}) \rulearrow
     (I_1, \mbox{\lstinline'e1'}) \\
