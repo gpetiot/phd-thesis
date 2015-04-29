@@ -31,8 +31,8 @@ chapitre.
   \begin{itemize}
   \item $x$, $y$ et $z$ sont des identificateurs de variable
   \item $v$ est une valeur
-  \item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
-    ou plus initialisée (après un \lstinline'free' ou une désallocation GMP).
+  %\item $\bot$ est une valeur spéciale qui signifie qu'une variable n'est pas
+  %  ou plus initialisée (après un \lstinline'free' ou une désallocation GMP).
   \item $i$, $i_1$, $i_2$ sont des instructions
   \item $A$, $B$ sont des blocs d'instructions
   \item $e$, $e_1$, $e_2$ sont des expressions C
@@ -45,105 +45,128 @@ chapitre.
 \subsection{Environnements}
 
 Un environnement \env est une fonction partielle \env $: ID \mapsto VAL$ des
-identificateurs de variables dans le domaine sémantique qui des valeurs
+identificateurs de variables dans le domaine sémantique des valeurs
 possibles.
 
 Le domaine des valeurs est défini comme l'union des types logiques que peuvent
-prendre les termes et prédicats \eacsl et des types C que peuvent prendre les
-variables C :
-$VAL = \mathbb{Z}~\cup~\mathbb{B}~\cup~\mbox{\lstinline'int'}~\cup~\ldots$
+prendre les termes et prédicats \eacsl :
+$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\mathbb{R}$
 
 La notation \env[$x \mapsto v$] est désigne un nouvel environnement,
 correspondant à l'environnement \env auquel la relation $(x, v)$ a été ajoutée,
-ce qui signifie que la variable $x$ a la valeur $v$ dans ce nouvel
-environnement.
+ce qui signifie qu'on remplace l'ancienne valeur de $x$ par $v$.
 
 L'accès à la valeur d'une variable dans un environnement est défini par :
-\begin{itemize}
-\item (\env[$x \mapsto v$])($x$) = $v$
-\item (\env[$x \mapsto v$])($y$) = \env($y$) si $x \neq y$
-\end{itemize}
+
+\begin{tabular}{rclr}
+  (\env[$x \mapsto v$])($x$) & = & $v$ & \eqlabel{env-1} \\
+  (\env[$x \mapsto v$])($y$) & = & \env($y$) si $x \neq y$ & \eqlabel{env-2}\\
+\end{tabular}
+
+Dans la suite, nous utiliserons la notation
+\env[$x \mapsto v_1, y \mapsto v_2$] (en supposant que $x \not = y$) comme un
+raccourci pour \env[$x \mapsto v_1$][$y \mapsto v_2$].
+
+La notation \env $-~\{\mbox{\lstinline'x'}\}$ signifie que la left-value
+\lstinline'x' et sa valeur sont enlevées de l'environnement \env :
+
+\begin{tabular}{rcl}
+  (\env[$x \mapsto v$])$-~\{\mbox{\lstinline'a'}\}$
+  &=& (\env$-~\{\mbox{\lstinline'a'}\}$)[$x \mapsto v$] si $x \neq a$ \\
+  (\env[$a \mapsto v$])$-~\{\mbox{\lstinline'a'}\}$ &=& \env \\
+\end{tabular}
 
 
-\subsection{Sémantique Dénotationnelle des Expressions}
+\subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
 La sémantique dénotationnelle des expressions C et des termes et prédicats
 \eacsl est exprimée avec la fonction
-$\mathcal{E} : EXP \mapsto ENV \mapsto VAL$.
+$\mathcal{E} : (EXP \cup TERM \cup PRED) \mapsto ENV \mapsto VAL$.
 Cette fonction associe à une expression C (ou un terme ou prédicat \eacsl) dans
 un environnement une valeur, à condition que cette expression ne génère pas
-d'effet de bord, ce qui est le cas sur le langage considéré après normalisation
-du code par \framac.
-Une expression C \underline{soulignée} utilise la sémantique des entiers non
-bornés.
+d'effet de bord, hypothèse satisfaite par le langage considéré après
+normalisation du code par \framac.
+%Une expression C \underline{soulignée} utilise la sémantique des entiers non
+%bornés.
 
-La sémantique des expressions C et des termes \eacsl est définie ci-dessous :
+La sémantique des expressions C et des termes \eacsl est donnée en
+figure~\ref{fig:sem-exp}.
+La sémantique des prédicats \eacsl est donnée en figure~\ref{fig:sem-pred}.
 
-\begin{tabular}{rclr}
-  \eval{cst}{\env} &=& cst & \eqlabel{E-cst} \\
-  \eval{lvalue}{\env} &=& \env(lvalue) & \eqlabel{E-lval} \\
-  \eval{\lstinline|unop x|}{\env}
-  &=& \lstinline|unop| (\eval{\lstinline|x|}{\env}) & \eqlabel{E-unop} \\
-  \eval{\lstinline|x binop y|}{\env}
-  &=& (\eval{\lstinline|x|}{\env}) \lstinline|binop|
-  (\eval{\lstinline|y|}{\env}) & \eqlabel{E-binop} \\
-  \eval{\lstinline'\\abs(t)'}{\env} &=&
-  $\lvert$ \eval{\lstinline't'}{\env} $\rvert$ & \eqlabel{E-abs} \\
-  \eval{\lstinline'\\sum(x, y, \\lambda integer k; z)'}{\env} &=&
-  $\sum_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z'}{\env}}$
-  & \eqlabel{E-sum} \\
-  \eval{\lstinline'\\product(x, y, \\lambda integer k; z)'}{\env} &=&
-  $\prod_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z'}{\env}}$
-  & \eqlabel{E-prod} \\
-  \eval{\lstinline'\\numof(x, y, \\lambda integer k; z)'}{\env} &=&
-  $\sum_{k = \mbox{\eval{\lstinline'x'}{\env}}}^{\mbox{\eval{\lstinline'y'}{\env}}} \mbox{\eval{\lstinline'z ? 1 : 0'}{\env}}$
-  & \eqlabel{E-num} \\
-  \eval{\lstinline'x ? y : z'}{\env} &=& \eval{\lstinline'y'}{\env}
-  si (\eval{\lstinline'x'}{\env}) $\neq$ 0 & \eqlabel{E-tif} \\
-  &=& \eval{\lstinline'z'}{\env}
-  si (\eval{\lstinline'x'}{\env}) = 0 & \eqlabel{E-tif'} \\
-  \eval{\lstinline'\\old(t)'}{\env} &=&
-  \eval{\lstinline't'}{(\env en début de fonction)}
-  & \eqlabel{E-old} \\
-  \eval{\lstinline'\\null'}{\env} &=& \lstinline'NULL' & \eqlabel{E-null} \\
-  \eval{\lstinline|(type) x|}{\env}
-  &=& \lstinline|(type)| (\eval{\lstinline|x|}{\env}) & \eqlabel{E-cast} \\
-\end{tabular}
+\begin{figure}[bt]
+  \begin{tabular}{rclr}
+    \eval{cst}{\env} &=& cst & \eqlabel{E-cst} \\
+    \eval{lvalue}{\env} &=& \env(lvalue) si $lvalue$ est une variable
+    & \eqlabel{E-lval} \\
+    \eval{\lstinline|unop t|}{\env}
+    &=& \lstinline|unop| (\eval{\lstinline|t|}{\env}) & \eqlabel{E-unop} \\
+    \eval{\lstinline|t1 binop t2|}{\env}
+    &=& (\eval{\lstinline|t1|}{\env}) \lstinline|binop|
+    (\eval{\lstinline|t2|}{\env}) & \eqlabel{E-binop} \\
+    \eval{\lstinline'\\abs(t)'}{\env} &=&
+    $\lvert$ \eval{\lstinline't'}{\env} $\rvert$ & \eqlabel{E-abs} \\
+    \eval{\lstinline'\\sum(t1, t2, \\lambda integer k; t3)'}{\env} &=&
+    $\sum_{k = \mbox{\eval{\lstinline't1'}{\env}}}^{\mbox{\eval{\lstinline't2'}{\env}}} \mbox{\eval{\lstinline't3'}{\env}}$
+    & \eqlabel{E-sum} \\
+    \eval{\lstinline'\\product(t1, t2, \\lambda integer k; t3)'}{\env} &=&
+    $\prod_{k = \mbox{\eval{\lstinline't1'}{\env}}}^{\mbox{\eval{\lstinline't2'}{\env}}} \mbox{\eval{\lstinline't3'}{\env}}$
+    & \eqlabel{E-prod} \\
+    \eval{\lstinline'\\numof(t1, t2, \\lambda integer k; t3)'}{\env} &=&
+    $\sum_{k = \mbox{\eval{\lstinline't1'}{\env}}}^{\mbox{\eval{\lstinline't2'}{\env}}} \mbox{\eval{\lstinline't3 ? 1 : 0'}{\env}}$
+    & \eqlabel{E-num} \\
+    \eval{\lstinline't1 ? t2 : t3'}{\env} &=& \eval{\lstinline't2'}{\env}
+    si (\eval{\lstinline't1'}{\env}) $\neq$ 0, \eval{\lstinline't3'}{\env} sinon
+    & \eqlabel{E-tif} \\
+    \eval{\lstinline'\\old(t)'}{\env} &=&
+    \eval{\lstinline't'}{(\env en début de fonction)}
+    & \eqlabel{E-old} \\
+    \eval{\lstinline'\\null'}{\env} &=& \lstinline'NULL' & \eqlabel{E-null} \\
+    \eval{\lstinline|(type) t|}{\env}
+    &=& \lstinline|(type)| (\eval{\lstinline|t|}{\env}) & \eqlabel{E-cast} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des termes et expressions}
+  \label{fig:sem-exp}
+\end{figure}
 
-La sémantique des prédicats \eacsl est définie ci-dessous :
 
-\begin{tabular}{rclr}
-  \eval{\lstinline'\\true'}{\env} &=& \textit{true} & \eqlabel{P-true} \\
-  \eval{\lstinline'\\false'}{\env} &=& \textit{false} & \eqlabel{P-false} \\
-  \eval{\lstinline'\\valid(t)'}{\env} &=&
-  "\lstinline'*t' est défini dans \env" & \eqlabel{P-valid} \\
-  \eval{\lstinline'\\forall integer k; a <= k <= b ==> y'}{\env} &=&
-  $\forall_{k=\mbox{\eval{\lstinline'a'}{\env}}}^{\mbox{\eval{\lstinline'b'}{\env}}} \mbox{\eval{\lstinline'y'}{\env}}$
-  & \eqlabel{P-forall} \\
-  \eval{\lstinline'\\exists integer k; a <= k <= b \&\& y'}{\env} &=&
-  $\exists_{k=\mbox{\eval{\lstinline'a'}{\env}}}^{\mbox{\eval{\lstinline'b'}{\env}}} \mbox{\eval{\lstinline'y'}{\env}}$
-  & \eqlabel{P-exists} \\
-  \eval{\lstinline'\! p'}{\env} &=& $\lnot$ (\eval{\lstinline'p'}{\env})
-  & \eqlabel{P-not} \\
-  \eval{\lstinline'p \&\& q'}{\env} &=&
-  (\eval{\lstinline'p'}{\env}) $\land$ (\eval{\lstinline'q'}{\env})
-  & \eqlabel{P-and} \\
-  \eval{\lstinline'p || q'}{\env} &=&
-  (\eval{\lstinline'p'}{\env}) $\lor$ (\eval{\lstinline'q'}{\env})
-  & \eqlabel{P-or} \\
-  \eval{\lstinline'p ==> q'}{\env} &=&
-  (\eval{\lstinline'p'}{\env}) $\Rightarrow$ (\eval{\lstinline'q'}{\env})
-  & \eqlabel{P-impl} \\
-  \eval{\lstinline'p <==> q'}{\env} &=&
-  (\eval{\lstinline'p'}{\env}) $\Leftrightarrow$ (\eval{\lstinline'q'}{\env})
-  & \eqlabel{P-eq} \\
-  \eval{\lstinline'x ? y : z'}{\env} &=& \eval{\lstinline'y'}{\env}
-  si \eval{\lstinline'x'}{\env} & \eqlabel{P-pif} \\
-  &=& \eval{\lstinline'z'}{\env} sinon & \eqlabel{P-pif'} \\
-  \eval{\lstinline|x rel y|}{\env}
-  &=& (\eval{\lstinline|x|}{\env}) \lstinline|rel|
-  (\eval{\lstinline|y|}{\env}) & \eqlabel{P-rel} \\
-\end{tabular}
+\begin{figure}[bt]
+  \begin{tabular}{rclr}
+    \eval{\lstinline'\\true'}{\env} &=& \textit{true} & \eqlabel{P-true} \\
+    \eval{\lstinline'\\false'}{\env} &=& \textit{false} & \eqlabel{P-false} \\
+    \eval{\lstinline'\\valid(t)'}{\env} &=& \textit{true} si \lstinline'*t' est
+    défini dans \env, \textit{false} sinon & \eqlabel{P-valid} \\
+    \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env} &=&
+    $\forall k.$ \eval{\lstinline't1'}{\env} $\le$ $k$ $\le$
+    \eval{\lstinline't2'}{\env} $\Rightarrow$ \eval{\lstinline'p'}{\env}
+    & \eqlabel{P-forall} \\
+    \eval{\lstinline'\\exists integer k; t1 <= k <= t2 \&\& p'}{\env} &=&
+    $\exists k.$ \eval{\lstinline't1'}{\env} $\le$ $k$ $\le$
+    \eval{\lstinline't2'}{\env} $\land$ \eval{\lstinline'p'}{\env}
+    & \eqlabel{P-exists} \\
+    \eval{\lstinline'\! p'}{\env} &=& $\lnot$ (\eval{\lstinline'p'}{\env})
+    & \eqlabel{P-not} \\
+    \eval{\lstinline'p1 \&\& p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\land$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-and} \\
+    \eval{\lstinline'p1 || p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\lor$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-or} \\
+    \eval{\lstinline'p1 ==> p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\Rightarrow$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-impl} \\
+    \eval{\lstinline'p1 <==> p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\Leftrightarrow$(\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-eq} \\
+    \eval{\lstinline't ? p1 : p2'}{\env} &=& \eval{\lstinline'p1'}{\env}
+    si (\eval{\lstinline't'}{\env}) $\neq$ 0, \eval{\lstinline'p2'}{\env} sinon
+    & \eqlabel{P-pif} \\
+    \eval{\lstinline|t1 rel t2|}{\env}
+    &=& (\eval{\lstinline|t1|}{\env}) \lstinline|rel|
+    (\eval{\lstinline|t2|}{\env}) & \eqlabel{P-rel} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des prédicats}
+  \label{fig:sem-pred}
+\end{figure}
 
 
 \subsection{Sémantique Dénotationnelle des Instructions}
@@ -156,62 +179,81 @@ l'environnement \env.
 Une instruction \underline{soulignée} utilise la sémantique des entiers non
 bornés.
 
-La sémantique des instructions C est définie ci-dessous :
+La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
+Dans la règle \eqlabel{C-Z-set}, la variable entière (GMP) \lstinline'lval' est
+allouée et on lui affecte la valeur de \lstinline'e'.
+Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) \lstinline'lval'
+est désallouée et enlevée de l'environnement \env.
 
-\begin{tabular}{p{4cm} p{.5cm} p{9cm} p{2cm}}
-  \comp{A $\cdot$ B}{\env} &=& \comp{B}{(\comp{A}{\env})} & \eqlabel{C-seq} \\
-  \comp{\lstinline|a = b;|}{\env}
-  &=& \env[$a \mapsto$ \eval{b}{\env}] \scriptsize{(arith. bornée)}
-  & \eqlabel{C-assign} \\
-  \comp{\lstinline|if(x) A else B|}{\env}
-  &=& \comp{A}{\env} si \eval{x}{\env} & \eqlabel{C-if} \\
-  &=& \comp{B}{\env} sinon & \eqlabel{C-if'} \\
-  \comp{\lstinline'/*@ assert P; */'}{\env}
-  &=& \env si \eval{P}{\env} & \eqlabel{C-assert-OK} \\
-  &=& erreur sinon & \eqlabel{C-assert-KO} \\
-  \comp{\lstinline'fassert(e);'}{\env}
-  &=& \env si \eval{e}{\env} & \eqlabel{C-fassert-OK} \\
-  &=& erreur sinon & \eqlabel{C-fassert-KO} \\
-  \comp{\lstinline'fassume(e);'}{\env}
-  &=& \env si \eval{e}{\env} & \eqlabel{C-fassume-OK} \\
-  &=& contradiction sinon & \eqlabel{C-fassume-KO} \\
-  \comp{\lstinline|while(x) A|}{\env}
-  &=& \comp{\lstinline|while(x) A|}{(\comp{A}{\env})}
-  si \eval{x}{\env} & \eqlabel{C-while} \\
-  &=& \env sinon & \eqlabel{C-while'} \\
-  \comp{\lstinline'/*@ loop invariant I; loop assigns X; loop variant v; */ while(e) A'}{\env}
-  & = & erreur si $\lnot$ \eval{I}{\env}
-  & \eqlabel{C-inv-not-esta} \\
-  & = & \env si \eval{\lstinline'e == 0'}{\env}
-  & \eqlabel{C-exit-loop} \\
-  & = & erreur si $\lnot$ \eval{\lstinline'v >= 0'}{\env}
-  & \eqlabel{C-variant-not-pos} \\
-  & = & erreur si $\lnot$ \eval{I}{\comp{A}{\env}}
-  & \eqlabel{C-inv-not-pres} \\
-  & = & erreur si \eval{v}{\comp{A}{\env}} $\ge$ \eval{v}{\env}
-  & \eqlabel{C-variant-not-dec} \\
-  & = & erreur si $\exists x \in G-X.$ \eval{x}{\comp{A}{\env}} $\ne$ \eval{x}{\env}
-  & \eqlabel{C-loop-assigns} \\
-  & = & \comp{\lstinline'/*@ ... */ while(e) A'}{\comp{A}{\env}} sinon
-  & \eqlabel{C-loop} \\
-  \\
+\begin{figure}
+  \begin{tabular}{p{4.2cm} p{.4cm} p{9cm} p{2cm}}
+    \comp{\lstinline'\;'}{\env} &=& \env & \eqlabel{C-skip} \\
+    \comp{\lstinline'i1 ; i2'}{\env} &=&
+    \comp{\lstinline'i2'}{(\comp{\lstinline'i1'}{\env})}
+    & \eqlabel{C-seq} \\
+    \comp{$\bopen$ \lstinline'i1 ; i2' $\bclose$}{\env} &=&
+    \comp{\lstinline'i2'}{(\comp{\lstinline'i1'}{\env})}
+    & \eqlabel{C-block} \\
+    \comp{\lstinline|lval = e;|}{\env}
+    &=& \env[$lval \mapsto$ \eval{e}{\env}] \scriptsize{(arith. bornée)}
+    & \eqlabel{C-set} \\
+    \comp{\lstinline'if(e)' $\bopen A \bclose$
+      \lstinline'else' $\bopen B \bclose$}{\env}
+    &=& \comp{A}{\env} si (\eval{e}{\env}) $\neq$ 0, \comp{B}{\env} sinon
+    & \eqlabel{C-if} \\
+    \comp{\lstinline'/*@ assert p; */'}{\env}
+    &=& \env si (\eval{p}{\env}) $\neq$ 0, erreur sinon
+    & \eqlabel{C-assert} \\
+    \comp{\lstinline'fassert(e);'}{\env}
+    &=& \env si (\eval{e}{\env}) $\neq$ 0, erreur sinon & \eqlabel{C-fassert} \\
+    \comp{\lstinline'fassume(e);'}{\env}
+    &=& \env si (\eval{e}{\env}) $\neq$ 0, contradiction sinon
+    & \eqlabel{C-fassume} \\
+    \comp{\lstinline|while(e)| $\bopen A \bclose$}{\env}
+    &=& \comp{\lstinline|while(e)| $\bopen A \bclose$}{(\comp{A}{\env})}
+    si \eval{e}{\env} $\neq$ 0, \env sinon  & \eqlabel{C-while} \\
+    \comp{\lstinline'/*@ loop invariant p; loop assigns X; loop variant t; */ while(e)' $\bopen A \bclose$}{\env}
+    & = & erreur si $\lnot$ \eval{p}{\env}
+    & \eqlabel{C-while-1} \\
+    & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0
+    & \eqlabel{C-while-2} \\
+    & = & erreur si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+    & \eqlabel{C-while-3} \\
+    & = & erreur si $\lnot$ \eval{p}{(\comp{A}{\env})}
+    & \eqlabel{C-while-4} \\
+    & = & erreur si (\eval{t}{(\comp{A}{\env})}) $\ge$ (\eval{t}{\env})
+    & \eqlabel{C-while-5} \\
+    & = & erreur si
+    $\exists x. x \in G-X.$ (\eval{x}{(\comp{A}{\env})}) $\ne$ (\eval{x}{\env})
+    & \eqlabel{C-while-6} \\
+    & = &
+    \comp{\lstinline'/*@ ... */ while(e)' $\bopen A \bclose$}{(\comp{A}{\env})}
+    sinon
+    & \eqlabel{C-while-7} \\
+    \comp{$\Zinit$ \underline{\lstinline|lval = e|} $\semicolon$}{\env}
+    &=& \env[$lval \mapsto$ \eval{e}{\env}] \scriptsize{(arith. non bornée)}
+    & \eqlabel{C-Z-set} \\
+    \comp{\underline{\lstinline|lval|} $\Zclear \semicolon$}{\env}
+    &=& \env $-~\{\mbox{\lstinline'a'}\}$ & \eqlabel{C-Z-unset} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des instructions}
+  \label{fig:sem-instr}
+\end{figure}
 
-  \comp{$\Zinit$ \underline{\lstinline|a = b|} $\semicolon$}{\env}
-  &=& \env[$a \mapsto$ \eval{b}{\env}] \scriptsize{(arith. non bornée)}
-  & \eqlabel{C-assign'} \\
-  \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est allouée et
-    on lui affecte la valeur de \lstinline'b'} \\ \\
-  \comp{\underline{\lstinline|a|} $\Zclear \semicolon$}{\env}
-  &=& \env[$a \mapsto \bot$] & \eqlabel{C-unset} \\
-  \multicolumn{4}{c}{la variable entière (GMP) \lstinline'a' est désallouée} \\
-\end{tabular}
 
-
-\subsection{Définition des listes d'insertions de code}
+\subsection{Définition des séquences d'insertions de code}
 
 Une insertion de code est un couple $(LABEL \times INSTR)$.
 Une liste (ou séquence) d'insertions de code résulte de la traduction d'un
 terme, prédicat ou d'une annotation \eacsl.
+Une séquence est notée :
+
+\begin{itemize}
+\item $\emptylist$ pour une séquence vide;
+\item $(l, i) \concat I$ pour la concaténation de $(l, i)$ au début de la
+  séquence $I$;
+\item $I_1 \concat I_2$ pour la concaténation de deux séquences $I_1$ et $I_2$.
+\end{itemize}
 
 Par exemple, la règle suivante montre la séquence d'insertions de code $I$
 générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
@@ -229,13 +271,14 @@ générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
         \bopen
         I_2 \cdot
         \underbracket{ (l, \mbox{\lstinline'e = e2;'}) }_{i_2}
-        \bclose ) }_{i_3}
+        \bclose ) }_{i_3} \concat \emptylist
       }_{I},
     \mbox{\lstinline'e'}) }
 }~\\
 
 Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
 $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
+\lstinline'e' est une left-value qui a une valeur dans l'environnement courant.
 
 
 \subsection{Sémantique dénotationnelle des insertions de code}
@@ -247,49 +290,48 @@ nouvel environnement.
 
 La fonction $\mathcal{I}$ est définie comme suit :
 
-\begin{center}
-  \begin{tabular}{rclr}
-    \compi{$\emptylist$}{\env} & = & \env & \eqlabel{I-empty} \\
-    \compi{($l$, $i$) $\concat~\emptylist$}{\env}
-    & = & \comp{$i$}{\env$_l$} & \eqlabel{I-instr} \\
-    \compi{$I_1 \concat I_2$}{\env} & = & \compi{$I_2$}{(\compi{$I_1$}{\env})}
-    & \eqlabel{I-split} \\
-  \end{tabular}
-\end{center}
+\begin{tabular}{rclr}
+  \compi{$\emptylist$}{\env} & = & \env & \eqlabel{I-empty} \\
+  \compi{($l$, $i$) $\concat~\emptylist$}{\env}
+  & = & \comp{$i$}{\env$_l$} & \eqlabel{I-instr} \\
+  \compi{$I_1 \concat I_2$}{\env} & = & \compi{$I_2$}{(\compi{$I_1$}{\env})}
+  & \eqlabel{I-split} \\
+\end{tabular}
 
-La première règle énonce qu'une séquence vide ne modifie pas l'environnement.
-La deuxième règle évalue l'instruction $i$ au label $l$ afin de calculer le
-nouvel environnement.
-La troisième règle traite le cas de la concaténation d'insertions de code.
+La règle \eqlabel{I-empty} énonce qu'une séquence vide ne modifie pas
+l'environnement.
+La règle \eqlabel{I-instr} évalue l'instruction $i$ au label $l$ afin de
+calculer le nouvel environnement.
+La règle \eqlabel{I-split} traite le cas de la concaténation d'insertions de
+code.
 
 
-\section{Properties}
+\section{Propriétés}
 \label{sec:properties}
 
 \begin{notation}
-  Soit $P$ un programme C correct syntaxiquement selon la grammaire définie dans
-  les figures~\ref{fig:gram-term}, \ref{fig:gram-pred} et~\ref{fig:gram-c}.
+  Soit $P$ un programme C annoté et syntaxiquement correct selon la grammaire
+  définie au chapitre précédent.
   Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
 \end{notation}
 
 
 
 \begin{theorem}
-  Si une annotation $a$ est invalide, alors l'exécution dans le programme $P$
-  des instructions obtenues par instrumentation provoque une erreur dans le
+  Si une annotation $a$ du programme $P$ est invalide, alors l'exécution
+  des instructions obtenues par traduction provoque une erreur dans le
   programme instrumenté $P'$.
-  \commentGP{une propriété pour chaque type d'annotation ?}
 \end{theorem}
 
 \begin{theorem}
   Si toutes les annotations d'un programme $P$ sont valides, alors $P$ et $P'$
-  (obtenu après instrumentation de $P$) ont la même sémantique, et le même
+  (obtenu après traduction de $P$) ont la même sémantique, c'est-à-dire le même
   comportement est observable à l'exécution.
 \end{theorem}
 
 
 
-\section{Traduction des termes}
+\section{Preuve de la Traduction des Termes}
 \label{sec:term-translation}
 
 
@@ -302,7 +344,7 @@ La troisième règle traite le cas de la concaténation d'insertions de code.
 \end{lemma}
 
 
-\subsection{Traduction des constantes}
+\subsection{Preuve de la Traduction des Constantes}
 
 {\myinference[$\tau$-const]
   {}
@@ -326,7 +368,7 @@ Pour n'importe quel environnement \env, nous prouvons que :
 \end{proof}
 
 
-\section{Traduction des prédicats}
+\section{Preuve de la Traduction des Prédicats}
 \label{sec:predicate-translation}
 
 
@@ -339,7 +381,7 @@ Pour n'importe quel environnement \env, nous prouvons que :
 \end{lemma}
 
 
-\subsection{Traduction des conjonctions}
+\subsection{Preuve de la Traduction des Conjonctions}
 
 {\myinference[$\pi$-and]
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
@@ -1028,7 +1070,7 @@ Pour n'importe quel environnement \env, nous prouvons que :
 \end{proof}
 
 
-\section{Traduction des annotations}
+\section{Preuve de la Traduction des Annotations}
 \label{sec:annotation-translation}
 
 
