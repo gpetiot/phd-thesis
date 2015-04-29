@@ -334,6 +334,16 @@ code.
 \section{Preuve de la Traduction des Termes}
 \label{sec:term-translation}
 
+Afin de prouver la correction de la traduction des prédicats et des annotations,
+nous devons prouver la correction de la traduction des termes.
+Le lemma~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
+$I$ générées lors de la traduction d'un terme $t$ ajoute une nouvelle variable
+$e$ (fraîche) à l'environnement \env, dont la valeur correspond à l'évaluation
+de $t$ dans \env.
+Cette propriété doit être prouvée sur chaque terme de la grammaire des termes
+définie au chapitre précédent.
+Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
+fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
 
 \begin{lemma}
   \label{lem:term-correct}
