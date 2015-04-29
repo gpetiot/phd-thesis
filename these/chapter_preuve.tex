@@ -335,12 +335,15 @@ code.
 \label{sec:term-translation}
 
 
-\begin{lemma}\label{lem:term-correct}
-  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(I, t')$.
+\begin{lemma}
+  \label{lem:term-correct}
+  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(I, e)$.
   La traduction est correcte si et seulement si, pour n'importe quel
   environnement \env :
 
-  \eval{$t'$}{\comp{$I$}{\env}} = \eval{$t$}{\env}.
+  \comp{$I$}{\env} = \env[$e \mapsto$ \eval{$t$}{\env}]
+
+  et \comp{$I$}{\env} ne produit pas d'erreur.
 \end{lemma}
 
 
