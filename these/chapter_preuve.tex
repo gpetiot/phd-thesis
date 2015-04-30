@@ -604,45 +604,32 @@ Pour n'importe quel environnement \env, nous prouvons que :
 
 Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{\lstinline'e'}{\comp{$I$}{\env}} =
-\eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env}.
+\comp{$I$}{\env} =
+\env[\lstinline'e' $\mapsto$
+  \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env}].
 
 
 \begin{proof}
   ~\\
-  Hypothèses : $t_1$, $t_2$ et $p$ sont correctement instrumentés et $t_1$ est
-  inférieur ou égal à $t_2$ (dans le cas contraire la quantification $\forall$
-  est trivialement vraie, ce qui ne nous intéresse pas).
+  Hypothèses : \lstinline't1', \lstinline't2' et \lstinline'p' sont correctement
+  instrumentés.
   Pour tout environnement \env :
 
   \begin{tabular}{rclr}
-    \eval{$e_1$}{\comp{$I_1$}{\env}}
-    & = & \eval{$t_1$}{\env} & \eqlabel{h1} \\
-    $\equiv$ \comp{$I_1$}{\env}
-    & = & \env[$e_1 \mapsto$ \eval{$t_1$}{\env}] & \\
-    \eval{$e_2$}{\comp{$I_2$}{\env}}
-    & = & \eval{$t_2$}{\env} & \eqlabel{h2} \\
-    $\equiv$ \comp{$I_2$}{\env}
-    & = & \env[$e_2 \mapsto$ \eval{$t_2$}{\env}] & \\
-    \eval{$e_3$}{\comp{$I_3$}{\env}}
-    & = & \eval{$p$}{\env} & \eqlabel{h3} \\
-    $\equiv$ \comp{$I_3$}{\env}
-    & = & \env[$e_3 \mapsto$ \eval{$p$}{\env}] & \\
-    \eval{$t_1$}{\env} & $\le$ & \eval{$t_2$}{\env} & \eqlabel{h4} \\
+    \comp{$I_1$}{\env}
+    & = & \env[$e_1 \mapsto$ \eval{$t_1$}{\env}] & \eqlabel{h1} \\
+    \comp{$I_2$}{\env}
+    & = & \env[$e_2 \mapsto$ \eval{$t_2$}{\env}] & \eqlabel{h2} \\
+    \comp{$I_3$}{\env}
+    & = & \env[$e_3 \mapsto$ \eval{$p$}{\env}] & \eqlabel{h3} \\
   \end{tabular}
-
-  On doit prouver l'égalité suivante :
-
-  \eval{\lstinline'e'}{\comp{$I$}{\env}}
-  $\eq{?}$ \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{\env}
 
   Développons le membre gauche :
   
   \begin{tabular}{p{.5cm} p{.5cm} p{11.5cm}}
-    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{\env}}} \\
-    &=& (\comp{$I$}{\env})(e) \\
+    \multicolumn{3}{l}{\comp{$I$}{\env}} \\
     & = &
-    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+    \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
           \comp{
@@ -661,9 +648,9 @@ Pour n'importe quel environnement \env, nous prouvons que :
           })
         })
       })
-    })(e) \\
+    } \\
     & = &
-    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+    \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
           \comp{
@@ -682,9 +669,9 @@ Pour n'importe quel environnement \env, nous prouvons que :
           })
         })
       })
-    })(e) \\
+    } \\
     & = &
-    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+    \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
           \comp{
@@ -704,9 +691,9 @@ Pour n'importe quel environnement \env, nous prouvons que :
           })
         })
       })
-    })(e) \\
+    } \\
     & = &
-    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+    \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
           \comp{
@@ -725,9 +712,9 @@ Pour n'importe quel environnement \env, nous prouvons que :
           })
         })
       })
-    })(e) \\
+    } \\
     & = &
-    (\comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+    \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
       (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
         (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{(
           \comp{
@@ -745,40 +732,69 @@ Pour n'importe quel environnement \env, nous prouvons que :
           })
         })
       })
-    })(e) \\
+    } \\
   \end{tabular}
 
-  Montrons que pour tout environnement \env :
+  Cas \eval{$t_1$}{\env} $>$ \eval{$t_2$}{\env} (hypothèse \eqlabel{h4}) :
+
+  \begin{tabular}{p{.5cm} p{.5cm} p{11.5cm}}
+    &=& \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\comp{\underline{\mbox{\lstinline'k'}} $\Zclear \semicolon$}{
+          (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
+            $e_2 \mapsto$ \eval{$t_2$}{\env},
+            $e \mapsto$ 1,
+            $k \mapsto$ \eval{$t_1$}{\env}])
+        })
+      })
+    } \\
+    &=& \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\comp{\underline{\mbox{\lstinline'e_1'}} $\Zclear \semicolon$}{
+        (\env[\lstinline't1' $\mapsto$ \eval{\lstinline't1'}{\env},
+          \lstinline't2' $\mapsto$ \eval{\lstinline't2'}{\env},
+          \lstinline'e' $\mapsto$ 1])
+      })
+    } \\
+    &=& \comp{\underline{\mbox{\lstinline'e_2'}} $\Zclear \semicolon$}{
+      (\env[\lstinline'e2' $\mapsto$ \eval{\lstinline't2'}{\env},
+        \lstinline'e' $\mapsto$ 1])
+    } \\
+    &=& \env[\lstinline'e' $\mapsto$ 1] \\
+    &=& \env[\lstinline'e' $\mapsto$
+      \lstinline'\forall integer k; \false ==> p'] \\
+    &$\eq{\eqlabel{h4}}$& \env[\lstinline'e' $\mapsto$
+      \lstinline'\forall integer k; t1 <= k <= t2 ==> p'] \\
+  \end{tabular}
+
+  Cas \eval{$t_1$}{\env} $\le$ \eval{$t_2$}{\env} (hypothèse \eqlabel{h5}) :
+
+  Pour calculer le nouvel environnement résultant de l'exécution de la boucle
+  nous aurons besoin de deux invariants de boucle :
 
   \begin{tabular}{rclr}
     \multicolumn{3}{c}{
       \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
     }
     & \eqlabel{inv-1} \\
-    \eval{$e$}{\env} &=&
+    \eval{\lstinline'e'}{\env} &=&
     \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}
     & \eqlabel{inv-2} \\
   \end{tabular}
 
-  sont des invariants de la boucle
-  $\mbox{\lstinline'while('}
-  \underline{\mbox{\lstinline'k <= e_2'}}~ \mbox{\lstinline'&& e')}
-  \bopen
-  I_3
-  \cdot \mbox{\lstinline'e = e_3;'}
-  \cdot \underline{\mbox{\lstinline'k++'}} \semicolon \bclose$.
-
-  Montrons que ces invariants sont établis avant la première itération :
+  Montrons que \eqlabel{inv-1} et \eqlabel{inv-2} sont vrais pour tout
+  environnement \env.
+  Montrons tout d'abord que ces invariants sont établis avant la première
+  itération.
 
   Développons
   \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1 :
 
   \begin{tabular}{rcl}
     \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
-    &=& \eval{$t_1$}{\env} $\le$ \eval{$t_1$}{\env}
+    &=& \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env}
     $\le$ \eval{$t_2$}{\env} + 1 \\
     &=& \eval{$t_1$}{\env} $\le$ \eval{$t_2$}{\env} + 1 \\
-    &$\eq{h4}$& \textit{true} \\
+    &$\eq{h5}$& \textit{true} \\
   \end{tabular}
 
   Développons le membre droit de
@@ -806,12 +822,9 @@ Pour n'importe quel environnement \env, nous prouvons que :
 
   Prouvons que le premier invariant est maintenu après chaque itération :
 
-  On a :
-
-  \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
+  On a : \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
   
   Ce qui peut être réécrit en :
-
   \eval{$t_1 \le k \le t_2 + 1$}{\env} = \textit{true}
 
   Montrons :
