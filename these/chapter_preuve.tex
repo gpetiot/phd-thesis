@@ -336,10 +336,10 @@ code.
 
 Afin de prouver la correction de la traduction des prédicats et des annotations,
 nous devons prouver la correction de la traduction des termes.
-Le lemma~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
-$I$ générées lors de la traduction d'un terme $t$ ajoute une nouvelle variable
-$e$ (fraîche) à l'environnement \env, dont la valeur correspond à l'évaluation
-de $t$ dans \env.
+Le lemme~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
+$I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
+variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
+correspond à l'évaluation de \lstinline't' dans \env.
 Cette propriété doit être prouvée sur chaque terme de la grammaire des termes
 définie au chapitre précédent.
 Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
@@ -347,11 +347,12 @@ fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
 
 \begin{lemma}
   \label{lem:term-correct}
-  Soit $t$ : $\tau$ un terme de type $\tau$, qui se traduit en $(I, e)$.
+  Soit \lstinline't' : $\tau$ un terme de type $\tau$, qui se traduit en
+  $(I, \mbox{\lstinline'e'})$.
   La traduction est correcte si et seulement si, pour n'importe quel
   environnement \env :
 
-  \comp{$I$}{\env} = \env[$e \mapsto$ \eval{$t$}{\env}]
+  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$ \eval{\lstinline't'}{\env}]
 
   et \comp{$I$}{\env} ne produit pas d'erreur.
 \end{lemma}
@@ -386,12 +387,24 @@ Cette évaluation ne produit pas d'erreur.
 \label{sec:predicate-translation}
 
 
+Afin de prouver la correction de la traduction des annotations,
+nous devons prouver la correction de la traduction des prédicats.
+Le lemme~\ref{lem:pred-correct} énonce que l'évaluation des insertions de code
+$I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
+nouvelle variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
+correspond à l'évaluation de \lstinline'p' dans \env.
+Cette propriété doit être prouvée sur chaque prédicat de la grammaire définie
+au chapitre précédent.
+Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
+fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall}.
+
+
 \begin{lemma}\label{lem:pred-correct}
-  Soit $p$ un prédicat qui se traduit en $(I, p')$.
-  La traduction est correct si et seulement si, pour n'importe quel
+  Soit \lstinline'p' un prédicat qui se traduit en $(I, \mbox{\lstinline'e'})$.
+  La traduction est correcte si et seulement si, pour n'importe quel
   environnement \env :
 
-  \eval{$p'$}{\comp{$I$}{\env}} = \eval{$p$}{\env}.
+  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$ \eval{\lstinline'p'}{\env}].
 \end{lemma}
 
 
