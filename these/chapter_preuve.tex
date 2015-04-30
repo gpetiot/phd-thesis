@@ -76,6 +76,14 @@ La notation \env $-~\{\mbox{\lstinline'x'}\}$ signifie que la left-value
   (\env[$a \mapsto v$])$-~\{\mbox{\lstinline'a'}\}$ &=& \env \\
 \end{tabular}
 
+Nous définissons également une relation d'inclusion sur les ensembles,
+c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si
+chaque affectation $(x, v)$ présente dans l'environnement \env$_1$ est
+également présente dans \env$_2$ :
+
+\env$_1$ $\subset$ \env$_2$ $\equiv$
+$\forall (x, v). (x \mapsto v) \in \mbox{\env}_1 \Rightarrow (x \mapsto v) \in \mbox{\env}_2$
+
 
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
