@@ -367,16 +367,17 @@ fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
 
 Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}}
-= \eval{v}{\env}.
+\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}
+= \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
+
+Cette évaluation ne produit pas d'erreur.
 
 
 \begin{proof}
   ~\\
   \begin{tabular}{rclr}
-    \eval{x}{\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}}
-    & $\eq{C-assign'}$ & \eval{x}{(\env[$x \mapsto$ \eval{v}{\env}])} & \\
-    & $\eq{E-lval}$ & \eval{v}{\env} &
+    \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}
+    &$\eq{C-Z-set}$& \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}]
   \end{tabular}
 \end{proof}
 
