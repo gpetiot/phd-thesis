@@ -397,7 +397,7 @@ correspond à l'évaluation de \lstinline'p' dans \env.
 Cette propriété doit être prouvée sur chaque prédicat de la grammaire définie
 au chapitre précédent.
 Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
-fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall}.
+fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall} (en annexe).
 
 
 \begin{lemma}\label{lem:pred-correct}
@@ -560,7 +560,145 @@ Pour n'importe quel environnement \env, nous prouvons que :
 \end{proof}
 
 
-\subsection{Traduction des quantifications universelles}
+
+
+
+\section{Preuve de la Traduction des Annotations}
+\label{sec:annotation-translation}
+
+
+\subsection{Assertions}
+
+
+{\scriptsize
+  {\myinference[$\alpha$-assert]
+    {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {(l, \mbox{\lstinline'assert p;'})
+      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+  }
+}
+
+
+Pour n'importe quel environnement \env, nous prouvons que :
+
+\comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur
+
+
+\begin{proof}
+  ~\\
+  On sait que \eval{e}{\comp{$I$}{\env}} = \eval{p}{\env} par hypothèse que
+  la traduction des prédicats est correcte.
+
+  Cas \eval{p}{\env} = \textit{true} :
+
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \env
+  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ erreur
+
+  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
+  = \comp{$I$}{\env}.
+
+  \commentGP{Prouver que \comp{$I$}{\env} ne génère pas d'erreur.}
+
+  Cas \eval{p}{\env} = \textit{false} :
+
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+
+  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
+  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
+  = erreur.
+
+  On a donc bien :
+
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur.
+\end{proof}
+
+
+\subsection{Vérification des contrats de boucles}
+
+
+{\scriptsize
+  {\myinference[$\alpha$-check-loop-assigns]
+    {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {
+      \splitfrac {
+        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
+      } {
+        I \concat
+        \forall (x:ctype) \in G-X:
+        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+      }
+    }
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-check-invariant]
+    {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+      (EndIter_l, \mbox{\lstinline'p'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
+    {
+      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
+      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
+    }
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-variant]
+    {
+      (BegIter_l, \mbox{\lstinline't'}) \rulearrow (I_1, \mbox{\lstinline'e1'})
+      \\
+      (EndIter_l, \mbox{\lstinline't'}) \rulearrow (I_2, \mbox{\lstinline'e2'})
+    }
+    {
+      \splitfrac
+          {
+            (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
+          }
+          {
+            I_1 \concat ((BegIter_l,
+            \mbox{\lstinline'fassert('}
+            \underline{\mbox{\lstinline'0 <= e1'}}
+            \mbox{\lstinline');' }
+            \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
+            \semicolon)
+            \concat I_2
+            \concat(EndIter_l,
+            \mbox{\lstinline'fassert('}
+            \underline{\mbox{\lstinline'e2'}\Zclear
+              \mbox{\lstinline'< old_variant'} \Zclear}
+            \mbox{\lstinline');'})
+          }
+    }
+  }
+}
+
+
+\subsection{Vérification des contrats de fonctions}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newpage
+\commentGP{à mettre en annexe ?}
+\section{Annexe : Preuve de la Traduction des Quantifications Universelles}
 
 {\myinference[$\pi$-forall]
   {
@@ -1136,122 +1274,3 @@ Pour n'importe quel environnement \env, nous prouvons que :
   \eval{\lstinline'e'}{\comp{$I$}{\env}}
   = \eval{\lstinline'\\forall integer k; t_1 <= k <= t_2 ==> p'}{\env}
 \end{proof}
-
-
-\section{Preuve de la Traduction des Annotations}
-\label{sec:annotation-translation}
-
-
-\subsection{Assertions}
-
-
-{\scriptsize
-  {\myinference[$\alpha$-assert]
-    {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
-    {(l, \mbox{\lstinline'assert p;'})
-      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
-  }
-}
-
-
-Pour n'importe quel environnement \env, nous prouvons que :
-
-\comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
-$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur
-
-
-\begin{proof}
-  ~\\
-  On sait que \eval{e}{\comp{$I$}{\env}} = \eval{p}{\env} par hypothèse que
-  la traduction des prédicats est correcte.
-
-  Cas \eval{p}{\env} = \textit{true} :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \env
-  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ erreur
-
-  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
-  = \comp{$I$}{\env}.
-
-  \commentGP{Prouver que \comp{$I$}{\env} ne génère pas d'erreur.}
-
-  Cas \eval{p}{\env} = \textit{false} :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
-
-  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
-  = erreur.
-
-  On a donc bien :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
-  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur.
-\end{proof}
-
-
-\subsection{Vérification des contrats de boucles}
-
-
-{\scriptsize
-  {\myinference[$\alpha$-check-loop-assigns]
-    {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
-    {
-      \splitfrac {
-        (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
-      } {
-        I \concat
-        \forall (x:ctype) \in G-X:
-        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
-        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
-      }
-    }
-  }
-}
-
-{\scriptsize
-  {\myinference[$\alpha$-check-invariant]
-    {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
-      (EndIter_l, \mbox{\lstinline'p'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
-    {
-      (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
-      I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
-      \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
-    }
-  }
-}
-
-{\scriptsize
-  {\myinference[$\alpha$-variant]
-    {
-      (BegIter_l, \mbox{\lstinline't'}) \rulearrow (I_1, \mbox{\lstinline'e1'})
-      \\
-      (EndIter_l, \mbox{\lstinline't'}) \rulearrow (I_2, \mbox{\lstinline'e2'})
-    }
-    {
-      \splitfrac
-          {
-            (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
-          }
-          {
-            I_1 \concat ((BegIter_l,
-            \mbox{\lstinline'fassert('}
-            \underline{\mbox{\lstinline'0 <= e1'}}
-            \mbox{\lstinline');' }
-            \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
-            \semicolon)
-            \concat I_2
-            \concat(EndIter_l,
-            \mbox{\lstinline'fassert('}
-            \underline{\mbox{\lstinline'e2'}\Zclear
-              \mbox{\lstinline'< old_variant'} \Zclear}
-            \mbox{\lstinline');'})
-          }
-    }
-  }
-}
-
-
-\subsection{Vérification des contrats de fonctions}
-
