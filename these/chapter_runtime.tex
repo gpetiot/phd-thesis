@@ -9,8 +9,10 @@ pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
 monitorer les opérations effectuées en mémoire par le programme.
 
 
+\section{Traduction des annotations}
 
-\section{Annotations \eacsl liées à la mémoire}
+
+\commentGP{TODO}
 
 
 Détaillons les annotations \acsl que nous souhaitons prendre en compte.
@@ -64,3 +66,187 @@ pour chaque bloc les informations suivantes :
 \item un booléen indiquant s'il y a eu un accès au bloc hors bornes
 \end{itemize}
 
+
+
+\section{Représentation du modèle mémoire}
+
+
+\subsection{Patricia tries}
+
+Le code instrumenté pouvant accéder et modifier fréquemment les données du
+$store$, une implémentation efficace du requiert une structure de données
+offrant une bonne complexité en temps et en espace. Cette structure doit être
+triée : on peut avoir besoin d'accéder directement à un bloc à partir de son
+adresse de base, mais aussi à partir de n'importe quelle adresse contenue dans
+le bloc (donc accéder au bloc précédent). Par exemple, la fonction
+\lstinline{__base_addr(p)} utilisée pour le traitement de la construction
+\acsl \lstinline{\base_addr(p)} cherche l'adresse de base la plus
+proche et inférieure à \lstinline{p} (et enfin vérifie les bornes du bloc).
+Cette contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
+chaînées ne sont pas assez efficaces à cause de la complexité linéaire au pire
+cas. Les arbres binaires de recherche non équilibrés ont aussi une complexité
+linéaire au pire cas quand les données sont insérées dans un ordre strictement
+monotone, ce qui est souvent le cas. Enfin, le coût du rééquilibrage de l'arbre
+(pour un arbre binaire de recherche équilibré) serait amorti dans le cas où les
+modifications de la structure de l'arbre sont moins nombreuses que les accès
+simples; ce qui n'est pas nécessairement vrai sur les exemples de code que nous
+avons instrumentés avec \eacsltoc.
+
+Notre implémentation du $store$ se base sur un {\em Patricia trie}
+\cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
+compact'', cette structure est efficace même si l'abre n'est pas équilibré.
+Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
+bits) ou des préfixes d'adresses. Chaque feuille contient les données relatives
+à un bloc en mémoire (voir section précédente pour le détail des informations
+stockées). Le routage de la racine jusqu'à une feuille particulière se fait
+grâce aux n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun
+de l'adresse de base de ses deux fils. La Fig.~\ref{fig:insertion-Patricia-trie}
+a illustre un Patricia trie (sur des adresses 8-bits pour des raisons de
+simplicité).
+
+Il contient 3 blocs dans ses feuilles (seules les adresses de base apparaissent
+sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes. Le symbole
+``{\tt *}'' signifie que la valeur du bit à cette position n'a pas d'importance.
+
+La complexité théorique au pire cas d'un accès dans un Patricia trie dans notre
+cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire 32 ou 64
+bits). En pratique, un programme ne pouvant allouer des blocs que dans un
+espace mémoire limité, la profondeur de l'arbre est inférieure à cette borne.
+De plus, contrairement aux chaînes de caractères (la première application des
+Patricia tries), la comparaison des mots peut être implémentée très
+efficacement par des opérations bit-à-bit.
+
+Les données de chaque bloc n'occupent que quelques octets en mémoire, exception
+faite des données d'initialisation du bloc. Le statut d'initialisation de chaque
+octet est monitoré séparément
+(les champs de bits ne sont pas encore supportés). Dans le pire cas (bloc
+partiellement initialisé), chaque octet utilise un bit supplémentaire portant
+l'information sur son initialisation. Dans le cas où tous les octets (ou aucun)
+sont initialisés (on utilise un compteur d'octets initialisés), le tableau
+censé contenir les bits portant l'information d'initialisation est libéré, et
+cette information est donc portée uniquement par le compteur. De plus, nous
+utilisons une fonction spécifique dans le cas où tous les octets d'un bloc sont
+initialisés d'un coup, au lieu d'invoquer une fonction d'initialisation sur
+chaque octet du bloc.
+
+
+\subsection{Calcul du plus grand préfixe commun}
+
+
+\lstinputlisting[caption={Calcul du plus grand préfixe commun},
+  label=lst:prefix]{listings/common_prefix_mask.c}
+
+
+Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
+d'une suite de $n$ ``1'', suivie d'une suite de ``0'', où $n$ est le nombre de
+bits communs entre A et B. Par exemple, le plus grand préfixe commun de
+A = \ppleaf{\texttt{0110\,0111}} et B = \ppleaf{\texttt{0111\,1111}} est P = 
+\ppnode{\texttt{011*\,****}}
+et le masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
+
+Les calculs et comparaisons des préfixes ont été optimisés par un usage
+intensif des opérations bit-à-bit. Le calcul du plus grand préfixe commun a lui
+aussi été reconçu pour de meilleures performances. L'implémentation naïve
+initiale consistait en un parcours linéaire des mots mémoire de gauche à droite
+jusqu'à trouver des bits différents, de la même manière qu'on pourrait le faire 
+sur des chaînes de caractères.
+
+La version optimisée de ce calcul consiste
+maintenant en une recherche dichotomique dans un tableau pré-calculé qui
+contient tous les préfixes possibles. Les transitions entre les étapes de la
+recherche se font en utilisant des indices pré-calculés, de manière à obtenir
+le prochain masque à essayer. Le Listing~\ref{lst:prefix} illustre cette
+implémentation du calcul sur des mots de 8 bits. Les masques sont
+stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
+masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.
+ligne 5). Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
+et la fonction essaie \lstinline'i = 4', puis \lstinline'i = shorter[4] = 2',
+puis \lstinline'i = longer[2] = 3', puis \lstinline'i = longer[3] = -3', pour
+finalement retourner \lstinline'mask[3] = 0xE0', qui
+est précisément \texttt{1110\,0000}.
+
+
+
+\subsection{Recherche}
+
+
+
+\subsubsection*{Recherche exacte}
+
+Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
+au pointeur passé en paramètre. On suppose que l'algorithme n'est utilisé que
+lorsqu'un tel bloc existe.
+
+Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
+fils
+-- on se dirige vers le fils ayant le plus grand préfixe commun avac l'adresse
+passée en paramètre de l'algorithme. Quand on arrive sur une feuille, cette
+dernière contient donc forcément l'adresse que l'on cherchait.
+
+\subsubsection*{Recheche du ``contenant''}
+
+Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
+paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$. Si un tel
+bloc n'existe pas, \lstinline{NULL} est renvoyé. Cet algorithme est utilisé pour
+des requêtes du type \lstinline{\valid} ou \lstinline{\initialized} où
+l'adresse passée en paramètre ne correspond pas forcément à l'adresse de base
+d'un bloc.
+
+Cet algorithme est similaire à celui de la recherche exacte, au détail près
+qu'il faut vérifier la formule de l'encadrement de $ptr$ par $B$ quand on arrive
+sur une feuille. On utilise une pile contenant les n\oe{}uds à partir desquels
+il
+faut reprendre le parcours si la recherche n'aboutit pas. Quand on explore le
+fils droit, on empile le fils gauche. Quand on arrive sur une feuille, on
+vérifie l'encadrement, s'il est vérifié on a trouvé le bloc qu'on cherchait,
+sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe, sinon
+on retourne \lstinline{NULL}.
+
+\subsection{Ajout}
+
+
+\input{figures/fig_add_patricia_trie}
+
+
+L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
+vide, l'élément est ajouté à la racine. Sinon, on recherche le n\oe{}ud $x$ le
+plus
+similaire au n\oe{}ud à insérer. Celui-ci sera son frère dans la nouvelle
+configuration de l'arbre. Nous créons ensuite le n\oe{}ud correspondant au père.
+Le
+plus grand préfixe commun des deux fils est calculé pour le père, et les fils
+sont ordonnés en fonction de leur adresse (le plus petit à gauche). Puis le
+père est inséré dans l'arbre à l'ancien emplacement de $x$. Les champs de $x$ et
+de l'ancien père de $x$ (s'il existe) sont également mis à jour pour maintenir
+la cohérence de l'arbre. La Fig.~\ref{fig:insertion-Patricia-trie} illustre
+l'insertion de l'adresse \ppleaf{\texttt{0010\,0111}} dans un arbre.
+L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
+\ppleaf{\texttt{0010\,0110}}, et crée
+le père correspondant : \ppnode{\texttt{0010\,011*}}.
+
+
+\subsubsection*{Recherche du n\oe{}ud le plus similaire}
+
+Dès qu'on arrive sur une feuille on la renvoie. Sinon on calcule le plus grand
+préfixe commun de l'adresse passée en paramètre avec le fils gauche, de même
+avec le fils droit. Si l'un des préfixes est strictement supérieur à l'autre
+on se dirige vers la branche correspondante, sinon on renvoie le n\oe{}ud
+courant.
+
+
+
+\subsection{Suppression}
+
+
+\input{figures/fig_rem_patricia_trie}
+
+
+La suppression d'une feuille $x$ du Patricia trie se déroule comme suit. Si cet
+élément est la racine, l'arbre devient vide. Sinon, Cette feuille a un frère $y$
+et un père. $x$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend
+donc la place du père). Enfin, les champs du nouveau père de $y$ sont mis à jour
+pour maintenir la cohérence de l'arbre (le plus grand préfixe commun est
+recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
+de l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie. Ce n\oe{}ud
+ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
+\ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
