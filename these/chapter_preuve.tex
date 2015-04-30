@@ -378,7 +378,8 @@ Cette évaluation ne produit pas d'erreur.
   ~\\
   \begin{tabular}{rclr}
     \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}
-    &$\eq{C-Z-set}$& \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}]
+    &$\eq{\eqlabel{C-Z-set}}$&
+    \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}] \\
   \end{tabular}
 \end{proof}
 
@@ -423,7 +424,8 @@ fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall}.
 
 Pour n'importe quel environnement \env, nous prouvons que :
 
-\eval{\lstinline'e'}{\comp{$I$}{\env}} = \eval{\lstinline'p1 && p2'}{\env}.
+\comp{$I$}{\env} =
+\env[\lstinline'e' $\mapsto$ \eval{\lstinline'p1 && p2'}{\env}].
 
 
 \begin{proof}
@@ -432,103 +434,129 @@ Pour n'importe quel environnement \env, nous prouvons que :
   Pour tout environnement \env :
 
   \begin{tabular}{rclr}
-    \eval{$e_1$}{\comp{$I_1$}{\env}}
-    & = & \eval{$p_1$}{\env} & \eqlabel{h1} \\
-    $\equiv$ \comp{$I_1$}{\env}
-    & = & \env[$e_1 \mapsto$ \eval{$p_1$}{\env}] & \\
-    \eval{$e_2$}{\comp{$I_2$}{\env}}
-    & = & \eval{$p_2$}{\env} & \eqlabel{h2} \\
-    $\equiv$ \comp{$I_2$}{\env}
-    & = & \env[$e_2 \mapsto$ \eval{$p_2$}{\env}] & \\
+    \comp{$I_1$}{\env} & = &
+    \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env}] & \eqlabel{h1} \\
+    \comp{$I_2$}{\env} & = &
+    \env[\lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env}] & \eqlabel{h2} \\
   \end{tabular}
-
-  On doit prouver l'égalité suivante :
-
-  \eval{\lstinline'e'}{\comp{$I$}{\env}}
-  $\eq{?}$ \eval{\lstinline'p1 && p2'}{\env}
 
   Développons le membre gauche :
   
   \begin{tabular}{rcl}
-    \multicolumn{3}{l}{\eval{\lstinline'e'}{\comp{$I$}{\env}}} \\
-    & = & (\comp{$I$}{\env})(e) \\
-    & $\eq{C-seq}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
-      (l, \lstinline'e = e_2;') $\bclose$ }{
-      (\comp{\lstinline'int e = e1;'}{
-        (\comp{$I_1$}{\env})
+    \multicolumn{3}{l}{\comp{$I$}{\env}} \\
+    & = & \comp{
+      $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+      (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
+    }{\env} \\
+    & = & \comp{
+      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    }{
+      (\comp{\lstinline'int e = e1;'}{(\comp{$I_1$}{\env})
       })
-    })(e) \\
-    & $\eq{h1}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
-      (l, \lstinline'e = e_2;') $\bclose$ }{
+    } \\
+    & $\eq{\eqlabel{h1}}$ & \comp{
+      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    }{
       (\comp{\lstinline'int e = e1;'}{
-        (\env[$e_1 \mapsto$ \eval{$p_1$}{\env}])
+        (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env}])
       })
-    })(e) \\
-    & $\eq{C-assign}$ & (\comp{\lstinline'if(e)' $\bopen \concat I_2 \concat$
-      (l, \lstinline'e = e_2;') $\bclose$ }{
-      (
-      \env[$e_1 \mapsto$ \eval{$p_1$}{\env}, $e \mapsto$ \eval{$p_1$}{\env}]
-      )
-    })(e) \\
+    } \\
+    & $\eq{\eqlabel{C-set}}$ & \comp{
+      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    }{
+      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+    } \\
 
     %% cas true
     \multicolumn{3}{l}{
-      Quand \eval{e}{(
-        \env
-        [$e_1 \mapsto$ \eval{$p_1$}{\env},
-          $e \mapsto$ \eval{$p_1$}{\env}]
-      )} = \textit{true} : ~~\eqlabel{h3}}\\
-    & $\eq{C-if}$ & (\comp{$I_2 \concat$
-      (l, \lstinline'e = e_2;')  }{
-      (
-      \env
-      [$e_1 \mapsto$ \eval{$p_1$}{\env},
-        $e \mapsto$ \eval{$p_1$}{\env}]
-      )
-    })(e) \\
-    & $\eq{C-seq}$ & (\comp{\lstinline'e = e_2;'}{
-      (\comp{$I_2$}{
-        (
-        \env
-        [$e_1 \mapsto$ \eval{$p_1$}{\env},
-          $e \mapsto$ \eval{$p_1$}{\env}]
-        )
-      })
-    })(e) \\
-    & $\eq{h2}$ & (\comp{\lstinline'e = e_2;'}{
-      (
-      \env
-      [$e_1 \mapsto$ \eval{$p_1$}{\env},
-        $e \mapsto$ \eval{$p_1$}{\env},
-        $e_2 \mapsto$ \eval{$p_2$}{\env}]
-      )
-    })(e) \\
-    & $\eq{C-assign}$ & (\env
-                [$e_1 \mapsto$ \eval{$p_1$}{\env},
-                $e_2 \mapsto$ \eval{$p_2$}{\env},
-                  $e \mapsto$ \eval{$p_2$}{\env}]
-                ) (e) \\
-    & = & \eval{$p_2$}{\env} \\
-    & = & true $\land$ \eval{$p_2$}{\env} \\
-    & $\eq{h3}$ & \eval{$p_1$}{\env} $\land$ \eval{$p_2$}{\env} \\
-    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
+      Cas où la valeur de l'expression de la conditionnelle est vraie :} \\
+    \multicolumn{3}{l}{
+      Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{true}
+      ~~\eqlabel{h3}
+    } \\
+    \multicolumn{3}{l}{
+      Car
+      \eval{\lstinline'e'}{(
+        \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        )} = \textit{true}} \\
+    & $\eq{\eqlabel{C-if}}$ & \comp{
+      $\bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    }{
+      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+    } \\
+    & $\eq{\eqlabel{C-block}}$ & \comp{
+      $I_2 \concat (l, \mbox{\lstinline'e = e_2;'})$
+    }{
+      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+    } \\
+    & = & \comp{
+      $(l, \mbox{\lstinline'e = e_2;'})$
+    }{
+      (\comp{$I_2$}{(\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])})
+    } \\
+    & $\eq{\eqlabel{h2}}$ & \comp{
+      $(l, \mbox{\lstinline'e = e_2;'})$
+    }{
+      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env},
+        \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env}])
+    } \\
+    & $\eq{\eqlabel{C-set}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
+      \lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}] \\
+    & = & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
+      \lstinline'e' $\mapsto$
+      \textit{true} $\land$ \eval{\lstinline'p2'}{\env}] \\
+    & $\eq{\eqlabel{h3}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
+      \lstinline'e' $\mapsto$
+      \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}] \\
+    & $\eq{\eqlabel{P-and}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
+      \lstinline'e' $\mapsto$ \eval{\lstinline'p1 \&\& p2'}{\env}] \\
 
     %% cas false
     \multicolumn{3}{l}{
-      Quand \eval{e}{(
-        \env
-        [$e_1 \mapsto$ \eval{$p_1$}{\env},
-          $e \mapsto$ \eval{$p_1$}{\env}]
-        )} = \textit{false} : ~~\eqlabel{h4}}\\
-    & $\eq{C-if'}$ & (
-    \env[$e_1 \mapsto$ \eval{$p_1$}{\env}, $e \mapsto$ \eval{$p_1$}{\env}]
-    ) (e) \\
-    & = & \eval{$p_1$}{\env} \\
-    & $\eq{h4}$ & false \\
-    & = & false $\land$ \eval{$p_2$}{\env} \\
-    & $\eq{h4}$ & \eval{$p_1$}{\env} $\land$ \eval{$p_2$}{\env} \\
-    & $\eq{P-and}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
+      Cas où la valeur de l'expression de la conditionnelle est fausse :} \\
+    \multicolumn{3}{l}{
+      Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{false}
+      ~~\eqlabel{h4}
+    }\\
+    \multicolumn{3}{l}{
+      Car \eval{\lstinline'e'}{(
+        \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        )} = \textit{false}}\\
+    & $\eq{\eqlabel{C-if}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}] \\
+    & $\eq{\eqlabel{h4}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e' $\mapsto$
+      \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}] \\
+    & $\eq{\eqlabel{P-and}}$
+    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
+      \lstinline'e' $\mapsto$
+      \eval{\lstinline'p1 \&\& p2'}{\env}] \\
   \end{tabular}
+
+  Nous avons donc prouvé que
+  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$
+    \eval{\lstinline'p1 \&\& p2'}{\env}].~\\
 \end{proof}
 
 
