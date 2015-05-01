@@ -84,6 +84,14 @@ chaque affectation $(x, v)$ présente dans l'environnement \env$_1$ est
 \env$_1$ $\subset$ \env$_2$ $\equiv$
 $\forall (x, v). (x \mapsto v) \in \mbox{\env}_1 \Rightarrow (x \mapsto v) \in \mbox{\env}_2$
 
+Nous définissons un ``environnement d'erreur'', noté \errorenv.
+Un tel environnement est le résultat de l'évaluation d'une instruction
+provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
+expression fausse) ou d'une instruction dont les annotations ne sont pas
+respectées (par exemple, \lstinline'assert' ou \lstinline'loop invariant' faux).
+L'évaluation des instructions s'arrête dès qu'un environnement d'erreur est
+produit.
+
 
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
@@ -210,10 +218,11 @@ est désallouée et enlevée de l'environnement \env.
     &=& \comp{A}{\env} si (\eval{e}{\env}) $\neq$ 0, \comp{B}{\env} sinon
     & \eqlabel{C-if} \\
     \comp{\lstinline'/*@ assert p; */'}{\env}
-    &=& \env si (\eval{p}{\env}) $\neq$ 0, erreur sinon
+    &=& \env si (\eval{p}{\env}) $\neq$ 0, \errorenv sinon
     & \eqlabel{C-assert} \\
     \comp{\lstinline'fassert(e);'}{\env}
-    &=& \env si (\eval{e}{\env}) $\neq$ 0, erreur sinon & \eqlabel{C-fassert} \\
+    &=& \env si (\eval{e}{\env}) $\neq$ 0, \errorenv sinon
+    & \eqlabel{C-fassert} \\
     \comp{\lstinline'fassume(e);'}{\env}
     &=& \env si (\eval{e}{\env}) $\neq$ 0, contradiction sinon
     & \eqlabel{C-fassume} \\
@@ -221,17 +230,17 @@ est désallouée et enlevée de l'environnement \env.
     &=& \comp{\lstinline|while(e)| $\bopen A \bclose$}{(\comp{A}{\env})}
     si \eval{e}{\env} $\neq$ 0, \env sinon  & \eqlabel{C-while} \\
     \comp{\lstinline'/*@ loop invariant p; loop assigns X; loop variant t; */ while(e)' $\bopen A \bclose$}{\env}
-    & = & erreur si $\lnot$ \eval{p}{\env}
+    & = & \errorenv si $\lnot$ \eval{p}{\env}
     & \eqlabel{C-while-1} \\
     & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0
     & \eqlabel{C-while-2} \\
-    & = & erreur si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+    & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
     & \eqlabel{C-while-3} \\
-    & = & erreur si $\lnot$ \eval{p}{(\comp{A}{\env})}
+    & = & \errorenv si $\lnot$ \eval{p}{(\comp{A}{\env})}
     & \eqlabel{C-while-4} \\
-    & = & erreur si (\eval{t}{(\comp{A}{\env})}) $\ge$ (\eval{t}{\env})
+    & = & \errorenv si (\eval{t}{(\comp{A}{\env})}) $\ge$ (\eval{t}{\env})
     & \eqlabel{C-while-5} \\
-    & = & erreur si
+    & = & \errorenv si
     $\exists x. x \in G-X.$ (\eval{x}{(\comp{A}{\env})}) $\ne$ (\eval{x}{\env})
     & \eqlabel{C-while-6} \\
     & = &
@@ -362,7 +371,7 @@ fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
 
   \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$ \eval{\lstinline't'}{\env}]
 
-  et \comp{$I$}{\env} ne produit pas d'erreur.
+  et \comp{$I$}{\env} $\neq$ \errorenv.
 \end{lemma}
 
 
@@ -589,8 +598,8 @@ Pour n'importe quel environnement \env, nous prouvons que :
 
 Pour n'importe quel environnement \env, nous prouvons que :
 
-\comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
-$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur
+\comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = \errorenv
 
 
 \begin{proof}
@@ -601,26 +610,26 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur
   Cas \eval{p}{\env} = \textit{true} :
 
   \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \env
-  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ erreur
+  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ \errorenv
 
   \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
   = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
   = \comp{$I$}{\env}.
 
-  \commentGP{Prouver que \comp{$I$}{\env} ne génère pas d'erreur.}
+  \commentGP{Prouver que \comp{$I$}{\env} $\neq$ \errorenv.}
 
   Cas \eval{p}{\env} = \textit{false} :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
 
   \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
   = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
-  = erreur.
+  = \errorenv.
 
   On a donc bien :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = erreur
-  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = erreur.
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = \errorenv.
 \end{proof}
 
 
