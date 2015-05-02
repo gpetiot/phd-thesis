@@ -12,15 +12,15 @@ générateur de tests si et seulement si il y a une inconsistance entre le code
 et sa spécification.
 
 La sémantique des annotations, des termes et des prédicats de
-\eacsl \cite{\citeeacsl} est présentée en partie~\ref{sec:notations}.
+\eacsl \cite{\citeeacsl} est présentée en partie~\ref{sec:definitions}.
 Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
 Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
 \ref{sec:annotation-translation} détaillent la preuve de ces propriétés
 respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
-\section{Notations}
-\label{sec:notations}
+\section{Définitions}
+\label{sec:definitions}
 
 
 Nous définissons les fonctions et symboles qui sont utilisés dans la suite du
@@ -38,6 +38,8 @@ chapitre.
   \item $e$, $e_1$, $e_2$ sont des expressions C
   \item $t$, $t_1$, $t_2$ sont des termes ($\in TERM$)
   \item $p$, $p_1$, $p_2$ sont des prédicats ($\in PRED$)
+  \item $P$ est un programme C annoté et $P'$ est le programme instrumenté
+    obtenu après traduction du programme $P$
   \end{itemize}
 \end{notation}
 
@@ -211,44 +213,48 @@ est désallouée et enlevée de l'environnement \env.
     \comp{\lstinline'i2'}{(\comp{\lstinline'i1'}{\env})}
     & \eqlabel{C-block} \\
     \comp{\lstinline|lval = e;|}{\env}
-    &=& \env[$lval \mapsto$ \eval{e}{\env}] \scriptsize{(arith. bornée)}
+    &=& \env[\lstinline'lval' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \scriptsize{(arith. bornée)}
     & \eqlabel{C-set} \\
     \comp{\lstinline'if(e)' $\bopen A \bclose$
       \lstinline'else' $\bopen B \bclose$}{\env}
-    &=& \comp{A}{\env} si (\eval{e}{\env}) $\neq$ 0, \comp{B}{\env} sinon
+    &=& \compi{$A$}{\env} si (\eval{\lstinline'e'}{\env}) $\neq$ 0,
+    \compi{$B$}{\env} sinon
     & \eqlabel{C-if} \\
     \comp{\lstinline'/*@ assert p; */'}{\env}
-    &=& \env si (\eval{p}{\env}) $\neq$ 0, \errorenv sinon
+    &=& \env si (\eval{\lstinline'p'}{\env}) $\neq$ 0, \errorenv sinon
     & \eqlabel{C-assert} \\
     \comp{\lstinline'fassert(e);'}{\env}
-    &=& \env si (\eval{e}{\env}) $\neq$ 0, \errorenv sinon
+    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
     & \eqlabel{C-fassert} \\
     \comp{\lstinline'fassume(e);'}{\env}
-    &=& \env si (\eval{e}{\env}) $\neq$ 0, contradiction sinon
+    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, contradiction sinon
     & \eqlabel{C-fassume} \\
     \comp{\lstinline|while(e)| $\bopen A \bclose$}{\env}
-    &=& \comp{\lstinline|while(e)| $\bopen A \bclose$}{(\comp{A}{\env})}
-    si \eval{e}{\env} $\neq$ 0, \env sinon  & \eqlabel{C-while} \\
+    &=& \comp{\lstinline|while(e)| $\bopen A \bclose$}{(\compi{$A$}{\env})}
+    si \eval{\lstinline'e'}{\env} $\neq$ 0, \env sinon  & \eqlabel{C-while} \\
     \comp{\lstinline'/*@ loop invariant p; loop assigns X; loop variant t; */ while(e)' $\bopen A \bclose$}{\env}
-    & = & \errorenv si $\lnot$ \eval{p}{\env}
+    & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
     & \eqlabel{C-while-1} \\
     & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0
     & \eqlabel{C-while-2} \\
     & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
     & \eqlabel{C-while-3} \\
-    & = & \errorenv si $\lnot$ \eval{p}{(\comp{A}{\env})}
+    & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{(\compi{$A$}{\env})}
     & \eqlabel{C-while-4} \\
-    & = & \errorenv si (\eval{t}{(\comp{A}{\env})}) $\ge$ (\eval{t}{\env})
+    & = & \errorenv si (\eval{\lstinline't'}{(\compi{$A$}{\env})}) $\ge$
+    (\eval{\lstinline't'}{\env})
     & \eqlabel{C-while-5} \\
     & = & \errorenv si
-    $\exists x. x \in G-X.$ (\eval{x}{(\comp{A}{\env})}) $\ne$ (\eval{x}{\env})
+    $\exists x. x \in G-X.$ (\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$
+    (\eval{\lstinline'x'}{\env})
     & \eqlabel{C-while-6} \\
-    & = &
-    \comp{\lstinline'/*@ ... */ while(e)' $\bopen A \bclose$}{(\comp{A}{\env})}
-    sinon
+    & = & \comp{\lstinline'/*@ ... */ while(e)'
+      $\bopen A \bclose$}{(\compi{$A$}{\env})} sinon
     & \eqlabel{C-while-7} \\
     \comp{$\Zinit$ \underline{\lstinline|lval = e|} $\semicolon$}{\env}
-    &=& \env[$lval \mapsto$ \eval{e}{\env}] \scriptsize{(arith. non bornée)}
+    &=& \env[\lstinline'lval' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \scriptsize{(arith. non bornée)}
     & \eqlabel{C-Z-set} \\
     \comp{\underline{\lstinline|lval|} $\Zclear \semicolon$}{\env}
     &=& \env $-~\{\mbox{\lstinline'a'}\}$ & \eqlabel{C-Z-unset} \\
@@ -273,7 +279,7 @@ Une séquence est notée :
 \end{itemize}
 
 Par exemple, la règle suivante montre la séquence d'insertions de code $I$
-générée pour la traduction du prédicat \lstinline'p_1 && p_2' :
+générée pour la traduction du prédicat \lstinline'p1 && p2' :
 
 {\myinference[$\pi$-and]
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
@@ -323,29 +329,34 @@ La règle \eqlabel{I-split} traite le cas de la concaténation d'insertions de
 code.
 
 
-\section{Propriétés}
+\section{Propriétés de l'instrumentation}
 \label{sec:properties}
 
-\begin{notation}
-  Soit $P$ un programme C annoté et syntaxiquement correct selon la grammaire
-  définie au chapitre précédent.
-  Soit $P'$ le programme instrumenté obtenu après traduction du programme $P$.
-\end{notation}
+
+Définissons maintenant les propriétés maintenues par le processus
+d'instrumentation des programmes annotés.
+Ces propriétés sont prouvées dans les sections suivantes.
 
 
-
-\begin{theorem}
-  Si une annotation $a$ du programme $P$ est invalide, alors l'exécution
-  des instructions obtenues par traduction provoque une erreur dans le
-  programme instrumenté $P'$.
+\begin{theorem}{Préservation des erreurs}\label{th:error}~\\
+  L'exécution des instructions obtenues par traduction d'une annotation $a$ du
+  programme $P$ provoque une erreur dans le programme traduit $P'$ si et
+  seulement si $a$ est invalide.
 \end{theorem}
 
-\begin{theorem}
-  Si toutes les annotations d'un programme $P$ sont valides, alors $P$ et $P'$
-  (obtenu après traduction de $P$) ont la même sémantique, c'est-à-dire le même
-  comportement est observable à l'exécution.
+Le théorème~\ref{th:error} assure l'absence de faux positifs et l'absence de
+faux négatifs lors de la génération de tests sur le programme traduit.
+
+
+\begin{theorem}{Inclusion des environnements}\label{th:inclusion}~\\
+  Si toutes les annotations d'un programme $P$ sont valides, l'environnement de
+  $P$ est inclus dans l'environnement du programme après traduction $P'$.
 \end{theorem}
 
+Le théorème~\ref{th:inclusion} implique que les seules variables modifiées sont
+les variables fraîchement créées par l'instrumentation, les variables de
+l'environnement du programme d'origine ne sont pas modifiées par
+l'instrumentation.
 
 
 \section{Preuve de la Traduction des Termes}
@@ -353,14 +364,6 @@ code.
 
 Afin de prouver la correction de la traduction des prédicats et des annotations,
 nous devons prouver la correction de la traduction des termes.
-Le lemme~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
-$I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
-variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
-correspond à l'évaluation de \lstinline't' dans \env.
-Cette propriété doit être prouvée sur chaque terme de la grammaire des termes
-définie au chapitre précédent.
-Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
-fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
 
 \begin{lemma}
   \label{lem:term-correct}
@@ -368,11 +371,27 @@ fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
   $(I, \mbox{\lstinline'e'})$.
   La traduction est correcte si et seulement si, pour n'importe quel
   environnement \env :
-
-  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$ \eval{\lstinline't'}{\env}]
-
-  et \comp{$I$}{\env} $\neq$ \errorenv.
+  
+  \eval{\lstinline'e'}{(\compi{$I$}{\env})} = \eval{\lstinline't'}{\env}
+  
+  et
+  
+  \env $\subset$ \compi{$I$}{\env}.
 \end{lemma}
+
+Le lemme~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
+$I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
+variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
+correspond à l'évaluation de \lstinline't' dans \env.
+Les variables qui sont déjà dans l'environnement initial \env ne sont pas
+impactées dans l'environnement \compi{$I$}{\env}.
+Ces deux propriétés sont vérifiées par la traduction de chaque terme.
+Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
+et~\ref{th:inclusion}.
+Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
+\textsc{$\tau$-const} de traduction des constantes.
+
+
 
 
 \subsection{Preuve de la Traduction des Constantes}
@@ -383,21 +402,34 @@ fournie pour la règle \textsc{$\tau$-const} de traduction des constantes.
     ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
 }
 
-Pour n'importe quel environnement \env, nous prouvons que :
+Nous prouvons que pour n'importe quel environnement \env  :
 
-\comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}
-= \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
+\eval{\lstinline'x'}{(\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
+= \eval{\lstinline'v'}{\env}
 
-Cette évaluation ne produit pas d'erreur.
-
+et
+\env $\subset$ \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}.
 
 \begin{proof}
   ~\\
   \begin{tabular}{rclr}
-    \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env}
+    \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
+    &$\eq{\eqlabel{I-instr}}$&
+    \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env} \\
     &$\eq{\eqlabel{C-Z-set}}$&
     \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}] \\
   \end{tabular}
+
+  En substituant \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} on
+  prouve la première partie du lemme~\ref{lem:term-correct} :
+  
+  \eval{\lstinline'x'}{
+    (\env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}])}
+  $\eq{\eqlabel{E-lval}}$ \eval{\lstinline'v'}{\env}.
+
+  La variable \lstinline'x' étant fraîche dans l'environnement, la seconde
+  partie du lemme~\ref{lem:term-correct} est également vérifiée :
+  \env $\subset$ \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
 \end{proof}
 
 
@@ -407,23 +439,31 @@ Cette évaluation ne produit pas d'erreur.
 
 Afin de prouver la correction de la traduction des annotations,
 nous devons prouver la correction de la traduction des prédicats.
+
+\begin{lemma}
+  \label{lem:pred-correct}
+  Soit \lstinline'p' un prédicat qui se traduit en $(I, \mbox{\lstinline'e'})$.
+  La traduction est correcte si et seulement si, pour n'importe quel
+  environnement \env :
+  
+  \eval{\lstinline'e'}{(\compi{$I$}{\env})} = \eval{\lstinline'p'}{\env}
+  
+  et
+  
+  \env $\subset$ \compi{$I$}{\env}.
+\end{lemma}
+
 Le lemme~\ref{lem:pred-correct} énonce que l'évaluation des insertions de code
 $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
 nouvelle variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
 correspond à l'évaluation de \lstinline'p' dans \env.
-Cette propriété doit être prouvée sur chaque prédicat de la grammaire définie
-au chapitre précédent.
-Pour des raisons de lisibilité, la preuve de cette propriété est uniquement
-fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall} (en annexe).
-
-
-\begin{lemma}\label{lem:pred-correct}
-  Soit \lstinline'p' un prédicat qui se traduit en $(I, \mbox{\lstinline'e'})$.
-  La traduction est correcte si et seulement si, pour n'importe quel
-  environnement \env :
-
-  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$ \eval{\lstinline'p'}{\env}].
-\end{lemma}
+Les variables qui sont déjà dans l'environnement initial \env ne sont pas
+impactées dans l'environnement \compi{$I$}{\env}.
+Ces deux propriétés sont vérifiées par la traduction de chaque prédicat.
+Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
+et~\ref{th:inclusion}.
+Pour des raisons de lisibilité, la preuve est uniquement fournie pour les règles
+\textsc{$\pi$-and} et \textsc{$\pi$-forall} (en annexe).
 
 
 \subsection{Preuve de la Traduction des Conjonctions}
@@ -439,141 +479,184 @@ fournie pour les règles \textsc{$\pi$-and} et \textsc{$\pi$-forall} (en annexe)
   }
 }~\\
 
-Pour n'importe quel environnement \env, nous prouvons que :
+Prouvons que pour n'importe quel environnement \env :
 
-\comp{$I$}{\env} =
-\env[\lstinline'e' $\mapsto$ \eval{\lstinline'p1 && p2'}{\env}].
+\eval{\lstinline'e'}{(
+  \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+    (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}
+  )} = \eval{\lstinline'p1 && p2'}{\env}
+
+et
+
+\env $\subset$
+\compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}.
 
 
 \begin{proof}
   ~\\
-  Hypothèses : $p_1$ et $p_2$ sont correctement instrumentés.
+  Hypothèses : \lstinline'p1' et \lstinline'p2' sont correctement instrumentés.
   Pour tout environnement \env :
 
   \begin{tabular}{rclr}
-    \comp{$I_1$}{\env} & = &
-    \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env}] & \eqlabel{h1} \\
-    \comp{$I_2$}{\env} & = &
-    \env[\lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env}] & \eqlabel{h2} \\
+    \eval{\lstinline'e1'}{(\compi{$I_1$}{\env})} & = &
+    \eval{\lstinline'p1'}{\env} & \eqlabel{h1} \\
+    \eval{\lstinline'e2'}{(\compi{$I_2$}{\env})} & = &
+    \eval{\lstinline'p2'}{\env} & \eqlabel{h2} \\
+    \env & $\subset$ & \compi{$I_1$}{\env} & \eqlabel{h3} \\
+    \env & $\subset$ & \compi{$I_2$}{\env} & \eqlabel{h4} \\
   \end{tabular}
 
-  Développons le membre gauche :
+  Développons \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+    (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env} :
   
   \begin{tabular}{rcl}
-    \multicolumn{3}{l}{\comp{$I$}{\env}} \\
-    & = & \comp{
-      $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-      (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+    \multicolumn{3}{l}{
+      \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+        (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+        (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}} \\
+    & $\eq{\eqlabel{I-split}}$ & \compi{
+      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
       (l, \mbox{\lstinline'e = e2;'}) \bclose )$
-    }{\env} \\
-    & = & \comp{
-      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
     }{
-      (\comp{\lstinline'int e = e1;'}{(\comp{$I_1$}{\env})
+      (\compi{$(l, \mbox{\lstinline'int e = e1;'})$}{(\compi{$I_1$}{\env})
       })
     } \\
-    & $\eq{\eqlabel{h1}}$ & \comp{
-      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    & $\eq{\eqlabel{I-instr}}$ & \compi{
+      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
     }{
-      (\comp{\lstinline'int e = e1;'}{
-        (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+      (\comp{\lstinline'int e = e1;'}{(\compi{$I_1$}{\env})
       })
     } \\
-    & $\eq{\eqlabel{C-set}}$ & \comp{
-      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
+    & $\eq{\eqlabel{C-set}}$ & \compi{
+      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
     }{
-      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+      ((\compi{$I_1$}{\env})
+      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+      )
+    } \\
+    & $\eq{\eqlabel{I-instr}}$ & \comp{
+      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
+      (l, \mbox{\lstinline'e = e2;'}) \bclose$
+    }{
+      ((\compi{$I_1$}{\env})
+      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+      )
     } \\
 
     %% cas true
     \multicolumn{3}{l}{
-      Cas où la valeur de l'expression de la conditionnelle est vraie :} \\
+      (1) Cas où la valeur de l'expression de la conditionnelle est vraie :} \\
     \multicolumn{3}{l}{
       Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{true}
-      ~~\eqlabel{h3}
+      ~~\eqlabel{h5}
     } \\
     \multicolumn{3}{l}{
       Car
       \eval{\lstinline'e'}{(
-        \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-        )} = \textit{true}} \\
-    & $\eq{\eqlabel{C-if}}$ & \comp{
-      $\bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e_2;'}) \bclose$
-    }{
-      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+        (\compi{$I_1$}{\env})
+        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+      )} = \textit{true}} \\
+    & $\eq{\eqlabel{C-if}}$ & \compi{
+      $I_2 \concat (l, \mbox{\lstinline'e = e2;'})$
+    }{(
+      (\compi{$I_1$}{\env})
+      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+      )} \\
+    & $\eq{\eqlabel{I-split}}$ & \compi{
+      $(l, \mbox{\lstinline'e = e2;'})$
+    }{(\compi{$I_2$}{(
+        (\compi{$I_1$}{\env})
+        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        )}
+      )} \\
+    & $\eq{\eqlabel{I-instr}}$ & \comp{
+      \lstinline'e = e2;'
+    }{(\compi{$I_2$}{(
+        (\compi{$I_1$}{\env})
+        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        )}
+      )} \\
+    & $\eq{\eqlabel{C-set}}$ & (\compi{$I_2$}{(
+      (\compi{$I_1$}{\env})
+      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+      )}
+    )[\lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}] \\
+    \multicolumn{3}{l}{
+      En évaluant \lstinline'e' dans ce nouvel environnement, on obtient :
     } \\
-    & $\eq{\eqlabel{C-block}}$ & \comp{
-      $I_2 \concat (l, \mbox{\lstinline'e = e_2;'})$
-    }{
-      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])
+    \multicolumn{3}{l}{
+      \eval{\lstinline'e'}{(\compi{$I_2$}{(
+          (\compi{$I_1$}{\env})
+          [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+          )}
+        )[\lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}]}
     } \\
-    & = & \comp{
-      $(l, \mbox{\lstinline'e = e_2;'})$
-    }{
-      (\comp{$I_2$}{(\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}])})
-    } \\
-    & $\eq{\eqlabel{h2}}$ & \comp{
-      $(l, \mbox{\lstinline'e = e_2;'})$
-    }{
-      (\env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-        \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env},
-        \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env}])
-    } \\
-    & $\eq{\eqlabel{C-set}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
-      \lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}] \\
-    & = & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
-      \lstinline'e' $\mapsto$
-      \textit{true} $\land$ \eval{\lstinline'p2'}{\env}] \\
-    & $\eq{\eqlabel{h3}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
-      \lstinline'e' $\mapsto$
-      \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}] \\
-    & $\eq{\eqlabel{P-and}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e2' $\mapsto$ \eval{\lstinline'p2'}{\env},
-      \lstinline'e' $\mapsto$ \eval{\lstinline'p1 \&\& p2'}{\env}] \\
+    & $\eq{\eqlabel{E-lval}}$ & \eval{\lstinline'p2'}{\env} \\
+    & $\eq{\eqlabel{h5}}$
+    & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
+    & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
 
     %% cas false
     \multicolumn{3}{l}{
-      Cas où la valeur de l'expression de la conditionnelle est fausse :} \\
+      (2) Cas où la valeur de l'expression de la conditionnelle est fausse :} \\
     \multicolumn{3}{l}{
       Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{false}
-      ~~\eqlabel{h4}
+      ~~\eqlabel{h6}
     }\\
     \multicolumn{3}{l}{
       Car \eval{\lstinline'e'}{(
-        \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-          \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        (\compi{$I_1$}{\env})
+        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
         )} = \textit{false}}\\
-    & $\eq{\eqlabel{C-if}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}] \\
-    & $\eq{\eqlabel{h4}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e' $\mapsto$
-      \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}] \\
-    & $\eq{\eqlabel{P-and}}$
-    & \env[\lstinline'e1' $\mapsto$ \eval{\lstinline'p1'}{\env},
-      \lstinline'e' $\mapsto$
-      \eval{\lstinline'p1 \&\& p2'}{\env}] \\
+    &$\eq{\eqlabel{C-if}}$
+    & (\compi{$I_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+    \\
+    \multicolumn{3}{l}{
+      En évaluant \lstinline'e' dans ce nouvel environnement, on obtient :
+    } \\
+    \multicolumn{3}{l}{
+      \eval{\lstinline'e'}{(
+        (\compi{$I_1$}{\env})
+        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
+        )}
+    } \\
+    & $\eq{\eqlabel{E-lval}}$
+    & \eval{\lstinline'p1'}{\env} \\
+    & $\eq{\eqlabel{h6}}$
+    & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
+    & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
 
-  Nous avons donc prouvé que
-  \comp{$I$}{\env} = \env[\lstinline'e' $\mapsto$
-    \eval{\lstinline'p1 \&\& p2'}{\env}].~\\
+  Nous avons donc prouvé, pour tout environnement \env :
+
+  \eval{\lstinline'e'}{(
+    \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+      (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+      (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}
+    )} = \eval{\lstinline'p1 && p2'}{\env}.
+
+  De manière informelle, la preuve de la seconde propriété est assurée par le
+  fait que d'une part les fragments de code générés ne modifient que la
+  variable fraîche \lstinline'e' et d'autre part, les hypothèses \eqlabel{h3}
+  et \eqlabel{h4} nous assurent que les fragments $I_1$ et $_2$ ne modifient pas
+  les variables de l'environnement \env.
+  On en conclut donc que les fragments générés
+  $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+  (l, \mbox{\lstinline'e = e2;'}) \bclose )$ ne modifient pas les variables de
+  l'environnement \env, et donc :
+
+  \env $\subset$
+  \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+    (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}.
+  ~\\
 \end{proof}
 
 
@@ -584,56 +667,59 @@ Pour n'importe quel environnement \env, nous prouvons que :
 \label{sec:annotation-translation}
 
 
-\subsection{Assertions}
+Nous allons maintenant prouver les théorèmes~\ref{th:error} et
+\ref{th:inclusion} pour chaque classe d'annotations : les assertions, les
+contrats de boucle et les contrats de fonction.
+Ces preuves s'appuient sur les preuves de correction de la traduction des termes
+et des prédicats établies dans les sections précédentes.
 
 
-{\scriptsize
-  {\myinference[$\alpha$-assert]
-    {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
-    {(l, \mbox{\lstinline'assert p;'})
-      \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
-  }
+\subsection{Preuve de la Traduction des Assertions}
+
+
+{\myinference[$\alpha$-assert]
+  {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+  {(l, \mbox{\lstinline'assert p;'})
+    \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
 }
 
 
-Pour n'importe quel environnement \env, nous prouvons que :
+Prouvons que pour tout environnement \env (théorème~\ref{th:error}) :
 
 \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-$\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = \errorenv
+$\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
+= \errorenv
+
+et si l'assertion est valide (théorème~\ref{th:inclusion}) :
+
+\env $\subset$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}.
 
 
 \begin{proof}
   ~\\
-  On sait que \eval{e}{\comp{$I$}{\env}} = \eval{p}{\env} par hypothèse que
-  la traduction des prédicats est correcte.
+  Hypothèses : le prédicat \lstinline'p' est correctement traduit.
+  Pour tout environnement \env :
+  \begin{tabular}{rclr}
+    \eval{\lstinline'e'}{(\compi{$I$}{\env})} &=& \eval{\lstinline'p'}{\env}
+    & \eqlabel{h1} \\
+    \env & $\subset$ & \compi{$I$}{\env} & \eqlabel{h2} \\
+  \end{tabular}
 
-  Cas \eval{p}{\env} = \textit{true} :
+  (1) Cas où l'assertion est valide :
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \env
-  donc \comp{\lstinline'/*@ assert p; */ ;'}{\env} $\not \equiv$ \errorenv
+  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{true} \eqlabel{h3}
 
-  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
-  = \comp{$I$}{\env}.
+  \commentGP{TODO}
 
-  \commentGP{Prouver que \comp{$I$}{\env} $\neq$ \errorenv.}
+  (2) Cas où l'assertion est invalide :
 
-  Cas \eval{p}{\env} = \textit{false} :
+  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{false} \eqlabel{h4}
 
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-
-  \comp{$I \concat$ \lstinline'fassert(e);'}{\env}
-  = \comp{\lstinline'fassert(e);'}{\comp{$I$}{\env}}
-  = \errorenv.
-
-  On a donc bien :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-  $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = \errorenv.
+  \commentGP{TODO}
 \end{proof}
 
 
-\subsection{Vérification des contrats de boucles}
+\subsection{Preuve de la Traduction des Contrats de Boucles}
 
 
 {\scriptsize
@@ -694,10 +780,12 @@ $\equiv$ \comp{$I \concat$ \lstinline'fassert(e);'}{\env} = \errorenv
   }
 }
 
+\commentGP{TODO}
 
-\subsection{Vérification des contrats de fonctions}
 
+\subsection{Preuve de la Traduction des Contrats de Fonctions}
 
+\commentGP{TODO}
 
 
 
