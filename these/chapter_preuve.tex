@@ -222,7 +222,7 @@ est désallouée et enlevée de l'environnement \env.
     \compi{$B$}{\env} sinon
     & \eqlabel{C-if} \\
     \comp{\lstinline'/*@ assert p; */'}{\env}
-    &=& \env si (\eval{\lstinline'p'}{\env}) $\neq$ 0, \errorenv sinon
+    &=& \env si (\eval{\lstinline'p'}{\env}), \errorenv sinon
     & \eqlabel{C-assert} \\
     \comp{\lstinline'fassert(e);'}{\env}
     &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
@@ -376,7 +376,11 @@ nous devons prouver la correction de la traduction des termes.
   
   et
   
-  \env $\subset$ \compi{$I$}{\env}.
+  \env $\subset$ \compi{$I$}{\env}
+
+  et
+
+  \compi{$I$}{\env} $\neq$ \errorenv.
 \end{lemma}
 
 Le lemme~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
@@ -384,8 +388,9 @@ $I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvel
 variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
 correspond à l'évaluation de \lstinline't' dans \env.
 Les variables qui sont déjà dans l'environnement initial \env ne sont pas
-impactées dans l'environnement \compi{$I$}{\env}.
-Ces deux propriétés sont vérifiées par la traduction de chaque terme.
+impactées dans l'environnement \compi{$I$}{\env}, et l'environnement résulant
+de la traduction du terme n'est pas l'environnement d'erreur \errorenv.
+Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
 et~\ref{th:inclusion}.
 Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
@@ -404,11 +409,17 @@ Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
 
 Nous prouvons que pour n'importe quel environnement \env  :
 
-\eval{\lstinline'x'}{(\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
+\eval{\lstinline'x'}{
+  (\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
 = \eval{\lstinline'v'}{\env}
 
 et
-\env $\subset$ \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}.
+
+\env $\subset$ \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
+
+et
+
+\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} $\neq$ \errorenv.
 
 \begin{proof}
   ~\\
@@ -427,9 +438,15 @@ et
     (\env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}])}
   $\eq{\eqlabel{E-lval}}$ \eval{\lstinline'v'}{\env}.
 
-  La variable \lstinline'x' étant fraîche dans l'environnement, la seconde
+  La variable \lstinline'x' étant fraîche dans l'environnement, la deuxième
   partie du lemme~\ref{lem:term-correct} est également vérifiée :
   \env $\subset$ \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
+
+  Le nouvel environnement étant \env auquel on a ajouté une nouvelle liaison
+  $(x, v)$, ce n'est pas un environnement d'erreur si \env lui-même n'était pas
+  un environnement d'erreur, ce qui prouve la troisième partie du lemme.
+  \env ne peut pas être \errorenv puisque la traduction se serait arrêtée dès
+  l'obtention de l'erreur.
 \end{proof}
 
 
@@ -450,7 +467,11 @@ nous devons prouver la correction de la traduction des prédicats.
   
   et
   
-  \env $\subset$ \compi{$I$}{\env}.
+  \env $\subset$ \compi{$I$}{\env}
+
+  et
+
+  \compi{$I$}{\env} $\neq$ \errorenv.
 \end{lemma}
 
 Le lemme~\ref{lem:pred-correct} énonce que l'évaluation des insertions de code
@@ -458,8 +479,9 @@ $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
 nouvelle variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
 correspond à l'évaluation de \lstinline'p' dans \env.
 Les variables qui sont déjà dans l'environnement initial \env ne sont pas
-impactées dans l'environnement \compi{$I$}{\env}.
-Ces deux propriétés sont vérifiées par la traduction de chaque prédicat.
+impactées dans l'environnement \compi{$I$}{\env} et l'environnement résultant de
+la traduciton du prédicat n'est pas l'environnement d'erreur.
+Ces propriétés sont vérifiées par la traduction de chaque prédicat.
 Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
 et~\ref{th:inclusion}.
 Pour des raisons de lisibilité, la preuve est uniquement fournie pour les règles
@@ -492,7 +514,13 @@ et
 \env $\subset$
 \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
   (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}.
+  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}
+
+et
+
+\compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env} $\neq$ \errorenv.
 
 
 \begin{proof}
@@ -507,6 +535,8 @@ et
     \eval{\lstinline'p2'}{\env} & \eqlabel{h2} \\
     \env & $\subset$ & \compi{$I_1$}{\env} & \eqlabel{h3} \\
     \env & $\subset$ & \compi{$I_2$}{\env} & \eqlabel{h4} \\
+    \compi{$I_1$}{\env} & $\neq$ & \errorenv & \eqlabel{h5} \\
+    \compi{$I_2$}{\env} & $\neq$ & \errorenv & \eqlabel{h6} \\
   \end{tabular}
 
   Développons \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
@@ -554,7 +584,7 @@ et
       (1) Cas où la valeur de l'expression de la conditionnelle est vraie :} \\
     \multicolumn{3}{l}{
       Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{true}
-      ~~\eqlabel{h5}
+      ~~\eqlabel{h7}
     } \\
     \multicolumn{3}{l}{
       Car
@@ -598,7 +628,7 @@ et
         )[\lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}]}
     } \\
     & $\eq{\eqlabel{E-lval}}$ & \eval{\lstinline'p2'}{\env} \\
-    & $\eq{\eqlabel{h5}}$
+    & $\eq{\eqlabel{h7}}$
     & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
     & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
 
@@ -607,7 +637,7 @@ et
       (2) Cas où la valeur de l'expression de la conditionnelle est fausse :} \\
     \multicolumn{3}{l}{
       Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{false}
-      ~~\eqlabel{h6}
+      ~~\eqlabel{h8}
     }\\
     \multicolumn{3}{l}{
       Car \eval{\lstinline'e'}{(
@@ -628,7 +658,7 @@ et
     } \\
     & $\eq{\eqlabel{E-lval}}$
     & \eval{\lstinline'p1'}{\env} \\
-    & $\eq{\eqlabel{h6}}$
+    & $\eq{\eqlabel{h8}}$
     & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
     & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
@@ -656,6 +686,16 @@ et
   \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
     (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
     (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}.
+
+  Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
+  code générés ne produisent pas d'erreur (seule la variable fraîche
+  \lstinline'e' est affectée) nous assurent que si \env n'est pas un
+  environnement d'erreur (ici encore, \env ne peut pas être \errorenv puisque la
+  traduction se serait arrêtée dès l'obtention de l'erreur), alors :
+
+  \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
+  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
+  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env} $\neq$ \errorenv.
   ~\\
 \end{proof}
 
@@ -703,19 +743,81 @@ et si l'assertion est valide (théorème~\ref{th:inclusion}) :
     \eval{\lstinline'e'}{(\compi{$I$}{\env})} &=& \eval{\lstinline'p'}{\env}
     & \eqlabel{h1} \\
     \env & $\subset$ & \compi{$I$}{\env} & \eqlabel{h2} \\
+    \compi{$I$}{\env} & $\neq$ & \errorenv & \eqlabel{h3} \\
   \end{tabular}
 
   (1) Cas où l'assertion est valide :
 
-  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{true} \eqlabel{h3}
+  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{true} \eqlabel{h4}
 
-  \commentGP{TODO}
+  Développons le membre gauche :
+
+  \begin{tabular}{rcl}
+    \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+    &$\eqv{\eqlabel{C-assert}}$& \env = \errorenv \\
+    &$\equiv$ & \textit{false}, car si \env = \errorenv, la traduction
+    se serait arrêtée. \\
+  \end{tabular}
+
+  Développons le membre droit :
+
+  \begin{tabular}{rcl}
+    \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env} = \errorenv
+    &$\eqv{\eqlabel{I-split}}$
+    & \compi{$(l, \mbox{\lstinline'fassert(e);'})$}{(\compi{$I$}{\env})}
+    = \errorenv \\
+    &$\eqv{\eqlabel{I-instr}}$
+    & \comp{\lstinline'fassert(e);'}{(\compi{$I$}{\env})} = \errorenv \\
+    &$\eqv{\eqlabel{C-fassert}}$ & \compi{$I$}{\env} = \errorenv \\
+    &$\eqv{\eqlabel{h3}}$ & \textit{false} \\
+  \end{tabular}
+
+  Quand l'assertion est valide, on a bien :
+
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+  $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
+  = \errorenv.
+
+  D'autre part, d'après le développement du membre droit, on a :
+
+   \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
+   = \compi{$I$}{\env}.
+   
+   En substituant dans l'hypothèse \eqlabel{h2} on obtient directement :
+
+   \env $\subset$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}.
 
   (2) Cas où l'assertion est invalide :
 
-  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{false} \eqlabel{h4}
+  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{false} \eqlabel{h5}
 
-  \commentGP{TODO}
+  Développons le membre gauche :
+
+  \begin{tabular}{rcl}
+    \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+    &$\eqv{\eqlabel{C-assert}}$& \errorenv = \errorenv \\
+    &$\equiv$& \textit{true}
+  \end{tabular}
+
+  Développons le membre droit :
+
+  \begin{tabular}{rcl}
+    \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env} = \errorenv
+    &$\eqv{\eqlabel{I-split}}$
+    & \compi{$(l, \mbox{\lstinline'fassert(e);'})$}{(\compi{$I$}{\env})}
+    = \errorenv \\
+    &$\eqv{\eqlabel{I-instr}}$
+    & \comp{\lstinline'fassert(e);'}{(\compi{$I$}{\env})} = \errorenv \\
+    &$\eqv{\eqlabel{C-fassert}}$ & \errorenv = \errorenv \\
+    &$\equiv$& \textit{true}
+  \end{tabular}
+
+  On a donc bien :
+
+  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
+  $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
+  = \errorenv.
+  ~\\
 \end{proof}
 
 
