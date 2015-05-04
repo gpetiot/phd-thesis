@@ -832,17 +832,17 @@ La traduction utilise les trois règles suivantes :
 
 {\scriptsize
   {\myinference[$\alpha$-check-loop-assigns]
-    {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {}
     {
       \splitfrac {
         (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
       }{
         \splitfrac {
           I \concat
-          \forall (x:ctype) \in G-X:
-          (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+          \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
+          (BegIter_l, \mbox{\lstinline'ctype assigns_x = x;'})
         }{
-          \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+          \concat (EndIter_l, \mbox{\lstinline'fassert(x == assigns_x);'})
         }
       }
     }

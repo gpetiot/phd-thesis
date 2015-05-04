@@ -12,10 +12,10 @@ TODO
 \begin{figure}[bt]
   \scriptsize{
     {\myinference[$\alpha$-assume-assigns]
-      {(End_f, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {}
       {(End_f, \mbox{\lstinline'assigns x;'})
         \rulearrow
-        I \concat (End_f, \mbox{\lstinline'e = nondet();'})}
+        I \concat (End_f, \mbox{\lstinline'x = nondet();'})}
     }
 
     {\myinference[$\alpha$-assume-post]
@@ -39,10 +39,10 @@ fonction instrumentée.
 \begin{figure}[bt]
   \scriptsize{
     {\myinference[$\alpha$-assume-loop-assigns]
-      {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {}
       {(l, \mbox{\lstinline'loop assigns x;'})
         \rulearrow
-        I \concat (l, \mbox{\lstinline'e = nondet();'})}
+        I \concat (l, \mbox{\lstinline'x = nondet();'})}
     }
 
     {\myinference[$\alpha$-assume-invariant-1]
