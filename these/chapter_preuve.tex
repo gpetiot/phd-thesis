@@ -824,17 +824,26 @@ et si l'assertion est valide (théorème~\ref{th:inclusion}) :
 \subsection{Preuve de la Traduction des Contrats de Boucles}
 
 
+Nous considérons une boucle complètement annotée avec
+\lstinline'loop invariant', \lstinline'loop variant' et
+\lstinline'loop assigns'.
+La traduction utilise les trois règles suivantes :
+
+
 {\scriptsize
   {\myinference[$\alpha$-check-loop-assigns]
     {(l, \mbox{\lstinline'x'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {
       \splitfrac {
         (l, \mbox{\lstinline'loop assigns X;'}) \rulearrow
-      } {
-        I \concat
-        \forall (x:ctype) \in G-X:
-        (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
-        \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+      }{
+        \splitfrac {
+          I \concat
+          \forall (x:ctype) \in G-X:
+          (BegIter_l, \mbox{\lstinline'ctype assigns_x = e;'})
+        }{
+          \concat (EndIter_l, \mbox{\lstinline'fassert(e == assigns_x);'})
+        }
       }
     }
   }
@@ -860,29 +869,32 @@ et si l'assertion est valide (théorème~\ref{th:inclusion}) :
       (EndIter_l, \mbox{\lstinline't'}) \rulearrow (I_2, \mbox{\lstinline'e2'})
     }
     {
-      \splitfrac
-          {
-            (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
-          }
-          {
-            I_1 \concat ((BegIter_l,
-            \mbox{\lstinline'fassert('}
-            \underline{\mbox{\lstinline'0 <= e1'}}
-            \mbox{\lstinline');' }
-            \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
-            \semicolon)
-            \concat I_2
-            \concat(EndIter_l,
-            \mbox{\lstinline'fassert('}
-            \underline{\mbox{\lstinline'e2'}\Zclear
-              \mbox{\lstinline'< old_variant'} \Zclear}
-            \mbox{\lstinline');'})
-          }
+      \splitfrac {
+        (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
+      }{
+        \splitfrac {
+          I_1 \concat ((BegIter_l,
+          \mbox{\lstinline'fassert('}
+          \underline{\mbox{\lstinline'0 <= e1'}}
+          \mbox{\lstinline');' }
+          \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
+          \semicolon)
+        }{
+          \concat I_2
+          \concat(EndIter_l,
+          \mbox{\lstinline'fassert('}
+          \underline{\mbox{\lstinline'e2'}\Zclear
+            \mbox{\lstinline'< old_variant'} \Zclear}
+          \mbox{\lstinline');'})
+        }
+      }
     }
   }
 }
 
-\commentGP{TODO}
+
+Donnons une intuition de la preuve de correction de la traduction des
+contrats de boucle à partir de ces règles.
 
 
 \subsection{Preuve de la Traduction des Contrats de Fonctions}
