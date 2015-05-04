@@ -1,0 +1,62 @@
+\begin{figure}[bt]
+  \begin{minipage}{0.65\textwidth}
+    \begin{lstlisting}[escapechar=§]
+L:
+/*@ loop invariant p; §\tikz[remember picture,overlay]{\node(lc-inv){};}§
+    loop assigns X; §\tikz[remember picture,overlay]{\node(lc-ass){};}§
+    loop variant t; */ §\tikz[remember picture,overlay]{\node(lc-var){};}§
+while(e) {
+BegIter_L: ;
+  A
+EndIter_L: ;
+}
+    \end{lstlisting}
+  \end{minipage}\hfill
+  \begin{minipage}{0.49\textwidth}
+    \begin{lstlisting}[escapechar=§]
+L:
+§\tikz[remember picture,overlay]{\node(lc-l1){};}§int e1; §$Spec2Code$§(§$I_1$§, e1);
+§\tikz[remember picture,overlay]{\node(lc-l2){};}§fassert(e1);
+while(e) {
+BegIter_L: ;
+§\tikz[remember picture,overlay]{\node(lc-l3){};}§type_x1 assigns_x1 = x1;
+...
+§\tikz[remember picture,overlay]{\node(lc-l4){};}§type_xN assigns_xN = xN;
+§\tikz[remember picture,overlay]{\node(lc-l5){};}§§$\Zinit$\underline{e2}§; §$Spec2Code$§(§$I_2$§, e2);
+§\tikz[remember picture,overlay]{\node(lc-l6){};}§fassert(§\underline{0 <= e2}§);
+  A
+EndIter_L: ;
+§\tikz[remember picture,overlay]{\node(lc-l7){};}§int e3; §$Spec2Code$§(§$I_3$§, e3);
+§\tikz[remember picture,overlay]{\node(lc-l8){};}§fassert(e3);
+§\tikz[remember picture,overlay]{\node(lc-l9){};}§fassert(x1 == assigns_x1);
+...
+§\tikz[remember picture,overlay]{\node(lc-l10){};}§fassert(xN == assigns_xN);
+§\tikz[remember picture,overlay]{\node(lc-l11){};}§§$\Zinit$\underline{e4}§; §$Spec2Code$§(§$I_4$§, e4);
+§\tikz[remember picture,overlay]{\node(lc-l12){};}§fassert(§\underline{e4$\Zclear$ < e2$\Zclear$}§);
+}
+    \end{lstlisting}
+  \end{minipage}
+  \begin{tikzpicture}[remember picture,overlay,font=\scriptsize]
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l1.north) -- (lc-l2.south) node (lc-inv1) {};
+    \path[parr,triangle 45-triangle 45] (lc-inv) -- (lc-inv1.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l3.north) -- (lc-l4.south) node (lc-ass1) {};
+    \path[parr,square-square] (lc-ass) -- (lc-ass1.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l5.north) -- (lc-l6.south) node (lc-var1) {};
+    \path[parr,o-o] (lc-var) -- (lc-var1.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l7.north) -- (lc-l8.south) node (lc-inv2) {};
+    \path[parr,triangle 45-triangle 45] (lc-inv) -- (lc-inv2.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l9.north) -- (lc-l10.south) node (lc-ass2) {};
+    \path[parr,square-square] (lc-ass) -- (lc-ass2.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (lc-l11.north) -- (lc-l12.south) node (lc-var2) {};
+    \path[parr,o-o] (lc-var) -- (lc-var2.north west);
+  \end{tikzpicture}
+  \caption{Preuve de correction simplifiée de la traduction des contrats de
+    boucle}
+  \label{fig:proof-loop-contract}
+\end{figure}

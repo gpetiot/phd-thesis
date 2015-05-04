@@ -888,6 +888,63 @@ La traduction utilise les trois règles suivantes :
 
 Donnons une intuition de la preuve de correction de la traduction des
 contrats de boucle à partir de ces règles.
+La figure~\ref{fig:proof-loop-contract}, illustre la preuve sur un exemple.
+La partie gauche de la figure montre une boucle disposant d'un contrat de boucle
+(\lstinline'loop invariant', \lstinline'loop assigns' et
+\lstinline'loop variant') au label $L$, avec un corps quelconque \lstinline'A'.
+En partie droite est affichée le code résultant de la traduction de cette
+boucle, où chaque ensemble d'instructions (regroupées avec une accolade) est
+mis en relation avec l'annotation du programme original dont il est la
+traduction.
+Les lignes 2--3 et 13--14 résultent de la traduction de l'invariant ligne 2,
+les lignes 6--8 et 15--17 résultant de la traduction de la clause assigns ligne
+3 et les lignes 9--10 et 18--19 résultent de la traduction du variant ligne 4.
+$Spec2Code$\lstinline'('$I_1$\lstinline', e1)' symbolise le fait que
+\lstinline'p' se traduit en $(I_1, \mbox{\lstinline'e1'})$ en accord avec la
+règle \textsc{$\alpha$-check-invariant}.
+La règle \eqlabel{C-while-1} de la sémantique de la boucle est gérée par les
+lignes 2--3 du code instrumenté : si $\lnot$ \eval{\lstinline'p'}{\env},
+\lstinline'fassert(e1)' produit \errorenv.
+La règle \eqlabel{C-while-2} correspond au cas où la condition de boucle n'est
+pas respectée.
+Nous avons démontré que le code que nous générons n'impacte pas les variables
+du programme original, donc la condition de boucle \lstinline'e' a la même
+valeur en chaque point dans le programme original et le programme traduit.
+La règle \eqlabel{C-while-3} est gérée par les lignes 9--10 : \errorenv est
+produit si $\lnot$ \eval{\lstinline't >= 0'}{\env}.
+La règle \eqlabel{C-while-4} est gérée par les lignes 13--14 : \errorenv est
+produit si $\lnot$ \eval{\lstinline'p'}{(\compi{$A$}{\env})}.
+La règle \eqlabel{C-while-5} est gérée par les lignes 18--19 (en réutilisant
+la valeur du variant au début de l'itération de la boucle, calculée ligne 9) :
+\errorenv est produit si (\eval{\lstinline't'}{(\compi{$A$}{\env})}) $\ge$
+ (\eval{\lstinline't'}{\env}).
+La règle \eqlabel{C-while-6} est gérée par les lignes 6--8 et 15--17 :
+\errorenv est produit si $\exists x. x \in G-X.$
+(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$  (\eval{\lstinline'x'}{\env}),
+où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
+La règle \eqlabel{C-while-7} correspond à l'exécution récursive de la boucle.
+
+%% \comp{\lstinline'/*@ loop invariant p; loop assigns X; loop variant t; */ while(e)' $\bopen A \bclose$}{\env}
+%% & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
+%% & \eqlabel{C-while-1} \\
+%% & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0
+%% & \eqlabel{C-while-2} \\
+%% & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+%% & \eqlabel{C-while-3} \\
+%% & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{(\compi{$A$}{\env})}
+%% & \eqlabel{C-while-4} \\
+%% & = & \errorenv si (\eval{\lstinline't'}{(\compi{$A$}{\env})}) $\ge$
+%% (\eval{\lstinline't'}{\env})
+%% & \eqlabel{C-while-5} \\
+%% & = & \errorenv si
+%% $\exists x. x \in G-X.$ (\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$
+%% (\eval{\lstinline'x'}{\env})
+%% & \eqlabel{C-while-6} \\
+%% & = & \comp{\lstinline'/*@ ... */ while(e)'
+%%   $\bopen A \bclose$}{(\compi{$A$}{\env})} sinon
+%% & \eqlabel{C-while-7} \\
+
+\input{figures/fig_proof_loop_contract}
 
 
 \subsection{Preuve de la Traduction des Contrats de Fonctions}
