@@ -869,24 +869,19 @@ La traduction utilise les trois règles suivantes :
       (EndIter_l, \mbox{\lstinline't'}) \rulearrow (I_2, \mbox{\lstinline'e2'})
     }
     {
-      \splitfrac {
+      \splitfrac{
         (l, \mbox{\lstinline'loop variant t;'}) \rulearrow
       }{
-        \splitfrac {
-          I_1 \concat ((BegIter_l,
-          \mbox{\lstinline'fassert('}
-          \underline{\mbox{\lstinline'0 <= e1'}}
-          \mbox{\lstinline');' }
-          \underline{\Zinit \mbox{\lstinline'old_variant = e1'} \Zclear}
-          \semicolon)
-        }{
-          \concat I_2
-          \concat(EndIter_l,
-          \mbox{\lstinline'fassert('}
-          \underline{\mbox{\lstinline'e2'}\Zclear
-            \mbox{\lstinline'< old_variant'} \Zclear}
-          \mbox{\lstinline');'})
-        }
+        I_1 \concat ((BegIter_l,
+        \mbox{\lstinline'fassert('}
+        \underline{\mbox{\lstinline'0 <= e1'}}
+        \mbox{\lstinline');' })
+        \concat I_2
+        \concat(EndIter_l,
+        \mbox{\lstinline'fassert('}
+        \underline{\mbox{\lstinline'e2'}\Zclear
+          \mbox{\lstinline'< e1'} \Zclear}
+        \mbox{\lstinline');'})
       }
     }
   }

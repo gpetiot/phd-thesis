@@ -14,7 +14,6 @@ int is_present(int* t, int n, int v) {
    §$BegIter_{l_0}:$§
     §$\underline{\Zinit \mbox{var\_7 = n}}$§; §$\underline{\Zinit \mbox{var\_8 = i}}$§; §$\underline{\Zinit \mbox{var\_9 = var\_7}\Zclear\ \mbox{- var\_8}\Zclear}$§;
     int var_10 = §$\underline{ \mbox{0 <= var\_9}}$§; fassert(var_10);
-    §$\underline{\Zinit \mbox{old\_variant = var\_{9}}\Zclear}$§;
     if(*(t+i) == v) { res = 1; break; } i++;
    §$EndIter_{l_0}:$§
     §$\underline{\Zinit \mbox{var\_{14} = 0}}$§; §$\underline{\Zinit \mbox{var\_{15} = i}}$§; int var_16 = §$\underline{ \mbox{var\_{14}}\Zclear\ \mbox{<= var\_{15}}\Zclear}$§; int var_17 = var_16;
@@ -23,7 +22,7 @@ int is_present(int* t, int n, int v) {
     }
     fassert(var_17);
     §$\underline{\Zinit \mbox{var\_{26} = n}}$§; §$\underline{\Zinit \mbox{var\_{27} = i}}$§; §$\underline{\Zinit \mbox{var\_{28} = var\_{26}}\Zclear\ \mbox{- var\_{27}}\Zclear}$§;
-    int var_29 = §$\underline{ \mbox{var\_{28}}\Zclear\ \mbox{< old\_variant}\Zclear}$§; fassert(var_29);
+    int var_29 = §$\underline{ \mbox{var\_{28}}\Zclear\ \mbox{< var\_9}\Zclear}$§; fassert(var_29);
   }
  §$End_{\texttt{is\_present}}:$§
   §$\underline{\Zinit \mbox{var\_{30} = 0}}$§; §$\underline{\Zinit \mbox{var\_{31} = res}}$§; int var_32 = §$\underline{ \mbox{var\_{30}}\Zclear\ \mbox{!= var\_{31}}\Zclear}$§;
