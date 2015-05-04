@@ -201,7 +201,7 @@ allouée et on lui affecte la valeur de \lstinline'e'.
 Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) \lstinline'lval'
 est désallouée et enlevée de l'environnement \env.
 
-\begin{figure}
+\begin{figure}[bt]
   \begin{tabular}{p{4.2cm} p{.4cm} p{9cm} p{2cm}}
     \comp{\lstinline'\;'}{\env} &=& \env & \eqlabel{C-skip} \\
     \comp{\lstinline'i1 ; i2'}{\env} &=&
@@ -214,6 +214,12 @@ est désallouée et enlevée de l'environnement \env.
     &=& \env[\lstinline'lval' $\mapsto$ \eval{\lstinline'e'}{\env}]
     \scriptsize{(arith. bornée)}
     & \eqlabel{C-set} \\
+    \comp{\lstinline'lval = f(e1, ..., eN);'}{\env}
+    &=&\env[\lstinline'lval' $\mapsto$ \eval{\lstinline'__ret'}{(\compf{\lstinline'f(e1, ..., eN)'}{\env})}]
+    & \eqlabel{C-fct1} \\
+    \comp{\lstinline'f(e1, ..., eN);'}{\env}
+    &=& \compf{\lstinline'f(e1, ..., eN)'}{\env}
+    & \eqlabel{C-fct2} \\
     \comp{\lstinline'if(e)' $\bopen A \bclose$
       \lstinline'else' $\bopen B \bclose$}{\env}
     &=& \compi{$A$}{\env} si (\eval{\lstinline'e'}{\env}) $\neq$ 0,
@@ -260,6 +266,36 @@ est désallouée et enlevée de l'environnement \env.
   \caption{Sémantique dénotationnelle des instructions}
   \label{fig:sem-instr}
 \end{figure}
+
+
+\begin{figure}[bt]
+  \begin{tabular}{p{.5cm} p{12cm} p{2cm}}
+    \multicolumn{3}{l}{
+      \compf{\lstinline'/*@ requires p1; assigns X; ensures p2; */ f(e1, ..., eN)' $\bopen A \bclose$}{\env}
+    } \\
+    =& contradiction si $\lnot$ \eval{\lstinline'p1'}{\env} et
+    \lstinline'f' est la fonction sous vérification & \eqlabel{F-1} \\
+    =& \errorenv si $\lnot$ \eval{\lstinline'p1'}{\env} et \lstinline'f' est
+    une fonction appelée & \eqlabel{F-2} \\
+    =& \errorenv si
+    $\exists x. x \in G-X.$ (\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$
+    (\eval{\lstinline'x'}{\env}) & \eqlabel{F-3} \\
+    =& \errorenv si $\lnot$ \eval{\lstinline'p2'}{(\compi{$A$}{\env})}
+    & \eqlabel{F-4} \\
+    =& \compi{$A$}{\env} sinon & \eqlabel{F-5} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des fonctions}
+  \label{fig:sem-fct}
+\end{figure}
+
+
+La sémantique dénotationnelle des fonctions est donnée en
+figure~\ref{fig:sem-fct}.
+La fonction $\mathcal{F}$ calcule un nouvel environnement à partir d'une
+fonction annotée et d'un environnement \env, ce qui permet de traiter les appels
+de fonction (règles \eqlabel{C-fct1} et \eqlabel{C-fct2} de la
+figure~\ref{fig:sem-instr}) et la fonction sous vérification (qui n'est pas
+appelée).
 
 
 \subsection{Définition des séquences d'insertions de code}
@@ -897,7 +933,7 @@ boucle, où chaque ensemble d'instructions (regroupées avec une accolade) est
 mis en relation avec l'annotation du programme original dont il est la
 traduction.
 Les lignes 2--3 et 13--14 résultent de la traduction de l'invariant ligne 2,
-les lignes 6--8 et 15--17 résultant de la traduction de la clause assigns ligne
+les lignes 6--8 et 15--17 résultent de la traduction de la clause assigns ligne
 3 et les lignes 9--10 et 18--19 résultent de la traduction du variant ligne 4.
 $Spec2Code$\lstinline'('$I_1$\lstinline', e1)' symbolise le fait que
 \lstinline'p' se traduit en $(I_1, \mbox{\lstinline'e1'})$ en accord avec la
@@ -924,43 +960,158 @@ La règle \eqlabel{C-while-6} est gérée par les lignes 6--8 et 15--17 :
 où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
 La règle \eqlabel{C-while-7} correspond à l'exécution récursive de la boucle.
 
-%% \comp{\lstinline'/*@ loop invariant p; loop assigns X; loop variant t; */ while(e)' $\bopen A \bclose$}{\env}
-%% & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
-%% & \eqlabel{C-while-1} \\
-%% & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0
-%% & \eqlabel{C-while-2} \\
-%% & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
-%% & \eqlabel{C-while-3} \\
-%% & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{(\compi{$A$}{\env})}
-%% & \eqlabel{C-while-4} \\
-%% & = & \errorenv si (\eval{\lstinline't'}{(\compi{$A$}{\env})}) $\ge$
-%% (\eval{\lstinline't'}{\env})
-%% & \eqlabel{C-while-5} \\
-%% & = & \errorenv si
-%% $\exists x. x \in G-X.$ (\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$
-%% (\eval{\lstinline'x'}{\env})
-%% & \eqlabel{C-while-6} \\
-%% & = & \comp{\lstinline'/*@ ... */ while(e)'
-%%   $\bopen A \bclose$}{(\compi{$A$}{\env})} sinon
-%% & \eqlabel{C-while-7} \\
 
 \input{figures/fig_proof_loop_contract}
 
 
 \subsection{Preuve de la Traduction des Contrats de Fonctions}
 
-\commentGP{TODO}
+Il nous faut distinguer deux cas pour la preuve des contrats de fonction : le
+cas où la fonction est ``sous vérification'' -- c'est-à-dire où c'est la
+fonction de plus haut niveau et sa précondition est supposée vraie -- et le cas
+où la fonction est appelée -- et sa précondition doit être vérifiée au point
+d'appel.
+Nous traitons les deux cas de manière séparée dans les deux sous-sections
+suivantes.
+
+\subsubsection{Fonction sous vérification}
+
+Nous considérons une fonction \lstinline'f' sous vérification annotée avec
+\lstinline'requires' (ou \lstinline'typically'), \lstinline'assigns' et
+\lstinline'ensures'.
+La traduction utilise les trois règles suivantes :
+
+{\scriptsize
+  {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
+    {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {(Beg_f, \left \{\hspace{-2mm}
+      \begin{array}{r}
+        \mbox{\lstinline'typically'} \\
+        \mbox{\lstinline'requires'}
+      \end{array} \mbox{\lstinline'p;'} \right.
+      )
+      \rulearrow
+      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-check-assigns]
+    {}
+    {
+      \splitfrac{
+        (End_f, \mbox{\lstinline'assigns X;'}) \rulearrow
+      } {
+        I \concat
+        \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
+        (Beg_f, \mbox{\lstinline'ctype assigns_x = x;'})
+        \concat (End_f, \mbox{\lstinline'fassert(x == assigns_x);'})
+      }
+    }
+  }
+}
+
+{\scriptsize
+  {\myinference[$\alpha$-check-post]
+    {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {(End_f, \mbox{\lstinline'ensures p;'})
+      \rulearrow
+      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
+  }
+}
 
 
+\input{figures/fig_proof_fct_contract_main}
+
+La figure~\ref{fig:proof-fct-contract-main}, illustre la preuve de correction
+de la traduction des contrats pour la fonction sous vérification sur un exemple.
+La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
+contrat, avec un corps quelconque \lstinline'A'.
+En partie droite est affichée le code résultant de la traduction de cette
+fonction, où chaque ensemble d'instructions (regroupées avec une accolade) est
+mis en relation avec l'annotation du programme original dont il est la
+traduction.
+
+Les lignes 3--4 résultent de la traduction de la précondition ligne 1,
+les lignes 5--7 et 10--12 résultent de la traduction de la clause assigns ligne
+2 et les lignes 13--14 résultent de la traduction de la postcondition ligne 3.
+La règle \eqlabel{f-1} de la sémantique dénotationnelle des fonctions
+(figure~\ref{fig:sem-fct}) est gérée par les lignes 3--4 du code instrumenté :
+si $\lnot$ \eval{\lstinline'p1'}{\env} (la précondition de la fonction sous
+vérification n'est pas valide) on arrive à une contradiction.
+La règle \eqlabel{f-2} ne s'applique par à la fonction sous vérification.
+La règle \eqlabel{f-3} est gérée par les lignes 5--7 et 10--12 : \errorenv est
+produit si $\exists x. x \in G-X.$
+(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env}),
+où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
+La règle \eqlabel{f-4} est gérée par les lignes 13--14 : \errorenv est produit
+si $\lnot$ \eval{\lstinline'p2'}{(\compi{$A$}{\env})}.
+La règle \eqlabel{f-5} correspond à l'exécution normale de la fonction.
 
 
+\subsubsection{Fonctions appelées}
+
+Nous considérons une fonction \lstinline'f' appelée annotée avec
+\lstinline'requires', \lstinline'assigns' et \lstinline'ensures'.
+La traduction des contrats d'une fonction appelée réutilise les règles
+\textsc{$\alpha$-check-assigns} et \textsc{$\alpha$-check-post} de la section
+précédente.
+En revanche, afin de vérifier la précondition d'une fonction appelée et non la
+supposer vraie, la règle \textsc{$\alpha$-assume-pre} est remplacée par la règle
+suivante :
+
+{\scriptsize
+  {\myinference[$\alpha$-check-pre\hspace{-2mm}]
+    {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+    {(Beg_f, \mbox{\lstinline'requires p;'})
+      \rulearrow
+      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
+  }
+}
+
+La figure~\ref{fig:proof-fct-contract-call}, illustre la preuve de correction
+de la traduction des contrats pour la fonction sous vérification sur un exemple.
+La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
+contrat, avec un corps quelconque \lstinline'A'.
+En partie droite est affichée le code résultant de la traduction de cette
+fonction, où chaque ensemble d'instructions (regroupées avec une accolade) est
+mis en relation avec l'annotation du programme original dont il est la
+traduction.
+
+Les lignes 3--4 résultent de la traduction de la précondition ligne 1,
+les lignes 5--7 et 10--12 résultent de la traduction de la clause assigns ligne
+2 et les lignes 13--14 résultent de la traduction de la postcondition ligne 3.
+La règle \eqlabel{f-1} de la sémantique dénotationnelle des fonctions
+(figure~\ref{fig:sem-fct}) ne s'applique par aux fonctions appelées.
+La règle \eqlabel{f-2} est gérée par les lignes 3--4 du code instrumenté :
+\errorenv est produit si $\lnot$ \eval{\lstinline'p1'}{\env}.
+Les autres règles sont traduites de manière similaire à la section précédente.
+La règle \eqlabel{f-3} est gérée par les lignes 5--7 et 10--12 : \errorenv est
+produit si $\exists x. x \in G-X.$
+(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env}),
+où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
+La règle \eqlabel{f-4} est gérée par les lignes 13--14 : \errorenv est produit
+si $\lnot$ \eval{\lstinline'p2'}{(\compi{$A$}{\env})}.
+La règle \eqlabel{f-5} correspond à l'exécution normale de la fonction.
 
 
+\input{figures/fig_proof_fct_contract_call}
 
 
+\section*{Conclusion du chapitre}
 
 
+L'objectif du chapitre était de fournir une preuve de correction pour les règles
+de traduction des annotations et des termes et prédicats \eacsl qui les
+composent.
 
+Grâce à cette preuve, nous pouvons assurer l'absence de faux positifs et de faux
+négatifs lors de la génération de tests sur le programme traduit, ainsi que
+la non-modification par le code généré des variables du programme d'origine.
+
+La preuve de ces propriétés est fournie de manière formelle pour les assertions
+et de manière informelle mais intuitive pour les contrats de boucle et les
+contrats de fonction.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

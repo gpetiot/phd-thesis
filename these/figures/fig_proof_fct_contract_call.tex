@@ -1,0 +1,50 @@
+\begin{figure}[bt]
+  \begin{minipage}{0.65\textwidth}
+    \begin{lstlisting}[escapechar=§]
+/*@ requires p1; §\tikz[remember picture,overlay]{\node(fc-req){};}§
+    assigns X; §\tikz[remember picture,overlay]{\node(fc-ass){};}§
+    ensures p2; */ §\tikz[remember picture,overlay]{\node(fc-ens){};}§
+f(...) {
+Beg_f: ;
+  A
+End_f: ;
+}
+    \end{lstlisting}
+  \end{minipage}\hfill
+  \begin{minipage}{0.49\textwidth}
+    \begin{lstlisting}[escapechar=§]
+f(...) {
+Beg_f: ;
+§\tikz[remember picture,overlay]{\node(fc-l1){};}§int e1; §$Spec2Code$§(§$I_1$§, e1);
+§\tikz[remember picture,overlay]{\node(fc-l2){};}§fassert(e1);
+§\tikz[remember picture,overlay]{\node(fc-l3){};}§type_x1 assigns_x1 = x1;
+...
+§\tikz[remember picture,overlay]{\node(fc-l4){};}§type_xN assigns_xN = xN;
+  A
+End_f: ;
+§\tikz[remember picture,overlay]{\node(fc-l5){};}§fassert(x1 == assigns_x1);
+...
+§\tikz[remember picture,overlay]{\node(fc-l6){};}§fassert(xN == assigns_xN);
+§\tikz[remember picture,overlay]{\node(fc-l7){};}§int e2; §$Spec2Code$§(§$I_2$§, e2);
+§\tikz[remember picture,overlay]{\node(fc-l8){};}§fassert(e2);
+}
+    \end{lstlisting}
+  \end{minipage}
+  \begin{tikzpicture}[remember picture,overlay,font=\scriptsize]
+    \draw[decorate,decoration={brace,mirror}]
+    (fc-l1.north) -- (fc-l2.south) node (fc-req1) {};
+    \path[parr,triangle 45-triangle 45] (fc-req) -- (fc-req1.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (fc-l3.north) -- (fc-l4.south) node (fc-ass1) {};
+    \path[parr,square-square] (fc-ass) -- (fc-ass1.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (fc-l5.north) -- (fc-l6.south) node (fc-ass2) {};
+    \path[parr,square-square] (fc-ass) -- (fc-ass2.north west);
+    \draw[decorate,decoration={brace,mirror}]
+    (fc-l7.north) -- (fc-l8.south) node (fc-ens1) {};
+    \path[parr,square-square] (fc-ens) -- (fc-ens1.north west);
+  \end{tikzpicture}
+  \caption{Preuve de correction simplifiée de la traduction des contrats de
+    fonction (fonction appelée)}
+  \label{fig:proof-fct-contract-call}
+\end{figure}

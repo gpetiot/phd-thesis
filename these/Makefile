@@ -12,7 +12,9 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/user_m.png \
 	figures/fig_code_gen.tex \
 	figures/fig_code_ins.tex \
-	figures/fig_proof_loop_contract.tex
+	figures/fig_proof_loop_contract.tex \
+	figures/fig_proof_fct_contract_call.tex \
+	figures/fig_proof_fct_contract_main.tex
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
@@ -29,7 +31,9 @@ chapter_motiv_contrib_DEPS=figures/user_f.png figures/user_m.png
 chapter_scenarios_DEPS=
 chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
 		figures/fig_rem_patricia_trie.tex
-chapter_preuve_DEPS=figures/fig_proof_loop_contract.tex
+chapter_preuve_DEPS=figures/fig_proof_loop_contract.tex \
+		figures/fig_proof_fct_contract_call.tex \
+		figures/fig_proof_fct_contract_main.tex
 chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
