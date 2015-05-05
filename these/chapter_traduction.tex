@@ -23,7 +23,7 @@ Dans la partie~\ref{sec:process} nous présentons le langage des programmes
 annotés pris en compte et les principes généraux de la traduction.
 Ensuite nous détaillons les règles de traduction des annotations \eacsl en code
 C.
-Les règles de traduction pour les annotations sont dans la
+Les règles de traduction pour les annotations sont décrites dans la
 partie~\ref{sec:annot}.
 Elles reposent sur les règles de traduction des termes et des prédicats, qui
 sont détaillées dans les parties~\ref{sec:term} et~\ref{sec:pred}.
@@ -70,7 +70,8 @@ Les non-terminaux \textit{cst}, \textit{left-value}, \textit{id}, \textit{label}
 et \textit{type} ne sont pas détaillés car ils proviennent de la grammaire du
 langage C.
 Rappelons qu'une \textit{left-value} est toute expression pouvant se trouver en
-partie gauche d'une affectation.
+partie gauche d'une affectation (variable simple ou déréférencée, avec ou sans
+offset).
 La figure~\ref{fig:gram-term} présente la grammaire des termes \eacsl et la
 figure~\ref{fig:gram-pred} présente la grammaire des prédicats \eacsl.
 
@@ -109,7 +110,7 @@ La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
 et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
 Notons que pour prouver formellement la postcondition, un invariant de boucle
 supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
-: \lstinline'\forall integer k; 0<=k<i ==> \old(*(t+k))!=v;'.
+: \lstinline'\forall integer k; 0<=k<=i-1 ==> \old(*(t+k))!=v;'.
 
 
 
@@ -129,11 +130,14 @@ Nous définissons une fonction \lstinline'fassert' permettant de tester la valeu
 d'une expression.
 Cette fonction correspond à un \lstinline'if' dont la branche
 \lstinline'else' génère une erreur et la rapporte.
-Nous définissons également une fonction \lstinline'fassume' permettant de tester
-la valeur d'une expression.
+Nous définissons également une fonction \lstinline'fassume' permettant de poser
+une hypothèse de validité sur la valeur d'une expression.
 Cette fonction correspond à un \lstinline'if' dont
 la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
 la branche \lstinline'else' est activée sont ignorées.
+Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
+d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
+permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
 
 Pour simplifier la lecture des insertions de code générées par la traduction,
 nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
@@ -167,28 +171,30 @@ Nous associons un label à chaque annotation -- qui caractérise sa position dan
 le programme initial et l'endroit où elle doit être évaluée -- ce qui nous
 donne une paire $(label, annotation)$.
 Chacune de ces paires est traduite en une séquence
-d'\emph{insertions de code}
-$(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$, qui 
-represente une liste de fragments de programmes C $c_1, c_2, \ldots, c_n$ où
-le fragment $c_i$ sera inséré dans le programme traduit au label $l_i$ :
-
-\[
-(l, annotation) \rulearrow \underbracket{(l_1, c_1) \concat (l_2, c_2) \concat
-  \ldots \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}
-\]
-
-Les fragments de programmes -- ou insertions de code -- sont les instructions
-nécessaires à l'évalutation d'une annotation, d'un prédicat ou d'un terme
-\eacsl.
-Ces insertions de code générées à partir des annotations sont placées
-dans une séquence d'insertions de code globale, qui est unique pour toutes les
-fonctions.
-
-Chaque couple $(l_i, c_i)$ de la séquence d'insertions globale donne lieu à
-l'insertion du fragment $c_i$ au label $l_i$ dans le programme traduit.
-Quand plusieurs fragments ont le même label (et doivent donc être insérés au
+d'\emph{insertions de code} dénotée par :
+$(l_1, c_1) \concat (l_2, c_2) \concat \ldots \concat (l_n, c_n)$.
+Elle represente une liste de fragments de programmes C $c_1, c_2, \ldots, c_n$
+où le fragment $c_i$ sera inséré dans le programme traduit au label $l_i$.
+Si plusieurs fragments ont le même label (et doivent donc être insérés au
 même endroit), ils sont insérés dans le programme traduit en respectant leur
 ordre dans la séquence (l'ordre dans lequel ils ont été générés).
+
+%% \[
+%% (l, annotation) \rulearrow \underbracket{(l_1, c_1) \concat (l_2, c_2) \concat
+%%   \ldots \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}
+%% \]
+
+Les fragments de programmes -- ou insertions de code -- sont les instructions
+nécessaires à l'évaluation d'une annotation, d'un prédicat ou d'un terme
+\eacsl.
+Ces insertions de code générées à partir des annotations sont placées
+dans une séquence d'insertions de code globale.
+
+%% Chaque couple $(l_i, c_i)$ de la séquence d'insertions globale donne lieu à
+%% l'insertion du fragment $c_i$ au label $l_i$ dans le programme traduit.
+%% Quand plusieurs fragments ont le même label (et doivent donc être insérés au
+%% même endroit), ils sont insérés dans le programme traduit en respectant leur
+%% ordre dans la séquence (l'ordre dans lequel ils ont été générés).
 
 Indépendamment de la traduction des annotations, un traitement particulier est
 effectué pour chaque fonction, nous permettant de faire référence à la valeur
@@ -272,16 +278,15 @@ Dans ces règles, les notations suivantes sont utilisées :
 \begin{itemize}
 \item $p$, $p_1$, $p_2$ et $p_3$ sont des prédicats \eacsl;
 \item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl;
-%\item $w$ est un prédicat ou un terme;
 \item $c$, $c_1$, $c_2$ et $c_3$ sont des fragments de programmes C;
 \item $e$, $e_1$, $e_2$ et $e_3$ sont des expressions C;
 \item $l$, $l_1$, $l_2$, $l_3$, $Beg_f$, $End_f$, $BegIter_l$ et $EndIter_l$ sont
   des labels du programme;
-\item $i$ est un identificateur de variable liée dans un prédicat \eacsl et un
-  compteur d'itérations dans un programme C;
+\item $i$ et $k$ sont des identificateurs de variables liées dans un prédicat
+  \eacsl et un compteur d'itérations dans un programme C;
 \item $x$ est un identificateur de variable C;
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
-  $(l_i, c_i)$.
+  $(l_i, c_i)^*$.
 \end{itemize}
 
 Les variables \lstinline'res', \lstinline'var_n', \lstinline'i_n',
@@ -343,14 +348,14 @@ traduit au label $l$ avec la fonction \lstinline'fassert'.
 La règle \textsc{$\alpha$-check-pre} vérifie le prédicat, et la règle
 \textsc{$\alpha$-assume-pre} suppose sa validité au début de la fonction
 instrumentée.
-La règle \textsc{$\alpha$-check-assigns} vérifie que les l-values qui ne sont
+La règle \textsc{$\alpha$-check-assigns} vérifie que les left-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
-L'ensemble des l-values considérées est la différence $G-X$, où $G$ est
-l'ensemble des l-values dans le contexte courant et $X$ est l'ensemble des
-l-values de la clausse \lstinline'assigns'.
-Pour chacune de ces l-values, une sauvegarde est faite au début de la fonction,
-puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
-La règle \textsc{$\alpha$-check-post} vérifie la validité à de la postcondition
+L'ensemble des left-values considérées est la différence $G-X$, où $G$ est
+l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble des
+left-values de la clausse \lstinline'assigns'.
+Pour chacune de ces left-values, une sauvegarde est faite au début de la
+fonction, puis on vérifie que la valeur n'a pas été modifiée en fin de fonction.
+La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
 Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
 et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
@@ -366,10 +371,10 @@ Les règles de traduction pour les invariants de boucle
 (\textsc{$\alpha$-check-loop-assigns})
 pour une boucle au label $l$ sont présentées dans la
 figure~\ref{fig:loop-annot}.
-La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les l-values qui ne
+La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les left-values qui ne
 sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
 boucle.
-Pour chacune de ces l-values, une sauvegarde est faite au début de chaque
+Pour chacune de ces left-values, une sauvegarde est faite au début de chaque
 itération, puis on vérifie que la valeur n'a pas été modifiée en fin de boucle.
 La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
 avant la boucle et après chaque itération de la boucle.
@@ -400,7 +405,7 @@ Soit
 
 une instance de la fonction partielle $\tau$ qui à un terme \eacsl $t$ de type
 $T$ au label $l$ associe la paire $(I, e)$ où $I$ est une liste d'insertions de
-code $(l_i, c_i)$, $e$ est une expression C, et $T$ peut être $\mathbb{Z}$
+code $(l_i, c_i)^*$, $e$ est une expression C, et $T$ peut être $\mathbb{Z}$
 (\lstinline'integer') ou $ctype$.
 Les insertions de code sont les instructions C nécessaires à l'évaluation du
 terme, elles permettent notamment d'évaluer les termes auxiliaires dont est
@@ -452,14 +457,14 @@ La figure~\ref{fig:coerce} détaille les règles de conversions implicites, de
 \lstinline'integer' vers type C et de type C vers \lstinline'integer'.
 
 La figure~\ref{fig:op} détaille les règles pour les opérations unaires
-(\textsc{$\tau$-unop$_{*}$}), les opérations binaires
-(\textsc{$\tau$-binop$_{*}$}) et la condition ternaire sur les termes
+(\textsc{$\tau$-unop$_{j}$}), les opérations binaires
+(\textsc{$\tau$-binop$_{j}$}) et la condition ternaire sur les termes
 (\textsc{$\tau$-if}).
 \textsc{$\tau$-unop$_1$} traite le cas de l'indirection de pointeur ($\star$).
 \textsc{$\tau$-unop$_2$} traite le cas de la négation logique (\lstinline|!|) et
 n'opère que sur un \lstinline'int', si c'est un \lstinline'integer' il est
 converti en utilisant la règle \textsc{$\tau$-coerce$_1$}.
-\textsc{$\tau$-unop$_3$} traite le cas du \lstinline|-| unaire et du complément
+\textsc{$\tau$-unop$_3$} traite le cas du moins unaire et du complément
 bit-à-bit ($\sim$) et on suppose que ces opérations prennent un
 \lstinline'integer' en entrée et en sortie.
 
@@ -556,10 +561,6 @@ dans l'intervalle d'offsets \lstinline't2..t3', ce qui veut dire que
 valides.
 Les règles \textsc{$\pi$-valid} et \textsc{$\pi$-valid-range} couvrent les deux
 cas.
-On suppose que l'évaluation de la validité d'un pointeur est possible au moyen
-d'une fonction \lstinline'fvalid' et que l'évaluation d'un pointeur sur un
-intervalle d'offsets peut se faire au moyen d'une fonction
-\lstinline'validr'.
 Le support de ces prédicats nécessite une représentation précise de la mémoire
 du programme, la réalisation de telles fonctions est abordée dans le
 chapitre~\ref{sec:runtime}.
@@ -586,7 +587,7 @@ ligne 31).
 
 
 
-\section{Détails}
+\section{Fragment d'\eacsl considéré et Arithmétique non bornée}
 \label{sec:details}
 \subsection{Sous-langage considéré}
 
@@ -605,10 +606,10 @@ terme (dont la grammaire est définie avec la figure~\ref{fig:gram-term}) peut
 contenir des expressions C pures (sans effets de bord) et des mots-clés du
 langage.
 Par exemple, le mot-clé \lstinline{\result} permet de faire référence au
-résultat d'une fonction, \lstinline{\valid} est un prédicat (leur grammaire est
+résultat d'une fonction, \lstinline{\valid} est un prédicat (sa grammaire est
 définie en figure~\ref{fig:gram-pred}) qui renvoie vrai si son argument est un
 pointeur valide (se référer au manuel du langage~\cite{\citeacsl}).
-Les quantifications existentielles et universelles doivent ported sur des
+Les quantifications existentielles et universelles doivent porter sur des
 domaines finis d'entiers.
 Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
 chaque fonction pour spécifier les pré- et postconditions.
@@ -617,7 +618,7 @@ nommés, pour lesquels l'exhaustivité (\textit{completeness}) -- au moins un
 comportement s'applique -- et/ou la séparation (\textit{disjointness}) -- au
 plus un comportement s'applique -- peut être requise.
 Les assertions peuvent être associées à des instructions quelconques.
-Les invariants de boucle et les variants peuvent être associés aux boucles.
+Les invariants de boucle et les variants doivent être associés aux boucles.
 Abordons maintenant deux des choix les plus importants du langage: les entiers
 mathématiques et la non-définition (nous utiliserons le terme anglais
 \textit{undefinedness}).
@@ -774,23 +775,6 @@ La préconditon de la fonction sous test est donc supposée vraie pour la
 génération de tests, afin de s'assurer que toutes les entrées générées par le
 test satisfont cette précondition.
 
-%% Besides, the treatment of the precondition of the FUT in \pathcrawler has two optimizations.
-%% First, an internal mechanism of unquantified and quantified preconditions
-%% allows a direct translation of ACSL preconditions into constraints
-%% supported in an efficient manner.
-%% Hence, for precondition patterns that can be expressed by this mechanism,
-%% a translation into C code is not necessary for \pathcrawler.
-%% Second, for the remaining preconditions translated into a C function, 
-%% \pathcrawler offers a specific
-%% efficient mechanism \cite{Delahaye/RV13}.
-%% A call to \lstinline|fassume| (adding the constraints of the
-%% precondition to the constraint store \emph{before} the path predicate in the FUT)
-%% can be replaced in \pathcrawler by a dedicated support for
-%% late precondition (where precondition constraints are posted \emph{after}
-%% other path constraints of the FUT).
-%% Thus the call to \lstinline|fassume| for the FUT 
-%% in \pathcrawler is not needed.
-
 \textbf{Annotations liées au modèle mémoire.}
 La validation à l'exécution nécessite une instrumentation complexe pour traiter
 les constructions \eacsl liées au modèle mémoire comme \lstinline'\valid',
@@ -812,7 +796,7 @@ une variable globale ou un paramètre formel de la fonction sous test
 Tandis que l'utilisation d'une bibliothèque externe d'artihmétique non bornée
 (comme GMP) pour traduire les entiers d'\eacsl est appropriée pour la validation
 à l'exécution, il n'en est pas de même pour la génération de tests :
-si le code des functions de la bibliothèque est analysé par le
+si le code des fonctions de la bibliothèque est analysé par le
 générateur de tests, alors cette solution se révèlera inefficace.
 En effet, la génération de tests à partir du programme instrumenté aura à
 traiter un code beaucoup plus compliqué, avec de nombreux appels de fonctions, 
@@ -839,22 +823,10 @@ par \rte mais ces erreurs peuvent être évitées en ajoutant les gardes
 nécessaires aux règles de traduction.
 Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
 (voir la règle \textsc{$\tau$-coerce$_1$} de la figure~\ref{fig:coerce}) peut
-être gardée en ajoutant
+être gardé en ajoutant
 \lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{ && }\underline{\lstinline{e <= INT\_MAX}}\lstinline{)} avant l'affectation
 \underline{\lstinline'var_n = e'}.
 
-%% already said earlier.
-%% \textbf{Triggering errors during test generation.}
-%% The function \lstinline|fassert(cond)| is a C macro defined by
-%% \textsc{PathCrawler} that is expanded as a conditional
-%% \lstinline|if(cond)|, testing
-%% if its parameter is true. Covering all feasible paths of the
-%% program will therefore enforce the generation of test inputs activating the
-%% $then$ branch of this condition, and test inputs activating the
-%% $else$ branch. So if there exist inputs such that \lstinline'cond' is evaluated to
-%% $false$, a test case activating the \lstinline|fassert| thus
-%% violating the corresponding annotation is generated. In other terms, a
-%% counter-example for that annotation is generated if such inputs exist.
 
 \section*{Conclusion du chapitre}
 
