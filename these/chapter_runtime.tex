@@ -1,112 +1,274 @@
 
-\chapter{Vérification à l'exécution}
+\chapter{Vérification à l'exécution des annotations liées au modèle mémoire}
 \label{sec:runtime}
 
 \chapterintro
 
-Afin de supporter les annotations relatives au modèle mémoire (validité d'un
-pointeur, initialisation d'un bloc, appartenance à un bloc, etc.) nous devons
-monitorer les opérations effectuées en mémoire par le programme.
+Dans ce chapitre nous abordons la vérification dynamique des annotations liées
+au modèle mémoire.
+Ceci requiert de pouvoir simuler un modèle mémoire bas niveau afin de pouvoir
+surveiller les opérations bas niveau des programmes C.
+Les générateurs de tests structurels pouvant rarement traiter les opérations
+bas niveau, nous avons décidé de changer d'approche pour ces propriétés.
+En effet, contrairement au chapitre~\ref{sec:traduction}, ces annotations ne
+seront pas vérifiées par test structurel mais par validation à l'exécution
+({\em runtime assertion checking}).
+
+Dans un premier temps nous présentons les différentes annotations qui nous
+intéressent (partie~\ref{sec:mem-annots}).
+Puis nous abordons les principes de l'instrumentation nécessaire pour leur
+vérification (partie~\ref{sec:mem-instru}).
+Enfin, nous présentons quelques détails de conception de notre modèle mémoire
+(partie~\ref{sec:mem-model}).
 
 
-\section{Traduction des annotations}
+\section{Annotations liées au modèle mémoire}
+\label{sec:mem-annots}
 
 
-\commentGP{TODO}
+Définissons d'abord quelques notions.
+Les objets de la mémoire sont des blocs.
+Chaque bloc est caractérisé par une adresse de base, une taille (en octets) et
+un contenu (qui peut être initialisé ou non).
+Tout ceci constitue le modèle mémoire.
 
-
-Détaillons les annotations \acsl que nous souhaitons prendre en compte.
-Elles sont au nombre de 6 : \lstinline{\base_addr}, \lstinline{\block_length},
+Détaillons maintenant les annotations \eacsl que nous considérons :
+\lstinline{\base_addr}, \lstinline{\block_length},
 \lstinline{\offset}, \lstinline{\valid}, \lstinline{\valid_read} et
 \lstinline{\initialized}.
+Les trois premières sont des termes \eacsl, les trois dernières sont des
+prédicats \eacsl.
+
+\lstinline'\base_addr(p)' retourne l'adresse de base du bloc alloué
+qui contient le pointeur \lstinline{p}.
+\lstinline'\block_length(p)' retourne la longueur (en octets) du
+bloc alloué qui contient, le porinteur \lstinline{p}.
+\lstinline'\offset(p)' retourne le décalage (en octets) entre \lstinline{p} et
+son adresse de base.
+\lstinline'\valid(p)' (respectivement \lstinline'\valid_read(p)') est vrai
+si le déréférencement de \lstinline{p} est autorisé en
+lecture et en écriture (respectivement au moins en lecture).
+\lstinline'\valid(p)' implique \lstinline'\valid_read(p)'
+mais l'inverse n'est pas vrai.
+\lstinline'\initialized(p)' est un prédicat prenant un pointeur \lstinline{p}
+sur une left-value en argument.
+Ce prédicat est vrai si la left-value en question est initialisée.
+
 
 \input{figures/fig_mem_annots}
+
+
+La figure~\ref{fig:mem-annots} illustre les annotations \lstinline{\base_addr},
+\lstinline{\block_length} et \lstinline{\offset} qui sont des termes \eacsl.
+On y voit un modèle mémoire simplifié contenant 3 blocs.
+Le second bloc contient le pointeur \lstinline'p' à l'offset 1.
+L'adresse de base de \lstinline'p' (\lstinline'\base_addr(p)') est indiquée au
+début du bloc.
+La longueur du bloc de \lstinline'p' (\lstinline'\block_length(p)') mesure la
+taille du bloc à partir de son adresse de base.
+L'offset de \lstinline'p' (\lstinline'\offset(p)') dans le bloc est 1.
 
 
 \lstinputlisting[caption={Annotations mémoire -- Exemple en C},
    label=lst:mem-annots,firstline=4,firstnumber=1]{listings/mem_annots.c}
 
 
-\lstinline'\base_addr{L}(p)' retourne l'adresse de base du bloc alloué
-qui contient, au label \lstinline{L}, le pointeur \lstinline{p}.
-
-\lstinline'\block_length{L}(p)' retourne la longueur (en octets) du
-bloc alloué qui contient, au label \lstinline{L}, le porinteur \lstinline{p}.
-
-\lstinline'\offset{L}(p)' retourne le décalage (en octets), au label
-\lstinline{L}, entre \lstinline{p} et son adresse de base.
-
-\lstinline'\valid{L}(p)' (respectivement \lstinline'\valid_read{L}(p)') est vrai
-si le déréférencement de \lstinline{p} au label \lstinline{L} est autorisé en
-lecture et en écriture (resp. au moins en lecture).
-\lstinline'\valid{L}(p)' implique \lstinline'\valid_read{L}(p)'
-mais l'inverse n'est pas vrai.
-
-\lstinline'\initialized{L}(p)' est un prédicat prenant un pointeur \lstinline{p}
-sur une l-value en argument. Ce prédicat est vrai si la l-value en question est
-initialisée au label \lstinline{L}.
-
-Le Listing~\ref{lst:mem-annots} illustre ces annotations sur un programme C, le
-programme et ses annotations sont correctes : l'exécution du programme traduit
-par \eacsltoc ne génère pas d'erreur.
-La Fig.~\ref{fig:mem-annots} schématise la mémoire allouée par le programme du
-Listing~\ref{lst:mem-annots}.
+Le Listing~\ref{lst:mem-annots} illustre toutes ces annotations sur un programme
+C.
+Un tableau \lstinline't' de trois entiers est alloué ligné 2.
+Les deux premières cases du tableau sont initialisées à 1 aux lignes 3--4.
+Un pointeur \lstinline'p' est ensuite initialisé à \lstinline't+1' ligne 5.
+Les annotations du programme sont correctes : leur vérification à l'exécution
+né produit pas d'erreur.
+L'assertion ligne 6 affirme que \lstinline'p' et \lstinline't' ont la même
+adresse de base.
+L'assertion ligne 7 affirme que le bloc contenant \lstinline'p' a une taille de
+trois entiers.
+L'assertion ligne 8 affirme que \lstinline'p' a un offset de 1 dans son bloc.
+L'assertion ligne 9 affirme que \lstinline'p' peut être déréférencé sur les
+offsets 0 et 1 (\lstinline'*(p+0)' et \lstinline'*(p+1)').
+L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
+\lstinline'p+1'.
 
 
-Pour pouvoir traiter ces annotations \acsl, nous devons donc conserver
-pour chaque bloc les informations suivantes :
-\begin{itemize}
-\item l'adresse de base
-\item le nombre d'octets occupés
-\item le nombre d'octets initialisés
-\item l'initialisation de chaque octet (un bit par octet, sauf si aucun ou tous
-  les octets sont initialisés)
-\item un booléen indiquant si le bloc est en lecture seule (par exemple si c'est
-  une chaîne littérale)
-\item un booléen indiquant s'il y a eu un accès au bloc hors bornes
-\end{itemize}
+\section{Instrumentation pour la Vérification à l'exécution}
+\label{sec:mem-instru}
 
 
+Nous présentons l'instrumentation d'un programme C annoté dans une optique de
+vérification à l'exécution des annotations liées au modèle mémoire.
+Certaines instructions C doivent être instrumentées afin d'enregistrer
+des informations sur la mémoire à l'exécution, et les annotations sont
+instrumentées afin de pouvoir exploiter ces informations.
 
-\section{Représentation du modèle mémoire}
+
+\subsection{Instrumentation des allocations et affectations}
 
 
-\subsection{Patricia tries}
+Comme nous l'avons vu, pour traiter ces annotations \eacsl, nous devons
+conserver pour chaque bloc les informations suivantes : l'adresse de base, le
+nombre d'octets occupés en mémoire, l'initialisation de chaque octet et un
+booléen indiquant si le bloc est en lecture seule (par exemple si c'est une
+chaîne littérale).
+
+Afin d'enregistrer ces informations nous définissons les fonctions C suivantes.
+La fonction \lstinline'__store_block', qui prend un pointeur et une taille en
+octets en paramètre, est la primitive d'ajout d'un bloc dans ce que nous
+appelerons le ``store''.
+Le store est une structure de donnée qui recense tous les blocs en mémoire que
+nous souhaitons surveiller.
+Nous donnerons plus de détails sur le store en partie~\label{sec:mem-model}.
+La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
+et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
+variable globale (au début de la fonction \lstinline'main').
+La fonction \lstinline'__delete_block' permet d'enlever un bloc du store.
+Elle est appelée en fin de portée d'une variable.
+
+Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
+standart du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
+\lstinline'free'.
+L'instrumentation va substituer les appels à ces fonctions par un appel à nos
+fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
+et \lstinline'__free'.
+Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
+au store, ainsi que de transférer les informations d'initialisations d'un bloc
+à un autre en cas de \lstinline'realloc'.
+
+Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
+marquer un certain nombre d'octets d'un bloc comme étant initialisés.
+L'instrumentation ajoute des appels à cette fonction pour chaque affectation du
+programme original, ainsi que pour chaque variable globale (initialisée à 0 par
+défaut en C).
+
+
+\subsection{Instrumentation des annotations}
+
+
+\begin{figure*}[bt]
+  \scriptsize{
+    {\myinference[$\tau$-base-addr]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\base_addr(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'void* var_n = __base_addr(e);'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+
+    {\myinference[$\tau$-block-length]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\block_length(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'size_t var_n = __block_length(e);'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+
+    {\myinference[$\tau$-offset]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\offset(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __offset(e);'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+
+    {\myinference[$\pi$-valid]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __valid(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+
+    {\myinference[$\pi$-valid-read]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid_read(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __valid_read(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+
+    {\myinference[$\pi$-initialized]
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\initialized(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __initialized(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+  }
+  \caption{Règles de traduction pour les annotations liées au modèle mémoire}
+  \label{fig:mem-annots-rules}
+\end{figure*}
+
+
+Afin de pouvoir exploiter les informations sur les blocs stockés dans le store,
+nous définissons les fonctions \lstinline'__base_addr',
+\lstinline'__block_length', \lstinline'__offset', \lstinline'__valid',
+\lstinline'__valid_read' et \lstinline'__initialized'.
+La sémantique de ces fonction est calquée sur la sémantique des annotations
+\eacsl donnée en partie~\ref{sec:mem-annots}.
+La fonction \lstinline'__base_addr' retourne l'adresse d'un bloc à partir du
+pointeur qu'elle reçoit en argument.
+La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
+le bloc.
+La fonction \lstinline'__ofset' retourne le décalage d'un pointeur par rapport à
+son adresse de base dans le bloc.
+Les fonctions \lstinline'__valid' et \lstinline'__valid_read'
+retournent le statut de validité à partir d'un pointeur et d'un nombre d'octets.
+La fonction \lstinline'__initialized' retourne le statut d'initialisation
+d'un nombre d'octets d'un pointeur en argument.
+La figure~\ref{fig:mem-annots-rules} présente les règles de traduction des
+annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}.
+
+
+\section{Modèle mémoire pour la Vérification à l'exécution}
+\label{sec:mem-model}
+
+
+\subsection{Structure de données du store}
 
 Le code instrumenté pouvant accéder et modifier fréquemment les données du
-$store$, une implémentation efficace du requiert une structure de données
-offrant une bonne complexité en temps et en espace. Cette structure doit être
-triée : on peut avoir besoin d'accéder directement à un bloc à partir de son
-adresse de base, mais aussi à partir de n'importe quelle adresse contenue dans
-le bloc (donc accéder au bloc précédent). Par exemple, la fonction
-\lstinline{__base_addr(p)} utilisée pour le traitement de la construction
-\acsl \lstinline{\base_addr(p)} cherche l'adresse de base la plus
-proche et inférieure à \lstinline{p} (et enfin vérifie les bornes du bloc).
-Cette contrainte ne nous permet pas d'utiliser une table de hachage. Les listes
-chaînées ne sont pas assez efficaces à cause de la complexité linéaire au pire
-cas. Les arbres binaires de recherche non équilibrés ont aussi une complexité
+store, une implémentation efficace requiert une structure de données
+offrant une bonne complexité en temps et en espace.
+Cette structure doit être triée : on peut avoir besoin d'accéder directement à
+un bloc à partir de son adresse de base, mais aussi à partir de n'importe quelle
+adresse contenue dans le bloc (donc accéder au bloc précédent).
+Par exemple, la fonction \lstinline'__base_addr(p)' utilisée pour le traitement
+de la construction \acsl \lstinline'\base_addr(p)' cherche l'adresse de base la
+plus proche et inférieure à \lstinline'p' (et enfin vérifie les bornes du bloc).
+Cette contrainte ne nous permet pas d'utiliser une table de hachage.
+Les listes chaînées ne sont pas assez efficaces à cause de la complexité
+linéaire au pire cas.
+Les arbres binaires de recherche non équilibrés ont aussi une complexité
 linéaire au pire cas quand les données sont insérées dans un ordre strictement
-monotone, ce qui est souvent le cas. Enfin, le coût du rééquilibrage de l'arbre
-(pour un arbre binaire de recherche équilibré) serait amorti dans le cas où les
-modifications de la structure de l'arbre sont moins nombreuses que les accès
-simples; ce qui n'est pas nécessairement vrai sur les exemples de code que nous
-avons instrumentés avec \eacsltoc.
+monotone, ce qui est souvent le cas.
+Enfin, le coût du rééquilibrage de l'arbre (pour un arbre binaire de recherche
+équilibré) serait amorti dans le cas où les modifications de la structure de
+l'arbre sont moins nombreuses que les accès simples; ce qui n'est pas
+nécessairement vrai sur les exemples de code que nous avons instrumentés comme
+nous le verrons au chapitre~\ref{sec:eacsl}.
 
-Notre implémentation du $store$ se base sur un {\em Patricia trie}
+Notre choix s'est donc porté sur la structure de {\em Patricia trie}
 \cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
 compact'', cette structure est efficace même si l'abre n'est pas équilibré.
 Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
-bits) ou des préfixes d'adresses. Chaque feuille contient les données relatives
-à un bloc en mémoire (voir section précédente pour le détail des informations
-stockées). Le routage de la racine jusqu'à une feuille particulière se fait
-grâce aux n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun
-de l'adresse de base de ses deux fils. La Fig.~\ref{fig:insertion-Patricia-trie}
-a illustre un Patricia trie (sur des adresses 8-bits pour des raisons de
-simplicité).
+bits) ou des préfixes d'adresses.
+Chaque feuille contient les données relatives à un bloc en mémoire (voir
+section précédente pour le détail des informations stockées).
+Le routage de la racine jusqu'à une feuille particulière se fait grâce aux
+n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun de
+l'adresse de base de ses deux fils.
 
+La figure~\ref{fig:insertion-Patricia-trie} \textbf{a)} illustre un Patricia
+trie (sur des adresses 8-bits pour des raisons de simplicité).
 Il contient 3 blocs dans ses feuilles (seules les adresses de base apparaissent
-sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes. Le symbole
-``{\tt *}'' signifie que la valeur du bit à cette position n'a pas d'importance.
+sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes.
+Le symbole ``{\tt *}'' signifie que la valeur du bit à cette position n'a pas
+d'importance.
 
 La complexité théorique au pire cas d'un accès dans un Patricia trie dans notre
 cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire 32 ou 64
@@ -117,17 +279,18 @@ Patricia tries), la comparaison des mots peut être implémentée très
 efficacement par des opérations bit-à-bit.
 
 Les données de chaque bloc n'occupent que quelques octets en mémoire, exception
-faite des données d'initialisation du bloc. Le statut d'initialisation de chaque
-octet est monitoré séparément
-(les champs de bits ne sont pas encore supportés). Dans le pire cas (bloc
-partiellement initialisé), chaque octet utilise un bit supplémentaire portant
-l'information sur son initialisation. Dans le cas où tous les octets (ou aucun)
-sont initialisés (on utilise un compteur d'octets initialisés), le tableau
-censé contenir les bits portant l'information d'initialisation est libéré, et
-cette information est donc portée uniquement par le compteur. De plus, nous
-utilisons une fonction spécifique dans le cas où tous les octets d'un bloc sont
-initialisés d'un coup, au lieu d'invoquer une fonction d'initialisation sur
-chaque octet du bloc.
+faite des données d'initialisation du bloc.
+Le statut d'initialisation de chaque octet est monitoré séparément (les champs
+de bits ne sont pas encore supportés).
+Dans le pire cas (bloc partiellement initialisé), chaque octet utilise un bit
+supplémentaire portant l'information sur son initialisation.
+Dans le cas où tous les octets (ou aucun) sont initialisés (on utilise un
+compteur d'octets initialisés), le tableau censé contenir les bits portant
+l'information d'initialisation est libéré, et cette information est donc portée
+uniquement par le compteur.
+De plus, nous utilisons une fonction spécifique dans le cas où tous les octets
+d'un bloc sont initialisés d'un coup, au lieu d'invoquer une fonction
+d'initialisation sur chaque octet du bloc.
 
 
 \subsection{Calcul du plus grand préfixe commun}
@@ -139,68 +302,69 @@ chaque octet du bloc.
 
 Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
 d'une suite de $n$ ``1'', suivie d'une suite de ``0'', où $n$ est le nombre de
-bits communs entre A et B. Par exemple, le plus grand préfixe commun de
-A = \ppleaf{\texttt{0110\,0111}} et B = \ppleaf{\texttt{0111\,1111}} est P = 
-\ppnode{\texttt{011*\,****}}
-et le masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
+bits communs entre A et B.
+Par exemple, le plus grand préfixe commun de A = \ppleaf{\texttt{0110\,0111}} et
+B = \ppleaf{\texttt{0111\,1111}} est P =  \ppnode{\texttt{011*\,****}} et le
+masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
 
 Les calculs et comparaisons des préfixes ont été optimisés par un usage
-intensif des opérations bit-à-bit. Le calcul du plus grand préfixe commun a lui
-aussi été reconçu pour de meilleures performances. L'implémentation naïve
-initiale consistait en un parcours linéaire des mots mémoire de gauche à droite
-jusqu'à trouver des bits différents, de la même manière qu'on pourrait le faire 
-sur des chaînes de caractères.
+intensif des opérations bit-à-bit.
+Le calcul du plus grand préfixe commun a lui aussi été reconçu pour de
+meilleures performances.
+L'implémentation naïve initiale consistait en un parcours linéaire des mots
+mémoire de gauche à droite jusqu'à trouver des bits différents, de la même
+manière qu'on pourrait le faire sur des chaînes de caractères.
 
-La version optimisée de ce calcul consiste
-maintenant en une recherche dichotomique dans un tableau pré-calculé qui
-contient tous les préfixes possibles. Les transitions entre les étapes de la
-recherche se font en utilisant des indices pré-calculés, de manière à obtenir
-le prochain masque à essayer. Le Listing~\ref{lst:prefix} illustre cette
-implémentation du calcul sur des mots de 8 bits. Les masques sont
-stockés dans le tableau de la ligne 3. Les indices à utiliser pour tester un
-masque plus long (resp. plus court) sont stockés dans le tableau ligne 4 (resp.
-ligne 5). Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
+La version optimisée de ce calcul consiste maintenant en une recherche
+dichotomique dans un tableau pré-calculé qui contient tous les préfixes
+possibles.
+Les transitions entre les étapes de la recherche se font en utilisant des
+indices pré-calculés, de manière à obtenir le prochain masque à essayer.
+Le listing~\ref{lst:prefix} illustre cette implémentation du calcul sur des
+mots de 8 bits.
+Les masques sont stockés dans le tableau de la ligne 3.
+Les indices à utiliser pour tester un masque plus long (respectivement plus
+court) sont stockés dans le tableau ligne 4 (respectivement ligne 5).
+Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
 et la fonction essaie \lstinline'i = 4', puis \lstinline'i = shorter[4] = 2',
 puis \lstinline'i = longer[2] = 3', puis \lstinline'i = longer[3] = -3', pour
 finalement retourner \lstinline'mask[3] = 0xE0', qui
 est précisément \texttt{1110\,0000}.
 
 
-
 \subsection{Recherche}
-
 
 
 \subsubsection*{Recherche exacte}
 
 Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
-au pointeur passé en paramètre. On suppose que l'algorithme n'est utilisé que
-lorsqu'un tel bloc existe.
+au pointeur passé en paramètre.
+On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
 
 Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
-fils
--- on se dirige vers le fils ayant le plus grand préfixe commun avac l'adresse
-passée en paramètre de l'algorithme. Quand on arrive sur une feuille, cette
-dernière contient donc forcément l'adresse que l'on cherchait.
+fils -- on se dirige vers le fils ayant le plus grand préfixe commun avec
+l'adresse passée en paramètre de l'algorithme.
+Quand on arrive sur une feuille, cette dernière contient donc forcément
+l'adresse que l'on cherchait.
 
 \subsubsection*{Recheche du ``contenant''}
 
 Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
-paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$. Si un tel
-bloc n'existe pas, \lstinline{NULL} est renvoyé. Cet algorithme est utilisé pour
-des requêtes du type \lstinline{\valid} ou \lstinline{\initialized} où
-l'adresse passée en paramètre ne correspond pas forcément à l'adresse de base
-d'un bloc.
+paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$.
+Si un tel bloc n'existe pas, \lstinline{NULL} est renvoyé.
+Cet algorithme est utilisé pour des requêtes du type \lstinline{\valid} ou
+\lstinline{\initialized} où l'adresse passée en paramètre ne correspond pas
+nécessairement à l'adresse de base d'un bloc.
 
 Cet algorithme est similaire à celui de la recherche exacte, au détail près
 qu'il faut vérifier la formule de l'encadrement de $ptr$ par $B$ quand on arrive
-sur une feuille. On utilise une pile contenant les n\oe{}uds à partir desquels
-il
-faut reprendre le parcours si la recherche n'aboutit pas. Quand on explore le
-fils droit, on empile le fils gauche. Quand on arrive sur une feuille, on
-vérifie l'encadrement, s'il est vérifié on a trouvé le bloc qu'on cherchait,
-sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe, sinon
-on retourne \lstinline{NULL}.
+sur une feuille.
+On utilise une pile contenant les n\oe{}uds à partir desquels il faut reprendre
+le parcours si la recherche n'aboutit pas.
+Quand on explore le fils droit, on empile le fils gauche.
+Quand on arrive sur une feuille, on vérifie l'encadrement, s'il est vérifié on
+a trouvé le bloc qu'on cherchait, sinon on utilise le dernier n\oe{}ud empilé
+(et on le dépile) s'il existe, sinon on retourne \lstinline{NULL}.
 
 \subsection{Ajout}
 
@@ -209,29 +373,29 @@ on retourne \lstinline{NULL}.
 
 
 L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
-vide, l'élément est ajouté à la racine. Sinon, on recherche le n\oe{}ud $x$ le
-plus
-similaire au n\oe{}ud à insérer. Celui-ci sera son frère dans la nouvelle
-configuration de l'arbre. Nous créons ensuite le n\oe{}ud correspondant au père.
-Le
-plus grand préfixe commun des deux fils est calculé pour le père, et les fils
-sont ordonnés en fonction de leur adresse (le plus petit à gauche). Puis le
-père est inséré dans l'arbre à l'ancien emplacement de $x$. Les champs de $x$ et
-de l'ancien père de $x$ (s'il existe) sont également mis à jour pour maintenir
-la cohérence de l'arbre. La Fig.~\ref{fig:insertion-Patricia-trie} illustre
-l'insertion de l'adresse \ppleaf{\texttt{0010\,0111}} dans un arbre.
+vide, l'élément est ajouté à la racine.
+Sinon, on recherche le n\oe{}ud $x$ le plus similaire au n\oe{}ud à insérer.
+Celui-ci sera son frère dans la nouvelle configuration de l'arbre.
+Nous créons ensuite le n\oe{}ud correspondant au père.
+Le plus grand préfixe commun des deux fils est calculé pour le père, et les fils
+sont ordonnés en fonction de leur adresse (le plus petit à gauche).
+Puis le père est inséré dans l'arbre à l'ancien emplacement de $x$.
+Les champs de $x$ et de l'ancien père de $x$ (s'il existe) sont également mis à
+jour pour maintenir la cohérence de l'arbre.
+La figure~\ref{fig:insertion-Patricia-trie} illustre l'insertion de l'adresse
+\ppleaf{\texttt{0010\,0111}} dans un arbre.
 L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
-\ppleaf{\texttt{0010\,0110}}, et crée
-le père correspondant : \ppnode{\texttt{0010\,011*}}.
+\ppleaf{\texttt{0010\,0110}}, et crée le père correspondant :
+\ppnode{\texttt{0010\,011*}}.
 
 
 \subsubsection*{Recherche du n\oe{}ud le plus similaire}
 
-Dès qu'on arrive sur une feuille on la renvoie. Sinon on calcule le plus grand
-préfixe commun de l'adresse passée en paramètre avec le fils gauche, de même
-avec le fils droit. Si l'un des préfixes est strictement supérieur à l'autre
-on se dirige vers la branche correspondante, sinon on renvoie le n\oe{}ud
-courant.
+Dès qu'on arrive sur une feuille on la renvoie.
+Sinon on calcule le plus grand préfixe commun de l'adresse passée en paramètre
+avec le fils gauche, de même avec le fils droit.
+Si l'un des préfixes est strictement supérieur à l'autre on se dirige vers la
+branche correspondante, sinon on renvoie le n\oe{}ud courant.
 
 
 
@@ -241,12 +405,29 @@ courant.
 \input{figures/fig_rem_patricia_trie}
 
 
-La suppression d'une feuille $x$ du Patricia trie se déroule comme suit. Si cet
-élément est la racine, l'arbre devient vide. Sinon, Cette feuille a un frère $y$
-et un père. $x$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend
-donc la place du père). Enfin, les champs du nouveau père de $y$ sont mis à jour
-pour maintenir la cohérence de l'arbre (le plus grand préfixe commun est
-recalculé). La Fig.~\ref{fig:suppression-Patricia-trie} illustre la suppression
-de l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie. Ce n\oe{}ud
-ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
+La suppression d'une feuille $x$ du Patricia trie se déroule comme suit.
+Si cet élément est la racine, l'arbre devient vide.
+Sinon, Cette feuille a un frère $y$ et un père.
+$x$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend donc la
+place du père).
+Enfin, les champs du nouveau père de $y$ sont mis à jour pour maintenir la
+cohérence de l'arbre (le plus grand préfixe commun est recalculé).
+La figure~\ref{fig:suppression-Patricia-trie} illustre la suppression de
+l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie.
+Ce n\oe{}ud ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 \ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
+
+
+\section*{Conclusion du chapitre}
+
+
+Nous avons présenté dans ce chapitre une manière de vérifier dynamiquement les
+annotations \eacsl qui concernent la mémoire : \lstinline'\base_addr',
+\lstinline'\block_length', \lstinline'\offset', \lstinline'\valid',
+\lstinline'\valid_read' et \lstinline'\initialized'.
+Nous avons présenté ces annotations ainsi qu'une manière d'instrumenter le
+programme, ainsi que le modèle mémoire que nous utilisons afin de les vérifier
+à l'exécution.
+Le chapitre~\ref{sec:eacsl} donne plus de détails concernant l'implémentation
+des fonctions C de simulation et du modèle mémoire, ainsi qu'une évaluation des
+performances de notre modèle mémoire.
