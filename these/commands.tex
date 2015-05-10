@@ -24,8 +24,8 @@
 \newcommand{\tikzinsert}[3]{%
   \tikz[remember picture,overlay]{\node[#3] (#1) {#2};}}
 \tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
-\newcommand{\insertball}[2][]{
-  \tikzinsert{}{#2}{ball,node distance=.5cm,xshift=.2cm,yshift=.05cm,font=\scriptsize\bfseries,#1}~~~~}
+\newcommand{\insertball}[1]{
+  \tikzinsert{}{#1}{ball,node distance=.5cm,xshift=.2cm,yshift=.05cm,font=\scriptsize\bfseries}~~~~}
 
 \newcommand{\ce}[1]{{\scriptsize{$\langle$}}#1{\scriptsize{$\rangle$}}}
 \newcommand{\fassert}{\lstinline'fassert'\xspace}
@@ -39,12 +39,20 @@
 \newcommand{\dep}{\leadsto}
 \newcommand{\alarms}{\mathop{\textit{alarms}}\nolimits}
 
-\newcommand{\NC}{\mathrm{NC}\xspace}
-\newcommand{\CW}{\mathrm{CW}\xspace}
-\newcommand{\NCCE}{\mathrm{NCCE}\xspace}
-\newcommand{\CWCE}{\mathrm{CWCE}\xspace}
-\newcommand{\all}{\mathrm{all}\xspace}
-\newcommand{\each}{\mathrm{each}\xspace}
+\newcommand{\NC}{\ensuremath{\mathrm{NC}}\xspace}
+\newcommand{\NCD}{\ensuremath{\mathrm{NCD}}\xspace}
+\newcommand{\CW}{\ensuremath{\mathrm{SW}}\xspace}
+\newcommand{\CWD}{\ensuremath{\mathrm{SWD}}\xspace}
+\newcommand{\NCCE}{\ensuremath{\mathrm{NCCE}}\xspace}
+\newcommand{\CWCE}{\ensuremath{\mathrm{SWCE}}\xspace}
+\newcommand{\all}{\ensuremath{\mathrm{all}}\xspace}
+\newcommand{\each}{\ensuremath{\mathrm{each}}\xspace}
+\newcommand{\nc}{\textsf{nc}\xspace}
+\newcommand{\cw}{\textsf{sw}\xspace}
+\newcommand{\yes}{\textsf{yes}\xspace}
+\renewcommand{\no}{\textsf{no}\xspace}
+\renewcommand{\C}{{\ensuremath\mathcal{C}\xspace}}
+\newcommand{\A}{{\ensuremath\mathcal{A}\xspace}}
 
 \newtheorem{theorem}{Théorème}
 \newtheorem{proposition}[theorem]{Proposition}
@@ -89,11 +97,6 @@
 \newcommand{\env}{$\Gamma$\xspace}
 \newcommand{\errorenv}{$\Gamma_\lightning$\xspace}
 \newcommand{\eqlabel}[1]{{\textsc{\scriptsize{#1}}}}
-
-%% \newcommand{\qed}{\nobreak \ifvmode \relax \else
-%%   \ifdim\lastskip<1.5em \hskip-\lastskip
-%%   \hskip1.5em plus0em minus0.5em \fi \nobreak
-%%   \vrule height0.75em width0.5em depth0.25em\fi}
 
 \newcommand{\eq}[1]{\stackrel{\smash{\scriptscriptstyle\mathrm{#1}}}{=}}
 \newcommand{\eqv}[1]{\stackrel{\smash{\scriptscriptstyle\mathrm{#1}}}{\equiv}}
