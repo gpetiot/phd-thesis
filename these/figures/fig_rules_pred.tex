@@ -89,12 +89,12 @@
         (I_1, \mbox{\lstinline'e1'}) \quad
         (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
         (I_2, \mbox{\lstinline'e2'}) \quad
-        op \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
+        rel \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
         \mathtt{==}, \mathtt{!=}\}}
-      {(l, \mbox{\lstinline't1 op t2'}) \rulearrow
+      {(l, \mbox{\lstinline't1 rel t2'}) \rulearrow
         (I_1 \concat I_2 \concat (l,
         \mbox{\lstinline'int var_n ='}~
-        \underline{\mbox{\lstinline' e1'} \Zclear \mbox{\lstinline' op e2'}
+        \underline{\mbox{\lstinline' e1'} \Zclear \mbox{\lstinline' rel e2'}
           \Zclear}
         \semicolon
         ), \mbox{\lstinline'var_n'})}

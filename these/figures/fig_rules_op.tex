@@ -10,10 +10,10 @@
     {\myinference[$\tau$-unop$_2$]
       {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
         \quad
-        op \in \{ -, \sim\}}
-      {(l, (\mbox{\lstinline'op t'}):\mathbb{Z}) \rulearrow
+        unop \in \{ -, \sim\}}
+      {(l, (\mbox{\lstinline'unop t'}):\mathbb{Z}) \rulearrow
         (I
-        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = op e'} \Zclear}
+        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = unop e'} \Zclear}
         \semicolon),
         \mbox{\lstinline'var_n'})}
     }
@@ -23,40 +23,24 @@
         \quad
         (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
         \quad
-        op \in \{+, -\}}
-      {(l, (\mbox{\lstinline't1 op t2'}):ptr) \rulearrow
-        (I_1 \concat I_2 \concat (l, ptr~\mbox{\lstinline'var_n = e1 op e2;'}),
+        binop \in \{+, -\}}
+      {(l, (\mbox{\lstinline't1 binop t2'}):ptr) \rulearrow
+        (I_1 \concat I_2
+        \concat (l, ptr~\mbox{\lstinline'var_n = e1 binop e2;'}),
         \mbox{\lstinline'var_n'})}
     }
 
     {\myinference[$\tau$-binop$_2$]
       {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \quad
-        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \quad
-        op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
-        \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
-        \mathtt{\&\&}\}}
-      {(l, (\mbox{\lstinline't1 op t2'}):int) \rulearrow
-        (I_1 \concat I_2 \concat (l,
-        \mbox{\lstinline'int var_n ='}~
-        \underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline'op e2'}\Zclear}
-        \semicolon
-        ), \mbox{\lstinline'var_n'})}
-    }
-
-    {\myinference[$\tau$-binop$_3$]
-      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \quad
         (l, \mbox{\lstinline't2'}:\mathbb{Z})
         \rulearrow (I_2, \mbox{\lstinline'e2'}) \quad
-        op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
-        \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
-        \mathbin{\char`\^}\}}
-      {(l, (\mbox{\lstinline't1 op t2'}):\mathbb{Z}) \rulearrow
+        binop \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
+        \mathtt{*} \}}
+      {(l, (\mbox{\lstinline't1 binop t2'}):\mathbb{Z}) \rulearrow
         (I_1 \concat I_2 \concat (l,
         \underline{\Zinit \mbox{\lstinline'var_n = e1'} \Zclear
-          \mbox{\lstinline'op e2'} \Zclear}
+          \mbox{\lstinline'binop e2'} \Zclear}
         \semicolon
         ), \mbox{\lstinline'var_n'})}
     }
