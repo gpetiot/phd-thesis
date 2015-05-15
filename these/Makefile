@@ -7,6 +7,8 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_add_patricia_trie.tex \
 	figures/fig_rem_patricia_trie.tex \
 	figures/fig_grammar.tex \
+	figures/fig_grammar_exp_term.tex \
+	figures/fig_grammar_pred.tex \
 	figures/fig_rules.tex \
 	figures/user_f.png \
 	figures/user_m.png \
@@ -14,39 +16,55 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_code_ins.tex \
 	figures/fig_proof_loop_contract.tex \
 	figures/fig_proof_fct_contract_call.tex \
-	figures/fig_proof_fct_contract_main.tex
+	figures/fig_proof_fct_contract_main.tex \
+	figures/fig_semantics.tex \
+	figures/fig_semantics_exp_term.tex \
+	figures/fig_semantics_pred.tex \
+	figures/fig_semantics_fct.tex
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
 	listings/naive_false_positive.c \
 	listings/naive_false_negative.c \
 	listings/is_present_normalized.c \
-	listings/is_present_instrumented.c
+	listings/is_present_instrumented.c \
+	listings/ex1.c \
+	listings/ex2.c \
+	listings/rgf_0.c
 CHAPTERS_TEX=$(wildcard chapter_*.tex)
 CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
 
 all_DEPS=chapter.tex header.tex $(BIB) style_listings.tex commands.tex
-chapter_ce_DEPS=
-chapter_motiv_contrib_DEPS=figures/user_f.png figures/user_m.png
+chapter_ce_DEPS=listings/ex1.c \
+		listings/ex2.c \
+		listings/rgf_0.c
+chapter_motiv_contrib_DEPS=figures/user_f.png \
+			figures/user_m.png
 chapter_scenarios_DEPS=
 chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
 		figures/fig_rem_patricia_trie.tex
-chapter_preuve_DEPS=figures/fig_proof_loop_contract.tex \
-		figures/fig_proof_fct_contract_call.tex \
-		figures/fig_proof_fct_contract_main.tex
 chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/mem_annots.c \
 		listings/common_prefix_mask.c
-chapter_traduction_DEPS=figures/fig_grammar.tex \
-			figures/fig_rules.tex \
+chapter_lang_DEPS=figures/fig_grammar.tex \
+		figures/fig_grammar_exp_term.tex \
+		figures/fig_grammar_pred.tex \
+		figures/fig_semantics.tex \
+		figures/fig_semantics_exp_term.tex \
+		figures/fig_semantics_pred.tex \
+		figures/fig_semantics_fct.tex
+chapter_instrumentation_DEPS=figures/fig_rules.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
 			listings/is_present_normalized.c \
 			listings/is_present_instrumented.c \
 			figures/fig_code_gen.tex \
-			figures/fig_code_ins.tex
+			figures/fig_code_ins.tex \
+			figures/fig_proof_loop_contract.tex \
+			figures/fig_proof_fct_contract_call.tex \
+			figures/fig_proof_fct_contract_main.tex
 
 all: main.pdf $(CHAPTERS_PDF)
 
