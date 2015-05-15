@@ -116,30 +116,30 @@
   \scriptsize{
     {\myinference[$\tau$-old\hspace{-2mm}{}]
       {}
-      {(l, \mbox{\lstinline'\\old(x)'}:ctype) \rulearrow
+      {(l, \mbox{\lstinline'\\old(x)'}) \rulearrow
         (\emptylist, \mbox{\lstinline'old_x'})}
     }
     {\myinference[$\tau$-var\hspace{-2mm}{}]
       {}
-      {(l, \mbox{\lstinline'x'}:ctype) \rulearrow
+      {(l, \mbox{\lstinline'x'}) \rulearrow
         (\emptylist, \mbox{\lstinline'x'})}
     }
 
     {\myinference[$\tau$-old-val\hspace{-2mm}{}]
-      {(l, \mbox{\lstinline't'}:int) \rulearrow (I, \mbox{\lstinline'e'})}
-      {(l, \mbox{\lstinline'\\old(*(x+t))'}:ctype) \rulearrow
-        (I,\mbox{\lstinline'*(old_val_x+e)'})}
+      {}
+      {(l, \mbox{\lstinline'\\old(*(x+t))'}) \rulearrow
+        (I,\mbox{\lstinline'*(old_val_x+t)'})}
     }
 
     {\myinference[$\tau$-res\hspace{-2mm}{}]
       {}
-      {(l, \mbox{\lstinline'\\result'}:ctype) \rulearrow
+      {(l, \mbox{\lstinline'\\result'}) \rulearrow
         (\emptylist, \mbox{\lstinline'res'})}
     }
     {\myinference[$\tau$-const\hspace{-1mm}{}]
       {}
       {(l, \mbox{\lstinline'cst'}:\mathbb{Z}) \rulearrow
-        ((l, \underline{\Zinit\mbox{\lstinline'var_n = cst'}}),
+        ((l, \underline{\Zinit\mbox{\lstinline'var_n = cst'}}\semicolon),
         \mbox{\lstinline'var_n'})}
     }
   }
@@ -163,9 +163,9 @@
       }
     }
     {\myinference[$\tau$-coerce$_2$]
-      {(l, \mbox{\lstinline't'}:int) \rulearrow (I, \mbox{\lstinline'e'})}
+      {}
       {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
-        \underline{\Zinit \mbox{\lstinline'var_n = e'}}
+        \underline{\Zinit \mbox{\lstinline'var_n = t'}}
         \semicolon
         ), \mbox{\lstinline'var_n'})}
     }
@@ -176,6 +176,24 @@
 
 \begin{figure*}[bt]
   \scriptsize{
+    {\myinference[$\tau$-unop$_1$]
+      {}
+      {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
+        (I \concat (l, ctype~\mbox{\lstinline'var_n = *t;'}),
+        \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-unop$_2$]
+      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
+        \quad
+        op \in \{ -, \sim\}}
+      {(l, (\mbox{\lstinline'op t'}):\mathbb{Z}) \rulearrow
+        (I
+        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = op e'} \Zclear}
+        \semicolon),
+        \mbox{\lstinline'var_n'})}
+    }
+
     {\myinference[$\tau$-binop$_1$]
       {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
         \quad
@@ -184,13 +202,6 @@
         op \in \{+, -\}}
       {(l, (\mbox{\lstinline't1 op t2'}):ptr) \rulearrow
         (I_1 \concat I_2 \concat (l, ptr~\mbox{\lstinline'var_n = e1 op e2;'}),
-        \mbox{\lstinline'var_n'})}
-    }
-
-    {\myinference[$\tau$-unop$_1$]
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'})}
-      {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
-        (I \concat (l, ctype~\mbox{\lstinline'var_n = *e;'}),
         \mbox{\lstinline'var_n'})}
     }
 
@@ -224,16 +235,6 @@
           \mbox{\lstinline'op e2'} \Zclear}
         \semicolon
         ), \mbox{\lstinline'var_n'})}
-    }
-
-    {\myinference[$\tau$-unop$_2$]
-      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
-        \quad
-        op \in \{ -, \sim\}}
-      {(l, (\mbox{\lstinline'op t'}):\mathbb{Z}) \rulearrow
-        (I
-        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = op e'} \Zclear}),
-        \mbox{\lstinline'var_n'})}
     }
 
     {\myinference[$\tau$-if]
@@ -459,23 +460,19 @@
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference[$\pi$-valid]
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {}
       {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
-        (I \concat (l, \mbox{\lstinline'int var_n = fvalid(e);'}),
+        (I \concat (l, \mbox{\lstinline'int var_n = fvalid(t);'}),
         \mbox{\lstinline'var_n'})
       }
     }
 
     {\myinference[$\pi$-valid-range]
-      {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
-        \\
-        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
-        \\
-        (l, \mbox{\lstinline't3'}:int) \rulearrow (I_3, \mbox{\lstinline'e3'})
-      } {
+      {}
+      {
         (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
         (I_1 \concat I_2 \concat I_3
-        \concat (l, \mbox{\lstinline'int var_n = fvalidr(e1,e2,e3);'}),
+        \concat (l, \mbox{\lstinline'int var_n = fvalidr(t1,t2,t3);'}),
         \mbox{\lstinline'var_n'})
       }
     }

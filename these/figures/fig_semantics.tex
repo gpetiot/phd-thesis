@@ -1,0 +1,75 @@
+\begin{figure}[h!]
+  \begin{tabular}{rcll}
+    \comp{\lstinline'\;'}{\env} &=& \env & \eqlabel{C-skip} \\
+    \comp{\lstinline'T id;'}{\env}
+    &=& \env[\lstinline'id' $\mapsto$ $\bot$] & \eqlabel{C-decl} \\
+    \comp{\lstinline'lv = e;'}{\env}
+    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \scriptsize{(arith. bornée)} & \eqlabel{C-set} \\
+    \comp{$\Zinit$ \underline{\lstinline'lv = e'} $\semicolon$}{\env}
+    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \scriptsize{(arith. non bornée)}
+    & \eqlabel{C-Z-set} \\
+    \comp{\underline{\lstinline'lv'} $\Zclear \semicolon$}{\env}
+    &=& \env $-~\{\mbox{\lstinline'a'}\}$ & \eqlabel{C-Z-unset} \\
+    \comp{\lstinline'fassert(e);'}{\env}
+    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
+    & \eqlabel{C-fassert} \\
+    \comp{\lstinline'fassume(e);'}{\env}
+    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, contradiction sinon
+    & \eqlabel{C-fassume} \\
+
+    \comp{\lstinline'lv = fvalid(e);'}{\env}
+    &=& \env[$lv \mapsto 1$] si $e$ est valide dans \env, \env[$lv \mapsto 0$]
+    sinon & \eqlabel{C-valid} \\
+
+    \comp{\lstinline'lv = fvalidr(e1,e2,e3);'}{\env}
+    &=& \env[$lv \mapsto 1$] si $(e1+e2)$, ..., $(e1+e3)$ sont valides dans
+    \env, & \eqlabel{C-validr} \\
+    & & \env[$lv \mapsto 0$] sinon & \\
+
+    \comp{\lstinline'f(e1, ..., eN);'}{\env}
+    &=& \compf{\lstinline'f(e1, ..., eN)'}{\env}
+    & \eqlabel{C-fct1} \\
+    \comp{\lstinline'lv = f(e1, ..., eN);'}{\env}
+    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'ret'}{
+        (\compf{\lstinline'f(e1,...,eN)'}{\env})}] & \eqlabel{C-fct2} \\
+    \comp{\lstinline'return e;'}{\env}
+    &=& \env[\lstinline'ret' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    & \eqlabel{C-return} \\    
+    \comp{$\bopen$ \lstinline'i'$^{*}$ $\bclose$}{\env} &=&
+    \comps{\lstinline'i'$^{*}$}{\env} & \eqlabel{C-block} \\
+    \comp{\lstinline'if(e)' $\bopen$ \lstinline'i'$_1^{*}$ $\bclose$
+      \lstinline'else' $\bopen$ \lstinline'i'$_2^{*}$ $\bclose$}{\env}
+    &=& \comps{\lstinline'i'$_1^{*}$}{\env} si (\eval{\lstinline'e'}{\env})
+    $\neq$ 0, \comps{\lstinline'i'$_2^{*}$}{\env} sinon & \eqlabel{C-if} \\
+    \comp{\lstinline'/*@ assert p; */'}{\env}
+    &=& \env si (\eval{\lstinline'p'}{\env}), \errorenv sinon
+    & \eqlabel{C-assert} \\
+    \multicolumn{4}{l}{
+      \comp{
+        \lstinline'/*@ loop invariant p; loop assigns X; loop variant t;*/ while(e)'
+        $\bopen$ \lstinline'i'$^{*}$ $\bclose$}{\env}
+    } \\
+    & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
+    & \eqlabel{C-while-1} \\
+    & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0 & \eqlabel{C-while-2} \\
+    & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+    & \eqlabel{C-while-3} \\
+    & = & \errorenv
+    si $\lnot$ \eval{\lstinline'p'}{(\comps{\lstinline'i'$^{*}$}{\env})}
+    & \eqlabel{C-while-4} \\
+    & = & \errorenv
+    si (\eval{\lstinline't'}{(\comps{\lstinline'i'$^{*}$}{\env})}) $\ge$
+    (\eval{\lstinline't'}{\env}) & \eqlabel{C-while-5} \\
+    & = & \errorenv si
+    $\exists \mbox{\lstinline'x'}. (\mbox{\lstinline'x'} \in G-X.$
+    (\eval{\lstinline'x'}{(\comps{\lstinline'i'$^{*}$}{\env})}) $\ne$
+    (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{C-while-6} \\
+    & = & \comp{\lstinline'/*@ ... */ while(e)'
+      $\bopen$ \lstinline'i'$^{*}$ $\bclose$}{
+      (\comps{\lstinline'i'$^{*}$}{\env})} sinon & \eqlabel{C-while-7} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des instructions}
+  \label{fig:sem-instr}
+\end{figure}
