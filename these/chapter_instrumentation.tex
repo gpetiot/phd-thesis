@@ -712,69 +712,69 @@ Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
 
 
 
-\subsection{Définition des séquences d'insertions de code}
+%% \subsection{Définition des séquences d'insertions de code}
 
-Une insertion de code est un couple $(LABEL \times INSTR)$.
-Une liste (ou séquence) d'insertions de code résulte de la traduction d'un
-terme, d'un prédicat ou d'une annotation \eacsl.
-Une séquence d'insertions de code est notée :
+%% Une insertion de code est un couple $(LABEL \times INSTR)$.
+%% Une liste (ou séquence) d'insertions de code résulte de la traduction d'un
+%% terme, d'un prédicat ou d'une annotation \eacsl.
+%% Une séquence d'insertions de code est notée :
 
-\begin{itemize}
-\item $\emptylist$ pour une séquence vide;
-\item $(l, i) \concat I$ pour l'ajout du couple $(l, i)$ au début de la
-  séquence $I$;
-\item $I_1 \concat I_2$ pour la concaténation de deux séquences $I_1$ et $I_2$.
-\end{itemize}
+%% \begin{itemize}
+%% \item $\emptylist$ pour une séquence vide;
+%% \item $(l, i) \concat I$ pour l'ajout du couple $(l, i)$ au début de la
+%%   séquence $I$;
+%% \item $I_1 \concat I_2$ pour la concaténation de deux séquences $I_1$ et $I_2$.
+%% \end{itemize}
 
-Par exemple, la règle suivante montre la séquence d'insertions de code $I$
-générée pour la traduction du prédicat \lstinline'p1 && p2' :
+%% Par exemple, la règle suivante montre la séquence d'insertions de code $I$
+%% générée pour la traduction du prédicat \lstinline'p1 && p2' :
 
-{\myinference[$\pi$-and]
-  { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
-    (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
-  { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
-    (
-    \underbracket{
-      I_1 \cdot
-      \underbracket{ (l, \mbox{\lstinline'int e = e1;'}) }_{i_1}
-      \cdot
-      \underbracket{ (l, \mbox{\lstinline'if(e)'}
-        \bopen
-        I_2 \cdot
-        \underbracket{ (l, \mbox{\lstinline'e = e2;'}) }_{i_2}
-        \bclose ) }_{i_3} \concat \emptylist
-      }_{I},
-    \mbox{\lstinline'e'}) }
-}~\\
+%% {\myinference[$\pi$-and]
+%%   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
+%%     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
+%%   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
+%%     (
+%%     \underbracket{
+%%       I_1 \cdot
+%%       \underbracket{ (l, \mbox{\lstinline'int e = e1;'}) }_{i_1}
+%%       \cdot
+%%       \underbracket{ (l, \mbox{\lstinline'if(e)'}
+%%         \bopen
+%%         I_2 \cdot
+%%         \underbracket{ (l, \mbox{\lstinline'e = e2;'}) }_{i_2}
+%%         \bclose ) }_{i_3} \concat \emptylist
+%%       }_{I},
+%%     \mbox{\lstinline'e'}) }
+%% }~\\
 
-Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
-$I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
-\lstinline'e' est une left-value qui a une valeur dans l'environnement courant.
+%% Dans cet exemple, $i_1$, $i_2$ et $i_3$ sont des insertions de code, tandis que
+%% $I_1$, $I_2$ et $I$ sont des séquences d'insertions de code.
+%% \lstinline'e' est une left-value qui a une valeur dans l'environnement courant.
 
 
-\subsection{Sémantique dénotationnelle des insertions de code}
+%% \subsection{Sémantique dénotationnelle des insertions de code}
 
-La sémantique dénotationnelle des insertions de code est exprimée avec la
-fonction $\mathcal{I} : list(LABEL \times INSTR) \mapsto ENV \mapsto ENV$.
-À chaque séquence d'insertions de code C et à un environnement est associé un
-nouvel environnement.
+%% La sémantique dénotationnelle des insertions de code est exprimée avec la
+%% fonction $\mathcal{I} : list(LABEL \times INSTR) \mapsto ENV \mapsto ENV$.
+%% À chaque séquence d'insertions de code C et à un environnement est associé un
+%% nouvel environnement.
 
-La fonction $\mathcal{I}$ est définie comme suit :
+%% La fonction $\mathcal{I}$ est définie comme suit :
 
-\begin{tabular}{rclr}
-  \compi{$\emptylist$}{\env} & = & \env & \eqlabel{I-empty} \\
-  \compi{($l$, $i$) $\concat~\emptylist$}{\env}
-  & = & \comp{$i$}{\env$_l$} & \eqlabel{I-instr} \\
-  \compi{$I_1 \concat I_2$}{\env} & = & \compi{$I_2$}{(\compi{$I_1$}{\env})}
-  & \eqlabel{I-split} \\
-\end{tabular}
+%% \begin{tabular}{rclr}
+%%   \compi{$\emptylist$}{\env} & = & \env & \eqlabel{I-empty} \\
+%%   \compi{($l$, $i$) $\concat~\emptylist$}{\env}
+%%   & = & \comp{$i$}{\env$_l$} & \eqlabel{I-instr} \\
+%%   \compi{$I_1 \concat I_2$}{\env} & = & \compi{$I_2$}{(\compi{$I_1$}{\env})}
+%%   & \eqlabel{I-split} \\
+%% \end{tabular}
 
-La règle \eqlabel{I-empty} énonce qu'une séquence vide ne modifie pas
-l'environnement.
-La règle \eqlabel{I-instr} évalue l'instruction $i$ au label $l$ afin de
-calculer le nouvel environnement.
-La règle \eqlabel{I-split} traite le cas de la concaténation d'insertions de
-code.
+%% La règle \eqlabel{I-empty} énonce qu'une séquence vide ne modifie pas
+%% l'environnement.
+%% La règle \eqlabel{I-instr} évalue l'instruction $i$ au label $l$ afin de
+%% calculer le nouvel environnement.
+%% La règle \eqlabel{I-split} traite le cas de la concaténation d'insertions de
+%% code.
 
 
 \section{Propriétés de l'instrumentation}
