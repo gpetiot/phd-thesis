@@ -1,0 +1,96 @@
+\begin{figure*}[h!]
+  \scriptsize{
+    {\myinference[$\tau$-unop$_1$]
+      {}
+      {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
+        (I \concat (l, ctype~\mbox{\lstinline'var_n = *t;'}),
+        \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-unop$_2$]
+      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
+        \quad
+        op \in \{ -, \sim\}}
+      {(l, (\mbox{\lstinline'op t'}):\mathbb{Z}) \rulearrow
+        (I
+        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = op e'} \Zclear}
+        \semicolon),
+        \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-binop$_1$]
+      {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
+        \quad
+        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
+        \quad
+        op \in \{+, -\}}
+      {(l, (\mbox{\lstinline't1 op t2'}):ptr) \rulearrow
+        (I_1 \concat I_2 \concat (l, ptr~\mbox{\lstinline'var_n = e1 op e2;'}),
+        \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-binop$_2$]
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \quad
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \quad
+        op \in \{\mathtt{==}, \mathtt{!=}, \mathtt{<},
+        \mathtt{<=}, \mathtt{>}, \mathtt{>=}, \mathtt{||},
+        \mathtt{\&\&}\}}
+      {(l, (\mbox{\lstinline't1 op t2'}):int) \rulearrow
+        (I_1 \concat I_2 \concat (l,
+        \mbox{\lstinline'int var_n ='}~
+        \underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline'op e2'}\Zclear}
+        \semicolon
+        ), \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-binop$_3$]
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \quad
+        (l, \mbox{\lstinline't2'}:\mathbb{Z})
+        \rulearrow (I_2, \mbox{\lstinline'e2'}) \quad
+        op \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
+        \mathtt{<<}, \mathtt{>>}, \mathtt{|}, \mathtt{\&},
+        \mathbin{\char`\^}\}}
+      {(l, (\mbox{\lstinline't1 op t2'}):\mathbb{Z}) \rulearrow
+        (I_1 \concat I_2 \concat (l,
+        \underline{\Zinit \mbox{\lstinline'var_n = e1'} \Zclear
+          \mbox{\lstinline'op e2'} \Zclear}
+        \semicolon
+        ), \mbox{\lstinline'var_n'})}
+    }
+
+    {\myinference[$\tau$-if]
+      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
+        (I_1, \mbox{\lstinline'e1'}) \\
+        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
+        (I_2, \mbox{\lstinline'e2'}) \\
+        (l, \mbox{\lstinline't3'}:\mathbb{Z}) \rulearrow
+        (I_3, \mbox{\lstinline'e3'})}
+      {
+        (l, (\mbox{\lstinline't1 ? t2 : t3'}):\mathbb{Z})
+        \rulearrow
+        (I_1
+        \concat (l,
+        \mbox{\lstinline'if('}
+        \underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline' \!= 0'}}
+        \mbox{\lstinline')'} \bopen
+        I_2
+        \concat
+        (l, \underline{\Zinit \mbox{\lstinline'var_n = e2'} \Zclear}
+        \semicolon )
+        \bclose
+        \mbox{\lstinline'else'} \bopen
+        I_3
+        \concat
+        (l, \underline{\Zinit \mbox{\lstinline'var_n = e3'} \Zclear}
+        \semicolon )
+        \bclose ),
+        \mbox{\lstinline'var_n'})
+      }
+    }
+  }
+  \caption{Règles de traduction pour les opérations unaires et binaires}
+  \label{fig:op}
+\end{figure*}

@@ -331,8 +331,7 @@ Le générateur de tests essaiera de couvrir tous les chemins d'exécution
 faisables, donc s'il existe des entrées permettant de provoquer un échec de
 l'expression de \lstinline'fassert', l'erreur sera trouvée.
 
-Les figures~\ref{fig:annot} et~\ref{fig:loop-annot} présentent les
-règles de traduction pour chaque annotation.
+\input{figures/fig_rules_annot}
 
 La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
 (\textsc{$\alpha$-assert}), les préconditions (\textsc{$\alpha$-check-pre} et
@@ -363,6 +362,8 @@ fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
 
+\input{figures/fig_rules_loop_annot}
+
 La figure~\ref{fig:loop-annot} présente les règles de traduction pour les
 invariants de boucle (\textsc{$\alpha$-check-invariant}), les variants de boucle
 (\textsc{$\alpha$-variant}) et les loop assigns
@@ -385,7 +386,6 @@ strictement (par rapport à sa valeur au début de l'itération).
 \section{Traduction des termes \eacsl}
 \label{sec:term}
 
-\input{figures/fig_rules}
 
 La fonction de traduction des termes, notée $\tau$, est définie comme une
 fonction partielle qui, à un label $l$ et un terme \lstinline't' de type $T$,
@@ -426,6 +426,8 @@ Pour un terme $t:\mathbb{Z}$, le résultat de traduction $e$ est toujours une
 variable de type \lstinline'Z_t' (ce qui justifie une désallocation
 \lstinline{e}${}^{\boxtimes}$, voir figure~\ref{fig:coerce}).
 
+\input{figures/fig_rules_const_id}
+
 La figure~\ref{fig:const-id} présente les règles de traduction pour les
 identificateurs de variable (\textsc{$\tau$-var}), pour le terme
 \lstinline|\result| (\textsc{$\tau$-res}) et pour les constantes
@@ -447,8 +449,12 @@ syntaxe abstrait (AST) par \framac.
 La règle \textsc{$\tau$-const} établit qu'une variable entière est définie pour
 prendre la valeur d'une contante entière.
 
+\input{figures/fig_rules_coerce}
+
 La figure~\ref{fig:coerce} détaille les règles de conversions implicites, de
 \lstinline'integer' vers type C et de type C vers \lstinline'integer'.
+
+\input{figures/fig_rules_op}
 
 La figure~\ref{fig:op} détaille les règles pour les opérations unaires
 (\textsc{$\tau$-unop$_{j}$}), les opérations binaires
@@ -474,6 +480,8 @@ arithmétiques suivants : \lstinline|+|, \lstinline|-|, \lstinline|/|,
 Dans la règle \textsc{$\tau$-if}, les évaluations de $t_2$ et $t_3$ sont dans
 des branches conditionnelles : on calcule uniquement l'un des deux, en fonction
 de l'évaluation de $t_1$.
+
+\input{figures/fig_rules_builtin}
 
 La figure~\ref{fig:builtin} présente les règles de traduction pour les fonctions
 logiques \lstinline|\sum| (\textsc{$\tau$-sum}) et \lstinline|\numof|
@@ -530,6 +538,8 @@ Pour chacune de ces règles, une variable fraîche \lstinline'var_n' est génér
 (même quand la traduction du prédicat est triviale) afin de faciliter la preuve
 de correction des règles au prochain chapitre.
 
+\input{figures/fig_rules_pred}
+
 La figure~\ref{fig:pred-logic} détaille les règles de traduction pour les
 prédicats les plus simples du langage \eacsl.
 Les règles \textsc{$\pi$-true} et \textsc{$\pi$-false} indiquent que
@@ -557,6 +567,8 @@ listing~\ref{lst:abbrv}).
 Dans la règle \textsc{$\pi$-rel}, \lstinline|op| est un des opérateurs suivants
 : \lstinline[style=c]{<, <=, >, >=, ==, !=}.
 
+\input{figures/fig_rules_valid}
+
 La figure~\ref{fig:valid} montre les règles de traduction pour le prédicat
 \lstinline|\valid|, qui est vrai si le pointeur en argument pointe vers une
 case mémoire valide et peut être déréférencé.
@@ -574,6 +586,8 @@ Dans notre exemple du listing~\ref{lst:normalized}, le prédicat
 \lstinline|\valid(t+(0..n-1))| de la clause \lstinline|requires| de la ligne 2
 est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 7 du
 listing~\ref{lst:abbrv}).
+
+\input{figures/fig_rules_quantif}
 
 Dans la figure~\ref{fig:quantif}, la règle \textsc{$\pi$-forall} traite de la
 traduction du prédicat universel \lstinline'\forall', quantifié sur les entiers.

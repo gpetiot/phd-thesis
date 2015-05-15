@@ -9,7 +9,15 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_grammar.tex \
 	figures/fig_grammar_exp_term.tex \
 	figures/fig_grammar_pred.tex \
-	figures/fig_rules.tex \
+	figures/fig_rules_annot.tex \
+	figures/fig_rules_loop_annot.tex \
+	figures/fig_rules_const_id.tex \
+	figures/fig_rules_coerce.tex \
+	figures/fig_rules_op.tex \
+	figures/fig_rules_builtin.tex \
+	figures/fig_rules_pred.tex \
+	figures/fig_rules_valid.tex \
+	figures/fig_rules_quantif.tex \
 	figures/user_f.png \
 	figures/user_m.png \
 	figures/fig_code_gen.tex \
@@ -55,7 +63,15 @@ chapter_lang_DEPS=figures/fig_grammar.tex \
 		figures/fig_semantics_exp_term.tex \
 		figures/fig_semantics_pred.tex \
 		figures/fig_semantics_fct.tex
-chapter_instrumentation_DEPS=figures/fig_rules.tex \
+chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
+			figures/fig_rules_loop_annot.tex \
+			figures/fig_rules_const_id.tex \
+			figures/fig_rules_coerce.tex \
+			figures/fig_rules_op.tex \
+			figures/fig_rules_builtin.tex \
+			figures/fig_rules_pred.tex \
+			figures/fig_rules_valid.tex \
+			figures/fig_rules_quantif.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
 			listings/is_present_normalized.c \

@@ -1,0 +1,52 @@
+\begin{figure}[h!]
+  \scriptsize{
+    {\myinference[$\alpha$-assert]
+      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(l, \mbox{\lstinline'assert p;'})
+        \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+    }
+
+    {\myinference[$\alpha$-check-pre\hspace{-2mm}]
+      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(Beg_f, \mbox{\lstinline'requires p;'})
+        \rulearrow
+        I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
+    }
+
+    {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
+      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(Beg_f, \left \{\hspace{-2mm}
+        \begin{array}{r}
+          \mbox{\lstinline'typically'} \\
+          \mbox{\lstinline'requires'}
+        \end{array} \mbox{\lstinline'p;'} \right.
+        )
+        \rulearrow
+        I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
+    }
+
+    {\myinference[$\alpha$-check-assigns]
+      {}
+      {
+        \splitfrac{
+          (End_f, \mbox{\lstinline'assigns X;'}) \rulearrow
+        } {
+          I \concat
+          \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
+          (Beg_f, \mbox{\lstinline'ctype assigns_x = x;'})
+          \concat (End_f, \mbox{\lstinline'fassert(x == assigns_x);'})
+        }
+      }
+    }
+
+    {\myinference[$\alpha$-check-post]
+      {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(End_f, \mbox{\lstinline'ensures p;'})
+        \rulearrow
+        I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
+    }
+  }
+  \caption{Règles de traduction pour les assertions, pré-/postconditions et
+    assigns}
+  \label{fig:annot}
+\end{figure}
