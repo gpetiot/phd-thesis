@@ -31,11 +31,18 @@ similitudes entre l'instrumentation pour la génération de tests et
 l'instrumentation pour la validation à l'exécution.
 
 Nous donnons également une justification de correction des règles de
-traduction, basée sur la sémantique dénotationnelle des instructions définie au
-chapitre~\ref{sec:lang}.
+traduction.
 Nous voulons notamment nous assurer qu'une erreur est trouvée par le
 générateur de tests si et seulement s'il y a une inconsistance entre le code
 et sa spécification.
+
+Pour atteindre cet objectif, nous prouvons que l'exécution du code inséré par
+la traduction d'un terme, d'un prédicat ou d'une annotation a pour effet de
+calculer la même valeur que la valeur de ce terme, ce prédicat ou cette
+annotation évalués à leur place dans le programme initial.
+Pour cela, nous nous basons sur la sémantique dénotationnelle des instructions
+définie au chapitre~\ref{sec:lang}.
+
 Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
 Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
 \ref{sec:annotation-translation} détaillent la preuve de ces propriétés
