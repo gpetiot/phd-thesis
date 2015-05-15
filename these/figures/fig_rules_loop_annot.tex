@@ -8,10 +8,10 @@
         }{
           \splitfrac{
             I \concat
-            \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
-            (BegIter_l, \mbox{\lstinline'ctype assigns_x = x;'})
+            \forall (\mbox{\lstinline'x'}:ctype) \in G-X :
           }{
-            \concat (EndIter_l, \mbox{\lstinline'fassert(x == assigns_x);'})
+            ((BegIter_l, \mbox{\lstinline'ctype var_x = x;'})
+            \concat (EndIter_l, \mbox{\lstinline'fassert(x == var_x);'}))
           }
         }
       }

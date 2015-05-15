@@ -368,7 +368,15 @@ La règle \textsc{$\alpha$-check-assigns} vérifie que les left-values qui ne so
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 L'ensemble des left-values considérées est la différence $G-X$, où $G$ est
 l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble des
-left-values de la clausse \lstinline'assigns'.
+left-values de la clause \lstinline'assigns'.
+Dans cette règle :
+\[
+\forall (x:ctype) \in G-X :
+((Beg_f, ctype~\mbox{\lstinline'var'}_x = x\semicolon)
+\concat (End_f, \mbox{\lstinline'fassert(x == var'}_x\mbox{\lstinline');'}) )
+\]
+dénote la liste de fragments de code contenant ces deux fragments de code pour
+chaque left-value $x$ de $G-X$.
 Pour chacune de ces left-values, une sauvegarde de leur valeur est faite au
 début de la fonction, puis on vérifie que leur valeur n'a pas été modifiée en
 fin de fonction.
@@ -1295,9 +1303,9 @@ La traduction utilise les trois règles suivantes :
         \splitfrac {
           I \concat
           \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
-          (BegIter_l, \mbox{\lstinline'ctype assigns_x = x;'})
+          (BegIter_l, \mbox{\lstinline'ctype var_x = x;'})
         }{
-          \concat (EndIter_l, \mbox{\lstinline'fassert(x == assigns_x);'})
+          \concat (EndIter_l, \mbox{\lstinline'fassert(x == var_x);'})
         }
       }
     }
@@ -1425,8 +1433,8 @@ La traduction utilise les trois règles suivantes :
       } {
         I \concat
         \forall (\mbox{\lstinline'x'}:ctype) \in G-X:
-        (Beg_f, \mbox{\lstinline'ctype assigns_x = x;'})
-        \concat (End_f, \mbox{\lstinline'fassert(x == assigns_x);'})
+        (Beg_f, \mbox{\lstinline'ctype var_x = x;'})
+        \concat (End_f, \mbox{\lstinline'fassert(x == var_x);'})
       }
     }
   }
