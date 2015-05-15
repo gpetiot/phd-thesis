@@ -362,13 +362,6 @@ début de la fonction, puis on vérifie que leur valeur n'a pas été modifiée 
 fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
-%% Dans l'exemple du listing~\ref{lst:normalized}, les clauses \lstinline'requires'
-%% et \lstinline'typically' des lignes 1, 2 et 3 sont traduites (en utilisant la
-%% règle \textsc{$\alpha$-assume-pre}) respectivement aux lignes 6, 7 et 8 du
-%% listing~\ref{lst:abbrv}.
-%% La postcondition aux lignes 4--5 du listing~\ref{lst:normalized} est traduite
-%% en utilisant la règle \textsc{$\alpha$-check-post} aux lignes 28--33 du
-%% listing~\ref{lst:abbrv}.
 
 La figure~\ref{fig:loop-annot} présente les règles de traduction pour les
 invariants de boucle (\textsc{$\alpha$-check-invariant}), les variants de boucle
@@ -386,12 +379,6 @@ La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négat
 au début de chaque itération.
 Enfin, on vérifie à la fin de chaque itération que le variant décroît
 strictement (par rapport à sa valeur au début de l'itération).
-%% Dans notre exemple du listing~\ref{lst:normalized}, la traduction du
-%% \lstinline'loop invariant' de la ligne 9 par la règle
-%% \textsc{$\alpha$-check-invariant} donne les lignes 10--12 et 19--23 du
-%% listing~\ref{lst:abbrv}, tandis que la traduction du \lstinline'loop variant'
-%% ligne 10 par la règle \textsc{$\alpha$-variant} produit les lignes 15--16 et
-%% 24--25 du listing~\ref{lst:abbrv}.
 
 
 
