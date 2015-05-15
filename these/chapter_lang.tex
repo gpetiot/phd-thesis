@@ -1,0 +1,403 @@
+
+\chapter{Programmes C annotés avec E-acsl}
+\label{sec:lang}
+
+\chapterintro
+
+
+Ce chapitre présente le sous-ensemble du langage C et du langage \eacsl que nous
+traitons.
+Nous définissons la notion d'environnement ainsi que les fonctions permettant de
+décrire la sémantique dénotationnelle de chaque élément du langage.
+
+
+\section{Syntaxe des programmes annotés}
+\label{sec:lang-syntax}
+
+
+Le langage de spécification \eacsl est un sous-langage exécutable d'\acsl, qui
+est un langage de spécification comportementale implémenté dans \framac.
+Premièrement, étant un sous-ensemble d'\acsl, \eacsl préserve la sémantique
+d'\acsl, ce qui implique que les greffons de \framac existants supportant \acsl
+peuvent être utilisés avec \eacsl sans modification.
+Deuxièmement, le langage \eacsl est \textit{exécutable}, ce qui veut dire que
+toutes les annotations peuvent être traduites en C et leur traduction peut être
+exécutée pour l'analyse dynamique et le \textit{monitoring} (surveillance
+d'exécution).
+
+
+\subsection{Syntaxe des instructions et fonctions}
+
+\input{figures/fig_grammar}
+
+Nous supposons que les fonctions respectent la forme normale définie par
+l'entité syntaxique \textit{function} de la grammaire définie dans la
+figure~\ref{fig:gram-c}.
+Pour des raisons de commodité, nous considérons qu'un label précède chaque
+instruction et annotation à l'intérieur d'une fonction.
+Nous considérons aussi qu'un label est présent au début et à la fin de chaque
+corps de boucle.
+Dans la figure~\ref{fig:gram-c}, la notation ``${\textit{as}\;X}$'' en exposant
+signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
+par la chaîne à laquelle on fait référence en exposant.
+Par exemple, si \texttt{foo} est le nom (\textit{id}) de la fonction sous test,
+la règle \textit{function} indique que les labels $\texttt{Beg}_f$ et
+$\texttt{End}_f$ dans le corps de cette fonction doivent être
+$\texttt{Beg}_{\texttt{foo}}$ et $\texttt{End}_{\texttt{foo}}$, ce qui assure des
+labels uniques au début et à la fin du corps de la fonction.
+Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
+de chaque fonction, qu'elle retourne une variable appelée \lstinline'res' et que
+cette variable n'entre pas en conflit avec une autre variable du programme.
+Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
+Les symboles terminaux sont \underline{soulignés}.
+Les symboles non-terminaux sont en \textit{italique}.
+\textit{cst} est toute constante du langage C : constante entière, chaîne de
+caractère littérale, constante flottante, etc.
+\textit{left-value} est toute expression pouvant se trouver en
+partie gauche d'une affectation (variable simple ou déréférencée, avec ou sans
+offset).
+\textit{id} fait référence aux identificateurs de variable (et de fonctions)
+autorisés dans le langage C : suite de caractères alphanumériques pouvant
+contenir des ``\lstinline'_''' mais dont le premier caractère ne peut pas être
+numérique.
+\textit{label} respecte les mêmes contraintes que \textit{label} mais fait
+référence aux labels d'un programme C.
+Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
+chaque fonction pour spécifier les préconditions et postconditions.
+La clause \lstinline'requires' d'un contrat de fonction désigne la précondition.
+La clause \lstinline'typically' désigne la précondition pour le test, comme son
+nom l'indique elle est spécifique au test et permet de limiter l'explosion
+combinatoire du nombre de chemins.
+La clause \lstinline'assigns' liste les termes pouvant être modifiés par la
+fonction (c'est une sur-approximation).
+La clause \lstinline'ensures' désigne la postcondition de la fonction.
+Les assertions peuvent être associées à des instructions quelconques.
+Les invariants de boucle, les variants (qui garantissement la terminaison)
+et une clause \lstinline'loop assigns' doivent être associés aux boucles.
+
+
+\subsection{Syntaxe des termes \eacsl et expressions C}
+
+\input{figures/fig_grammar_exp_term}
+
+La figure~\ref{fig:gram-exp-term} définit la grammaire des termes \eacsl et des
+expressions C du langage.
+Les termes peuvent être vus comme une extension des expressions, ils peuvent
+être d'un type C (comme une expression) ou d'un type logique (nous nous
+limitons à \lstinline'integer' dans nos travaux).
+Les termes sont ``purs'', c'est-à-dire qu'ils sont sans effets de bord.
+De même, nous nous limitons aux expressions C ``pures''.
+Pour cette raison, nous ne considérons pas les expressions comme \lstinline'x++'
+ou \lstinline'++x', et nous considérons les appels de fonction non pas comme des
+expressions mais comme des instructions (voir la figure~\ref{fig:gram-c}).
+Le terme \lstinline'\abs' fait référence à la valeur absolue d'un terme.
+\lstinline'\sum(t1, t2, \lambda integer k; t3)' est la somme généralisée
+$\sum_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
+\lstinline'\product(t1, t2, \lambda integer k; t3)' est le produit
+généralisé $\Pi_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
+\lstinline'\numof(t1, t2, \lambda integer k; t3)' fait référence au nombre de
+\lstinline'k' tel que
+$\mbox{\lstinline't1'} \le \mbox{\lstinline'k'} \le \mbox{\lstinline't2'}$ et
+$\mbox{\lstinline't3'} \neq 0$.
+Le terme \lstinline'\old' fait référence à la valeur du terme au début de la
+fonction courante.
+\lstinline'\null' est le terme correspondant au pointeur \lstinline'NULL'.
+\lstinline{\result} fait référence au résultat d'une fonction.
+
+
+\subsubsection{Entiers mathématiques}
+\label{sec:eacsl-integers}
+
+
+En plus des entiers machine, les termes \eacsl peuvent être des entiers
+mathématiques de type \lstinline{integer} qui sont définis sur l'ensemble
+$\mathbb{Z}$ : les constantes entières, les
+opérations sur les entiers, ainsi que les variables logiques sont de type
+\lstinline{integer}.
+L'arithmétique entière est non bornée et donc les débordements d'entier
+(\textit{overflows}) sont impossibles.
+\eacsl dispose d'un système de sous-typage pour convertir automatiquement les
+types entiers du C vers les entiers mathématiques.
+Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
+\lstinline{1} et \lstinline{x+1} sont de type \lstinline{integer} et une
+conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
+dans ce contexte quand la variable \lstinline{x} est typée.
+Ce choix a été fait pour plusieurs raisons.
+Premièrement, un des buts principaux de \framac est la preuve de programmes par
+appel à des prouveurs externes.
+Or, la plupart de ces prouveurs fonctionnent mieux
+avec l'arithmétique entière qu'avec l'arithmétique bornée (ou modulaire).
+Deuxièmement, les spécifications sont habituellement écrites sans se préoccuper
+des détails d'implémentation, et les débordements d'entiers sont des détails
+d'implémentation.
+Troisièmement, il reste possible d'utiliser l'arithmétique bornée, si besoin
+est, en utilisant des conversions explicites (\textit{casts}).
+Par exemple, \lstinline{(int)(INT_MAX + 1)} est égal à \lstinline{INT_MIN}, la
+plus petite valeur représentable de type \lstinline{int}.
+Quatrièmement, ce choix facilite l'expression des débordements potentiels dans
+les spécifications : par exemple, grâce à l'arithmétique entière,
+\lstinline{/*@ assert INT_MIN <= x+y <= INT_MAX;*/} est le moyen le plus simple
+de spécifier que \lstinline{x+y} ne déborde pas.
+Dans la suite, sauf mention contraire, ``entier'' fait référence à
+``entier non borné''.
+
+
+\subsection{Syntaxe des prédicats \eacsl}
+
+\input{figures/fig_grammar_pred}
+
+La figure~\ref{fig:gram-pred} définit la grammaire des prédicats du langage
+\eacsl.
+Un prédicat a une valeur de vérité vraie ou fausse.
+Le prédicat \lstinline'\valid' renvoie vrai si son argument est un pointeur
+valide : c'est-à-dire \lstinline'\valid(ptr)' est vrai si et seulement si
+on peut déréférencer \lstinline'ptr' et donc écrire \lstinline'*ptr'.
+Dans le cas où son argument est de la forme \lstinline'ptr+(x..y)', le prédicat
+est valide si et seulement si \lstinline'ptr+x', \lstinline'ptr+(x+1)', \ldots,
+\lstinline'ptr+y' sont valides.
+Les quantifications existentielles (\lstinline'\exists') et universelles
+(\lstinline'\forall') doivent porter sur des domaines finis d'entiers.
+Le symbole \lstinline'==>' encode l'implication logique et le symbole
+\lstinline'<==>' encode l'équivalence logique de deux prédicats.
+
+
+\section{Sémantique des programmes annotés}
+\label{sec:lang-semantics}
+
+
+Nous définissons maintenant la notion d'environnement d'un programme, puis la
+sémantique dénotationnelle des instructions et fonctions d'un programme
+annoté par rapport à un environnement.
+Dans la suite, nous utilisons les notations suivantes :
+\begin{itemize}
+\item $lv$, $lv_1$ et $lv_2$ sont des left-values;
+\item $id$ est un identificateur de variable;
+\item $f$ est un identificateur de fonction;
+\item $v$ est une valeur;
+\item $cst$ est une constante;
+\item $G$ et $X$ sont des listes de termes \eacsl;
+\item $i$, $i_1$, $i_2$ sont des instructions C;
+\item $i^{*}$, $i_1^{*}$, $i_2^{*}$ sont des séquence d'instructions C;
+\item $e$, $e_1$, $e_2$, $e_N$ sont des expressions C;
+\item $t$, $t_1$, $t_2$ sont des termes \eacsl;
+\item $p$, $p_1$, $p_2$ sont des prédicats \eacsl;
+\item $unop$ est un opérateur unaire;
+\item $binop$ est un opérateur binaire;
+\item $rel$ est un opérateur binaire relationnel.
+\end{itemize}
+
+
+\subsection{Environnements}
+
+
+Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
+Le domaine des valeurs $VAL$ est défini comme l'union des types que
+peuvent prendre les termes et prédicats \eacsl :
+$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\mathbb{R}$.
+
+Un environnement \env est une fonction partielle \env $: LV \rightarrow VAL$ des
+identificateurs de variables dans le domaine sémantique des valeurs
+possibles.
+
+La notation \env[$lv \mapsto v$] désigne un nouvel environnement,
+correspondant à l'environnement \env auquel la paire $(lv, v)$ a été ajoutée,
+ce qui signifie que $v$ est la nouvelle valeur de $lv$ dans cet environnement.
+
+L'accès à la valeur d'une left-value $lv$ dans un environnement \env est noté
+\env($lv$).
+Il est défini par :
+
+\begin{tabular}{rclr}
+  (\env[$lv \mapsto v$])($lv$) & = & $v$ & \eqlabel{env-1} \\
+  (\env[$lv_1 \mapsto v$])($lv_2$) & = & \env($lv_2$) si $lv_1 \neq lv_2$
+  & \eqlabel{env-2}\\
+\end{tabular}
+
+Dans la suite, nous utiliserons la notation
+\env[$lv_1 \mapsto v_1, lv_2 \mapsto v_2$] (en supposant que $lv_1 \not = lv_2$)
+comme un raccourci pour \env[$lv_1 \mapsto v_1$][$lv_2 \mapsto v_2$].
+
+La notation \env $-~\{lv\}$ signifie que la left-value
+$lv$ et sa valeur sont enlevées de l'environnement \env :
+
+\begin{tabular}{rcl}
+  (\env[$lv_1 \mapsto v$])$-~\{lv_2\}$
+  &=& (\env$-~\{lv_2\}$)[$lv_1 \mapsto v$] si $lv_1 \neq lv_2$ \\
+  (\env[$lv \mapsto v$])$-~\{lv\}$ &=& \env \\
+\end{tabular}
+
+Nous définissons également une relation d'inclusion sur les environnements,
+c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si
+chaque paire $(lv, v)$ présente dans l'environnement \env$_1$ est
+également présente dans \env$_2$ :
+
+\env$_1$ $\subset$ \env$_2$ $\equiv$
+$\forall (lv, v). (lv \mapsto v) \in \mbox{\env}_1 \Rightarrow (lv \mapsto v) \in \mbox{\env}_2$
+
+Nous définissons un ``environnement d'erreur'', noté \errorenv.
+Un tel environnement est le résultat de l'évaluation d'une instruction
+provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
+expression fausse) ou d'une annotation invalide (par exemple,
+\lstinline'assert' ou \lstinline'loop invariant' faux).
+L'évaluation des instructions s'arrête dès qu'un environnement d'erreur est
+produit.
+Nous notons $ENV$ le domaine des environnements.
+
+
+\subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
+
+\input{figures/fig_semantics_exp_term}
+
+La sémantique dénotationnelle des expressions C, des termes et des prédicats
+\eacsl est exprimée avec la fonction
+$\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow ENV \rightarrow VAL$.
+Le domaines $EXP$, $TERM$ et $PRED$ correspondent respectivement aux entités
+syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
+figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
+Cette fonction associe à une expression C (ou un terme ou prédicat \eacsl) dans
+un environnement une valeur, à condition que cette expression ne génère pas
+d'effet de bord, hypothèse satisfaite par le langage considéré après
+normalisation du code par \framac.
+
+La figure~\ref{fig:sem-exp-term} donne la sémantique des expressions et des
+termes.
+Ces deux éléments du langage se retrouvent sur la même figure car les termes
+peuvent être vus comme une extension des expressions C.
+Les cinq premières règles de la figure~\ref{fig:sem-exp-term} sont communes aux
+termes et aux expressions, les autres sont spécifiques aux termes.
+Dans la règle \eqlabel{E-old}, \env$_{Old}$ est l'environnement au début de la
+fonction.
+
+La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
+La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
+
+\input{figures/fig_semantics_pred}
+
+
+\subsection{Sémantique Dénotationnelle des Instructions}
+
+La sémantique dénotationnelle des instructions C est exprimée avec la fonction
+$\mathcal{C} : INSTR \rightarrow ENV \rightarrow ENV$.
+Cette fonction associe à une instruction $i$ et un environnement \env un nouvel
+environnement qui prend en compte les modifications effectuées par $i$ dans
+l'environnement \env.
+La sémantique d'une séquence d'instructions est exprimée avec la fonction
+$\mathcal{C}^{*} : INSTR^{*} \rightarrow ENV \rightarrow ENV$.
+Le symbole $\emptylist$ dénote une séquence vide.
+Cette fonction revient à appeler succesivement $\mathcal{C}$ sur chaque
+instruction de la séquence :
+
+\begin{tabular}{rclr}
+  \comps{$\emptylist$}{\env} & = & \env & \eqlabel{C*-empty} \\
+  \comps{$i_1$ ; $i_2^{*}$}{\env} & = & \comps{$i_2^{*}$}{(\comp{$i_1$}{\env})}
+  & \eqlabel{C*-seq} \\
+\end{tabular}
+
+
+\input{figures/fig_semantics}
+
+La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
+La règle \eqlabel{C-decl} ajoute une variable non initialisée (notée par le
+symbole $\bot$) à l'environnement \env.
+Dans la règle \eqlabel{C-Z-set}, la variable entière (GMP) \lstinline'lval' est
+allouée et on lui affecte la valeur de \lstinline'e'.
+Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) \lstinline'lval'
+est désallouée et enlevée de l'environnement \env.
+Une instruction \underline{soulignée} manipule des entiers non bornés.
+
+Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
+d'une expression.
+Cette fonction correspond à un \lstinline'if' dont la branche
+\lstinline'else' génère une erreur et la rapporte.
+Nous définissons également une fonction \lstinline'fassume' permettant de poser
+une hypothèse de validité sur la valeur d'une expression.
+Cette fonction correspond à un \lstinline'if' dont
+la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
+la branche \lstinline'else' est activée sont ignorées.
+Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
+d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
+permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
+
+La sémantique de la fonction \lstinline'fassert' donnée par la règle
+\eqlabel{C-fassert} énonce que si l'expression \lstinline'e' s'évalue en une
+expression non nulle, alors l'environnement \env est inchangé, sinon on obtient
+l'environnement d'erreur \errorenv.
+La sémantique de la fonction \lstinline'fassume' donnée par la règle
+\eqlabel{C-fassume} énonce que l'expression \lstinline'e' est supposée vraie et
+doit donc s'évaluer en une expression non nulle.
+L'environnement est inchangé après cet appel de fonction.
+\lstinline'e' ne peut pas s'évaluer en 0 par définition de la fonction, si c'est
+le cas on aboutit à une contradiction.
+
+La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donnée
+par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
+Elles énoncent que dans le nouvel environnement, la left-value $lv$ a la valeur
+1 si les pointeurs en argument de la fonction sont valides, et 0 sinon.
+
+La sémantique des assertions \eacsl donnée par la règle \eqlabel{C-assert} est
+similaire à la sémantique de la fonction \lstinline'fassert'.
+Si le prédicat \lstinline'p' s'évalue en une expression non nulle,
+l'environnement \env est inchangé, sinon l'environnement \errorenv est obtenu.
+
+La sémantique des boucles annotées par un contrat contenant un invariant
+\lstinline'p', une liste de termes \lstinline'X' et un variant \lstinline't' est
+donnée par les règles \eqlabel{C-while-1} à \eqlabel{C-while-7}.
+La règle \eqlabel{C-while-1} énonce que \errorenv est obtenu si l'invariant de
+boucle n'est pas établi avant l'exécution du corps de la boucle.
+La règle \eqlabel{C-while-2} énonce que l'environnement \env est inchangé si
+la condition de boucle \lstinline'e' s'évalue à 0 et donc la boucle n'est pas
+exécutée.
+La règle \eqlabel{C-while-3} énonce que \errorenv est obtenu si le variant de
+boucle n'est pas positif avant l'exécution de la boucle.
+La règle \eqlabel{C-while-4} énonce que \errorenv est obtenu si l'invariant de
+boucle n'est pas maintenu après l'exécution du corps de boucle.
+L'environnement \comps{\lstinline'i'$^{*}$}{\env} est obtenu après exécution du
+corps de la boucle dans \env.
+La règle \eqlabel{C-while-5} énonce que \errorenv est obtenu si le variant de
+boucle ne décroît pas strictement entre le début et la fin de l'exécution du
+corps de boucle.
+La règle \eqlabel{C-while-6} énonce que \errorenv est obtenu si l'évaluation
+d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
+la clause \lstinline'loop assigns' de la boucle) est différente entre le début
+et la fin de l'exécution du corps de la boucle.
+La règle \eqlabel{C-while-7} énonce que si aucun des six cas précédents ne s'est
+produit, il faut ré-évaluer la sémantique de la boucle dans l'environnement
+obtenu après exécution du corps de la boucle dans \env.
+
+
+\input{figures/fig_semantics_fct}
+
+
+La sémantique dénotationnelle des fonctions est exprimée avec la fonction
+$\mathcal{F} : FCT \rightarrow ENV \rightarrow ENV$ où $FCT$ correspond à
+l'entité syntaxique \textit{function} définie par la figure~\ref{fig:gram-c}.
+Cette fonction calcule un nouvel environnement à partir d'une
+fonction annotée et d'un environnement \env, ce qui permet de traiter les appels
+de fonction (règles \eqlabel{C-fct1} et \eqlabel{C-fct2} de la
+figure~\ref{fig:sem-instr}) et la fonction sous vérification (qui n'est pas
+appelée).
+
+La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
+Si la fonction considérée est la fonction sous vérification, alors sa
+précondition \lstinline'p1' est supposée vraie par définition.
+On obtient donc une contradiction si le prédicat \lstinline'p1' s'évalue en
+faux pour la fonction sous vérification (règle \eqlabel{F-1}).
+Si la fonction considérée n'est pas la fonction sous vérification, alors la
+règle \eqlabel{F-2} énonce que \errorenv est obtenu si le prédicat
+\lstinline'p1' s'évalue en faux.
+La règle \eqlabel{F-3} énonce que \errorenv est obtenu si l'évaluation
+d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
+la clause \lstinline'assigns' de la fonction) est différente entre le début
+et la fin de l'exécution du corps de la fonction.
+La règle \eqlabel{F-4} énonce que \errorenv est obtenu si le prédicat de la
+postcondition \lstinline'p2' est faux à la fin de la fonction.
+Enfin, si aucun des quatre cas précédents ne s'est produit, il faut calculer la
+sémantique des instructions du corps de la fonction.
+
+
+\section*{Conclusion du chapitre}
+
+Dans ce chapitre nous avons présenté le sous-ensemble du langage C et du
+langage \eacsl que nous traitons.
+Nous avons défini la notion d'environnement, ainsi que la sémantique
+dénotationnelle de chaque élément du langage.
