@@ -1,0 +1,47 @@
+\begin{figure}[h!]
+  \begin{tabular}{lrl}
+    \textit{unop} & ::= & \underline{\lstinline'-'}
+    $\mid$ \underline{\lstinline'*'}
+    $\mid$ \underline{\lstinline'\~'} \\
+    \textit{binop} & ::= & \underline{\lstinline'+'}
+    $\mid$ \underline{\lstinline'-'}
+    $\mid$ \underline{\lstinline'*'}
+    $\mid$ \underline{\lstinline'/'}
+    $\mid$ \underline{\lstinline'\%'} \\
+    \textit{exp} & ::= & \textit{cst} \\
+    & $\mid$ & \textit{left-value} \\
+    & $\mid$ & \textit{unop} \textit{exp} \\
+    & $\mid$ & \textit{exp} \textit{binop} \textit{exp} \\
+    %& $\mid$ & \underline{\lstinline'('} \textit{type}
+    %\underline{\lstinline')'} \textit{exp} \\
+    \textit{term} & ::= & \textit{cst} \\
+    & $\mid$ & \textit{left-value} \\
+    & $\mid$ & \textit{unop} \textit{term} \\
+    & $\mid$ & \textit{term} \textit{binop} \textit{term} \\
+    %& $\mid$ & \underline{\lstinline'('} \textit{type}
+    %\underline{\lstinline')'} \textit{term} \\
+    & $\mid$
+    & \underline{\lstinline'\\abs('} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$
+    & \underline{\lstinline'\\sum('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\product('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\numof('} \textit{term}
+    \underline{\lstinline','} \textit{term} \underline{\lstinline','}
+    \underline{\lstinline'\\lambda integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline')'} \\
+    & $\mid$ & \textit{term} \underline{\texttt{?}} \textit{term}
+    \underline{\lstinline'\:'} \textit{term}\\
+    & $\mid$ & \underline{\lstinline'\\old('} \textit{term}
+    \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\null'} \\
+    & $\mid$ & \underline{\lstinline'\\result'} \\
+  \end{tabular}
+  \caption{Grammaire des expressions C et termes \eacsl}
+  \label{fig:gram-exp-term}
+\end{figure}

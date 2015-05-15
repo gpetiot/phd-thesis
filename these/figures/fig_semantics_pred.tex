@@ -1,0 +1,44 @@
+\begin{figure}[h!]
+  \begin{tabular}{rclr}
+    \eval{\lstinline'\\true'}{\env} &=& 1 & \eqlabel{P-true} \\
+    \eval{\lstinline'\\false'}{\env} &=& 0 & \eqlabel{P-false} \\
+    \eval{\lstinline'\\valid(t)'}{\env} &=& 1 si \lstinline't' est
+    valide dans \env, 0 sinon & \eqlabel{P-valid} \\
+    \eval{\lstinline'\\valid(t1+(t2..t3))'}{\env} &=& 1 si
+    \lstinline'(t1+t2)', \dots, \lstinline'(t1+t3)' sont valides dans \env,
+    & \eqlabel{P-validr} \\
+    & & 0 sinon & \\
+    \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env} &=&
+    $\forall$ \lstinline'k'.
+    (\eval{\lstinline't1'}{\env} $\le$ \lstinline'k' $\le$
+    \eval{\lstinline't2'}{\env} $\Rightarrow$ \eval{\lstinline'p'}{\env})
+    & \eqlabel{P-forall} \\
+    \eval{\lstinline'\\exists integer k; t1 <= k <= t2 \&\& p'}{\env} &=&
+    $\exists$ \lstinline'k'.
+    (\eval{\lstinline't1'}{\env} $\le$ \lstinline'k' $\le$
+    \eval{\lstinline't2'}{\env} $\land$ \eval{\lstinline'p'}{\env})
+    & \eqlabel{P-exists} \\
+    \eval{\lstinline'\! p'}{\env} &=& $\lnot$ (\eval{\lstinline'p'}{\env})
+    & \eqlabel{P-not} \\
+    \eval{\lstinline'p1 \&\& p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\land$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-and} \\
+    \eval{\lstinline'p1 || p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\lor$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-or} \\
+    \eval{\lstinline'p1 ==> p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\Rightarrow$ (\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-impl} \\
+    \eval{\lstinline'p1 <==> p2'}{\env} &=&
+    (\eval{\lstinline'p1'}{\env}) $\Leftrightarrow$(\eval{\lstinline'p2'}{\env})
+    & \eqlabel{P-eq} \\
+    \eval{\lstinline't ? p1 : p2'}{\env} &=& \eval{\lstinline'p1'}{\env}
+    si (\eval{\lstinline't'}{\env}) $\neq$ 0, \eval{\lstinline'p2'}{\env} sinon
+    & \eqlabel{P-pif} \\
+    \eval{\lstinline|t1 rel t2|}{\env}
+    &=& (\eval{\lstinline|t1|}{\env}) \lstinline|rel|
+    (\eval{\lstinline|t2|}{\env}) & \eqlabel{P-rel} \\
+  \end{tabular}
+  \caption{Sémantique dénotationnelle des prédicats}
+  \label{fig:sem-pred}
+\end{figure}

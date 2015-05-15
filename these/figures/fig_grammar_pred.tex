@@ -1,0 +1,36 @@
+\begin{figure}[h!]
+  \begin{tabular}{lrl}
+    \textit{relation} & ::= & \underline{\lstinline'>'}
+    $\mid$ \underline{\lstinline'>='}
+    $\mid$ \underline{\lstinline'<'}
+    $\mid$ \underline{\lstinline'<='}
+    $\mid$ \underline{\lstinline'=='}
+    $\mid$ \underline{\lstinline'\!='} \\
+    \textit{pred} & ::= & \underline{\lstinline'\\true'} \\
+    & $\mid$ & \underline{\lstinline'\\false'} \\
+    & $\mid$ & \underline{\lstinline'\\valid('} \textit{term}
+    \underline{\lstinline')'} \\
+    & $\mid$ & \underline{\lstinline'\\valid('} \textit{term}
+    \underline{\lstinline'+('}
+    \textit{term} \underline{\lstinline'..'} \textit{term}
+    \underline{\lstinline'))'} \\
+    & $\mid$ & \underline{\lstinline'\\forall integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline'<='}
+    \textit{id} \underline{\lstinline'<='} \textit{term}
+    \underline{\lstinline'==>'} \textit{pred} \\
+    & $\mid$ & \underline{\lstinline'\\exists integer'} \textit{id}
+    \underline{\lstinline'\;'} \textit{term} \underline{\lstinline'<='}
+    \textit{id} \underline{\lstinline'<='} \textit{term}
+    \underline{\lstinline'&&'} \textit{pred} \\
+    & $\mid$ & \underline{\lstinline'\!'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'&&'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'||'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'==>'} \textit{pred} \\
+    & $\mid$ & \textit{pred} \underline{\lstinline'<==>'} \textit{pred} \\
+    & $\mid$ & \textit{term} \underline{\texttt{?}} \textit{pred}
+    \underline{\lstinline'\:'} \textit{pred} \\
+    & $\mid$ & \textit{term} \textit{relation} \textit{term} \\
+  \end{tabular}
+  \caption{Grammaire des prédicats \eacsl}
+  \label{fig:gram-pred}
+\end{figure}
