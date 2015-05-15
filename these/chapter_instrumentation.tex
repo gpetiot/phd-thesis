@@ -497,6 +497,31 @@ arithmétiques suivants : \lstinline|+|, \lstinline|-|, \lstinline|/|,
 Dans la règle \textsc{$\tau$-if}, les évaluations de $t_2$ et $t_3$ sont dans
 des branches conditionnelles : on calcule uniquement l'un des deux, en fonction
 de l'évaluation de $t_1$.
+La notation
+\[
+(l,
+\mbox{\lstinline'if('}
+\underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline' \!= 0'}}
+\mbox{\lstinline')'} \bopen
+I_2
+\concat
+(l, \underline{\Zinit \mbox{\lstinline'var_n = e2'} \Zclear}
+\semicolon )
+\bclose
+\mbox{\lstinline'else'} \bopen
+I_3
+\concat
+(l, \underline{\Zinit \mbox{\lstinline'var_n = e3'} \Zclear}
+\semicolon )
+\bclose )
+\]
+signifie que les blocs du \lstinline'if' et du \lstinline'else' contiendront,
+après l'étape d'insertion (voir partie~\ref{sec:principles}), les instructions à
+insérer au label $l$ obtenues à partir des fragments de code de $I_2$ et $I_3$
+respectivement.
+Dans la suite cette notation sera utilisée pour chaque conditionnelle
+\lstinline'if' et chaque boucle \lstinline'while' générée par les règles de
+traduction.
 
 \input{figures/fig_rules_builtin}
 
