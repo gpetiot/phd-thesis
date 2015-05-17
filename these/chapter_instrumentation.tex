@@ -954,28 +954,35 @@ nous devons prouver la correction de la traduction des prédicats.
 
 \begin{lemma}
   \label{lem:pred-correct}
-  Soit \lstinline'p' un prédicat qui se traduit en $(I, \mbox{\lstinline'e'})$.
-  La traduction est correcte si et seulement si, pour n'importe quel
-  environnement \env :
-  
-  \eval{\lstinline'e'}{(\compi{$I$}{\env})} = \eval{\lstinline'p'}{\env}
-  
-  et
-  
-  \env \subenv \compi{$I$}{\env}
-
-  et
-
-  \compi{$I$}{\env} $\neq$ \errorenv.
+  Soit \lstinline'p' un prédicat au label $l$ qui est
+  traduit par le couple $(I, \mbox{\lstinline'e'})$ où $I$ est une liste
+  d'insertions de code et \lstinline'e' l'expression donnant la valeur du
+  prédicat \lstinline'p'.
+  La traduction est correcte si le fragment de programme $A$ obtenu à partir de
+  $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
+  environnement \env{} tel que
+  \eval{\lstinline'e'}{\env} = \eval{\lstinline'p'}{\env}, où
+  \env = \comp{$A$}{\env$_l$}.
 \end{lemma}
+
+\begin{corollary}
+  \label{lem:pred-noerror}
+  \env $\neq$ \errorenv
+\end{corollary}
+
+\begin{corollary}
+  \label{lem:pred-subset}
+  \env$_l$ \subenv{} \env
+\end{corollary}
 
 Le lemme~\ref{lem:pred-correct} énonce que l'évaluation des insertions de code
 $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
-nouvelle variable \lstinline'e' (fraîche) à l'environnement \env, dont la valeur
-correspond à l'évaluation de \lstinline'p' dans \env.
-Les variables qui sont déjà dans l'environnement initial \env ne sont pas
-impactées dans l'environnement \compi{$I$}{\env} et l'environnement résultant de
-la traduciton du prédicat n'est pas l'environnement d'erreur.
+nouvelle variable \lstinline'e' (fraîche) à l'environnement courant, dont la
+valeur correspond à l'évaluation de \lstinline'p' dans \env.
+Les variables qui sont déjà dans l'environnement initial \env$_l$ ne sont pas
+impactées dans l'environnement \env{} (Corollaire~\ref{lem:pred-subset}), et
+l'environnement résulant de la traduction du prédicat n'est pas l'environnement
+d'erreur \errorenv (Corollaire~\ref{lem:pred-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
 Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
 et~\ref{th:inclusion}.
