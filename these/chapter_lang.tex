@@ -193,7 +193,8 @@ Dans la suite, nous utilisons les notations suivantes :
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 Le domaine des valeurs $VAL$ est défini comme l'union des types que
 peuvent prendre les termes et prédicats \eacsl :
-$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\mathbb{R}$.
+$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\mathbb{R}~\cup~\bot$, où le symbole
+$\bot$ dénote une valeur non initialisée.
 
 Un environnement \env est une fonction partielle \env $: LV \rightarrow VAL$ des
 identificateurs de variables dans le domaine sémantique des valeurs
