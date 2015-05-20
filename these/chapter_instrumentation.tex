@@ -1010,15 +1010,15 @@ Prouvons que pour n'importe quel environnement \env :
 1.
 \eval{\lstinline'p1 && p2'}{\env} =
 \eval{\lstinline'e'}{(
-  \comp{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'} \cdot
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
     \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-    \mbox{\lstinline' e = e2;'}) \bclose$
+    \mbox{\lstinline' e = e2;'} \bclose$
   }{\env}
   )}
 en admettant que le fragment de programme
-$A_1\semicolon~ \mbox{\lstinline' int e = e1;'} \cdot
+$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
 \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-\mbox{\lstinline' e = e2;'}) \bclose$
+\mbox{\lstinline' e = e2;'} \bclose$
 est obtenu à partir des listes d'insertions
 $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
@@ -1026,15 +1026,15 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 
 2.
 \env{} \subenv{}
-\comp{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'} \cdot
+\comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
   \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' e = e2;'}) \bclose$
+  \mbox{\lstinline' e = e2;'} \bclose$
 }{\env}.
 
 3.
-\comp{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'} \cdot
+\comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
   \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' e = e2;'}) \bclose$
+  \mbox{\lstinline' e = e2;'} \bclose$
 }{\env} $\neq$ \errorenv.
 
 
@@ -1046,182 +1046,181 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
   \begin{center}
     \begin{tabular}{rclr}
       \eval{\lstinline'p1'}{\env}
-      &=& \eval{\lstinline'e1'}{(\comp{$A_1$}{\env})} & \eqlabel{h1} \\
+      &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} & \eqlabel{h1} \\
       \eval{\lstinline'p2'}{\env}
-      &=& \eval{\lstinline'e2'}{(\comp{$A_2$}{\env})} & \eqlabel{h2} \\
-      %\env & \subenv & \compi{$I_1$}{\env} & \eqlabel{h3} \\
-      %\env & \subenv & \compi{$I_2$}{\env} & \eqlabel{h4} \\
-      %\compi{$I_1$}{\env} & $\neq$ & \errorenv & \eqlabel{h5} \\
-      %\compi{$I_2$}{\env} & $\neq$ & \errorenv & \eqlabel{h6} \\
+      &=& \eval{\lstinline'e2'}{(\comps{$A_2$}{\env})} & \eqlabel{h2} \\
     \end{tabular}
   \end{center}
 
   Développons le membre droit :
-  
+
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
-      \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-        (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-        (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}} \\
-    & $\eq{\eqlabel{I-split}}$ & \compi{
-      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
-    }{
-      (\compi{$(l, \mbox{\lstinline'int e = e1;'})$}{(\compi{$I_1$}{\env})
+      \eval{\lstinline'e'}{(
+        \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
+          \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+          \mbox{\lstinline' e = e2;'} \bclose$
+        }{\env}
+        )}
+    } \\
+    &=& \eval{\lstinline'e'}{(\comps{$\mbox{\lstinline' int e = e1;'}
+        \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+        \mbox{\lstinline' e = e2;'} \bclose$}{(\comps{$A_1$}{\env})})} \\
+    &$\eq{\eqlabel{C-set}}$& \eval{\lstinline'e'}{(\comps{
+        \lstinline'if(e)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' e = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
       })
     } \\
-    & $\eq{\eqlabel{I-instr}}$ & \compi{
-      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
-    }{
-      (\comp{\lstinline'int e = e1;'}{(\compi{$I_1$}{\env})
-      })
-    } \\
-    & $\eq{\eqlabel{C-set}}$ & \compi{
-      $(l, \mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e2;'}) \bclose )$
-    }{
-      ((\compi{$I_1$}{\env})
-      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-      )
-    } \\
-    & $\eq{\eqlabel{I-instr}}$ & \comp{
-      $\mbox{\lstinline'if(e)'} \bopen I_2 \concat
-      (l, \mbox{\lstinline'e = e2;'}) \bclose$
-    }{
-      ((\compi{$I_1$}{\env})
-      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-      )
-    } \\
-
-    %% cas true
-    \multicolumn{3}{l}{
-      (1) Cas où la valeur de l'expression de la conditionnelle est vraie :} \\
-    \multicolumn{3}{l}{
-      Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{true}
-      ~~\eqlabel{h7}
-    } \\
-    \multicolumn{3}{l}{
-      Car
-      \eval{\lstinline'e'}{(
-        (\compi{$I_1$}{\env})
-        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-      )} = \textit{true}} \\
-    & $\eq{\eqlabel{C-if}}$ & \compi{
-      $I_2 \concat (l, \mbox{\lstinline'e = e2;'})$
-    }{(
-      (\compi{$I_1$}{\env})
-      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-      )} \\
-    & $\eq{\eqlabel{I-split}}$ & \compi{
-      $(l, \mbox{\lstinline'e = e2;'})$
-    }{(\compi{$I_2$}{(
-        (\compi{$I_1$}{\env})
-        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-        )}
-      )} \\
-    & $\eq{\eqlabel{I-instr}}$ & \comp{
-      \lstinline'e = e2;'
-    }{(\compi{$I_2$}{(
-        (\compi{$I_1$}{\env})
-        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-        )}
-      )} \\
-    & $\eq{\eqlabel{C-set}}$ & (\compi{$I_2$}{(
-      (\compi{$I_1$}{\env})
-      [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-      )}
-    )[\lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}] \\
-    \multicolumn{3}{l}{
-      En évaluant \lstinline'e' dans ce nouvel environnement, on obtient :
-    } \\
-    \multicolumn{3}{l}{
-      \eval{\lstinline'e'}{(\compi{$I_2$}{(
-          (\compi{$I_1$}{\env})
-          [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-          )}
-        )[\lstinline'e' $\mapsto$ \eval{\lstinline'p2'}{\env}]}
-    } \\
-    & $\eq{\eqlabel{E-lval}}$ & \eval{\lstinline'p2'}{\env} \\
-    & $\eq{\eqlabel{h7}}$
-    & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
-    & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
-
-    %% cas false
-    \multicolumn{3}{l}{
-      (2) Cas où la valeur de l'expression de la conditionnelle est fausse :} \\
-    \multicolumn{3}{l}{
-      Nouvelle hypothèse : \eval{\lstinline'p1'}{\env} = \textit{false}
-      ~~\eqlabel{h8}
-    }\\
-    \multicolumn{3}{l}{
-      Car \eval{\lstinline'e'}{(
-        (\compi{$I_1$}{\env})
-        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-        )} = \textit{false}}\\
-    &$\eq{\eqlabel{C-if}}$
-    & (\compi{$I_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-    \\
-    \multicolumn{3}{l}{
-      En évaluant \lstinline'e' dans ce nouvel environnement, on obtient :
-    } \\
-    \multicolumn{3}{l}{
-      \eval{\lstinline'e'}{(
-        (\compi{$I_1$}{\env})
-        [\lstinline'e' $\mapsto$ \eval{\lstinline'p1'}{\env}]
-        )}
-    } \\
-    & $\eq{\eqlabel{E-lval}}$
-    & \eval{\lstinline'p1'}{\env} \\
-    & $\eq{\eqlabel{h8}}$
-    & \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} \\
-    & $\eq{\eqlabel{P-and}}$ & \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
 
-  Nous avons donc prouvé, pour tout environnement \env :
+  (a) Cas où la valeur de l'expression conditionnelle \lstinline'e' est vraie,
+  soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = true, c'est-à-dire par
+  hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = true.
+  Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc
+  $A_2\semicolon~ \mbox{\lstinline' e = e2;'}$ :
 
+  \begin{tabular}{rcl}
+    \multicolumn{3}{l}{
+      \comps{
+        \lstinline'if(e)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' e = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+      }
+    } \\
+    &$\eq{\eqlabel{C-if}}$& \comps{
+      $A_2\semicolon~\mbox{\lstinline' e = e2;'}$}{
+      ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+    } \\
+    &=& \comp{
+      \lstinline' e = e2;'
+    }{$\underbracket{
+        \mbox{
+          (\comps{$A_2$}{
+            ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          })
+        }
+      }_{\Gamma_f}$
+    } \\
+    &$\eq{\eqlabel{C-set}}$
+    & $\Gamma_f$[\lstinline'e' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}]
+  \end{tabular}
+
+  Donc :
+
+  \begin{tabular}{rcl}
+    \eval{\lstinline'e'}{
+      ($\Gamma_f$[
+        \lstinline'e' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}
+      ])
+    }
+    &=& \eval{\lstinline'e2'}{$\Gamma_f$} \\
+    &$\eq{\eqlabel{h2}}$& \eval{\lstinline'p2'}{\env} \\
+    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}
+         {\scriptsize
+           (car on est dans le cas \eval{\lstinline'p1'}{\env} = true)} \\
+         &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
+  \end{tabular}
+
+  (b) Cas où la valeur de l'expression conditionnelle \lstinline'e' est fausse,
+  soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = false, c'est-à-dire par
+  hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = false.
+  Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc du
+  \lstinline'else' (qui ici est vide et n'apparaît pas car facultatif) :
+
+  \begin{tabular}{rcl}
+    \multicolumn{3}{l}{
+      \comps{
+        \lstinline'if(e)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' e = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+      }
+    } \\
+    &$\eq{\eqlabel{C-if}}$
+    & (\comps{$A_1$}{\env})[
+      \lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}] \\
+  \end{tabular}
+
+  Donc :
+
+  \begin{tabular}{rcl}
+    \multicolumn{3}{l}{
+      \eval{\lstinline'e'}{
+        ((\comps{$A_1$}{\env})[
+          \lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+      }
+    } \\
+    &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} \\
+    &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{\env} \\
+    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} {\scriptsize
+      (car on est dans le cas \eval{\lstinline'p1'}{\env} = false)} \\
+    &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
+  \end{tabular}
+  
+  On a donc bien :
+  \eval{\lstinline'p1 && p2'}{\env} =
   \eval{\lstinline'e'}{(
-    \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-      (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-      (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}
-    )} = \eval{\lstinline'p1 && p2'}{\env}.
-
-  De manière informelle, la preuve de la seconde propriété est assurée par le
-  fait que d'une part les fragments de code générés ne modifient que la
-  variable fraîche \lstinline'e' et d'autre part, les hypothèses \eqlabel{h3}
-  et \eqlabel{h4} nous assurent que les fragments $I_1$ et $_2$ ne modifient pas
-  les variables de l'environnement \env.
-  On en conclut donc que les fragments générés
-  $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-  (l, \mbox{\lstinline'e = e2;'}) \bclose )$ ne modifient pas les variables de
-  l'environnement \env, et donc :
-
-  \env \subenv
-  \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-    (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env}.
-
-  Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
-  code générés ne produisent pas d'erreur (seule la variable fraîche
-  \lstinline'e' est affectée) nous assurent que si \env n'est pas un
-  environnement d'erreur (ici encore, \env ne peut pas être \errorenv puisque la
-  traduction se serait arrêtée dès l'obtention de l'erreur), alors :
-
-  \compi{$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-  (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-  (l, \mbox{\lstinline'e = e2;'}) \bclose )$}{\env} $\neq$ \errorenv.
+    \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
+      \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+      \mbox{\lstinline' e = e2;'} \bclose$
+    }{\env}
+    )}.
   ~\\
 \end{proof}
 
 
 \begin{proof}[Preuve du point 2.]~\\
-  ...
+  Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
+  correctes, c'est-à-dire :
+
+  \begin{center}
+    \begin{tabular}{rclr}
+      \env & \subenv & \comps{$A_1$}{\env} & \eqlabel{h3} \\
+      \env & \subenv & \comps{$A_2$}{\env} & \eqlabel{h4} \\
+    \end{tabular}
+  \end{center}
+
+  De manière informelle, les affectations générées \lstinline'int e = e1;'
+  et \lstinline'e = e2;' ne modifient que la variable fraîche \lstinline'e' et
+  les hypothèses \eqlabel{h3}
+  et \eqlabel{h4} nous assurent que les blocs $A_1$ et $A_2$ ne modifient pas
+  les variables de l'environnement \env.
+  On en conclut donc que le fragment de programme généré
+  $A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
+  \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+  \mbox{\lstinline' e = e2;'} \bclose$
+  ne modifie pas les variables de l'environnement \env.
+  On a donc bien :
+  \env{} \subenv{}
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
+    \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+    \mbox{\lstinline' e = e2;'} \bclose$
+  }{\env}.
 ~\\
 \end{proof}
 
+
 \begin{proof}[Preuve du point 3.]~\\
-  ...
+  Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
+  correctes, c'est-à-dire :
+
+  \begin{center}
+    \begin{tabular}{rclr}
+      \comps{$A_1$}{\env} & $\neq$ & \errorenv & \eqlabel{h5} \\
+      \comps{$A_2$}{\env} & $\neq$ & \errorenv & \eqlabel{h6} \\
+    \end{tabular}
+  \end{center}
+
+  Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
+  code générés ne produisent pas d'erreur (seule la variable fraîche
+  \lstinline'e' est affectée) nous assurent que si \env{} n'est pas un
+  environnement d'erreur (\env{} ne peut pas être \errorenv puisque la
+  traduction se serait arrêtée dès l'obtention de l'erreur).
+  On a donc bien :
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
+    \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
+    \mbox{\lstinline' e = e2;'} \bclose$
+  }{\env} $\neq$ \errorenv.
 ~\\
 \end{proof}
 
