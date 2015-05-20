@@ -163,8 +163,7 @@ paramètre formel de la fonction.
 En effet, chaque valeur d'entrée \lstinline'x' (un paramètre formel de la
 fonction ou une variable globale) de type $T$ est mémorisée par
 une instruction \lstinline|T old_x = x;| au début de la fonction
-instrumentée, c'est-à-dire au label $Beg_{\mbox{\lstinline'f'}}$, dans la section
-$decl^{*}$.
+instrumentée, c'est-à-dire au label $Beg_{\mbox{\lstinline'f'}}$.
 Pour chaque tableau ou pointeur \lstinline'x', les valeurs pointées sont
 mémorisées dans un tableau alloué dynamiquement \lstinline'old_val_x' dont la
 taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose la
