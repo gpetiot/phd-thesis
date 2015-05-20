@@ -50,20 +50,20 @@
     } \\
     & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
     & \eqlabel{C-while-1} \\
-    & = & \env si (\eval{\lstinline'e'}{\env}) $=$ 0 & \eqlabel{C-while-2} \\
-    & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+    &  & \env{} si (\eval{\lstinline'e'}{\env}) $=$ 0 & \eqlabel{C-while-2} \\
+    &  & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
     & \eqlabel{C-while-3} \\
-    & = & \errorenv
+    &  & \errorenv
     si $\lnot$ \eval{\lstinline'p'}{(\comps{$A$}{\env})}
     & \eqlabel{C-while-4} \\
-    & = & \errorenv
+    &  & \errorenv
     si (\eval{\lstinline't'}{(\comps{$A$}{\env})}) $\ge$
     (\eval{\lstinline't'}{\env}) & \eqlabel{C-while-5} \\
-    & = & \errorenv si
+    &  & \errorenv si
     $\exists \mbox{\lstinline'x'}. (\mbox{\lstinline'x'} \in G-X.$
     (\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$
     (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{C-while-6} \\
-    & = & \comp{\lstinline'/*@ ... */ while(e)'
+    &  & \comp{\lstinline'/*@ ... */ while(e)'
       $\bopen A \bclose$}{
       (\comps{$A$}{\env})} sinon & \eqlabel{C-while-7} \\
   \end{tabular}
