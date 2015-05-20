@@ -2,10 +2,10 @@
   \begin{tabular}{rclr}
     \eval{\lstinline'\\true'}{\env} &=& 1 & \eqlabel{P-true} \\
     \eval{\lstinline'\\false'}{\env} &=& 0 & \eqlabel{P-false} \\
-    \eval{\lstinline'\\valid(t)'}{\env} &=& 1 si \lstinline't' est
+    \eval{\lstinline'\\valid(lv)'}{\env} &=& 1 si \lstinline'lv' est
     valide dans \env, 0 sinon & \eqlabel{P-valid} \\
-    \eval{\lstinline'\\valid(t1+(t2..t3))'}{\env} &=& 1 si
-    \lstinline'(t1+t2)', \dots, \lstinline'(t1+t3)' sont valides dans \env,
+    \eval{\lstinline'\\valid(lv+(t1..t2))'}{\env} &=& 1 si
+    \lstinline'(lv+t1)', \dots, \lstinline'(lv+t2)' sont valides dans \env,
     & \eqlabel{P-validr} \\
     & & 0 sinon & \\
     \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env} &=&
