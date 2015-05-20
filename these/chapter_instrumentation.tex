@@ -887,61 +887,61 @@ d'erreur \errorenv (Corollaire~\ref{lem:term-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
 et~\ref{th:inclusion}.
-Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
-\textsc{$\tau$-const} de traduction des constantes.
+%Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
+%\textsc{$\tau$-const} de traduction des constantes.
 
 
 
 
-\subsection{Preuve de la Traduction des Constantes}
+%% \subsection{Preuve de la Traduction des Constantes}
 
-{\myinference[$\tau$-const]
-  {}
-  { (l, \mbox{\lstinline'v'} : \mathbb{Z}) \rulearrow
-    ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
-}
+%% {\myinference[$\tau$-const]
+%%   {}
+%%   { (l, \mbox{\lstinline'v'} : \mathbb{Z}) \rulearrow
+%%     ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
+%% }
 
-Nous prouvons que pour n'importe quel environnement \env  :
+%% Nous prouvons que pour n'importe quel environnement \env  :
 
-\eval{\lstinline'x'}{
-  (\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
-= \eval{\lstinline'v'}{\env}
+%% \eval{\lstinline'x'}{
+%%   (\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
+%% = \eval{\lstinline'v'}{\env}
 
-et
+%% et
 
-\env \subenv \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
+%% \env \subenv \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
 
-et
+%% et
 
-\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} $\neq$ \errorenv.
+%% \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} $\neq$ \errorenv.
 
-\begin{proof}
-  ~\\
-  \begin{tabular}{rclr}
-    \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
-    &$\eq{\eqlabel{I-instr}}$&
-    \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env} \\
-    &$\eq{\eqlabel{C-Z-set}}$&
-    \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}] \\
-  \end{tabular}
+%% \begin{proof}
+%%   ~\\
+%%   \begin{tabular}{rclr}
+%%     \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
+%%     &$\eq{\eqlabel{I-instr}}$&
+%%     \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env} \\
+%%     &$\eq{\eqlabel{C-Z-set}}$&
+%%     \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}] \\
+%%   \end{tabular}
 
-  En substituant \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} on
-  prouve la première partie du lemme~\ref{lem:term-correct} :
+%%   En substituant \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} on
+%%   prouve la première partie du lemme~\ref{lem:term-correct} :
   
-  \eval{\lstinline'x'}{
-    (\env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}])}
-  $\eq{\eqlabel{E-lval}}$ \eval{\lstinline'v'}{\env}.
+%%   \eval{\lstinline'x'}{
+%%     (\env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}])}
+%%   $\eq{\eqlabel{E-lval}}$ \eval{\lstinline'v'}{\env}.
 
-  La variable \lstinline'x' étant fraîche dans l'environnement, la deuxième
-  partie du lemme~\ref{lem:term-correct} est également vérifiée :
-  \env \subenv \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
+%%   La variable \lstinline'x' étant fraîche dans l'environnement, la deuxième
+%%   partie du lemme~\ref{lem:term-correct} est également vérifiée :
+%%   \env \subenv \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}].
 
-  Le nouvel environnement étant \env auquel on a ajouté une nouvelle liaison
-  $(x, v)$, ce n'est pas un environnement d'erreur si \env lui-même n'était pas
-  un environnement d'erreur, ce qui prouve la troisième partie du lemme.
-  \env ne peut pas être \errorenv puisque la traduction se serait arrêtée dès
-  l'obtention de l'erreur.
-\end{proof}
+%%   Le nouvel environnement étant \env auquel on a ajouté une nouvelle liaison
+%%   $(x, v)$, ce n'est pas un environnement d'erreur si \env lui-même n'était pas
+%%   un environnement d'erreur, ce qui prouve la troisième partie du lemme.
+%%   \env ne peut pas être \errorenv puisque la traduction se serait arrêtée dès
+%%   l'obtention de l'erreur.
+%% \end{proof}
 
 
 \section{Preuve de la Traduction des Prédicats}
