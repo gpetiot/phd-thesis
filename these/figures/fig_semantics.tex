@@ -1,6 +1,5 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
-    \comp{\lstinline'\;'}{\env} &=& \env & \eqlabel{C-skip} \\
     \comp{\lstinline'T id;'}{\env}
     &=& \env[\lstinline'id' $\mapsto$ $\bot$] & \eqlabel{C-decl} \\
     \comp{\lstinline'lv = e;'}{\env}
