@@ -35,9 +35,7 @@
         (\compf{\lstinline'f(e1,...,eN)'}{\env})}] & \eqlabel{C-fct2} \\
     \comp{\lstinline'return e;'}{\env}
     &=& \env[\lstinline'ret' $\mapsto$ \eval{\lstinline'e'}{\env}]
-    & \eqlabel{C-return} \\    
-    \comp{$\bopen$ \lstinline'i'$^{*}$ $\bclose$}{\env} &=&
-    \comps{\lstinline'i'$^{*}$}{\env} & \eqlabel{C-block} \\
+    & \eqlabel{C-return} \\
     \comp{\lstinline'if(e)' $\bopen$ \lstinline'i'$_1^{*}$ $\bclose$
       \lstinline'else' $\bopen$ \lstinline'i'$_2^{*}$ $\bclose$}{\env}
     &=& \comps{\lstinline'i'$_1^{*}$}{\env} si (\eval{\lstinline'e'}{\env})
