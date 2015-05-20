@@ -36,17 +36,17 @@
     \comp{\lstinline'return e;'}{\env}
     &=& \env[\lstinline'ret' $\mapsto$ \eval{\lstinline'e'}{\env}]
     & \eqlabel{C-return} \\
-    \comp{\lstinline'if(e)' $\bopen$ \lstinline'i'$_1^{*}$ $\bclose$
-      \lstinline'else' $\bopen$ \lstinline'i'$_2^{*}$ $\bclose$}{\env}
-    &=& \comps{\lstinline'i'$_1^{*}$}{\env} si (\eval{\lstinline'e'}{\env})
-    $\neq$ 0, \comps{\lstinline'i'$_2^{*}$}{\env} sinon & \eqlabel{C-if} \\
+    \comp{\lstinline'if(e)' $\bopen A \bclose$
+      \lstinline'else' $\bopen B \bclose$}{\env}
+    &=& \comps{$A$}{\env} si (\eval{\lstinline'e'}{\env})
+    $\neq$ 0, \comps{$B$}{\env} sinon & \eqlabel{C-if} \\
     \comp{\lstinline'/*@ assert p; */'}{\env}
     &=& \env si (\eval{\lstinline'p'}{\env}), \errorenv sinon
     & \eqlabel{C-assert} \\
     \multicolumn{4}{l}{
       \comp{
         \lstinline'/*@ loop invariant p; loop assigns X; loop variant t;*/ while(e)'
-        $\bopen$ \lstinline'i'$^{*}$ $\bclose$}{\env}
+        $\bopen A \bclose$}{\env}
     } \\
     & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
     & \eqlabel{C-while-1} \\
@@ -54,18 +54,18 @@
     & = & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
     & \eqlabel{C-while-3} \\
     & = & \errorenv
-    si $\lnot$ \eval{\lstinline'p'}{(\comps{\lstinline'i'$^{*}$}{\env})}
+    si $\lnot$ \eval{\lstinline'p'}{(\comps{$A$}{\env})}
     & \eqlabel{C-while-4} \\
     & = & \errorenv
-    si (\eval{\lstinline't'}{(\comps{\lstinline'i'$^{*}$}{\env})}) $\ge$
+    si (\eval{\lstinline't'}{(\comps{$A$}{\env})}) $\ge$
     (\eval{\lstinline't'}{\env}) & \eqlabel{C-while-5} \\
     & = & \errorenv si
     $\exists \mbox{\lstinline'x'}. (\mbox{\lstinline'x'} \in G-X.$
-    (\eval{\lstinline'x'}{(\comps{\lstinline'i'$^{*}$}{\env})}) $\ne$
+    (\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$
     (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{C-while-6} \\
     & = & \comp{\lstinline'/*@ ... */ while(e)'
-      $\bopen$ \lstinline'i'$^{*}$ $\bclose$}{
-      (\comps{\lstinline'i'$^{*}$}{\env})} sinon & \eqlabel{C-while-7} \\
+      $\bopen A \bclose$}{
+      (\comps{$A$}{\env})} sinon & \eqlabel{C-while-7} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des instructions}
   \label{fig:sem-instr}

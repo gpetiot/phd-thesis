@@ -177,7 +177,7 @@ Dans la suite, nous utilisons les notations suivantes :
 \item $cst$ est une constante;
 \item $G$ et $X$ sont des listes de termes \eacsl;
 \item $i$, $i_1$, $i_2$ sont des instructions C;
-\item $i^{*}$, $i_1^{*}$, $i_2^{*}$ sont des séquence d'instructions C;
+\item $A$ et $B$ sont des blocs d'instructions;
 \item $e$, $e_1$, $e_2$, $e_N$ sont des expressions C;
 \item $t$, $t_1$, $t_2$ sont des termes \eacsl;
 \item $p$, $p_1$, $p_2$ sont des prédicats \eacsl;
@@ -284,15 +284,9 @@ environnement qui prend en compte les modifications effectuées par $i$ dans
 l'environnement \env.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
 $\mathcal{C}^{*} : INSTR^{*} \rightarrow ENV \rightarrow ENV$.
-Le symbole $\emptylist$ dénote une séquence vide.
+%Le symbole $\emptylist$ dénote une séquence vide.
 Cette fonction revient à appeler succesivement $\mathcal{C}$ sur chaque
-instruction de la séquence :
-
-\begin{tabular}{rclr}
-  \comps{$\emptylist$}{\env} & = & \env & \eqlabel{C*-empty} \\
-  \comps{$i_1$ ; $i_2^{*}$}{\env} & = & \comps{$i_2^{*}$}{(\comp{$i_1$}{\env})}
-  & \eqlabel{C*-seq} \\
-\end{tabular}
+instruction de la séquence.
 
 
 \input{figures/fig_semantics}
@@ -352,7 +346,7 @@ La règle \eqlabel{C-while-3} énonce que \errorenv est obtenu si le variant de
 boucle n'est pas positif avant l'exécution de la boucle.
 La règle \eqlabel{C-while-4} énonce que \errorenv est obtenu si l'invariant de
 boucle n'est pas maintenu après l'exécution du corps de boucle.
-L'environnement \comps{\lstinline'i'$^{*}$}{\env} est obtenu après exécution du
+L'environnement \comps{$A$}{\env} est obtenu après exécution du
 corps de la boucle dans \env.
 La règle \eqlabel{C-while-5} énonce que \errorenv est obtenu si le variant de
 boucle ne décroît pas strictement entre le début et la fin de l'exécution du
