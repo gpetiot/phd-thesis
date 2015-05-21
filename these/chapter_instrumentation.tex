@@ -1264,92 +1264,62 @@ Prouvons également que si l'\lstinline'assert' est valide :
 
 
 \begin{proof}[Justification de la propriété~\ref{th:error}]~\\
-  Hypothèses : le prédicat \lstinline'p' est correctement traduit.
-  Pour tout environnement \env :
+  Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
+
   \begin{tabular}{rclr}
-    \eval{\lstinline'e'}{(\compi{$I$}{\env})} &=& \eval{\lstinline'p'}{\env}
+    \eval{\lstinline'e'}{(\comps{$A$}{\env})} &=& \eval{\lstinline'p'}{\env}
     & \eqlabel{h1} \\
-    \env & \subenv & \compi{$I$}{\env} & \eqlabel{h2} \\
-    \compi{$I$}{\env} & $\neq$ & \errorenv & \eqlabel{h3} \\
+    \comps{$A$}{\env} & $\neq$ & \errorenv & \eqlabel{h2} \\
   \end{tabular}
 
-  (1) Cas où l'assertion est valide :
+  Supposons
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} = \errorenv
+  (\eqlabel{h3}) et
+  prouvons que \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv.
 
-  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{true} \eqlabel{h4}
-
-  Développons le membre gauche :
+  (a) Cas où l'assertion est vraie, soit
+  \eval{\lstinline'e'}{(\comps{$A$}{\env})} = true, c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{\env} = true.
+  Développons \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} :
 
   \begin{tabular}{rcl}
-    \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-    &$\eqv{\eqlabel{C-assert}}$& \env = \errorenv \\
-    &$\equiv$ & \textit{false}, car si \env = \errorenv, la traduction
-    se serait arrêtée. \\
+    \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
+    &=& \comp{\lstinline'fassert(e);'}{(\comps{$A$}{\env})} \\
+    &$\eq{\eqlabel{C-fassert}}$
+    & \comps{$A$}{\env} {\scriptsize (car \eval{\lstinline'e'}{(\comps{$A$}{\env})} = true)} \\
   \end{tabular}
 
-  Développons le membre droit :
-
-  \begin{tabular}{rcl}
-    \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env} = \errorenv
-    &$\eqv{\eqlabel{I-split}}$
-    & \compi{$(l, \mbox{\lstinline'fassert(e);'})$}{(\compi{$I$}{\env})}
-    = \errorenv \\
-    &$\eqv{\eqlabel{I-instr}}$
-    & \comp{\lstinline'fassert(e);'}{(\compi{$I$}{\env})} = \errorenv \\
-    &$\eqv{\eqlabel{C-fassert}}$ & \compi{$I$}{\env} = \errorenv \\
-    &$\eqv{\eqlabel{h3}}$ & \textit{false} \\
-  \end{tabular}
-
-  Quand l'assertion est valide, on a bien :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-  $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
+  D'autre part, l'hypothèse \eqlabel{h3} nous donne :
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
   = \errorenv.
 
-  D'autre part, d'après le développement du membre droit, on a :
+  On obtient par substitution :
+  \comps{$A$}{\env} = \errorenv, ce qui contredit l'hypothèse \eqlabel{h2} selon
+  laquelle \comps{$A$}{\env} $\neq$ \errorenv.
 
-   \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
-   = \compi{$I$}{\env}.
-   
-   En substituant dans l'hypothèse \eqlabel{h2} on obtient directement :
+  (b) Cas où l'assertion est fausse, soit
+  \eval{\lstinline'e'}{(\comps{$A$}{\env})} = false, c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{\env} = false.
 
-   \env \subenv \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}.
-
-  (2) Cas où l'assertion est invalide :
-
-  Nouvelle hypothèse : \eval{\lstinline'p'}{\env} = \textit{false} \eqlabel{h5}
-
-  Développons le membre gauche :
+  Développons \comp{\lstinline'/*@ assert p; */ ;'}{\env} :
 
   \begin{tabular}{rcl}
-    \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-    &$\eqv{\eqlabel{C-assert}}$& \errorenv = \errorenv \\
-    &$\equiv$& \textit{true}
+    \comp{\lstinline'/*@ assert p; */ ;'}{\env}
+    &$\eq{\eqlabel{C-assert}}$
+    & \errorenv{} {\scriptsize (car \eval{\lstinline'p'}{\env} = false)} \\
   \end{tabular}
 
-  Développons le membre droit :
-
-  \begin{tabular}{rcl}
-    \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env} = \errorenv
-    &$\eqv{\eqlabel{I-split}}$
-    & \compi{$(l, \mbox{\lstinline'fassert(e);'})$}{(\compi{$I$}{\env})}
-    = \errorenv \\
-    &$\eqv{\eqlabel{I-instr}}$
-    & \comp{\lstinline'fassert(e);'}{(\compi{$I$}{\env})} = \errorenv \\
-    &$\eqv{\eqlabel{C-fassert}}$ & \errorenv = \errorenv \\
-    &$\equiv$& \textit{true}
-  \end{tabular}
-
-  On a donc bien :
-
-  \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-  $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
-  = \errorenv.
+  La propriété~\ref{th:error} est ainsi prouvée.
   ~\\
 \end{proof}
 
 
 \begin{proof}[Justification de la propriété~\ref{th:inclusion}]~\\
-  ...
+  Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
+
+  \begin{tabular}{rclr}
+    \env & \subenv & \compi{$I$}{\env} & \eqlabel{h1} \\
+  \end{tabular}
   ~\\
 \end{proof}
 
