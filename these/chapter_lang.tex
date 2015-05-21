@@ -373,20 +373,22 @@ figure~\ref{fig:sem-instr}) et la fonction sous vérification (qui n'est pas
 appelée).
 
 La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
-Si la fonction considérée est la fonction sous vérification, alors sa
+Si \lstinline'f' est la fonction sous vérification, alors sa
 précondition \lstinline'p1' est supposée vraie par définition.
-On obtient donc une contradiction si le prédicat \lstinline'p1' s'évalue en
-faux pour la fonction sous vérification (règle \eqlabel{F-1}).
+%On obtient donc une contradiction si le prédicat \lstinline'p1' s'évalue en
+%faux pour la fonction sous vérification (règle \eqlabel{F-1}).
 Si la fonction considérée n'est pas la fonction sous vérification, alors la
-règle \eqlabel{F-2} énonce que \errorenv est obtenu si le prédicat
+règle \eqlabel{F-1} énonce que \errorenv est obtenu si le prédicat
 \lstinline'p1' s'évalue en faux.
-La règle \eqlabel{F-3} énonce que \errorenv est obtenu si l'évaluation
+Si \lstinline'g' est la fonction sous vérification, alors le prédicat
+\lstinline'p1' est vrai par hypothèse.
+La règle \eqlabel{F-2} énonce que \errorenv est obtenu si l'évaluation
 d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
 la clause \lstinline'assigns' de la fonction) est différente entre le début
 et la fin de l'exécution du corps de la fonction.
-La règle \eqlabel{F-4} énonce que \errorenv est obtenu si le prédicat de la
+La règle \eqlabel{F-3} énonce que \errorenv est obtenu si le prédicat de la
 postcondition \lstinline'p2' est faux à la fin de la fonction.
-Enfin, si aucun des quatre cas précédents ne s'est produit, il faut calculer la
+Enfin, si aucun des trois cas précédents ne s'est produit, il faut calculer la
 sémantique des instructions du corps de la fonction.
 
 

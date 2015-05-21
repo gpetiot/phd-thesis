@@ -5,18 +5,18 @@
         \lstinline'/*@ requires p1; assigns X; ensures p2; */ f(e1, ..., eN)'
         $\bopen A \bclose$}{\env}
     } \\
-    =& contradiction si $\lnot$ \eval{\lstinline'p1'}{\env} et
-    \lstinline'f' est la fonction sous vérification & \eqlabel{F-1} \\
+    %=& contradiction si $\lnot$ \eval{\lstinline'p1'}{\env} et
+    %\lstinline'f' est la fonction sous vérification & \eqlabel{F-1} \\
     =& \errorenv si $\lnot$ \eval{\lstinline'p1'}{\env} et \lstinline'f' est
-    une fonction appelée & \eqlabel{F-2} \\
+    une fonction appelée & \eqlabel{F-1} \\
     =& \errorenv si
     $\exists \mbox{\lstinline'x'}. (\mbox{\lstinline'x'} \in G-X.$
     (\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$
-    (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{F-3} \\
+    (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{F-2} \\
     =& \errorenv si
     $\lnot$ \eval{\lstinline'p2'}{(\comps{$A$}{\env})}
-    & \eqlabel{F-4} \\
-    =& \comps{$A$}{\env} sinon & \eqlabel{F-5} \\
+    & \eqlabel{F-3} \\
+    =& \comps{$A$}{\env} sinon & \eqlabel{F-4} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des fonctions}
   \label{fig:sem-fct}
