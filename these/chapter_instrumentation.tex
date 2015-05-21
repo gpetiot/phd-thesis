@@ -862,7 +862,7 @@ nous devons prouver la correction de la traduction des termes.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
   $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
   environnement \env{} tel que
-  \eval{\lstinline't'}{\env} = \eval{\lstinline'e'}{\env}, où
+  \eval{\lstinline't'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
 \end{property}
 
@@ -961,7 +961,7 @@ nous devons prouver la correction de la traduction des prédicats.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
   $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
   environnement \env{} tel que
-  \eval{\lstinline'p'}{\env} = \eval{\lstinline'e'}{\env}, où
+  \eval{\lstinline'p'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
 \end{property}
 
@@ -1234,33 +1234,36 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 Nous allons maintenant prouver les propriétés~\ref{th:error} et
 \ref{th:inclusion} pour chaque classe d'annotations : les assertions, les
 contrats de boucle et les contrats de fonction.
-Ces justifications s'appuient sur les justifications de correction de la
-traduction des termes et des prédicats établies dans les parties précédentes.
+Ces justifications s'appuient sur la correction de la traduction des termes et
+des prédicats justifiée dans les parties précédentes.
 
 
 \subsection{Justification de correction de la Traduction des Assertions}
 
+La règle de traduction d'une annotation \lstinline'assert' est la suivante :
 
+\begin{center}
 {\myinference[$\alpha$-assert]
   {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
   {(l, \mbox{\lstinline'assert p;'})
     \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
 }
+\end{center}
 
-
-Prouvons que pour tout environnement \env (propriété~\ref{th:error}) :
-
+Prouvons que pour tout environnement \env{} :
 \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-$\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
-= \errorenv
+si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} = \errorenv
+(propriété~\ref{th:error}),
+où le fragment de programme $A$ est obtenu à partir de la séquence d'insertions
+de code $I$ selon les règles d'insertion énoncées dans la
+partie~\ref{sec:principles}.
 
-et si l'assertion est valide (propriété~\ref{th:inclusion}) :
+Prouvons également que si l'\lstinline'assert' est valide :
+\env{} \subenv{} \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
+(propriété~\ref{th:inclusion}).
 
-\env \subenv \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}.
 
-
-\begin{proof}
-  ~\\
+\begin{proof}[Justification de la propriété~\ref{th:error}]~\\
   Hypothèses : le prédicat \lstinline'p' est correctement traduit.
   Pour tout environnement \env :
   \begin{tabular}{rclr}
@@ -1341,6 +1344,12 @@ et si l'assertion est valide (propriété~\ref{th:inclusion}) :
   \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
   $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
   = \errorenv.
+  ~\\
+\end{proof}
+
+
+\begin{proof}[Justification de la propriété~\ref{th:inclusion}]~\\
+  ...
   ~\\
 \end{proof}
 
