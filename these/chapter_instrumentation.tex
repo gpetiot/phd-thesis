@@ -825,23 +825,23 @@ d'instrumentation des programmes annotés.
 Ces propriétés sont prouvées dans les parties suivantes.
 
 
-\begin{theorem}{Préservation des erreurs}\label{th:error}~\\
+\begin{property}{Préservation des erreurs}\label{th:error}~\\
   L'exécution des instructions obtenues par traduction d'une annotation $a$ du
   programme $P$ provoque une erreur dans le programme instrumenté par la
   traduction de $a$ si et seulement si l'annotation $a$ est invalide.
-\end{theorem}
+\end{property}
 
-Le théorème~\ref{th:error} assure l'absence de faux positifs et l'absence de
+La propriété~\ref{th:error} assure l'absence de faux positifs et l'absence de
 faux négatifs lors de la génération de tests sur le programme instrumenté.
 
-\begin{theorem}{Inclusion des environnements}\label{th:inclusion}~\\
+\begin{property}{Inclusion des environnements}\label{th:inclusion}~\\
   Si toutes les annotations d'un programme $P$ sont valides, l'environnement de
   $P$ est inclus dans l'environnement du programme après traduction $P'$.
-\end{theorem}
+\end{property}
 
 \commentGP{reformuler pour avoir une inclusion en chaque point de programme}
 
-Le théorème~\ref{th:inclusion} implique que les seules variables modifiées sont
+La propriété~\ref{th:inclusion} implique que les seules variables modifiées sont
 les variables fraîchement créées par l'instrumentation, les variables de
 l'environnement du programme d'origine ne sont pas modifiées par
 l'instrumentation.
@@ -853,7 +853,7 @@ l'instrumentation.
 Afin de prouver la correction de la traduction des prédicats et des annotations,
 nous devons prouver la correction de la traduction des termes.
 
-\begin{lemma}
+\begin{property}
   \label{lem:term-correct}
   Soit \lstinline't' : $\tau$ un terme de type $\tau$ au label $l$ qui est
   traduit par le couple $(I, \mbox{\lstinline'e'})$ où $I$ est une liste
@@ -864,28 +864,29 @@ nous devons prouver la correction de la traduction des termes.
   environnement \env{} tel que
   \eval{\lstinline't'}{\env} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
-\end{lemma}
+\end{property}
 
-\begin{corollary}
+\begin{property}
   \label{lem:term-noerror}
   \env $\neq$ \errorenv
-\end{corollary}
+\end{property}
 
-\begin{corollary}
+\begin{property}
   \label{lem:term-subset}
   \env$_l$ \subenv{} \env
-\end{corollary}
+\end{property}
 
-Le lemme~\ref{lem:term-correct} énonce que l'évaluation des insertions de code
+La propriété~\ref{lem:term-correct} énonce que l'évaluation des insertions de
+code
 $I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
 variable \lstinline'e' (fraîche) à l'environnement courant, dont la valeur
 correspond à l'évaluation de \lstinline't' dans \env.
 Les variables qui sont déjà dans l'environnement initial \env$_l$ ne sont pas
-impactées dans l'environnement \env{} (Corollaire~\ref{lem:term-subset}), et
+impactées dans l'environnement \env{} (propriété~\ref{lem:term-subset}), et
 l'environnement résulant de la traduction du terme n'est pas l'environnement
-d'erreur \errorenv (Corollaire~\ref{lem:term-noerror}).
+d'erreur \errorenv (propriété~\ref{lem:term-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
-Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
+Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
 %Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
 %\textsc{$\tau$-const} de traduction des constantes.
@@ -951,7 +952,7 @@ et~\ref{th:inclusion}.
 Afin de prouver la correction de la traduction des annotations,
 nous devons prouver la correction de la traduction des prédicats.
 
-\begin{lemma}
+\begin{property}
   \label{lem:pred-correct}
   Soit \lstinline'p' un prédicat au label $l$ qui est
   traduit par le couple $(I, \mbox{\lstinline'e'})$ où $I$ est une liste
@@ -962,28 +963,29 @@ nous devons prouver la correction de la traduction des prédicats.
   environnement \env{} tel que
   \eval{\lstinline'p'}{\env} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
-\end{lemma}
+\end{property}
 
-\begin{corollary}
+\begin{property}
   \label{lem:pred-noerror}
   \env $\neq$ \errorenv
-\end{corollary}
+\end{property}
 
-\begin{corollary}
+\begin{property}
   \label{lem:pred-subset}
   \env$_l$ \subenv{} \env
-\end{corollary}
+\end{property}
 
-Le lemme~\ref{lem:pred-correct} énonce que l'évaluation des insertions de code
+La propriété~\ref{lem:pred-correct} énonce que l'évaluation des insertions de
+code
 $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
 nouvelle variable \lstinline'e' (fraîche) à l'environnement courant, dont la
 valeur correspond à l'évaluation de \lstinline'p' dans \env.
 Les variables qui sont déjà dans l'environnement initial \env$_l$ ne sont pas
-impactées dans l'environnement \env{} (Corollaire~\ref{lem:pred-subset}), et
+impactées dans l'environnement \env{} (propriété~\ref{lem:pred-subset}), et
 l'environnement résulant de la traduction du prédicat n'est pas l'environnement
-d'erreur \errorenv (Corollaire~\ref{lem:pred-noerror}).
+d'erreur \errorenv (propriété~\ref{lem:pred-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
-Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
+Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
 Pour des raisons de lisibilité, la justification est uniquement fournie pour la
 règle \textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
@@ -1229,7 +1231,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 \label{sec:annotation-translation}
 
 
-Nous allons maintenant prouver les théorèmes~\ref{th:error} et
+Nous allons maintenant prouver les propriétés~\ref{th:error} et
 \ref{th:inclusion} pour chaque classe d'annotations : les assertions, les
 contrats de boucle et les contrats de fonction.
 Ces justifications s'appuient sur les justifications de correction de la
@@ -1246,13 +1248,13 @@ traduction des termes et des prédicats établies dans les parties précédentes
 }
 
 
-Prouvons que pour tout environnement \env (théorème~\ref{th:error}) :
+Prouvons que pour tout environnement \env (propriété~\ref{th:error}) :
 
 \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
 $\equiv$ \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}
 = \errorenv
 
-et si l'assertion est valide (théorème~\ref{th:inclusion}) :
+et si l'assertion est valide (propriété~\ref{th:inclusion}) :
 
 \env \subenv \compi{$I \concat (l, \mbox{\lstinline'fassert(e);'})$}{\env}.
 
