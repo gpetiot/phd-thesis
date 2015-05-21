@@ -12,10 +12,10 @@
     \comp{\underline{\lstinline'lv'} $\Zclear \semicolon$}{\env}
     &=& \env $-~\{\mbox{\lstinline'a'}\}$ & \eqlabel{C-Z-unset} \\
     \comp{\lstinline'fassert(e);'}{\env}
-    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
+    &=& \env{} si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
     & \eqlabel{C-fassert} \\
     \comp{\lstinline'fassume(e);'}{\env}
-    &=& \env si (\eval{\lstinline'e'}{\env}) $\neq$ 0, contradiction sinon
+    &=& \env{} si (\eval{\lstinline'e'}{\env}) $\neq$ 0, contradiction sinon
     & \eqlabel{C-fassume} \\
 
     \comp{\lstinline'lv = fvalid(e);'}{\env}
@@ -41,7 +41,7 @@
     &=& \comps{$A$}{\env} si (\eval{\lstinline'e'}{\env})
     $\neq$ 0, \comps{$B$}{\env} sinon & \eqlabel{C-if} \\
     \comp{\lstinline'/*@ assert p; */'}{\env}
-    &=& \env si (\eval{\lstinline'p'}{\env}), \errorenv sinon
+    &=& \env{} si (\eval{\lstinline'p'}{\env}), \errorenv sinon
     & \eqlabel{C-assert} \\
     \multicolumn{4}{l}{
       \comp{
