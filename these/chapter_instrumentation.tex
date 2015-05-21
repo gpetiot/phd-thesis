@@ -45,7 +45,7 @@ définie au chapitre~\ref{sec:lang}.
 
 Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
 Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
-\ref{sec:annotation-translation} détaillent la preuve de ces propriétés
+\ref{sec:annotation-translation} justifient la correction de ces propriétés
 respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
@@ -576,8 +576,8 @@ Nous définissons dans les figures~\ref{fig:pred-logic}, \ref{fig:valid}
 et~\ref{fig:quantif} les règles de traduction pour les principaux
 prédicats \eacsl que nous traitons.
 Pour chacune de ces règles, une variable fraîche \lstinline'var_n' est générée
-(même quand la traduction du prédicat est triviale) afin de faciliter la preuve
-de correction des règles au prochain chapitre.
+(même quand la traduction du prédicat est triviale) afin de faciliter la
+justification de correction des règles.
 
 \input{figures/fig_rules_pred}
 
@@ -847,7 +847,7 @@ l'environnement du programme d'origine ne sont pas modifiées par
 l'instrumentation.
 
 
-\section{Preuve de la Traduction des Termes}
+\section{Justification de la correction de la Traduction des Termes}
 \label{sec:term-translation}
 
 Afin de prouver la correction de la traduction des prédicats et des annotations,
@@ -893,7 +893,7 @@ et~\ref{th:inclusion}.
 
 
 
-%% \subsection{Preuve de la Traduction des Constantes}
+%% \subsection{Justification de correction de la Traduction des Constantes}
 
 %% {\myinference[$\tau$-const]
 %%   {}
@@ -944,7 +944,7 @@ et~\ref{th:inclusion}.
 %% \end{proof}
 
 
-\section{Preuve de la Traduction des Prédicats}
+\section{Justification de correction de la Traduction des Prédicats}
 \label{sec:predicate-translation}
 
 
@@ -985,11 +985,11 @@ d'erreur \errorenv (Corollaire~\ref{lem:pred-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
 Elles nous permettent de prouver les deux théorèmes~\ref{th:error}
 et~\ref{th:inclusion}.
-Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
-\textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
+Pour des raisons de lisibilité, la justification est uniquement fournie pour la
+règle \textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
 
 
-\subsection{Preuve de la Traduction des Conjonctions}
+\subsection{Justification de correction de la Traduction des Conjonctions}
 
 La règle de traduction du prédicat de conjonction est \textsc{$\pi$-and},
 définie ainsi :
@@ -1039,7 +1039,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 
 
 
-\begin{proof}[Preuve du point 1.]~\\
+\begin{proof}[Justification du point 1.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
@@ -1169,7 +1169,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 \end{proof}
 
 
-\begin{proof}[Preuve du point 2.]~\\
+\begin{proof}[Justification du point 2.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
@@ -1200,7 +1200,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 \end{proof}
 
 
-\begin{proof}[Preuve du point 3.]~\\
+\begin{proof}[Justification du point 3.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
@@ -1225,18 +1225,18 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 \end{proof}
 
 
-\section{Preuve de la Traduction des Annotations}
+\section{Justification de correction de la Traduction des Annotations}
 \label{sec:annotation-translation}
 
 
 Nous allons maintenant prouver les théorèmes~\ref{th:error} et
 \ref{th:inclusion} pour chaque classe d'annotations : les assertions, les
 contrats de boucle et les contrats de fonction.
-Ces preuves s'appuient sur les preuves de correction de la traduction des termes
-et des prédicats établies dans les parties précédentes.
+Ces justifications s'appuient sur les justifications de correction de la
+traduction des termes et des prédicats établies dans les parties précédentes.
 
 
-\subsection{Preuve de la Traduction des Assertions}
+\subsection{Justification de correction de la Traduction des Assertions}
 
 
 {\myinference[$\alpha$-assert]
@@ -1343,7 +1343,8 @@ et si l'assertion est valide (théorème~\ref{th:inclusion}) :
 \end{proof}
 
 
-\subsection{Preuve de la Traduction des Contrats de Boucles}
+\subsection{Justification de correction de la Traduction des Contrats de
+  Boucles}
 
 
 Nous considérons une boucle complètement annotée avec
@@ -1410,9 +1411,9 @@ La traduction utilise les trois règles suivantes :
 }
 
 
-Donnons une intuition de la preuve de correction de la traduction des
+Donnons une intuition de la justification de correction de la traduction des
 contrats de boucle à partir de ces règles.
-La figure~\ref{fig:proof-loop-contract} illustre le principe de la preuve.
+La figure~\ref{fig:proof-loop-contract} illustre la démarche.
 La partie gauche de la figure montre une boucle disposant d'un contrat de boucle
 (\lstinline'loop invariant', \lstinline'loop assigns' et
 \lstinline'loop variant') au label $L$, avec un corps quelconque \lstinline'A'.
@@ -1452,9 +1453,10 @@ La règle \eqlabel{C-while-7} correspond à l'exécution récursive de la boucle
 \input{figures/fig_proof_loop_contract}
 
 
-\subsection{Preuve de la Traduction des Contrats de Fonctions}
+\subsection{Justification de correction de la Traduction des Contrats de
+  Fonctions}
 
-Il nous faut distinguer deux cas pour la preuve des contrats de fonction : le
+Il nous faut distinguer deux cas : le
 cas où la fonction est ``sous vérification'' -- c'est-à-dire où c'est la
 fonction de plus haut niveau et sa précondition est supposée vraie -- et le cas
 où la fonction est appelée -- et sa précondition doit être vérifiée au point
@@ -1511,7 +1513,8 @@ La traduction utilise les trois règles suivantes :
 
 \input{figures/fig_proof_fct_contract_main}
 
-La figure~\ref{fig:proof-fct-contract-main}, illustre la preuve de correction
+La figure~\ref{fig:proof-fct-contract-main}, illustre la justification de
+correction
 de la traduction des contrats pour la fonction sous vérification sur un schéma
 générique normalisé de fonction.
 La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
@@ -1560,7 +1563,8 @@ suivante :
   }
 }
 
-La figure~\ref{fig:proof-fct-contract-call}, illustre la preuve de correction
+La figure~\ref{fig:proof-fct-contract-call}, illustre la justification de
+correction
 de la traduction des contrats pour la fonction sous vérification sur un exemple.
 La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
 contrat, avec un corps quelconque \lstinline'A'.
@@ -1609,16 +1613,16 @@ annotations \eacsl : \lstinline'assert', \lstinline'requires',
 \lstinline'loop variant'.
 Ces différentes instrumentations des annotations nous permettront par la suite
 de détecter différentes erreurs dans le code et la spécification.
-Le chapitre suivant aborde la preuve de correction des règles de traduction des
-termes, prédicats et annotations.
+Le chapitre suivant aborde la justification de correction des règles de
+traduction des termes, prédicats et annotations.
 
 Grâce à notre justification de correction, nous pouvons assurer l'absence de
 faux positifs et de faux négatifs lors de la génération de tests sur le
 programme instrumenté, ainsi que la non-modification par le code généré des
 variables du programme d'origine.
-La preuve de cette propriété est fournie de manière formelle pour les assertions
-et de manière informelle mais intuitive pour les contrats de boucle et les
-contrats de fonction.
+La justification de cette propriété est fournie de manière formelle pour les
+assertions et de manière informelle mais intuitive pour les contrats de boucle
+et les contrats de fonction.
 
 
 
