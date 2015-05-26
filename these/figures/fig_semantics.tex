@@ -27,12 +27,22 @@
     \env, & \eqlabel{C-validr} \\
     & & \env[$lv \mapsto 0$] sinon & \\
 
-    \comp{\lstinline'f(e1, ..., eN);'}{\env}
-    &=& \compf{\lstinline'f(e1, ..., eN)'}{\env}
-    & \eqlabel{C-fct1} \\
-    \comp{\lstinline'lv = f(e1, ..., eN);'}{\env}
-    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'ret'}{
-        (\compf{\lstinline'f(e1,...,eN)'}{\env})}] & \eqlabel{C-fct2} \\
+    \comp{\lstinline'f(e1,...,eN);'}{\env} &=& & \eqlabel{C-fct1} \\
+    \multicolumn{4}{c}{
+      \compf{\lstinline'f(id1,...,idN)\{...\}'}{
+        \env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
+          \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}]}
+    } \\
+
+    \comp{\lstinline'lv = f(e1,...,eN);'}{\env} &=& & \eqlabel{C-fct2} \\
+    \multicolumn{4}{c}{
+      \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'ret'}{
+          (\compf{\lstinline'f(id1,...,idN)\{...\}'}{
+            \env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
+              \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}]
+          })}]
+    } \\
+
     \comp{\lstinline'return e;'}{\env}
     &=& \env[\lstinline'ret' $\mapsto$ \eval{\lstinline'e'}{\env}]
     & \eqlabel{C-return} \\

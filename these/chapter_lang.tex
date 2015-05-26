@@ -289,7 +289,6 @@ environnement qui prend en compte les modifications effectuées par $i$ dans
 l'environnement \env.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
 $\mathcal{C}^{*} : INSTR^{*} \rightarrow ENV \rightarrow ENV$.
-%Le symbole $\emptylist$ dénote une séquence vide.
 Cette fonction revient à appeler succesivement $\mathcal{C}$ sur chaque
 instruction de la séquence.
 
@@ -333,6 +332,16 @@ La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donn�
 par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
 Elles énoncent que dans le nouvel environnement, la left-value $lv$ a la valeur
 1 si les pointeurs en argument de la fonction sont valides, et 0 sinon.
+
+La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct1}
+et \eqlabel{C-fct2}.
+Dans ces règles, la sémantique de la fonction \lstinline'f' est calculée à
+l'aide de la fonction $\mathcal{F}$ donnée en figure~\ref{fig:sem-fct}.
+\env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
+  \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}] est l'environnement
+dans lequel les paramètres effectifs (les expressions \lstinline'e1', ...,
+\lstinline'eN') sont affectés aux paramètres formels (les identificateurs
+\lstinline'id1', ..., \lstinline'idN').
 
 La sémantique des assertions \eacsl donnée par la règle \eqlabel{C-assert} est
 similaire à la sémantique de la fonction \lstinline'fassert'.
