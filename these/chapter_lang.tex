@@ -196,44 +196,49 @@ peuvent prendre les termes et prédicats \eacsl :
 $VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\mathbb{R}~\cup~\bot$, où le symbole
 $\bot$ dénote une valeur non initialisée.
 
-Un environnement \env est une fonction partielle \env $: LV \rightarrow VAL$ des
-identificateurs de variables dans le domaine sémantique des valeurs
+Un environnement \env{} est une fonction totale \env $: LV \rightarrow VAL$
+des identificateurs de variables dans le domaine sémantique des valeurs
 possibles.
-
 La notation \env[$lv \mapsto v$] désigne un nouvel environnement,
 correspondant à l'environnement \env auquel la paire $(lv, v)$ a été ajoutée,
 ce qui signifie que $v$ est la nouvelle valeur de $lv$ dans cet environnement.
-
 L'accès à la valeur d'une left-value $lv$ dans un environnement \env est noté
 \env($lv$).
 Il est défini par :
 
+\begin{center}
 \begin{tabular}{rclr}
-  (\env[$lv \mapsto v$])($lv$) & = & $v$ & \eqlabel{env-1} \\
+  (\env[$lv \mapsto v$])($lv$) & = & $v$ & \eqlabel{env-get-1} \\
   (\env[$lv_1 \mapsto v$])($lv_2$) & = & \env($lv_2$) si $lv_1 \neq lv_2$
-  & \eqlabel{env-2}\\
+  & \eqlabel{env-get-2}\\
+  \env($lv$) & = & $\bot$ (par défaut) & \eqlabel{env-get-3} \\
 \end{tabular}
+\end{center}
 
 Dans la suite, nous utiliserons la notation
 \env[$lv_1 \mapsto v_1, lv_2 \mapsto v_2$] (en supposant que $lv_1 \not = lv_2$)
 comme un raccourci pour \env[$lv_1 \mapsto v_1$][$lv_2 \mapsto v_2$].
-
 La notation \env $-~\{lv\}$ signifie que la left-value
 $lv$ et sa valeur sont enlevées de l'environnement \env :
 
-\begin{tabular}{rcl}
+\begin{center}
+\begin{tabular}{rclr}
+  (\env[$lv \mapsto v$])$-~\{lv\}$ &=& \env & \eqlabel{env-del-1} \\
   (\env[$lv_1 \mapsto v$])$-~\{lv_2\}$
-  &=& (\env$-~\{lv_2\}$)[$lv_1 \mapsto v$] si $lv_1 \neq lv_2$ \\
-  (\env[$lv \mapsto v$])$-~\{lv\}$ &=& \env \\
+  &=& (\env$-~\{lv_2\}$)[$lv_1 \mapsto v$] si $lv_1 \neq lv_2$
+  & \eqlabel{env-del-2} \\
+  \env$-~\{lv\}$ &=& \env{}  si \env($lv$) = $\bot$ & \eqlabel{env-del-3} \\
 \end{tabular}
+\end{center}
 
 Nous définissons également une relation d'inclusion sur les environnements,
 c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si
 chaque paire $(lv, v)$ présente dans l'environnement \env$_1$ est
 également présente dans \env$_2$ :
-
-\env$_1$ \subenv{} \env$_2$ $\equiv$
-$\forall (lv, v). (lv \mapsto v) \in \mbox{\env}_1 \Rightarrow (lv \mapsto v) \in \mbox{\env}_2$
+\[
+\mbox{\env}_1~\mbox{\subenv}~\mbox{\env}_2~\equiv~
+\forall lv.~\forall v.~(\mbox{\env}_1(lv)=v) \Rightarrow (\mbox{\env}_2(lv)=v)
+\]
 
 Nous définissons un ``environnement d'erreur'', noté \errorenv.
 Un tel environnement est le résultat de l'évaluation d'une instruction
