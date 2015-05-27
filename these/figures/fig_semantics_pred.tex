@@ -31,10 +31,10 @@
     (\eval{$p_1$}{\env}) $\lor$ (\eval{$p_2$}{\env})
     & \eqlabel{P-or} \\
     \eval{$p_1$ \lstinline'==>' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\Rightarrow$ (\eval{$_2$}{\env})
+    (\eval{$p_1$}{\env}) $\Rightarrow$ (\eval{$p_2$}{\env})
     & \eqlabel{P-impl} \\
     \eval{$p_1$ \lstinline'<==>' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\Leftrightarrow$(\eval{$_2$}{\env})
+    (\eval{$p_1$}{\env}) $\Leftrightarrow$(\eval{$p_2$}{\env})
     & \eqlabel{P-eq} \\
     \eval{$t$ \texttt{?} $p_1$ \texttt{:} $p_2$}{\env} &=&
     \eval{$p_1$}{\env} si (\eval{$t$}{\env}) $\neq 0$, \eval{$p_2$}{\env} sinon
