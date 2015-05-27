@@ -276,6 +276,8 @@ fonction.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
 La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
+La sémantique du prédicat \lstinline'valid' est expliquée en
+partie~\ref{sec:ptr-valid}.
 
 \input{figures/fig_semantics_pred}
 
@@ -332,6 +334,8 @@ La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donn�
 par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
 Elles énoncent que dans le nouvel environnement, la left-value $lv$ a la valeur
 1 si les pointeurs en argument de la fonction sont valides, et 0 sinon.
+Plus de détails sur la sémantique de ces fonctions sont donnés en
+partie~\ref{sec:ptr-valid}.
 
 La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct1}
 et \eqlabel{C-fct2}.
@@ -389,8 +393,6 @@ appelée).
 La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
 Si \lstinline'f' est la fonction sous vérification, alors sa
 précondition \lstinline'p1' est supposée vraie par définition.
-%On obtient donc une contradiction si le prédicat \lstinline'p1' s'évalue en
-%faux pour la fonction sous vérification (règle \eqlabel{F-1}).
 Si la fonction considérée n'est pas la fonction sous vérification, alors la
 règle \eqlabel{F-1} énonce que \errorenv est obtenu si le prédicat
 \lstinline'p1' s'évalue en faux.
@@ -406,9 +408,49 @@ Enfin, si aucun des trois cas précédents ne s'est produit, il faut calculer la
 sémantique des instructions du corps de la fonction.
 
 
+\subsection{Validité des pointeurs}
+\label{sec:ptr-valid}
+
+Un pointeur est valide en mémoire si on peut le déréférencer, afin de pouvoir
+accéder ou modifier l'emplacement mémoire qu'il référence.
+Un pointeur alloué dynamiquement (à l'aide de la fonction \lstinline'malloc' par
+exemple) est valide tant qu'il n'est pas libéré (par la fonction
+\lstinline'free').
+Le pointeur égal à l'adresse d'une variable globale est toujours valide, et le
+pointeur égal à l'adresse d'une variable locale est valide dans la portée de
+cette variable.
+
+Ainsi, le prédicat \lstinline'\valid(t)' est vrai si \lstinline't'
+peut être déréférencé et est accessible en écriture, c'est-à-dire n'est pas une
+constante.
+De la même manière, \lstinline'\valid(t+(t1..t2))' est valide si les pointeurs
+\lstinline'(t+t1)', ..., \lstinline'(t+t2)' peuvent être déréférencés et sont
+accessibles en écriture.
+L'expression de la sémantique dénotationnelle de ces prédicats requiert une
+fonction $\mathcal{E}$ plus complexe et n'est pas donnée ici.
+
+Afin de refléter le fonctionnement de ces prédicats, nous avons défini les
+fonctions \lstinline'fvalid' et \lstinline'fvalidr'.
+Grossièrement, \lstinline'fvalid(t)' a la même sémantique que
+\lstinline'\valid(t)' et \lstinline'fvalidr(t,t1,t2)' a la même sémantique que
+\lstinline'\valid(t+(t1..t2))'.
+De la même manière, la sémantique dénotationnelle de ces fonctions requiert une
+fonction $\mathcal{C}$ plus complexe et n'est pas donnée ici.
+
+Ces fonctions seront utilisées au chapitre~\ref{sec:traduction}, Traduction en
+C des annotations pour le Test, afin de générer du code C préservant la
+sémantique du prédicat \lstinline'\valid'.
+Le chapitre~\ref{sec:runtime}, Vérification à l'exécution des annotations liées
+au modèle mémoire, présente la conception de telles fonctions permettant de
+refléter la sémantique de \lstinline'\valid' et d'autres prédicats \eacsl liés
+au modèle mémoire.
+
+
 \section*{Conclusion du chapitre}
 
 Dans ce chapitre nous avons présenté le sous-ensemble du langage C et du
 langage \eacsl que nous traitons.
 Nous avons défini la notion d'environnement, ainsi que la sémantique
 dénotationnelle de chaque élément du langage.
+Le chapitre~\ref{sec:traduction} présentera la traduction de ces annotations
+\eacsl en code C sémantiquement équivalent.

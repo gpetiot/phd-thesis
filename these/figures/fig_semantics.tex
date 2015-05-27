@@ -19,8 +19,8 @@
     & \eqlabel{C-fassume} \\
 
     \comp{\lstinline'lv = fvalid(e);'}{\env}
-    &=& \env[$lv \mapsto 1$] si $e$ est valide dans \env, \env[$lv \mapsto 0$]
-    sinon & \eqlabel{C-valid} \\
+    &=& \env[$lv \mapsto 1$] si $e$ est valide dans \env, & \eqlabel{C-valid} \\
+    && \env[$lv \mapsto 0$] sinon & \\
 
     \comp{\lstinline'lv = fvalidr(e1,e2,e3);'}{\env}
     &=& \env[$lv \mapsto 1$] si $(e1+e2)$, ..., $(e1+e3)$ sont valides dans
