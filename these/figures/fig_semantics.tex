@@ -1,79 +1,86 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
-    \comp{\lstinline'T id;'}{\env}
-    &=& \env[\lstinline'id' $\mapsto$ $\bot$] & \eqlabel{C-decl} \\
-    \comp{\lstinline'lv = e;'}{\env}
-    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \comp{$T~\mathit{id}\semicolon$}{\env}
+    &=& \env[$\mathit{id}\mapsto$ $\bot$] & \eqlabel{C-decl} \\
+    \comp{$\mathit{lv}$ \lstinline'=' $e\semicolon$}{\env}
+    &=& \env[$\mathit{lv}\mapsto$ \eval{$e$}{\env}]
     \scriptsize{(arith. bornée)} & \eqlabel{C-set} \\
-    \comp{$\Zinit$ \underline{\lstinline'lv = e'} $\semicolon$}{\env}
-    &=& \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'e'}{\env}]
+    \comp{$\Zinit$ \underline{$\mathit{lv}$ \lstinline'=' $e$} $\semicolon$}{\env}
+    &=& \env[$\mathit{lv} \mapsto$ \eval{$e$}{\env}]
     \scriptsize{(arith. non bornée)}
     & \eqlabel{C-Z-set} \\
-    \comp{\underline{\lstinline'lv'} $\Zclear \semicolon$}{\env}
-    &=& \env $-~\{\mbox{\lstinline'a'}\}$ & \eqlabel{C-Z-unset} \\
-    \comp{\lstinline'fassert(e);'}{\env}
-    &=& \env{} si (\eval{\lstinline'e'}{\env}) $\neq$ 0, \errorenv sinon
+    \comp{\underline{$\mathit{lv}$} $\Zclear \semicolon$}{\env}
+    &=& \env $-~\{\mathit{lv}\}$ & \eqlabel{C-Z-unset} \\
+    \comp{\lstinline'fassert('$e$\lstinline');'}{\env}
+    &=& \env{} si (\eval{$e$}{\env}) $\neq 0$, \errorenv sinon
     & \eqlabel{C-fassert} \\
-    \comp{\lstinline'fassume(e);'}{\env}
-    &=& \env{} si (\eval{\lstinline'e'}{\env}) $\neq$ 0%, contradiction sinon
+    \comp{\lstinline'fassume('$e$\lstinline');'}{\env}
+    &=& \env{} si (\eval{$e$}{\env}) $\neq 0$
     & \eqlabel{C-fassume} \\
 
-    \comp{\lstinline'lv = fvalid(e);'}{\env}
-    &=& \env[$lv \mapsto 1$] si $e$ est valide dans \env, & \eqlabel{C-valid} \\
-    && \env[$lv \mapsto 0$] sinon & \\
+    \comp{$\mathit{lv}$ \lstinline'= fvalid('$e$\lstinline');'}{\env}
+    &=& \env[$\mathit{lv} \mapsto 1$] si $e$ est valide dans \env,
+    & \eqlabel{C-valid} \\
+    && \env[$\mathit{lv} \mapsto 0$] sinon & \\
 
-    \comp{\lstinline'lv = fvalidr(e1,e2,e3);'}{\env}
-    &=& \env[$lv \mapsto 1$] si $(e1+e2)$, ..., $(e1+e3)$ sont valides dans
-    \env, & \eqlabel{C-validr} \\
-    & & \env[$lv \mapsto 0$] sinon & \\
+    \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
+      \lstinline');'}{\env}
+    &=& \env[$\mathit{lv} \mapsto 1$] si $(e_1+e_2)$, ..., $(e_1+e_3)$ sont
+    valides dans \env, & \eqlabel{C-validr} \\
+    & & \env[$\mathit{lv} \mapsto 0$] sinon & \\
 
-    \comp{\lstinline'f(e1,...,eN);'}{\env} &=& & \eqlabel{C-fct1} \\
+    \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{\env} &=&
+    & \eqlabel{C-fct1} \\
     \multicolumn{4}{c}{
-      \compf{\lstinline'f(id1,...,idN)\{...\}'}{
-        \env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
-          \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}]}
+      \compf{$f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
+        \lstinline')\{...\}'}{
+        \env[$\mathit{id_1} \mapsto$ \eval{$e_1$}{\env}, ...,
+          $\mathit{id_N} \mapsto$ \eval{$e_N$}{\env}]}
     } \\
 
-    \comp{\lstinline'lv = f(e1,...,eN);'}{\env} &=& & \eqlabel{C-fct2} \\
+    \comp{$\mathit{lv}$ \lstinline'=' $f$\lstinline'('$e_1$,...,$e_N$
+      \lstinline');'}{\env} &=& & \eqlabel{C-fct2} \\
     \multicolumn{4}{c}{
-      \env[\lstinline'lv' $\mapsto$ \eval{\lstinline'ret'}{
-          (\compf{\lstinline'f(id1,...,idN)\{...\}'}{
-            \env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
-              \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}]
+      \env[$\mathit{lv} \mapsto$ \eval{\lstinline'ret'}{
+          (\compf{$f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
+            \lstinline')\{...\}'}{
+            \env[$\mathit{id_1} \mapsto$ \eval{$e_1$}{\env}, ...,
+              $\mathit{id_N} \mapsto$ \eval{$e_N$}{\env}]
           })}]
     } \\
 
-    \comp{\lstinline'return e;'}{\env}
-    &=& \env[\lstinline'ret' $\mapsto$ \eval{\lstinline'e'}{\env}]
-    & \eqlabel{C-return} \\
-    \comp{\lstinline'if(e)' $\bopen A \bclose$
+    \comp{\lstinline'return' $e\semicolon$}{\env}
+    &=& \env[\lstinline'ret' $\mapsto$ \eval{$e$}{\env}] & \eqlabel{C-return} \\
+    \comp{\lstinline'if('$e$\lstinline')' $\bopen A \bclose$
       \lstinline'else' $\bopen B \bclose$}{\env}
-    &=& \comps{$A$}{\env} si (\eval{\lstinline'e'}{\env})
-    $\neq$ 0, \comps{$B$}{\env} sinon & \eqlabel{C-if} \\
-    \comp{\lstinline'/*@ assert p; */'}{\env}
-    &=& \env{} si (\eval{\lstinline'p'}{\env}), \errorenv sinon
+    &=& \comps{$A$}{\env} si (\eval{$e$}{\env})
+    $\neq 0$, \comps{$B$}{\env} sinon & \eqlabel{C-if} \\
+    \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{\env}
+    &=& \env{} si (\eval{$p$}{\env}), \errorenv sinon
     & \eqlabel{C-assert} \\
     \multicolumn{4}{l}{
       \comp{
-        \lstinline'/*@ loop invariant p; loop assigns X; loop variant t;*/ while(e)'
+        \lstinline'/*@ loop invariant' $p\semicolon$
+        \lstinline'loop assigns' $X\semicolon$
+        \lstinline'loop variant' $t\semicolon$
+        \lstinline'*/ while(' $e$ \lstinline')'
         $\bopen A \bclose$}{\env}
     } \\
-    & = & \errorenv si $\lnot$ \eval{\lstinline'p'}{\env}
+    & = & \errorenv si $\lnot$ \eval{$p$}{\env}
     & \eqlabel{C-while-1} \\
-    &  & \env{} si (\eval{\lstinline'e'}{\env}) $=$ 0 & \eqlabel{C-while-2} \\
-    &  & \errorenv si $\lnot$ \eval{\lstinline't >= 0'}{\env}
+    &  & \env{} si (\eval{$e$}{\env}) $= 0$ & \eqlabel{C-while-2} \\
+    &  & \errorenv si (\eval{$t$}{\env}) $< 0$
     & \eqlabel{C-while-3} \\
-    &  & \errorenv
-    si $\lnot$ \eval{\lstinline'p'}{(\comps{$A$}{\env})}
+    &  & \errorenv si $\lnot$ \eval{$p$}{(\comps{$A$}{\env})}
     & \eqlabel{C-while-4} \\
     &  & \errorenv
-    si (\eval{\lstinline't'}{(\comps{$A$}{\env})}) $\ge$
-    (\eval{\lstinline't'}{\env}) & \eqlabel{C-while-5} \\
+    si (\eval{$t$}{(\comps{$A$}{\env})}) $\ge$
+    (\eval{$t$}{\env}) & \eqlabel{C-while-5} \\
     &  & \errorenv si
-    $\exists \mbox{\lstinline'x'}. (\mbox{\lstinline'x'} \in G-X.$
-    (\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$
-    (\eval{\lstinline'x'}{\env}) $)$ & \eqlabel{C-while-6} \\
-    &  & \comp{\lstinline'/*@ ... */ while(e)'
+    $\exists x. (x \in G-X.$
+    (\eval{$x$}{(\comps{$A$}{\env})}) $\ne$
+    (\eval{$x$}{\env}) $)$ & \eqlabel{C-while-6} \\
+    &  & \comp{\lstinline'/*@ ... */ while('$e$\lstinline')'
       $\bopen A \bclose$}{
       (\comps{$A$}{\env})} sinon & \eqlabel{C-while-7} \\
   \end{tabular}

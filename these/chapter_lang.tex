@@ -170,20 +170,22 @@ sémantique dénotationnelle des instructions et fonctions d'un programme
 annoté par rapport à un environnement.
 Dans la suite, nous utilisons les notations suivantes :
 \begin{itemize}
-\item $lv$, $lv_1$ et $lv_2$ sont des left-values;
-\item $id$ est un identificateur de variable;
+\item $\mathit{lv}$, $\mathit{lv_1}$ et $\mathit{lv_2}$ sont des left-values;
+\item $\mathit{id}$, $\mathit{id_1}$ et $\mathit{id_N}$ sont des identificateurs
+  de variable;
 \item $f$ est un identificateur de fonction;
 \item $v$ est une valeur;
-\item $cst$ est une constante;
+\item $\mathit{cst}$ est une constante;
 \item $G$ et $X$ sont des listes de termes \eacsl;
 \item $i$, $i_1$, $i_2$ sont des instructions C;
 \item $A$ et $B$ sont des blocs d'instructions;
 \item $e$, $e_1$, $e_2$, $e_N$ sont des expressions C;
 \item $t$, $t_1$, $t_2$ sont des termes \eacsl;
 \item $p$, $p_1$, $p_2$ sont des prédicats \eacsl;
-\item $unop$ est un opérateur unaire;
-\item $binop$ est un opérateur binaire;
-\item $rel$ est un opérateur binaire relationnel.
+\item $T$ est un type C;
+\item $\mathit{unop}$ est un opérateur unaire;
+\item $\mathit{binop}$ est un opérateur binaire;
+\item $\mathit{rel}$ est un opérateur binaire relationnel.
 \end{itemize}
 
 
@@ -199,45 +201,51 @@ $\bot$ dénote une valeur non initialisée.
 Un environnement \env{} est une fonction totale \env $: LV \rightarrow VAL$
 des identificateurs de variables dans le domaine sémantique des valeurs
 possibles.
-La notation \env[$lv \mapsto v$] désigne un nouvel environnement,
-correspondant à l'environnement \env auquel la paire $(lv, v)$ a été ajoutée,
-ce qui signifie que $v$ est la nouvelle valeur de $lv$ dans cet environnement.
-L'accès à la valeur d'une left-value $lv$ dans un environnement \env est noté
-\env($lv$).
+La notation \env[$\mathit{lv} \mapsto v$] désigne un nouvel environnement,
+correspondant à l'environnement \env auquel la paire $(\mathit{lv}, v)$ a été
+ajoutée, ce qui signifie que $v$ est la nouvelle valeur de $\mathit{lv}$ dans
+cet environnement.
+L'accès à la valeur d'une left-value $\mathit{lv}$ dans un environnement \env{}
+est noté \env($\mathit{lv}$).
 Il est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
-  (\env[$lv \mapsto v$])($lv$) & = & $v$ & \eqlabel{env-get-1} \\
-  (\env[$lv_1 \mapsto v$])($lv_2$) & = & \env($lv_2$) si $lv_1 \neq lv_2$
+  (\env[$\mathit{lv} \mapsto v$])($\mathit{lv}$) &=& $v$ & \eqlabel{env-get-1}\\
+  (\env[$\mathit{lv_1} \mapsto v$])($\mathit{lv_2}$) & =
+  & \env($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
-  \env($lv$) & = & $\bot$ (par défaut) & \eqlabel{env-get-3} \\
+  \env($\mathit{lv}$) & = & $\bot$ (par défaut) & \eqlabel{env-get-3} \\
 \end{tabular}
 \end{center}
 
 Dans la suite, nous utiliserons la notation
-\env[$lv_1 \mapsto v_1, lv_2 \mapsto v_2$] (en supposant que $lv_1 \not = lv_2$)
-comme un raccourci pour \env[$lv_1 \mapsto v_1$][$lv_2 \mapsto v_2$].
-La notation \env $-~\{lv\}$ signifie que la left-value
-$lv$ et sa valeur sont enlevées de l'environnement \env :
+\env[$\mathit{lv_1} \mapsto v_1, \mathit{lv_2} \mapsto v_2$] (en supposant que
+$\mathit{lv_1} \neq \mathit{lv_2}$)
+comme un raccourci pour
+\env[$\mathit{lv_1} \mapsto v_1$][$\mathit{lv_2} \mapsto v_2$].
+La notation \env $-~\{\mathit{lv}\}$ signifie que la left-value
+$\mathit{lv}$ et sa valeur sont enlevées de l'environnement \env :
 
 \begin{center}
 \begin{tabular}{rclr}
-  (\env[$lv \mapsto v$])$-~\{lv\}$ &=& \env & \eqlabel{env-del-1} \\
-  (\env[$lv_1 \mapsto v$])$-~\{lv_2\}$
-  &=& (\env$-~\{lv_2\}$)[$lv_1 \mapsto v$] si $lv_1 \neq lv_2$
-  & \eqlabel{env-del-2} \\
-  \env$-~\{lv\}$ &=& \env{}  si \env($lv$) = $\bot$ & \eqlabel{env-del-3} \\
+  (\env[$\mathit{lv} \mapsto v$])$-~\{lv\}$ &=& \env & \eqlabel{env-del-1} \\
+  (\env[$\mathit{lv_1} \mapsto v$])$-~\{\mathit{lv_2}\}$
+  &=& (\env$-~\{\mathit{lv_2}\}$)[$\mathit{lv_1} \mapsto v$] si
+  $\mathit{lv_1} \neq \mathit{lv_2}$ & \eqlabel{env-del-2} \\
+  \env$-~\{\mathit{lv}\}$ &=& \env{}  si \env($\mathit{lv}$) = $\bot$
+  & \eqlabel{env-del-3} \\
 \end{tabular}
 \end{center}
 
 Nous définissons également une relation d'inclusion sur les environnements,
 c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si
-chaque paire $(lv, v)$ présente dans l'environnement \env$_1$ est
+chaque paire $(\mathit{lv}, v)$ présente dans l'environnement \env$_1$ est
 également présente dans \env$_2$ :
 \[
 \mbox{\env}_1~\mbox{\subenv}~\mbox{\env}_2~\equiv~
-\forall lv.~\forall v.~(\mbox{\env}_1(lv)=v) \Rightarrow (\mbox{\env}_2(lv)=v)
+\forall \mathit{lv}.~\forall v.
+~(\mbox{\env}_1(\mathit{lv})=v) \Rightarrow (\mbox{\env}_2(\mathit{lv})=v)
 \]
 
 Nous définissons un ``environnement d'erreur'', noté \errorenv.
@@ -276,7 +284,7 @@ fonction.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
 La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
-La sémantique du prédicat \lstinline'valid' est expliquée en
+La sémantique du prédicat \lstinline'\valid' est expliquée en
 partie~\ref{sec:ptr-valid}.
 
 \input{figures/fig_semantics_pred}
@@ -300,9 +308,9 @@ instruction de la séquence.
 La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
 La règle \eqlabel{C-decl} ajoute une variable non initialisée (notée par le
 symbole $\bot$) à l'environnement \env.
-Dans la règle \eqlabel{C-Z-set}, la variable entière (GMP) \lstinline'lval' est
-allouée et on lui affecte la valeur de \lstinline'e'.
-Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) \lstinline'lval'
+Dans la règle \eqlabel{C-Z-set}, la variable entière (GMP) $\mathit{lv}$ est
+allouée et on lui affecte la valeur de $e$.
+Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) $\mathit{lv}$
 est désallouée et enlevée de l'environnement \env.
 Une instruction \underline{soulignée} manipule des entiers non bornés.
 
@@ -313,52 +321,53 @@ Cette fonction correspond à un \lstinline'if' dont la branche
 Nous définissons également une fonction \lstinline'fassume' permettant de poser
 une hypothèse de validité sur la valeur d'une expression.
 Cette fonction correspond à un \lstinline'if' dont
-la branche \lstinline'then' est toujours vraie, les exécutions pour lesquelles
-la branche \lstinline'else' est activée sont ignorées.
+la branche \textit{true} est toujours vraie, les exécutions pour lesquelles
+la branche \textit{false} est activée sont ignorées.
 Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
 d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
 permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
 
 La sémantique de la fonction \lstinline'fassert' donnée par la règle
-\eqlabel{C-fassert} énonce que si l'expression \lstinline'e' s'évalue en une
+\eqlabel{C-fassert} énonce que si l'expression $e$ s'évalue en une
 expression non nulle, alors l'environnement \env est inchangé, sinon on obtient
 l'environnement d'erreur \errorenv.
 La sémantique de la fonction \lstinline'fassume' donnée par la règle
-\eqlabel{C-fassume} énonce que l'expression \lstinline'e' est supposée vraie et
+\eqlabel{C-fassume} énonce que l'expression $e$ est supposée vraie et
 doit donc s'évaluer en une expression non nulle.
 L'environnement est inchangé après cet appel de fonction.
-\lstinline'e' ne peut pas s'évaluer en 0 par définition de la fonction, si c'est
+$e$ ne peut pas s'évaluer en $0$ par définition de la fonction, si c'est
 le cas on aboutit à une contradiction.
 
 La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donnée
 par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
-Elles énoncent que dans le nouvel environnement, la left-value $lv$ a la valeur
-1 si les pointeurs en argument de la fonction sont valides, et 0 sinon.
+Elles énoncent que dans le nouvel environnement, la left-value $\mathit{lv}$ a
+la valeur $1$ si les pointeurs en argument de la fonction sont valides, et $0$
+sinon.
 Plus de détails sur la sémantique de ces fonctions sont donnés en
 partie~\ref{sec:ptr-valid}.
 
 La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct1}
 et \eqlabel{C-fct2}.
-Dans ces règles, la sémantique de la fonction \lstinline'f' est calculée à
+Dans ces règles, la sémantique de la fonction $f$ est calculée à
 l'aide de la fonction $\mathcal{F}$ donnée en figure~\ref{fig:sem-fct}.
-\env[\lstinline'id1' $\mapsto$ \eval{\lstinline'e1'}{\env}, ...,
-  \lstinline'idN' $\mapsto$ \eval{\lstinline'eN'}{\env}] est l'environnement
-dans lequel les paramètres effectifs (les expressions \lstinline'e1', ...,
-\lstinline'eN') sont affectés aux paramètres formels (les identificateurs
-\lstinline'id1', ..., \lstinline'idN').
+\env[$\mathit{id_1} \mapsto$ \eval{$e_1$}{\env}, ...,
+  $\mathit{id_N} \mapsto$ \eval{$e_N$}{\env}] est l'environnement
+dans lequel les paramètres effectifs (les expressions $e_1$, ..., $e_N$) sont
+affectés aux paramètres formels (les identificateurs
+$\mathit{id_1}$, ..., $\mathit{id_N}$).
 
 La sémantique des assertions \eacsl donnée par la règle \eqlabel{C-assert} est
 similaire à la sémantique de la fonction \lstinline'fassert'.
-Si le prédicat \lstinline'p' s'évalue en une expression non nulle,
-l'environnement \env est inchangé, sinon l'environnement \errorenv est obtenu.
+Si le prédicat $p$ s'évalue en une expression non nulle,
+l'environnement \env{} est inchangé, sinon l'environnement \errorenv est obtenu.
 
 La sémantique des boucles annotées par un contrat contenant un invariant
-\lstinline'p', une liste de termes \lstinline'X' et un variant \lstinline't' est
+$p$, une liste de termes $X$ et un variant $t$ est
 donnée par les règles \eqlabel{C-while-1} à \eqlabel{C-while-7}.
 La règle \eqlabel{C-while-1} énonce que \errorenv est obtenu si l'invariant de
 boucle n'est pas établi avant l'exécution du corps de la boucle.
-La règle \eqlabel{C-while-2} énonce que l'environnement \env est inchangé si
-la condition de boucle \lstinline'e' s'évalue à 0 et donc la boucle n'est pas
+La règle \eqlabel{C-while-2} énonce que l'environnement \env{} est inchangé si
+la condition de boucle $e$ s'évalue à $0$ et donc la boucle n'est pas
 exécutée.
 La règle \eqlabel{C-while-3} énonce que \errorenv est obtenu si le variant de
 boucle n'est pas positif avant l'exécution de la boucle.
@@ -391,19 +400,19 @@ figure~\ref{fig:sem-instr}) et la fonction sous vérification (qui n'est pas
 appelée).
 
 La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
-Si \lstinline'f' est la fonction sous vérification, alors sa
-précondition \lstinline'p1' est supposée vraie par définition.
+Si $f$ est la fonction sous vérification, alors sa
+précondition $p_1$ est supposée vraie par définition.
 Si la fonction considérée n'est pas la fonction sous vérification, alors la
 règle \eqlabel{F-1} énonce que \errorenv est obtenu si le prédicat
-\lstinline'p1' s'évalue en faux.
-Si \lstinline'g' est la fonction sous vérification, alors le prédicat
-\lstinline'p1' est vrai par hypothèse.
+$p_1$ s'évalue en faux.
+Si $f$ est la fonction sous vérification, alors le prédicat
+$p_1$ est vrai par hypothèse.
 La règle \eqlabel{F-2} énonce que \errorenv est obtenu si l'évaluation
 d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
 la clause \lstinline'assigns' de la fonction) est différente entre le début
 et la fin de l'exécution du corps de la fonction.
 La règle \eqlabel{F-3} énonce que \errorenv est obtenu si le prédicat de la
-postcondition \lstinline'p2' est faux à la fin de la fonction.
+postcondition $p_2$ est faux à la fin de la fonction.
 Enfin, si aucun des trois cas précédents ne s'est produit, il faut calculer la
 sémantique des instructions du corps de la fonction.
 
@@ -411,8 +420,9 @@ sémantique des instructions du corps de la fonction.
 \subsection{Validité des pointeurs}
 \label{sec:ptr-valid}
 
-Un pointeur est valide en mémoire si on peut le déréférencer, afin de pouvoir
-accéder ou modifier l'emplacement mémoire qu'il référence.
+Un pointeur est valide en mémoire si on peut le déréférencer afin de pouvoir
+accéder ou modifier l'emplacement mémoire qu'il référence (c'est-à-dire vers
+lequel il pointe).
 Un pointeur alloué dynamiquement (à l'aide de la fonction \lstinline'malloc' par
 exemple) est valide tant qu'il n'est pas libéré (par la fonction
 \lstinline'free').
