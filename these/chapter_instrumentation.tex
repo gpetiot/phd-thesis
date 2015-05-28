@@ -824,19 +824,21 @@ d'instrumentation des programmes annotés.
 Ces propriétés sont prouvées dans les parties suivantes.
 
 
-\begin{property}{Préservation des erreurs}\label{th:error}~\\
+\begin{myproperty}[Préservation des erreurs]
+  \label{th:error}
   L'exécution des instructions obtenues par traduction d'une annotation $a$ du
   programme $P$ provoque une erreur dans le programme instrumenté $P'$ par cette
   traduction de $a$ si et seulement si l'annotation $a$ est invalide.
-\end{property}
+\end{myproperty}
 
 La propriété~\ref{th:error} assure l'absence de faux positifs et l'absence de
 faux négatifs lors de la génération de tests sur le programme instrumenté.
 
-\begin{property}{Inclusion des environnements}\label{th:inclusion}~\\
+\begin{myproperty}[Inclusion des environnements]
+  \label{th:inclusion}
   Si toutes les annotations d'un programme $P$ sont valides, l'environnement de
   $P$ est inclus dans l'environnement du programme après traduction $P'$.
-\end{property}
+\end{myproperty}
 
 \commentGP{reformuler pour avoir une inclusion en chaque point de programme}
 
@@ -852,7 +854,7 @@ l'instrumentation.
 Afin de prouver la correction de la traduction des prédicats et des annotations,
 nous devons prouver la correction de la traduction des termes.
 
-\begin{property}
+\begin{myproperty}[Traduction des Termes : Correction]
   \label{lem:term-correct}
   Soit \lstinline't' : $\tau$ un terme de type $\tau$ au label $l$ qui est
   traduit par le couple $(I, \mbox{\lstinline'e'})$ où $I$ est une liste
@@ -863,17 +865,17 @@ nous devons prouver la correction de la traduction des termes.
   environnement \env{} tel que
   \eval{\lstinline't'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
-\end{property}
+\end{myproperty}
 
-\begin{property}
+\begin{myproperty}[Traduction des Termes : Absence d'erreur]
   \label{lem:term-noerror}
   \env $\neq$ \errorenv
-\end{property}
+\end{myproperty}
 
-\begin{property}
+\begin{myproperty}[Traduction des Termes : Inclusion des environnements]
   \label{lem:term-subset}
   \env$_l$ \subenv{} \env
-\end{property}
+\end{myproperty}
 
 La propriété~\ref{lem:term-correct} énonce que l'évaluation des insertions de
 code
@@ -951,7 +953,7 @@ et~\ref{th:inclusion}.
 Afin de prouver la correction de la traduction des annotations,
 nous devons prouver la correction de la traduction des prédicats.
 
-\begin{property}
+\begin{myproperty}[Traduction des Prédicats : Correction]
   \label{lem:pred-correct}
   Soit \lstinline'p' un prédicat au label $l$ qui est
   traduit par le couple $(I, \mbox{\lstinline'e'})$ où $I$ est une liste
@@ -962,17 +964,17 @@ nous devons prouver la correction de la traduction des prédicats.
   environnement \env{} tel que
   \eval{\lstinline'p'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
   \env = \comp{$A$}{\env$_l$}.
-\end{property}
+\end{myproperty}
 
-\begin{property}
+\begin{myproperty}[Traduction des Prédicats : Absence d'erreurs]
   \label{lem:pred-noerror}
   \env $\neq$ \errorenv
-\end{property}
+\end{myproperty}
 
-\begin{property}
+\begin{myproperty}[Traduction des Prédicats : Inclusion des environnements]
   \label{lem:pred-subset}
   \env$_l$ \subenv{} \env
-\end{property}
+\end{myproperty}
 
 La propriété~\ref{lem:pred-correct} énonce que l'évaluation des insertions de
 code
