@@ -1,48 +1,53 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\tau$-unop$_1$]
+    {\myinference[$\tau$-lv]
       {}
       {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
         (I \concat (l, ctype~\mbox{\lstinline'var_n = *t;'}),
         \mbox{\lstinline'var_n'})}
     }
 
-    {\myinference[$\tau$-unop$_2$]
+    {\myinference[$\tau$-unop]
       {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
-        \quad
-        unop \in \{ -, \sim\}}
-      {(l, (\mbox{\lstinline'unop t'}):\mathbb{Z}) \rulearrow
+      } {(l, (\mathit{unop}~\mbox{\lstinline't'}):\mathbb{Z}) \rulearrow
         (I
-        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n = unop e'} \Zclear}
+        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n ='}
+          ~\mathit{unop}~\mbox{\lstinline'e'} \Zclear}
         \semicolon),
-        \mbox{\lstinline'var_n'})}
+        \mbox{\lstinline'var_n'})
+        \quad
+        \mathit{unop} \in \{ -, \sim\}}
     }
 
     {\myinference[$\tau$-binop$_1$]
       {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
         \quad
-        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})
-        \quad
-        binop \in \{+, -\}}
-      {(l, (\mbox{\lstinline't1 binop t2'}):ptr) \rulearrow
+        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})}
+      {(l, (\mbox{\lstinline't1'}~\mathit{binop}~\mbox{\lstinline't2'}):ptr)
+        \rulearrow
         (I_1 \concat I_2
-        \concat (l, ptr~\mbox{\lstinline'var_n = e1 binop e2;'}),
-        \mbox{\lstinline'var_n'})}
+        \concat (l, ptr~\mbox{\lstinline'var_n = e1'}~\mathit{binop}
+        ~\mbox{\lstinline'e2;'}),
+        \mbox{\lstinline'var_n'})
+        \quad
+        \mathit{binop} \in \{+, -\}}
     }
 
     {\myinference[$\tau$-binop$_2$]
       {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \quad
         (l, \mbox{\lstinline't2'}:\mathbb{Z})
-        \rulearrow (I_2, \mbox{\lstinline'e2'}) \quad
-        binop \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
-        \mathtt{*} \}}
-      {(l, (\mbox{\lstinline't1 binop t2'}):\mathbb{Z}) \rulearrow
+        \rulearrow (I_2, \mbox{\lstinline'e2'})}
+      {(l, (\mbox{\lstinline't1'}~\mathit{binop}~\mbox{\lstinline't2'}):
+        \mathbb{Z}) \rulearrow
         (I_1 \concat I_2 \concat (l,
         \underline{\Zinit \mbox{\lstinline'var_n = e1'} \Zclear
-          \mbox{\lstinline'binop e2'} \Zclear}
+          ~\mathit{binop}~\mbox{\lstinline'e2'} \Zclear}
         \semicolon
-        ), \mbox{\lstinline'var_n'})}
+        ), \mbox{\lstinline'var_n'})
+        \quad
+        \mathit{binop} \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
+        \mathtt{*} \}}
     }
 
     {\myinference[$\tau$-if]

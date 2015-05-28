@@ -18,8 +18,8 @@ programmes C annotés sans que cet outil n'ait à traiter les annotations dans
 leur format d'origine.
 Il détecte ces erreurs par analyse du code C produit par l'instrumentation.
 
-Dans la partie~\ref{sec:process} nous présentons le langage des programmes
-annotés pris en compte et les principes généraux de la traduction.
+Dans la partie~\ref{sec:process} nous présentons les principes de la traduction
+des programmes annotés définis par la syntaxe présentée au chapitre précédent.
 Ensuite nous détaillons les règles de traduction des annotations \eacsl en code
 C.
 Les règles de traduction pour les annotations sont décrites dans la
@@ -32,17 +32,16 @@ l'instrumentation pour la validation à l'exécution.
 
 Nous donnons également une justification de correction des règles de
 traduction.
-Nous voulons notamment nous assurer qu'une erreur est trouvée par le
-générateur de tests si et seulement s'il y a une inconsistance entre le code
-et sa spécification.
+Nous voulons notamment nous assurer que si une erreur est trouvée par le
+générateur de tests alors y a une inconsistance entre le code et sa
+spécification.
 
-Pour atteindre cet objectif, nous prouvons que l'exécution du code inséré par
+Pour atteindre cet objectif, nous montrons que l'exécution du code inséré par
 la traduction d'un terme, d'un prédicat ou d'une annotation a pour effet de
 calculer la même valeur que la valeur de ce terme, ce prédicat ou cette
 annotation évalués à leur place dans le programme initial.
 Pour cela, nous nous basons sur la sémantique dénotationnelle des instructions
-définie au chapitre~\ref{sec:lang}.
-
+définie au chapitre précédent.
 Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
 Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
 \ref{sec:annotation-translation} justifient la correction de ces propriétés
@@ -55,7 +54,7 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 Cette partie présente le processus d'instrumentation des fonctions C annotées
 avec le langage d'annotations \eacsl pour la génération de tests.
-
+Elle l'illustre sur l'exemple donné dans le listing~\ref{lst:normalized}.
 
 
 \subsection{Exemple}
@@ -70,11 +69,12 @@ avec le langage d'annotations \eacsl pour la génération de tests.
 Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
 test normalisée en suivant la grammaire de la figure~\ref{fig:gram-c} du
 chapitre~\ref{sec:lang}.
-Elle retourne $1$ quand la valeur \lstinline'v' en paramètre est présente dans
-le tableau \lstinline't' en paramètre, et $0$ sinon.
+La clause \lstinline'ensures' aux lignes 4--5 indique qu'elle retourne $1$ quand
+la valeur \lstinline'v' en paramètre est présente dans le tableau \lstinline't'
+en paramètre, et $0$ sinon.
 
 La clause \lstinline'requires' de la ligne 1 indique que la taille du tableau
-\lstinline'n' est positive.
+\lstinline'n' est positive ou nulle.
 La clause \lstinline'requires' de la ligne 2 indique que \lstinline'(t+0)',
 \ldots, \lstinline'(t+(n-1))' sont des pointeurs valides.
 La clause \lstinline'typically' de la ligne 3 est une extension de la syntaxe
@@ -88,12 +88,12 @@ Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
 \cite{\citekorat}).
 L'invariant de boucle de la ligne 9 spécifie des bornes pour \lstinline'i'
 sur l'ensemble des itérations de la boucle.
-Le variant de boucle ligne 10 assure la terminaison de la boucle.
+Le variant de boucle ligne 10 permet de vérifier la terminaison de la boucle.
 La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
 et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
-Notons que pour prouver formellement la postcondition, un invariant de boucle
-supplémentaire est nécessaire, mais n'est pas inclus dans cet exemple simplifié 
-: \lstinline'\forall integer k; 0<=k<=i-1 ==> \old(*(t+k))!=v;'.
+Notons que pour prouver formellement la postcondition, l'invariant de boucle
+suivant est nécessaire, mais n'est pas inclus dans cet exemple simplifié :
+\lstinline'\forall integer k; 0<=k<=i-1 ==> \old(*(t+k))!=v;'.
 
 
 
@@ -111,10 +111,10 @@ Les principes de la traduction sont illustrés par des extraits de ce listing,
 au fur et à mesure de leur présentation.
 
 Pour simplifier la lecture des insertions de code générées par la traduction,
-nous utilisons la notation abrégée ${}^{\square}$\lstinline{var} pour indiquer
-que la variable \lstinline{var} doit être déclarée et allouée
+nous utilisons la notation abrégée ${}^{\square}$\lstinline'var' pour indiquer
+que la variable \lstinline'var' doit être déclarée et allouée
 au début de la portion de code insérée, et la notation
-\lstinline{var}${}^{\boxtimes}$ pour indiquer que la variable \lstinline{var} doit
+\lstinline'var'${}^{\boxtimes}$ pour indiquer que la variable \lstinline'var' doit
 être désallouée à la fin du code inséré.
 Nous soulignons les opérations (affectation, comparaison, \dots) qui utilisent
 l'arithmétique non bornée (par opposition à l'arithmétique modulaire), et
@@ -147,7 +147,7 @@ Elle représente une liste de fragments de programmes C $c_1, c_2, \ldots, c_n$
 où le fragment $c_i$ sera inséré dans le programme instrumenté au label $l_i$.
 Si plusieurs fragments ont le même label (et doivent donc être insérés au
 même endroit), ils sont insérés dans le programme instrumenté en respectant leur
-ordre dans la séquence (l'ordre dans lequel ils ont été générés).
+ordre dans la séquence.
 
 Les fragments de programmes -- ou insertions de code -- sont les instructions
 nécessaires à l'évaluation d'une annotation, d'un prédicat ou d'un terme
@@ -162,24 +162,25 @@ du terme \lstinline'\old(x)' si \lstinline'x' est une variable globale ou un
 paramètre formel de la fonction.
 En effet, chaque valeur d'entrée \lstinline'x' (un paramètre formel de la
 fonction ou une variable globale) de type $T$ est mémorisée par
-une instruction \lstinline|T old_x = x;| au début de la fonction
-instrumentée, c'est-à-dire au label $Beg_{\mbox{\lstinline'f'}}$.
+une instruction \lstinline'T old_x = x;' au début de la fonction
+instrumentée, c'est-à-dire au label $Beg_{\mbox{\lstinline'f'}}$, dans la section
+\textit{instr}$^{*}$.
 Pour chaque tableau ou pointeur \lstinline'x', les valeurs pointées sont
 mémorisées dans un tableau alloué dynamiquement \lstinline'old_val_x' dont la
 taille est inférée à partir du prédicat \lstinline'\valid' dont on suppose la
 présence en précondition de la fonction à traduire.
 Dans l'exemple du listing~\ref{lst:abbrv}, les valeurs des paramètres formels
-\lstinline|t|, \lstinline|n| et \lstinline|v| de la fonction
+\lstinline't', \lstinline'n' et \lstinline'v' de la fonction
 \lstinline'is_present' sont mémorisées lignes 3--5, un
-nouveau tableau \lstinline|old_val_t| stocke les anciennes valeurs contenues
-dans \lstinline|t|, il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
+nouveau tableau \lstinline'old_val_t' stocke les anciennes valeurs contenues
+dans \lstinline't', il est alloué ligne 3, rempli ligne 5 et désalloué ligne 35.
 
 \textbf{Traduction des annotations.}
 Une fois ce pré-traitement effectué, toute annotation \eacsl de la forme
-\lstinline'kwd w' (où \lstinline'kwd' $\in$ \bopen \lstinline|assert|,
-\lstinline|requires|, \lstinline|typically|, \lstinline|ensures|,
-\lstinline|loop variant|, \lstinline|loop invariant|, \lstinline|assigns|,
-\lstinline|loop assigns| \bclose et \lstinline'w' est un terme ou un prédicat)
+\lstinline'kwd w' (où \lstinline'kwd' $\in$ \bopen \lstinline'assert',
+\lstinline'requires', \lstinline'typically', \lstinline'ensures',
+\lstinline'loop variant', \lstinline'loop invariant', \lstinline'assigns',
+\lstinline'loop assigns' \bclose et \lstinline'w' est un terme ou un prédicat)
 est traduite.
 D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
 réduites au fragment \eacsl considéré.
@@ -193,33 +194,38 @@ réécrits comme des implications dans des assertions.
 
 Les figures~\ref{fig:code-gen} et~\ref{fig:code-ins} illustrent la traduction
 d'un invariant de boucle \lstinline'loop invariant x<y' à un label de boucle
-$L$.
+$l$.
 La figure~\ref{fig:code-gen} montre quelles insertions de code sont générées
 pour chaque composant de l'annotation.
 Les insertions nécessaires à l'évaluation du prédicat \lstinline'x < y' au
-label $L$ et au label $EndIter_L$ apparaissent en partie gauche de la figure,
-les symboles \insertball[fill=gray!40,xshift=-1mm,yshift=1mm]{n} dénotent les
-fragments de code et font le lien entre les deux parties de la figure.
-La partie droite de la figure montre la séquence d'insertions étiquetées par
-des labels obtenue après traduction complète de l'invariant de boucle.
+label $l$ et au label $\mathit{EndIter_l}$ apparaissent en partie gauche de la
+figure.
+$(\mathbb{Z})\mbox{\lstinline'x'}$ explicite la conversion (qui est implicite
+dans la suite) du terme \lstinline'x' (qui est une variable du programme et est
+donc du type \lstinline'int' ou autre type C) vers le type logique
+\lstinline'integer'.
+Les symboles dénotés \insertball[fill=gray!40,xshift=-1mm,yshift=1mm]{n}
+désignent les fragments de code et font le lien entre les deux parties de la
+figure.
+La partie droite de la figure montre la séquence d'insertions, étiquetées par
+des labels, obtenue après traduction complète de l'invariant de boucle.
 La figure~\ref{fig:code-ins} illustre le principe d'insertion des fragments de
-code de la figure~\ref{fig:code-gen}, qui produit le programme après
-instrumentation.
+code de la figure~\ref{fig:code-gen}, qui produit le programme instrumenté.
 
 
-Maintenant que le principe général de l'instrumentation a été présenté, revenons
-sur l'instrumentation de la fonction du listing~\ref{lst:normalized}.
+Maintenant que le principe général de la traduction a été présenté, revenons
+sur celle de la fonction du listing~\ref{lst:normalized}.
 Chaque annotation du listing~\ref{lst:normalized} est traduite en une séquence
 d'insertions de code.
-La clause \lstinline'requires' de la ligne 1 (listing~\ref{lst:normalized}) est
+La première précondition à la ligne 1 (listing~\ref{lst:normalized}) est
 traduite à la ligne 6 du listing~\ref{lst:abbrv}.
-La clause \lstinline'requires' de la ligne 2 (listing~\ref{lst:normalized}) est
+La seconde précondition à la ligne 2 (listing~\ref{lst:normalized}) est
 traduite à la ligne 7 du listing~\ref{lst:abbrv}.
 La clause \lstinline'typically' de la ligne 3 du listing~\ref{lst:normalized}
 est traduite ligne 8 du listing~\ref{lst:abbrv}.
 L'invariant de boucle de la ligne 9 du listing~\ref{lst:normalized} est traduit
 aux lignes 10--12 du listing~\ref{lst:abbrv} pour vérifier que l'invariant est
-vrai avant la première itération (établissement), et aux lignes 20--24 du
+vrai avant la première itération (établissement), et aux lignes 19--23 du
 listing~\ref{lst:abbrv} pour vérifier la préservation de l'invariant après
 chaque itération.
 Le variant de boucle ligne 10 du listing~\ref{lst:normalized} est traduit aux
@@ -229,50 +235,39 @@ listing~\ref{lst:abbrv} pour vérifier que le
 variant décroît strictement après chaque itération, assurant ainsi la
 terminaison de la boucle.
 La postcondition des lignes 4--5 du listing~\ref{lst:normalized} est traduite
-aux lignes 28--33 du listing~\ref{lst:abbrv}.
+aux lignes 29--34 du listing~\ref{lst:abbrv}.
 
 La traduction d'annotations est définie par les règles de la
 partie~\ref{sec:annot}.
 Cela requiert de traduire les termes et les prédicats \eacsl.
 Ces transformations sont décrites par les règles des parties~\ref{sec:term}
 et~\ref{sec:pred}.
-Dans ces règles, les notations suivantes sont utilisées :
+Dans ces règles, les notations supplémentaires suivantes sont utilisées :
 \begin{itemize}
 \item $c_1$, $c_2$, $c_i$ et $c_n$ sont des fragments de programmes C;
-\item $l$, $l_1$, $l_2$, $l_i$, $l_n$, $Beg_f$, $End_f$, $BegIter_l$ et
-  $EndIter_l$ sont des labels du programme;
+\item $l$, $l_1$, $l_2$, $l_i$, $l_n$, $\mathit{Beg_f}$, $\mathit{End_f}$,
+  $\mathit{BegIter_l}$ et $\mathit{EndIter_l}$ sont des labels du programme;
 \item $i$ et $k$ sont des identificateurs de variables liées
   dans un prédicat \eacsl et un compteur d'itérations dans un programme C;
-\item $x$ est un identificateur de variable C;
+\item $x$ est un identificateur de variable C (donc une left-value);
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)^*$;
 \item $x$, $y$ et $z$ sont des left-values;
-\item $var_n$ est un identificateur de variable fraîche;
-\item $v$ est une valeur;
 \item $i$, $i_1$, $i_2$ sont des instructions C;
-\item $A$, $B$ sont des blocs d'instructions;
-\item $e$, $e_1$, $e_2$ et $e_3$ sont des expressions C;
-\item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl;
-\item $p$, $p_1$, $p_2$ et $p_3$ sont des prédicats \eacsl;
-\item $cst$ est une constante;
-\item $G$ et $X$ sont des listes de termes \eacsl;
-\item $unop$ est un opérateur unaire;
-\item $binop$ est un opérateur binaire;
-\item $rel$ est un opérateur binaire relationnel;
 \item $P$ est un programme C annoté et $P'$ est le programme instrumenté
   obtenu après traduction du programme $P$.
 \end{itemize}
 
-Les variables \lstinline'res', \lstinline'var_n', \lstinline'i_n',
-\lstinline|old_x| et \lstinline'old_val_x' sont
+Les variables \lstinline'res', \lstinline'var_'$n$, \lstinline'i_'$n$,
+\lstinline'old_'$x$ et \lstinline'old_val_'$x$ sont
 ``fraîches'' (fresh), c'est-à-dire que ces identificateurs sont supposés
 différents de tous les autres identifiants de variables du programme instrumenté
 : quand on utilise plusieurs fois une règle introduisant une variable fraîche,
 toutes les occurrences de la variable créée doivent être différentes.
-Ceci peut être implémenté en incrémentant le compteur \lstinline'n' à chaque
-occurrence dans \lstinline'var_n' et \lstinline'i_n', et en utilisant le nom de
-la variable d'origine à la place de \lstinline'x' dans \lstinline'old_x' et
-\lstinline'old_val_x'.
+Ceci peut être implémenté en incrémentant le compteur $n$ à chaque
+occurrence dans \lstinline'var_'$n$ et \lstinline'i_'$n$, et en utilisant le nom
+de la variable d'origine à la place de $x$ dans \lstinline'old_'$x$ et
+\lstinline'old_val_'$x$.
 
 Pour des raisons de commodité, nous supposons que toutes les variables logiques
 liées dans les annotations et toutes les variables du programme sont
@@ -334,14 +329,15 @@ listing~\ref{lst:Z:1}.
 \label{sec:annot}
 
 
-Définissons maintenant les règles de traduction de haut niveau pour les
+Définissons maintenant les règles de traduction des
 annotations, qui permettent de mettre en évidence les échecs d'annotation.
 Pour chaque annotation, un fragment de programme C se terminant par le test
 d'une expression par la fonction \lstinline'fassert' est inséré dans le
 programme.
 Le générateur de tests essaiera de couvrir tous les chemins d'exécution
-faisables, donc s'il existe des entrées permettant de provoquer un échec de
-l'expression de \lstinline'fassert', l'erreur sera trouvée.
+faisables, donc s'il existe des entrées permettant de rendre fausse
+l'expression de \lstinline'fassert', une erreur sera trouvée et un cas de test
+la produisant sera donné.
 
 \input{figures/fig_rules_annot}
 
@@ -368,17 +364,19 @@ pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 L'ensemble des left-values considérées est la différence $G-X$, où $G$ est
 l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble des
 left-values de la clause \lstinline'assigns'.
-Dans cette règle :
+Dans cette règle, l'expression suivante :
 \[
-\forall (x:ctype) \in G-X :
-((Beg_f, ctype~\mbox{\lstinline'var'}_x = x\semicolon)
-\concat (End_f, \mbox{\lstinline'fassert(x == var'}_x\mbox{\lstinline');'}) )
+\forall (x:\mathit{ctype}) \in G-X :
+((Beg_f, \mathit{ctype}~\mbox{\lstinline'var_'}x = x\semicolon)
+\concat (End_f, \mbox{\lstinline'fassert(x == var_'}x\mbox{\lstinline');'}) )
 \]
-dénote la liste de fragments de code contenant ces deux fragments de code pour
-chaque left-value $x$ de $G-X$.
-Pour chacune de ces left-values, une sauvegarde de leur valeur est faite au
-début de la fonction, puis on vérifie que leur valeur n'a pas été modifiée en
-fin de fonction.
+dénote la liste d'insertions de fragments de code contenant ces deux fragments
+de code $\mathit{ctype}~\mbox{\lstinline'var_'}x = x\semicolon$ et
+$\mbox{\lstinline'fassert(x == var_'}x\mbox{\lstinline');'}$ pour chaque
+left-value $x$ de $G-X$.
+Le premier fragment sauvegarde la valeur de $x$ dans \lstinline'var_'$x$ au
+début de la fonction, le second fragment vérifie que leur valeur de $x$ n'a pas
+été modifiée en fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
 
@@ -450,49 +448,50 @@ variable de type \lstinline'Z_t' (ce qui justifie une désallocation
 
 La figure~\ref{fig:const-id} présente les règles de traduction pour les
 identificateurs de variable (\textsc{$\tau$-var}), pour le terme
-\lstinline|\result| (\textsc{$\tau$-res}) et pour les constantes
+\lstinline'\result' (\textsc{$\tau$-res}) et pour les constantes
 (\textsc{$\tau$-const}).
 Deux règles sont nécessaires pour traduire la construction \eacsl
-\lstinline|\old|.
+\lstinline'\old'.
 Appliquée à un identificateur $x$ (règle \textsc{$\tau$-old}), le terme est
-traduit en variable fraîche \lstinline|old_x| qui contient la valeur de $x$ au
+traduit en variable fraîche \lstinline'old_'$x$ qui contient la valeur de $x$ au
 début de la fonction.
 Appliquée à un accès mémoire (règle \textsc{$\tau$-old-val}), on utilise le
-tableau alloué dynamiquement \lstinline|old_val_x| qui contient les valeurs du
-tableau ou pointeur \lstinline'x' au début de la fonction (se référer à la
+tableau alloué dynamiquement \lstinline'old_val_'$x$ qui contient les valeurs du
+tableau ou pointeur $x$ au début de la fonction (se référer à la
 partie~\ref{sec:principles}).
-Le terme \lstinline|\result| est traduit par la règle \textsc{$\tau$-res}, il
-fait référence à la valeur de retour de la fonction en \eacsl qui est écrite
-dans la variable \lstinline|res|.
+Le terme \lstinline'\result' est traduit par la règle \textsc{$\tau$-res}, il
+fait référence à la valeur de retour de la fonction en \eacsl qui, par la
+normalisation, est désignée par la variable \lstinline'res'.
 Cette variable est unique dans chaque fonction après normalisation de l'arbre de
-syntaxe abstrait (AST) par \framac.
+syntaxe abstrait par \framac.
 La règle \textsc{$\tau$-const} établit qu'une variable entière est définie pour
 prendre la valeur d'une contante entière.
 
 \input{figures/fig_rules_coerce}
 
 La figure~\ref{fig:coerce} détaille les règles de conversions implicites, de
-\lstinline'integer' vers type C et de type C vers \lstinline'integer'.
+\lstinline'integer' vers le type C \lstinline'int' et du type C \lstinline'int'
+vers \lstinline'integer'.
 
 \input{figures/fig_rules_op}
 
 La figure~\ref{fig:op} détaille les règles pour les opérations unaires
-(\textsc{$\tau$-unop$_{j}$}), les opérations binaires
+(\textsc{$\tau$-lv} et \textsc{$\tau$-unop}), les opérations binaires
 (\textsc{$\tau$-binop$_{j}$}) et la condition ternaire sur les termes
 (\textsc{$\tau$-if}).
-\textsc{$\tau$-unop$_1$} traite le cas de l'indirection de pointeur
+\textsc{$\tau$-lv} traite le cas de l'indirection de pointeur
 (\lstinline'*').
-\textsc{$\tau$-unop$_2$} traite le cas du moins unaire et du complément
-bit-à-bit ($\sim$) et on suppose que ces opérations prennent un
+\textsc{$\tau$-unop} traite le cas du moins unaire et du complément
+bit-à-bit ($\sim$) pour lesquelles on suppose que ces opérations prennent un
 \lstinline'integer' en entrée et en sortie.
 
 \textsc{$\tau$-binop$_1$} traite l'arithmétique de pointeur, l'opérande gauche
-est un pointeur, $binop$ doit être \lstinline|+| ou \lstinline|-|, et l'opérande
+est un pointeur, $binop$ doit être \lstinline'+' ou \lstinline'-', et l'opérande
 droite est de type \lstinline'int'.
 \textsc{$\tau$-binop$_2$} traite les opérations arithmétiques entières (les
 opérandes et le résultat sont des entiers), $binop$ est un des opérateurs
-arithmétiques suivants : \lstinline|+|, \lstinline|-|, \lstinline|/|,
-\lstinline|%|, \lstinline|*|.
+arithmétiques suivants : \lstinline'+', \lstinline'-', \lstinline'/',
+\lstinline'%', \lstinline'*'.
 Dans la règle \textsc{$\tau$-if}, les évaluations de $t_2$ et $t_3$ sont dans
 des branches conditionnelles : on calcule uniquement l'un des deux, en fonction
 de l'évaluation de $t_1$.
@@ -525,13 +524,13 @@ traduction.
 \input{figures/fig_rules_builtin}
 
 La figure~\ref{fig:builtin} présente les règles de traduction pour les fonctions
-logiques \lstinline|\sum| (\textsc{$\tau$-sum}) et \lstinline|\numof|
+logiques \lstinline'\sum' (\textsc{$\tau$-sum}) et \lstinline'\numof'
 (\textsc{$\tau$-numof}).
 \lstinline'\sum(t1, t2, \lambda integer k; t3)' calcule la somme généralisée
 $\sum_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
 La règle \textsc{$\tau$-sum} permet de calculer cette somme.
-Elle initialise une variable entière fraîche \lstinline|var_n| à $0$ et
-l'incrémente avec la valeur du \lstinline|\lambda|-terme \lstinline't3' à chaque
+Elle initialise une variable entière fraîche \lstinline'var_n' à $0$ et
+l'incrémente avec la valeur du \lstinline'\lambda'-terme \lstinline't3' à chaque
 itération.
 \lstinline'\product(t1, t2, \lambda integer k; t3)' calcule le produit
 généralisé $\Pi_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
@@ -543,8 +542,8 @@ celle-ci.
 $\mbox{\lstinline't1'} \le \mbox{\lstinline'k'} \le \mbox{\lstinline't2'}$ et
 $\mbox{\lstinline't3'} \neq 0$.
 La règle \textsc{$\tau$-numof} permet de traduire ce terme.
-Elle initialise une variable entière fraîche \lstinline|var_n| à $0$ et
-incrémente sa valeur quand le \lstinline|\lambda|-terme \lstinline't3' (non
+Elle initialise une variable entière fraîche \lstinline'var_n' à $0$ et
+incrémente sa valeur quand le \lstinline'\lambda'-terme \lstinline't3' (non
 entier) s'évalue en une expression non nulle.
 
 
@@ -556,8 +555,8 @@ De manière similaire à la fonction de traduction $\tau$ pour les termes
 (partie~\ref{sec:term}), la fonction de traduction des prédicats, notée $\pi$,
 est définie comme une fonction partielle qui, à un label et un prédicat \eacsl
 \lstinline'p', associe une séquence d'insertions de code $(l_i, c_i)^*$ et une
-expression $\mbox{\lstinline'e'} \in \{0, 1\}$  du C (que nous encoderons dans
-un \lstinline'int') :
+expression $\mbox{\lstinline'e'} \in \{0, 1\}$ du langage C (que nous encoderons
+dans un \lstinline'int') :
 
 \[
 (l, \mbox{\lstinline'p'}) \rulearrow
@@ -598,20 +597,20 @@ partie~\ref{sec:term}).
 Dans l'exemple du listing~\ref{lst:normalized}, la traduction de la
 postcondition
 \lstinline{\result != 0 <==> \exists integer i; 0<=i<n && *(t+i)==v} requiert
-la traduction des prédicats \lstinline|\result != 0| et
-\lstinline{\exists(...)} qui sont respectivement traduits en \lstinline|var_32|
-et \lstinline|var_35|.
+la traduction des prédicats \lstinline'\result != 0' et
+\lstinline{\exists(...)} qui sont respectivement traduits en \lstinline'var_32'
+et \lstinline'var_35'.
 Ces deux prédicats sont assemblés pour construire la traduction du prédicat
 composé, d'après la règle \textsc{$\pi$-equiv},:
-\lstinline{(!var_32 || var_35) && (!var_35 || var_32)} (line 33 du
+\lstinline'(!var_32 || var_35) && (!var_35 || var_32)' (line 33 du
 listing~\ref{lst:abbrv}).
 Dans la règle \textsc{$\pi$-rel}, $rel$ est un des opérateurs relationnels
-suivants : \lstinline[style=c]{<, <=, >, >=, ==, !=}.
+suivants : \lstinline[style=c]'<, <=, >, >=, ==, !='.
 
 \input{figures/fig_rules_valid}
 
 La figure~\ref{fig:valid} montre les règles de traduction pour le prédicat
-\lstinline|\valid|, qui est vrai si le pointeur en argument pointe vers une
+\lstinline'\valid', qui est vrai si le pointeur en argument pointe vers une
 case mémoire valide et peut être déréférencé.
 \lstinline'\valid(t)' exprime la validité d'un seul pointeur et
 \lstinline'\valid(t1+(t2..t3))' exprime la validité du pointeur \lstinline't1'
@@ -624,8 +623,8 @@ Le support de ces prédicats nécessite une représentation précise de la mémo
 du programme, la réalisation de telles fonctions est abordée dans le
 chapitre~\ref{sec:runtime}.
 Dans notre exemple du listing~\ref{lst:normalized}, le prédicat
-\lstinline|\valid(t+(0..n-1))| de la clause \lstinline|requires| de la ligne 2
-est traduit en \lstinline[style=c]|fvalidr(t,0,(n-1))| (ligne 7 du
+\lstinline'\valid(t+(0..n-1))' de la clause \lstinline'requires' de la ligne 2
+est traduit en \lstinline[style=c]'fvalidr(t,0,(n-1))' (ligne 7 du
 listing~\ref{lst:abbrv}).
 
 \input{figures/fig_rules_quantif}
@@ -642,8 +641,8 @@ Le code généré met à jour une variable \lstinline'var_n' (initialement $fals
 \lstinline'k' soient considérées ou que \lstinline'var_n' soit évalué à $true$.
 Dans le listing~\ref{lst:normalized}, le prédicat
 \lstinline{\exists integer i; 0<=i<n && *(t+i)==v} de la ligne 4 est traduit
-aux lignes 28--32 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
-valeur du prédicat après évaluation est \lstinline|var_35| (déclarée à la
+aux lignes 29--33 du listing~\ref{lst:abbrv} et la variable fraîche contenant la
+valeur du prédicat après évaluation est \lstinline'var_35' (déclarée à la
 ligne 31).
 
 
@@ -665,7 +664,7 @@ Cette partie discute les similarités et les différences entre ces deux façons
 d'instrumenter.
 
 La traduction et la traduction pour la validation à l'exécution et pour la
-génération de test ont toutes deux besoin de générer du code exécutable, c'est
+génération de tests ont toutes deux besoin de générer du code exécutable, c'est
 pourquoi un sous-ensemble exécutable du langage de spécification est considéré
 dans les deux cas.
 La plupart des règles définies dans les parties~\ref{sec:term},
@@ -705,7 +704,7 @@ annotations \cite{Kosmatov/RV13}.
 Nous aborderons les spécificités d'une telle instrumentation dans le
 chapitre~\ref{sec:runtime}.
 Certaines de ces constructions peuvent être traitées symboliquement en test
-concolique sans nécessiter d'instrumentation spécifique dans le code C.
+concolique sans nécessiter de traduction spécifique dans le code C.
 C'est ce que nous faisons ici en supposant la définition de fonctions C
 \lstinline'fvalid' et \lstinline'fvalidr' supportées par le générateur de tests,
 qui retournent la valeur de validité du pointeur en argument si celui-ci est
@@ -827,7 +826,7 @@ Ces propriétés sont prouvées dans les parties suivantes.
 
 \begin{property}{Préservation des erreurs}\label{th:error}~\\
   L'exécution des instructions obtenues par traduction d'une annotation $a$ du
-  programme $P$ provoque une erreur dans le programme instrumenté par la
+  programme $P$ provoque une erreur dans le programme instrumenté $P'$ par cette
   traduction de $a$ si et seulement si l'annotation $a$ est invalide.
 \end{property}
 

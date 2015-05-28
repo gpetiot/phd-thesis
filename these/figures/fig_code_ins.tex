@@ -4,7 +4,7 @@
   \end{minipage}\hfill
   \begin{minipage}{0.49\textwidth}
     \begin{lstlisting}[escapechar=§]
-L:
+§$l$§:
                                 §\tikzinsert{a}{1}{ball,fill=blue!40}§
                                 §\tikzinsert{b}{2}{ball,fill=red!40}§
                                 §\tikzinsert{c}{3}{ball,fill=greenv!40}§
@@ -14,7 +14,7 @@ L:
 while(c) {
   /* body */
 
-EndIter_L:
+§$\mathit{EndIter_l}$§:
                                 §\tikzinsert{e}{5}{ball,fill=gray!40}§
                                 §\tikzinsert{f}{6}{ball,fill=gray!40}§
                                 §\tikzinsert{g}{7}{ball,fill=gray!40}§
@@ -29,39 +29,39 @@ EndIter_L:
     \node[ins,draw=blue] at (-11,2) (l-ins1) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {mpz_t v1; __gmpz_init_set_si(v1,x);}};
-    \node[left of=l-ins1,node distance=2.5cm] (l1) {\texttt{L},};
+    \node[left of=l-ins1,node distance=2.5cm] (l1) {$l$,};
     \node[ins,draw=red,below of=l-ins1] (l-ins2) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {mpz_t v2; __gmpz_init_set_si(v2,y);}};
-    \node[left of=l-ins2,node distance=2.5cm] (l2) {\texttt{L},};
+    \node[left of=l-ins2,node distance=2.5cm] (l2) {$l$,};
     \node[ins,inner sep=0,below of=l-ins2] (l-ins3a) {
       \lstinline[basicstyle=\tiny\ttfamily]{int v3; __gmpz_cmp(v1, v2)<0;}};
     \node[inner sep=0,below of=l-ins3a,node distance=.3cm] (l-ins3b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v1); __gmpz_clear(v2);}};
     \node[ins,draw=greenv,fit=(l-ins3a)(l-ins3b)] (l-ins3) {};
-    \node[left of=l-ins3a,node distance=2.5cm] (l3) {\texttt{L},};
+    \node[left of=l-ins3a,node distance=2.5cm] (l3) {$l$,};
     \node[ins,draw=gray,below of=l-ins3] (l-ins4) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {mpz_t v4; __gmpz_init_set_si(v4,x);}};
-    \node[left of=l-ins4,node distance=3.15cm] (l5) {\texttt{EndIter\_L},};
+    \node[left of=l-ins4,node distance=2.95cm] (l5) {$\mathit{EndIter_l}$,};
     \node[ins,draw=gray,below of=l-ins4] (l-ins5) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {mpz_t v5; __gmpz_init_set_si(v5,y);}};
-    \node[left of=l-ins5,node distance=3.15cm] (l6) {\texttt{EndIter\_L},};
+    \node[left of=l-ins5,node distance=2.95cm] (l6) {$\mathit{EndIter_l}$,};
     \node[ins,inner sep=0,below of=l-ins5] (l-ins6a) {
       \lstinline[basicstyle=\tiny\ttfamily]{int v6; __gmpz_cmp(v4, v5)<0;}};
     \node[inner sep=0,below of=l-ins6a,node distance=.3cm] (l-ins6b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v4); __gmpz_clear(v5);}};
     \node[ins,draw=gray,fit=(l-ins6a)(l-ins6b)] (l-ins6) {};
-    \node[left of=l-ins6a,node distance=3.15cm] (l7) {\texttt{EndIter\_L},};
+    \node[left of=l-ins6a,node distance=2.95cm] (l7) {$\mathit{EndIter_l}$,};
     \node[ins,draw=orange,below of=l-ins6] (l-ins7) {
       \lstinline[basicstyle=\tiny\ttfamily]{assert(v3);}};
-    \node[left of=l-ins7,node distance=2.5cm] (l4) {\texttt{L},};
+    \node[left of=l-ins7,node distance=2.5cm] (l4) {$l$,};
     \node[ins,draw=gray,below of=l-ins7] (l-ins8) {
       \lstinline[basicstyle=\tiny\ttfamily]{assert(v6);}};
-    \node[left of=l-ins8,node distance=3.15cm] (l8) {\texttt{EndIter\_L},};
+    \node[left of=l-ins8,node distance=2.95cm] (l8) {$\mathit{EndIter_l}$,};
     %% arrow for order
     \node[right of=l-ins1,node distance=2.5cm] (inv1) {};
     \node[below of=inv1,node distance=4cm] (inv2) {};
