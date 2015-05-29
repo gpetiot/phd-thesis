@@ -5,28 +5,28 @@
     assigns X; §\tikz[remember picture,overlay]{\node(fc-ass){};}§
     ensures p2; */ §\tikz[remember picture,overlay]{\node(fc-ens){};}§
 f(...) {
-Beg_f: ;
-  A
-End_f: ;
+§$Beg_{\texttt{f}}$§: ;
+  §$A$§
+§$End_{\texttt{f}}$§: ;
 }
     \end{lstlisting}
   \end{minipage}\hfill
   \begin{minipage}{0.49\textwidth}
     \begin{lstlisting}[escapechar=§]
 f(...) {
-Beg_f: ;
-§\tikz[remember picture,overlay]{\node(fc-l1){};}§int e1; §$Spec2Code$§(§$I_1$§, e1);
-§\tikz[remember picture,overlay]{\node(fc-l2){};}§fassert(e1);
-§\tikz[remember picture,overlay]{\node(fc-l3){};}§type_x1 assigns_x1 = x1;
-...
-§\tikz[remember picture,overlay]{\node(fc-l4){};}§type_xN assigns_xN = xN;
-  A
-End_f: ;
-§\tikz[remember picture,overlay]{\node(fc-l5){};}§fassert(x1 == assigns_x1);
-...
-§\tikz[remember picture,overlay]{\node(fc-l6){};}§fassert(xN == assigns_xN);
-§\tikz[remember picture,overlay]{\node(fc-l7){};}§int e2; §$Spec2Code$§(§$I_2$§, e2);
-§\tikz[remember picture,overlay]{\node(fc-l8){};}§fassert(e2);
+§$Beg_{\texttt{f}}$§: ;
+  §\tikz[remember picture,overlay]{\node(fc-l1){};}§int e1; §$Spec2Code$§(§$I_1$§, e1);
+  §\tikz[remember picture,overlay]{\node(fc-l2){};}§fassert(e1);
+  §\tikz[remember picture,overlay]{\node(fc-l3){};}§type_x1 assigns_x1 = x1;
+  ...
+  §\tikz[remember picture,overlay]{\node(fc-l4){};}§type_xN assigns_xN = xN;
+  §$A$§
+§$End_{\texttt{f}}$§: ;
+  §\tikz[remember picture,overlay]{\node(fc-l5){};}§fassert(x1 == assigns_x1);
+  ...
+  §\tikz[remember picture,overlay]{\node(fc-l6){};}§fassert(xN == assigns_xN);
+  §\tikz[remember picture,overlay]{\node(fc-l7){};}§int e2; §$Spec2Code$§(§$I_2$§, e2);
+  §\tikz[remember picture,overlay]{\node(fc-l8){};}§fassert(e2);
 }
     \end{lstlisting}
   \end{minipage}

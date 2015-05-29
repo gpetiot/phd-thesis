@@ -1,38 +1,38 @@
 \begin{figure}[bt]
   \begin{minipage}{0.65\textwidth}
     \begin{lstlisting}[escapechar=§]
-L:
+§$l$§:
 /*@ loop invariant p; §\tikz[remember picture,overlay]{\node(lc-inv){};}§
     loop assigns X; §\tikz[remember picture,overlay]{\node(lc-ass){};}§
     loop variant t; */ §\tikz[remember picture,overlay]{\node(lc-var){};}§
 while(e) {
-BegIter_L: ;
-  A
-EndIter_L: ;
+§$\mathit{BegIter_l}$§: ;
+  §$A$§
+§$\mathit{EndIter_l}$§: ;
 }
     \end{lstlisting}
   \end{minipage}\hfill
   \begin{minipage}{0.49\textwidth}
     \begin{lstlisting}[escapechar=§]
-L:
+§$l$§:
 §\tikz[remember picture,overlay]{\node(lc-l1){};}§int e1; §$Spec2Code$§(§$I_1$§, e1);
 §\tikz[remember picture,overlay]{\node(lc-l2){};}§fassert(e1);
 while(e) {
-BegIter_L: ;
-§\tikz[remember picture,overlay]{\node(lc-l3){};}§type_x1 assigns_x1 = x1;
-...
-§\tikz[remember picture,overlay]{\node(lc-l4){};}§type_xN assigns_xN = xN;
-§\tikz[remember picture,overlay]{\node(lc-l5){};}§§$\Zinit$\underline{e2}§; §$Spec2Code$§(§$I_2$§, e2);
-§\tikz[remember picture,overlay]{\node(lc-l6){};}§fassert(§\underline{0 <= e2}§);
-  A
-EndIter_L: ;
-§\tikz[remember picture,overlay]{\node(lc-l7){};}§int e3; §$Spec2Code$§(§$I_3$§, e3);
-§\tikz[remember picture,overlay]{\node(lc-l8){};}§fassert(e3);
-§\tikz[remember picture,overlay]{\node(lc-l9){};}§fassert(x1 == assigns_x1);
-...
-§\tikz[remember picture,overlay]{\node(lc-l10){};}§fassert(xN == assigns_xN);
-§\tikz[remember picture,overlay]{\node(lc-l11){};}§§$\Zinit$\underline{e4}§; §$Spec2Code$§(§$I_4$§, e4);
-§\tikz[remember picture,overlay]{\node(lc-l12){};}§fassert(§\underline{e4$\Zclear$ < e2$\Zclear$}§);
+§$\mathit{BegIter_l}$§: ;
+  §\tikz[remember picture,overlay]{\node(lc-l3){};}§type_x1 assigns_x1 = x1;
+  ...
+  §\tikz[remember picture,overlay]{\node(lc-l4){};}§type_xN assigns_xN = xN;
+  §\tikz[remember picture,overlay]{\node(lc-l5){};}§§$\Zinit$\underline{e2}§; §$Spec2Code$§(§$I_2$§, e2);
+  §\tikz[remember picture,overlay]{\node(lc-l6){};}§fassert(§\underline{0 <= e2}§);
+  §$A$§
+§$\mathit{EndIter_l}$§: ;
+  §\tikz[remember picture,overlay]{\node(lc-l7){};}§int e3; §$Spec2Code$§(§$I_3$§, e3);
+  §\tikz[remember picture,overlay]{\node(lc-l8){};}§fassert(e3);
+  §\tikz[remember picture,overlay]{\node(lc-l9){};}§fassert(x1 == assigns_x1);
+  ...
+  §\tikz[remember picture,overlay]{\node(lc-l10){};}§fassert(xN == assigns_xN);
+  §\tikz[remember picture,overlay]{\node(lc-l11){};}§§$\Zinit$\underline{e4}§; §$Spec2Code$§(§$I_4$§, e4);
+  §\tikz[remember picture,overlay]{\node(lc-l12){};}§fassert(§\underline{e4$\Zclear$ < e2$\Zclear$}§);
 }
     \end{lstlisting}
   \end{minipage}
