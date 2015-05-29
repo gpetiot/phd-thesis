@@ -42,10 +42,7 @@ calculer la même valeur que la valeur de ce terme, ce prédicat ou cette
 annotation évalués à leur place dans le programme initial.
 Pour cela, nous nous basons sur la sémantique dénotationnelle des instructions
 définie au chapitre précédent.
-Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
-Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
-\ref{sec:annotation-translation} justifient la correction de ces propriétés
-respectivement sur les termes, sur les prédicats et sur les annotations.
+Cette justification est présentée en partie~\ref{sec:justif}.
 
 
 \section{Processus de transformation de programmes}
@@ -814,8 +811,21 @@ Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
 %% La règle \eqlabel{I-split} traite le cas de la concaténation d'insertions de
 %% code.
 
+\section{Justification de Correction de la Traduction}
+\label{sec:justif}
 
-\section{Propriétés de l'instrumentation}
+
+Nous ne détaillons pas les justifications de toutes les constructions.
+Nous avons choisi un échantillon représentatif du langage formé, des constantes
+pour les termes, des conjonctions pour les prédicats, des assertions, des
+contrats de boucle et des contrats de fonction.
+Les propriétés que nous vérifions sont définies en partie~\ref{sec:properties}.
+Les parties~\ref{sec:term-translation}, \ref{sec:predicate-translation} et
+\ref{sec:annotation-translation} justifient la correction de ces propriétés
+respectivement sur les termes, sur les prédicats et sur les annotations.
+
+
+\subsection{Propriétés de l'instrumentation}
 \label{sec:properties}
 
 
@@ -826,29 +836,29 @@ Ces propriétés sont prouvées dans les parties suivantes.
 
 \begin{myproperty}[Préservation des erreurs]
   \label{th:error}
-  L'exécution des instructions obtenues par traduction d'une annotation $a$ du
-  programme $P$ provoque une erreur dans le programme instrumenté $P'$ par cette
-  traduction de $a$ si et seulement si l'annotation $a$ est invalide.
+  Si l'exécution des instructions obtenues par traduction d'une annotation $a$
+  du programme $P$ provoque une erreur dans le programme instrumenté $P'$ par
+  cette traduction de $a$, alors l'annotation $a$ est invalide.
 \end{myproperty}
 
-La propriété~\ref{th:error} assure l'absence de faux positifs et l'absence de
-faux négatifs lors de la génération de tests sur le programme instrumenté.
+La propriété~\ref{th:error} assure l'absence de faux positifs lors de la
+génération de tests sur le programme instrumenté.
 
 \begin{myproperty}[Inclusion des environnements]
   \label{th:inclusion}
-  Si toutes les annotations d'un programme $P$ sont valides, l'environnement de
-  $P$ est inclus dans l'environnement du programme après traduction $P'$.
+  Si toutes les annotations d'un programme $P$ sont valides, à chaque point
+  d'exécution de $P$ l'environnement \env{} produit par $P$ est inclus dans
+  l'environnement \env$'$ du programme instrumenté $P'$ au même point
+  d'exécution : \env{} \subenv{} \env$'$.
 \end{myproperty}
 
-\commentGP{reformuler pour avoir une inclusion en chaque point de programme}
-
-La propriété~\ref{th:inclusion} implique que les seules variables modifiées sont
-les variables fraîchement créées par l'instrumentation, les variables de
-l'environnement du programme d'origine ne sont pas modifiées par
-l'instrumentation.
+La propriété~\ref{th:inclusion} énonce que les seules variables modifiées par le
+programme instrumenté sont les variables fraîchement créées par la traduction,
+les variables existantes dans le programme d'origine ne sont pas modifiées par
+la traduction.
 
 
-\section{Justification de la correction de la Traduction des Termes}
+\subsection{Justification de la correction de la Traduction des Termes}
 \label{sec:term-translation}
 
 Afin de prouver la correction de la traduction des prédicats et des annotations,
@@ -864,7 +874,7 @@ nous devons prouver la correction de la traduction des termes.
   $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
   environnement \env{} tel que
   \eval{\lstinline't'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
-  \env = \comp{$A$}{\env$_l$}.
+  \env = \comps{$A$}{\env$_l$}.
 \end{myproperty}
 
 \begin{myproperty}[Traduction des Termes : Absence d'erreur]
@@ -889,50 +899,73 @@ d'erreur \errorenv (propriété~\ref{lem:term-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
-%Pour des raisons de lisibilité, la preuve est uniquement fournie pour la règle
-%\textsc{$\tau$-const} de traduction des constantes.
+Pour ne pas alourdir ce chapitre, la preuve est uniquement fournie pour la règle
+\textsc{$\tau$-const} de traduction des constantes.
 
 
+\subsection{Justification de correction de la Traduction des Constantes}
+
+Rappelons la règle de traduction des constantes :
+
+{\myinference[$\tau$-const]
+  {}
+  { (l, \mbox{\lstinline'cst'} : \mathbb{Z}) \rulearrow
+    ((l, \Zinit\underline{\mbox{\lstinline'var_n = cst;'}}),
+    \mbox{\lstinline'var_n'}) }
+}
+
+Prouvons que pour n'importe quel environnement \env{} :
+
+1. \eval{\lstinline'cst'}{\env} =
+\eval{\lstinline'var_n'}{
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env})}.
 
 
-%% \subsection{Justification de correction de la Traduction des Constantes}
+2. \env{} \subenv{} \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env}.
 
-%% {\myinference[$\tau$-const]
-%%   {}
-%%   { (l, \mbox{\lstinline'v'} : \mathbb{Z}) \rulearrow
-%%     ((l, \Zinit\underline{\mbox{\lstinline'x = v;'}}), \mbox{\lstinline'x'}) }
-%% }
 
-%% Nous prouvons que pour n'importe quel environnement \env  :
+3. \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env} $\neq$ \errorenv.
 
-%% \eval{\lstinline'x'}{
-%%   (\compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env})}
-%% = \eval{\lstinline'v'}{\env}
 
-%% et
+\begin{proof}[Justification du point 1.]~\\
+  Développons le membre droit :
 
-%% \env \subenv \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
+  \begin{tabular}{rcl}
+  \eval{\lstinline'var_n'}{
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env})}
+  &$\eq{\eqlabel{C-Z-set}}$&
+  \eval{\lstinline'var_n'}{
+    (\env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}])} \\
+  &$\eq{\eqlabel{E-lval}}$&
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}]
+  (\lstinline'var_n') \\
+  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{\env} \\
+  \end{tabular}
+  ~\\
+\end{proof}
 
-%% et
 
-%% \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} $\neq$ \errorenv.
+\begin{proof}[Justification du point 2.]~\\
+  L'affectation générée $\Zinit$\underline{\lstinline'var_n = cst;'} ne modifie
+  que la variable fraîche \lstinline'var_n', on peut donc en conclure
+  \env{} \subenv{}
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}] et donc :
+  \env{} \subenv{} \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env}.
+  ~\\
+\end{proof}
 
-%% \begin{proof}
-%%   ~\\
-%%   \begin{tabular}{rclr}
-%%     \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env}
-%%     &$\eq{\eqlabel{I-instr}}$&
-%%     \comp{$\Zinit$\underline{\lstinline'x = v;'}}{\env} \\
-%%     &$\eq{\eqlabel{C-Z-set}}$&
-%%     \env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}] \\
-%%   \end{tabular}
 
-%%   En substituant \compi{$(l, \Zinit$\underline{\lstinline'x = v;'}$)$}{\env} on
-%%   prouve la première partie du lemme~\ref{lem:term-correct} :
-  
-%%   \eval{\lstinline'x'}{
-%%     (\env[\lstinline'x' $\mapsto$ \eval{\lstinline'v'}{\env}])}
-%%   $\eq{\eqlabel{E-lval}}$ \eval{\lstinline'v'}{\env}.
+\begin{proof}[Justification du point 3.]~\\
+  Le nouvel environnement étant
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}], ce n'est pas
+  un environnement d'erreur car l'évaluation d'une constante ne produit pas
+  d'erreur.
+  On a donc bien :
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env} $\neq$ \errorenv.
+  ~\\
+\end{proof}
+
+
 
 %%   La variable \lstinline'x' étant fraîche dans l'environnement, la deuxième
 %%   partie du lemme~\ref{lem:term-correct} est également vérifiée :
@@ -943,10 +976,9 @@ et~\ref{th:inclusion}.
 %%   un environnement d'erreur, ce qui prouve la troisième partie du lemme.
 %%   \env ne peut pas être \errorenv puisque la traduction se serait arrêtée dès
 %%   l'obtention de l'erreur.
-%% \end{proof}
 
 
-\section{Justification de correction de la Traduction des Prédicats}
+\subsection{Justification de correction de la Traduction des Prédicats}
 \label{sec:predicate-translation}
 
 
@@ -963,7 +995,7 @@ nous devons prouver la correction de la traduction des prédicats.
   $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
   environnement \env{} tel que
   \eval{\lstinline'p'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
-  \env = \comp{$A$}{\env$_l$}.
+  \env = \comps{$A$}{\env$_l$}.
 \end{myproperty}
 
 \begin{myproperty}[Traduction des Prédicats : Absence d'erreurs]
@@ -1001,10 +1033,10 @@ définie ainsi :
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
-    (I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-    (l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-    (l, \mbox{\lstinline'e = e2;'}) \bclose ),
-    \mbox{\lstinline'e'})
+    (I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
+    (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
+    (l, \mbox{\lstinline'var_n = e2;'}) \bclose ),
+    \mbox{\lstinline'var_n'})
   }
 }~\\
 
@@ -1012,32 +1044,32 @@ Prouvons que pour n'importe quel environnement \env :
 
 1.
 \eval{\lstinline'p1 && p2'}{\env} =
-\eval{\lstinline'e'}{(
-  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-    \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-    \mbox{\lstinline' e = e2;'} \bclose$
+\eval{\lstinline'var_n'}{(
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+    \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+    \mbox{\lstinline' var_n = e2;'} \bclose$
   }{\env}
   )}
 en admettant que le fragment de programme
-$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-\mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-\mbox{\lstinline' e = e2;'} \bclose$
+$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+\mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+\mbox{\lstinline' var_n = e2;'} \bclose$
 est obtenu à partir des listes d'insertions
-$I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
-(l, \mbox{\lstinline'if(e)'} \bopen I_2 \cdot
-(l, \mbox{\lstinline'e = e2;'}) \bclose )$.
+$I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
+(l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
+(l, \mbox{\lstinline'var_n = e2;'}) \bclose )$.
 
 2.
 \env{} \subenv{}
-\comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-  \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' e = e2;'} \bclose$
+\comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+  \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+  \mbox{\lstinline' var_n = e2;'} \bclose$
 }{\env}.
 
 3.
-\comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-  \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' e = e2;'} \bclose$
+\comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+  \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+  \mbox{\lstinline' var_n = e2;'} \bclose$
 }{\env} $\neq$ \errorenv.
 
 
@@ -1059,62 +1091,70 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
-      \eval{\lstinline'e'}{(
-        \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-          \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-          \mbox{\lstinline' e = e2;'} \bclose$
+      \eval{\lstinline'var_n'}{(
+        \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+          \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+          \mbox{\lstinline' var_n = e2;'} \bclose$
         }{\env}
         )}
     } \\
-    &=& \eval{\lstinline'e'}{(\comps{$\mbox{\lstinline' int e = e1;'}
-        \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-        \mbox{\lstinline' e = e2;'} \bclose$}{(\comps{$A_1$}{\env})})} \\
-    &$\eq{\eqlabel{C-set}}$& \eval{\lstinline'e'}{(\comps{
-        \lstinline'if(e)' $\bopen A_2\semicolon~
-        \mbox{\lstinline' e = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+    &=& \eval{\lstinline'var_n'}{(\comps{$\mbox{\lstinline' int var_n = e1;'}
+        \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{(\comps{$A_1$}{\env})})} \\
+    &$\eq{\eqlabel{C-set}}$& \eval{\lstinline'var_n'}{(\comps{
+        \lstinline'if(var_n)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[
+          \lstinline'var_n' $\mapsto$
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
       })
     } \\
   \end{tabular}
 
-  (a) Cas où la valeur de l'expression conditionnelle \lstinline'e' est vraie,
-  soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = true, c'est-à-dire par
-  hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = true.
+  (a) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
+  vraie, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = true, c'est-à-dire
+  par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = true.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc
-  $A_2\semicolon~ \mbox{\lstinline' e = e2;'}$ :
+  $A_2\semicolon~ \mbox{\lstinline' var_n = e2;'}$ :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
       \comps{
-        \lstinline'if(e)' $\bopen A_2\semicolon~
-        \mbox{\lstinline' e = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+        \lstinline'if(var_n)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[
+          \lstinline'var_n' $\mapsto$
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
       }
     } \\
     &$\eq{\eqlabel{C-if}}$& \comps{
-      $A_2\semicolon~\mbox{\lstinline' e = e2;'}$}{
-      ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+      $A_2\semicolon~\mbox{\lstinline' var_n = e2;'}$}{
+      ((\comps{$A_1$}{\env})[
+        \lstinline'var_n' $\mapsto$
+        \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
     } \\
     &=& \comp{
-      \lstinline' e = e2;'
+      \lstinline' var_n = e2;'
     }{$\underbracket{
         \mbox{
           (\comps{$A_2$}{
-            ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+            ((\comps{$A_1$}{\env})[
+              \lstinline'var_n' $\mapsto$
+              \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
           })
         }
       }_{\Gamma_f}$
     } \\
     &$\eq{\eqlabel{C-set}}$
-    & $\Gamma_f$[\lstinline'e' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}]
+    & $\Gamma_f$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}]
   \end{tabular}
 
   Donc :
 
   \begin{tabular}{rcl}
-    \eval{\lstinline'e'}{
+    \eval{\lstinline'var_n'}{
       ($\Gamma_f$[
-        \lstinline'e' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}
+        \lstinline'var_n' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}
       ])
     }
     &=& \eval{\lstinline'e2'}{$\Gamma_f$} \\
@@ -1125,47 +1165,53 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
          &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
 
-  (b) Cas où la valeur de l'expression conditionnelle \lstinline'e' est fausse,
-  soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = false, c'est-à-dire par
-  hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = false.
+  (b) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
+  fausse, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = false,
+  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = false.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc du
   \lstinline'else' (qui ici est vide et n'apparaît pas car facultatif) :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
       \comps{
-        \lstinline'if(e)' $\bopen A_2\semicolon~
-        \mbox{\lstinline' e = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[\lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+        \lstinline'if(var_n)' $\bopen A_2\semicolon~
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{
+        ((\comps{$A_1$}{\env})[
+          \lstinline'var_n' $\mapsto$
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
       }
     } \\
     &$\eq{\eqlabel{C-if}}$
     & (\comps{$A_1$}{\env})[
-      \lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}] \\
+      \lstinline'var_n' $\mapsto$
+      \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}] \\
   \end{tabular}
 
   Donc :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
-      \eval{\lstinline'e'}{
+      \eval{\lstinline'var_n'}{
         ((\comps{$A_1$}{\env})[
-          \lstinline'e' $\mapsto$ \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          \lstinline'var_n' $\mapsto$
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
       }
     } \\
     &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} \\
     &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{\env} \\
-    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} {\scriptsize
+    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} {
+      \scriptsize
       (car on est dans le cas \eval{\lstinline'p1'}{\env} = false)} \\
     &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
   \end{tabular}
   
   On a donc bien :
+
   \eval{\lstinline'p1 && p2'}{\env} =
-  \eval{\lstinline'e'}{(
-    \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-      \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-      \mbox{\lstinline' e = e2;'} \bclose$
+  \eval{\lstinline'var_n'}{(
+    \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+      \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+      \mbox{\lstinline' var_n = e2;'} \bclose$
     }{\env}
     )}.
   ~\\
@@ -1183,21 +1229,22 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
     \end{tabular}
   \end{center}
 
-  De manière informelle, les affectations générées \lstinline'int e = e1;'
-  et \lstinline'e = e2;' ne modifient que la variable fraîche \lstinline'e' et
-  les hypothèses \eqlabel{h3}
-  et \eqlabel{h4} nous assurent que les blocs $A_1$ et $A_2$ ne modifient pas
-  les variables de l'environnement \env.
+  De manière informelle, les affectations générées \lstinline'int var_n = e1;'
+  et \lstinline'var_n = e2;' ne modifient que la variable fraîche
+  \lstinline'var_n' et les hypothèses \eqlabel{h3} et \eqlabel{h4} nous assurent
+  que les blocs $A_1$ et $A_2$ ne modifient pas les variables de
+  l'environnement \env.
   On en conclut donc que le fragment de programme généré
-  $A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-  \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' e = e2;'} \bclose$
+  $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+  \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+  \mbox{\lstinline' var_n = e2;'} \bclose$
   ne modifie pas les variables de l'environnement \env.
   On a donc bien :
+
   \env{} \subenv{}
-  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-    \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-    \mbox{\lstinline' e = e2;'} \bclose$
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+    \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+    \mbox{\lstinline' var_n = e2;'} \bclose$
   }{\env}.
 ~\\
 \end{proof}
@@ -1216,19 +1263,20 @@ $I_1 \cdot (l, \mbox{\lstinline'int e = e1;'}) \cdot
 
   Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
   code générés ne produisent pas d'erreur (seule la variable fraîche
-  \lstinline'e' est affectée) nous assurent que si \env{} n'est pas un
+  \lstinline'var_n' est affectée) nous assurent que si \env{} n'est pas un
   environnement d'erreur (\env{} ne peut pas être \errorenv puisque la
   traduction se serait arrêtée dès l'obtention de l'erreur).
   On a donc bien :
-  \comps{$A_1\semicolon~ \mbox{\lstinline' int e = e1;'}
-    \mbox{\lstinline'if(e)'} \bopen A_2\semicolon~
-    \mbox{\lstinline' e = e2;'} \bclose$
+
+  \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+    \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+    \mbox{\lstinline' var_n = e2;'} \bclose$
   }{\env} $\neq$ \errorenv.
 ~\\
 \end{proof}
 
 
-\section{Justification de correction de la Traduction des Annotations}
+\subsection{Justification de correction de la Traduction des Annotations}
 \label{sec:annotation-translation}
 
 
@@ -1319,8 +1367,14 @@ Prouvons également que si l'\lstinline'assert' est valide :
   Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
 
   \begin{tabular}{rclr}
-    \env & \subenv & \compi{$I$}{\env} & \eqlabel{h1} \\
+    \env & \subenv & \comps{$A$}{\env} & \eqlabel{h1} \\
   \end{tabular}
+
+  Nous avons montré que si l'assertion est valide, alors
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
+  = \comps{$A$}{\env}.
+  Par substitution dans \eqlabel{h1}, on obtient :
+  \env{} \subenv{} \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}.
   ~\\
 \end{proof}
 
@@ -1420,14 +1474,14 @@ valeur en chaque point dans le programme original et le programme instrumenté.
 La règle \eqlabel{C-while-3} correspond aux lignes 9--10 : \errorenv est
 produit si $\lnot$ \eval{\lstinline't >= 0'}{\env}.
 La règle \eqlabel{C-while-4} correspond aux lignes 13--14 : \errorenv est
-produit si $\lnot$ \eval{\lstinline'p'}{(\compi{$A$}{\env})}.
+produit si $\lnot$ \eval{\lstinline'p'}{(\comps{$A$}{\env})}.
 La règle \eqlabel{C-while-5} correspond aux lignes 18--19 (en réutilisant
 la valeur du variant au début de l'itération de la boucle, calculée ligne 9) :
-\errorenv est produit si (\eval{\lstinline't'}{(\compi{$A$}{\env})}) $\ge$
+\errorenv est produit si (\eval{\lstinline't'}{(\comps{$A$}{\env})}) $\ge$
  (\eval{\lstinline't'}{\env}).
 La règle \eqlabel{C-while-6} correspond aux lignes 6--8 et 15--17 :
 \errorenv est produit si $\exists x. x \in G-X.$
-(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$  (\eval{\lstinline'x'}{\env}),
+(\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$  (\eval{\lstinline'x'}{\env}),
 où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
 La règle \eqlabel{C-while-7} correspond à l'exécution récursive de la boucle.
 
@@ -1517,11 +1571,11 @@ vérification n'est pas valide) on arrive à une contradiction.
 La règle \eqlabel{f-2} ne s'applique pas à la fonction sous vérification.
 La règle \eqlabel{f-3} correspond aux lignes 5--7 et 10--12 : \errorenv est
 produit si $\exists x. (x \in G-X.$
-(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env})
+(\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env})
 $)$,
 où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
 La règle \eqlabel{f-4} correspond aux lignes 13--14 : \errorenv est produit
-si $\lnot$ \eval{\lstinline'p2'}{(\compi{$A$}{\env})}.
+si $\lnot$ \eval{\lstinline'p2'}{(\comps{$A$}{\env})}.
 La règle \eqlabel{f-5} correspond à l'exécution normale de la fonction.
 
 
@@ -1566,10 +1620,10 @@ La règle \eqlabel{f-2} correspond aux lignes 3--4 du code instrumenté :
 Les autres règles sont traduites de manière similaire à la partie précédente.
 La règle \eqlabel{f-3} correspond aux lignes 5--7 et 10--12 : \errorenv est
 produit si $\exists x. x \in G-X.$
-(\eval{\lstinline'x'}{(\compi{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env}),
+(\eval{\lstinline'x'}{(\comps{$A$}{\env})}) $\ne$ (\eval{\lstinline'x'}{\env}),
 où $G-X = \{\mbox{\lstinline'x1'},\ldots,\mbox{\lstinline'xN'}\}$.
 La règle \eqlabel{f-4} correspond aux lignes 13--14 : \errorenv est produit
-si $\lnot$ \eval{\lstinline'p2'}{(\compi{$A$}{\env})}.
+si $\lnot$ \eval{\lstinline'p2'}{(\comps{$A$}{\env})}.
 La règle \eqlabel{f-5} correspond à l'exécution normale de la fonction.
 
 
@@ -1595,13 +1649,10 @@ annotations \eacsl : \lstinline'assert', \lstinline'requires',
 \lstinline'loop variant'.
 Ces différentes instrumentations des annotations nous permettront par la suite
 de détecter différentes erreurs dans le code et la spécification.
-Le chapitre suivant aborde la justification de correction des règles de
-traduction des termes, prédicats et annotations.
 
 Grâce à notre justification de correction, nous pouvons assurer l'absence de
-faux positifs et de faux négatifs lors de la génération de tests sur le
-programme instrumenté, ainsi que la non-modification par le code généré des
-variables du programme d'origine.
+faux positifs lors de la génération de tests sur le programme instrumenté, ainsi
+que la non-modification par le code généré des variables du programme d'origine.
 La justification de cette propriété est fournie de manière formelle pour les
 assertions et de manière informelle mais intuitive pour les contrats de boucle
 et les contrats de fonction.
