@@ -62,7 +62,8 @@ chapter_lang_DEPS=figures/fig_grammar.tex \
 		figures/fig_semantics.tex \
 		figures/fig_semantics_exp_term.tex \
 		figures/fig_semantics_pred.tex \
-		figures/fig_semantics_fct.tex
+		figures/fig_semantics_fct.tex \
+		listings/is_present_normalized.c
 chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
 			figures/fig_rules_loop_annot.tex \
 			figures/fig_rules_const_id.tex \
@@ -74,7 +75,6 @@ chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
 			figures/fig_rules_quantif.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
-			listings/is_present_normalized.c \
 			listings/is_present_instrumented.c \
 			figures/fig_code_gen.tex \
 			figures/fig_code_ins.tex \

@@ -26,6 +26,44 @@ exécutée pour l'analyse dynamique et le \textit{monitoring} (surveillance
 d'exécution).
 
 
+\subsection{Exemple de fonction C normalisée}
+\label{sec:translation-example}
+
+
+\lstinputlisting[style=c,escapechar=§,caption={Function C annotée décidant si
+    \lstinline{v} est présent dans le tableau \lstinline{t} de taille
+    \lstinline{n}},
+  label=lst:normalized]{listings/is_present_normalized.c}
+
+Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
+test normalisée en suivant la grammaire de la figure~\ref{fig:gram-c}.
+La clause \lstinline'ensures' aux lignes 4--5 indique qu'elle retourne $1$ quand
+la valeur \lstinline'v' en paramètre est présente dans le tableau \lstinline't'
+en paramètre, et $0$ sinon.
+
+La clause \lstinline'requires' de la ligne 1 indique que la taille du tableau
+\lstinline'n' est positive ou nulle.
+La clause \lstinline'requires' de la ligne 2 indique que \lstinline'(t+0)',
+\ldots, \lstinline'(t+(n-1))' sont des pointeurs valides.
+La clause \lstinline'typically' de la ligne 3 est une extension de la syntaxe
+d'\eacsl définissant une précondition pour le test.
+Elle renforce la précondition pour limiter l'explosion combinatoire du nombre de
+chemins à explorer par la génération de tests, elle permet d'obtenir une
+couverture partielle des chemins : seuls les chemins satisfaisant cette clause
+sont considérés.
+Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
+\lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
+\cite{\citekorat}).
+L'invariant de boucle de la ligne 9 spécifie des bornes pour \lstinline'i'
+sur l'ensemble des itérations de la boucle.
+Le variant de boucle ligne 10 permet de vérifier la terminaison de la boucle.
+La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
+et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
+Notons que pour prouver formellement la postcondition, l'invariant de boucle
+suivant est nécessaire, mais n'est pas inclus dans cet exemple simplifié :
+\lstinline'\forall integer k; 0<=k<=i-1 ==> \old(*(t+k))!=v;'.
+
+
 \subsection{Syntaxe des instructions et fonctions}
 
 \input{figures/fig_grammar}
