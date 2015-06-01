@@ -1,5 +1,7 @@
 \begin{figure}[h!]
   \begin{tabular}{lrl}
+    \textit{left-value} & ::= & \textit{id}
+    $\mid$ \underline{\lstinline'*'} \textit{id} \\
     \textit{instr} & ::= & \textit{type} \textit{id} \underline{\semicolon} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{exp}
     \underline{\semicolon} \\
@@ -29,11 +31,11 @@
     \textit{instr}$^{*}$
     \textit{EndIter}$_l$ \underline{\lstinline'\:'} \underline{\semicolon}
     \underline{$\bclose$} \\
-    \textit{type} & ::= & \textit{type} \underline{\lstinline'*'}
-    $\mid$ \underline{\lstinline'int'}
+    \textit{type} & ::= & \textit{basic-type}
+    $\mid$ \textit{basic-type} \underline{\lstinline'*'} \\
+    \textit{basic-type} & ::= & \underline{\lstinline'int'}
     $\mid$ \underline{\lstinline'char'}
-    $\mid$ \underline{\lstinline'long'}
-    $\mid$ \ldots \\
+    $\mid$ \underline{\lstinline'long'} \\
     \textit{function} & ::= & \underline{\lstinline'/*@ requires'}
     \textit{pred} \underline{\semicolon} \\
     &     & \underline{\lstinline'    typically'} \textit{pred}

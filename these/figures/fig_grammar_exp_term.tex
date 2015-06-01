@@ -1,7 +1,7 @@
 \begin{figure}[h!]
   \begin{tabular}{lrl}
     \textit{unop} & ::= & \underline{\lstinline'-'}
-    $\mid$ \underline{\lstinline'*'}
+    %$\mid$ \underline{\lstinline'*'}
     $\mid$ \underline{\lstinline'\~'} \\
     \textit{binop} & ::= & \underline{\lstinline'+'}
     $\mid$ \underline{\lstinline'-'}
@@ -12,14 +12,10 @@
     & $\mid$ & \textit{left-value} \\
     & $\mid$ & \textit{unop} \textit{exp} \\
     & $\mid$ & \textit{exp} \textit{binop} \textit{exp} \\
-    %& $\mid$ & \underline{\lstinline'('} \textit{type}
-    %\underline{\lstinline')'} \textit{exp} \\
     \textit{term} & ::= & \textit{cst} \\
     & $\mid$ & \textit{left-value} \\
     & $\mid$ & \textit{unop} \textit{term} \\
     & $\mid$ & \textit{term} \textit{binop} \textit{term} \\
-    %& $\mid$ & \underline{\lstinline'('} \textit{type}
-    %\underline{\lstinline')'} \textit{term} \\
     & $\mid$
     & \underline{\lstinline'\\abs('} \textit{term} \underline{\lstinline')'} \\
     & $\mid$
