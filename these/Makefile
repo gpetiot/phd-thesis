@@ -28,7 +28,8 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_semantics.tex \
 	figures/fig_semantics_exp_term.tex \
 	figures/fig_semantics_pred.tex \
-	figures/fig_semantics_fct.tex
+	figures/fig_semantics_fct.tex \
+	figures/mmodel_architecture.pdf
 LISTINGS=listings/mem_annots.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
@@ -50,7 +51,8 @@ chapter_motiv_contrib_DEPS=figures/user_f.png \
 			figures/user_m.png
 chapter_scenarios_DEPS=
 chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
-		figures/fig_rem_patricia_trie.tex
+		figures/fig_rem_patricia_trie.tex \
+		figures/mmodel_architecture.pdf
 chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
