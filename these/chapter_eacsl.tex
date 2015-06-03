@@ -4,30 +4,27 @@
 
 \chapterintro
 
-Dans ce chapitre nous présentons une solution pour le monitoring mémoire des
-programmes C, dévelopée pour la vérification d'assertions à l'exécution
-({\em runtime assertion checking} \cite{Clarke/06}) dans \framac
-\cite{\citeframac}.
-Cette solution inclut un langage de spécification exécutable, \eacsl,
-et un traducteur, \eacsltoc \cite{\citeeacsltoc}.
-Notre objectif est de pouvoir exécuter des annotations écrites avec le langage
-de spécification \eacsl.
-Nous avons développé une bibliothèque C permettant d'enregistrer et de récupérer
-les informations de validité et d'initialisation d'un programme. Les appels aux
-fonctions de cette bibiliothèque C sont automatiquement ajoutés aux emplacements
-adéquats dans le code source du programme par \eacsltoc durant la
-traduction de la spécification \eacsl en C.
 
-\eacsltoc est un greffon de \framac qui traduit automatiquement
-un programme C annoté en un autre programme dont l'exécution échouera si une
-annotation n'est pas valide. Si aucune annotation n'est violée, le comportement
+Dans ce chapitre nous présentons notre implémentation du modèle mémoire en C
+qui permet d'exécuter les annotations \eacsl présentées dans
+le chapitre~\ref{sec:runtime}.
+Notre bibliothèque permet au greffon \eacsltoc de vérifier à l'exécution les
+annotations \eacsl portant sur le modèle mémoire.
+
+\eacsltoc traduit automatiquement un programme C annoté en un autre
+programme dont l'exécution échouera si une annotation n'est pas valide.
+Si aucune annotation n'est violée, le comportement
 du nouveau programme est exactement le même que celui du programme d'origine.
+Ce greffon utilise notre bibliothèque afin de vérifier à l'exécution les
+annotations \eacsl portant sur le modèle mémoire.
+
+Nous présentons la bibliothèque en partie~\ref{sec:eacsl-impl} et les résultats
+de nos expérimentations en partie~\ref{sec:eacsl-exp}.
 
 
 \section{Implémentation}
+\label{sec:eacsl-impl}
 
-
-\commentGP{TODO}
 
 \begin{landscape}
   \begin{figure}[tb]
@@ -39,6 +36,7 @@ du nouveau programme est exactement le même que celui du programme d'origine.
 
 
 \section{Expérimentations}
+\label{sec:eacsl-exp}
 
 
 Pour évaluer notre solution, nous avons effectué plus de 300 exécutions sur
@@ -200,3 +198,8 @@ nos hypothèses, à savoir :
   \label{tab:mutation-exp}
   \caption{Capacité de détection d'erreurs}
 \end{table}
+
+
+\section*{Conclusion du chapitre}
+
+TODO
