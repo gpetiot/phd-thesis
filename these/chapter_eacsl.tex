@@ -25,6 +25,12 @@ de nos expérimentations en partie~\ref{sec:eacsl-exp}.
 \section{Implémentation}
 \label{sec:eacsl-impl}
 
+Dans cette partie nous présentons l'architecture générale de la bibliothèque
+ainsi que l'implémentation de quelques fonctions.
+
+
+\subsection{Architecture de la bibliothèque}
+
 
 \begin{landscape}
   \begin{figure}[tb]
@@ -33,6 +39,34 @@ de nos expérimentations en partie~\ref{sec:eacsl-exp}.
     \caption{Architecture de la bibliothèque de modèle mémoire d'\eacsl}
   \end{figure}
 \end{landscape}
+
+La figure~\ref{fig:mmodel-architecture} présente l'architecture générale de la
+bibliothèque au moyen du graphe de dépendances des fonctions C.
+Une flèche $A \rightarrow B$ signifie que la fonction $A$ appelle la fonction
+$B$.
+Les fonctions \lstinline'valid', \lstinline'base_addr', \lstinline'valid_read',
+\lstinline'initialized', \lstinline'block_length', \lstinline'out_of_bound',
+\lstinline'initialize' et \lstinline'offset' ont été regroupées afin de ne pas
+surcharger le graphe.
+Chacune de ces huit fonctions ne dépend que de la fonction \lstinline'get_cont'.
+Les fonctions dont le cadre est bleu doivent être appeler en lieu et place des
+fonctions de la bibliothèque standard associées (\lstinline'malloc', etc.).
+Les fonctions dont le cadre est rouge correspondent à des annotations \eacsl et
+retournent la valeur du terme ou du prédicat \eacsl correspondant.
+Ces fonctions ne modifient pas le contenu du modèle mémoire.
+Les fonctions dont le cadre est vert servent à modifier le contenu du modèle
+mémoire (ajout ou suppression d'élément, initialisation, etc.).
+Les fonctions dont le cadre est jaune correspondent à l'implémentation de la
+structure de données gardant les informations à propos des blocs alloués.
+Plusieurs implémentations sont fournies pour ces fonctions, correspondant à
+différentes structures de données génériques : listes chaînées, arbres binaires
+de recherche, Splay trees et Patricia tries.
+Les fonctions dont le cadre est bleu, vert ou rouge sont implémentées de manière
+indépendante à la structure de données de la couche jaune.
+
+Cette architecture facilite la conception des algorithmes, ainsi que la
+comparaison d'efficacité des différentes implémentations de la structure de
+données, effectuée en partie~\ref{sec:eacsl-exp}.
 
 
 \section{Expérimentations}
