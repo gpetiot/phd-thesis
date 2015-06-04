@@ -13,12 +13,6 @@
 \tikzstyle{pnode}=[rounded corners,rectangle,inner sep=1mm,draw]
 \tikzstyle{pleaf}=[pnode,fill=gray!30]
 \tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
-%% traduction
-\tikzstyle{box}=[draw,minimum height=2em,text width=11em,outer sep=0]
-\tikzstyle{func}=[box,minimum height=4em]
-\tikzstyle{pre}=[box,fill=red!20,text centered]
-\tikzstyle{post}=[box,fill=red!20,text centered]
-\tikzstyle{precond}=[draw,text width=2em,fill=gray!20,minimum height=1.5em]
 \tikzstyle{parr}=[->,draw,thick]
 
 \newcommand{\tikzinsert}[3]{%
@@ -56,10 +50,6 @@
 
 \declareupmtheorem{myproperty}{Propri\'et\'e}{Liste des propri\'et\'es}
 
-%\newenvironment{proof}[1][Preuve]{\begin{trivlist}
-%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
-%\newenvironment{definition}[1][Definition]{\begin{trivlist}
-%\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{example}[1][Exemple]{\begin{trivlist}
 \item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 \newenvironment{remark}[1][Remarque]{\begin{trivlist}
@@ -69,7 +59,6 @@
 
 \newcommand{\commentAG}[1]{{\color{red}((AG: {#1}))}}
 \newcommand{\commentGP}[1]{\colorbox{violet}{{\color{white}((GP: {#1}))}}}
-%\newcommand{\commentNK}[1]{\colorbox{blue}{{\color{white}((NK: {#1}))}}}
 \newcommand{\commentNK}[1]{{{\color{blue}((NK: {#1}))\color{black}}}}
 \newcommand{\commentJJ}[1]{\colorbox{green!60!black}{{\color{white}((JJ: {#1}))}}}
 
