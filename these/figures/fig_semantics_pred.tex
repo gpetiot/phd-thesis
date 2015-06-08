@@ -1,47 +1,51 @@
 \begin{figure}[h!]
   \begin{tabular}{rclr}
-    \eval{\lstinline'\\true'}{\env} &=& $1$ & \eqlabel{P-true} \\
-    \eval{\lstinline'\\false'}{\env} &=& $0$ & \eqlabel{P-false} \\
-    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline')'}{\env}
-    &=& $1$ si $\mathit{lv}$ est valide dans \env,
+    \eval{\lstinline'\\true'}{\env\store} &=& $1$ & \eqlabel{P-true} \\
+    \eval{\lstinline'\\false'}{\env\store} &=& $0$ & \eqlabel{P-false} \\
+    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline')'}{\env\store}
+    &=& $1$ si \store(\eval{$\mathit{lv}$}{\env\store}) $\in LOC$,
     $0$ sinon & \eqlabel{P-valid} \\
     \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline'+('$\mathit{t_1}$
-      \lstinline'..'$\mathit{t_2}$\lstinline'))'}{\env} &=& $1$ si
-    $(\mathit{lv}+t_1)$, \dots, $(\mathit{lv}+t_2)$ sont valides dans \env,
+      \lstinline'..'$\mathit{t_2}$\lstinline'))'}{\env\store} &=&
+    \eval{
+      \lstinline'\\valid('$\mathit{lv}$\lstinline'+'$\mathit{t_1}$\lstinline')'
+      \lstinline'\&\&' $\ldots$ \lstinline'\&\&'
+      \lstinline'\\valid('$\mathit{lv}$\lstinline'+'$\mathit{t_2}$\lstinline')'
+    }{\env\store}
     & \eqlabel{P-validr} \\
-    & & $0$ sinon & \\
     \eval{\lstinline'\\forall integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'==>' $p$}{\env} &=&
+      \lstinline'<=' $t_2$ \lstinline'==>' $p$}{\env\store} &=&
     $\forall k$.
-    (\eval{$t_1$}{\env} $\le k \le$
-    \eval{$t_2$}{\env} $\Rightarrow$ \eval{$p$}{\env})
+    (\eval{$t_1$}{\env\store} $\le k \le$
+    \eval{$t_2$}{\env\store} $\Rightarrow$ \eval{$p$}{\env\store})
     & \eqlabel{P-forall} \\
     \eval{\lstinline'\\exists integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{\env} &=&
+      \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{\env\store} &=&
     $\exists k$.
-    (\eval{$t_1$}{\env} $\le k \le$
-    \eval{$t_2$}{\env} $\land$ \eval{$p$}{\env})
+    (\eval{$t_1$}{\env\store} $\le k \le$
+    \eval{$t_2$}{\env\store} $\land$ \eval{$p$}{\env\store})
     & \eqlabel{P-exists} \\
-    \eval{\lstinline'\!'$p$}{\env} &=& $\lnot$ (\eval{$p$}{\env})
+    \eval{\lstinline'\!'$p$}{\env\store} &=& $\lnot$ (\eval{$p$}{\env\store})
     & \eqlabel{P-not} \\
-    \eval{$p_1$ \lstinline'\&\&' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\land$ (\eval{$p_2$}{\env})
+    \eval{$p_1$ \lstinline'\&\&' $p_2$}{\env\store} &=&
+    (\eval{$p_1$}{\env\store}) $\land$ (\eval{$p_2$}{\env\store})
     & \eqlabel{P-and} \\
-    \eval{$p_1$ \lstinline'||' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\lor$ (\eval{$p_2$}{\env})
+    \eval{$p_1$ \lstinline'||' $p_2$}{\env\store} &=&
+    (\eval{$p_1$}{\env\store}) $\lor$ (\eval{$p_2$}{\env\store})
     & \eqlabel{P-or} \\
-    \eval{$p_1$ \lstinline'==>' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\Rightarrow$ (\eval{$p_2$}{\env})
+    \eval{$p_1$ \lstinline'==>' $p_2$}{\env\store} &=&
+    (\eval{$p_1$}{\env\store}) $\Rightarrow$ (\eval{$p_2$}{\env\store})
     & \eqlabel{P-impl} \\
-    \eval{$p_1$ \lstinline'<==>' $p_2$}{\env} &=&
-    (\eval{$p_1$}{\env}) $\Leftrightarrow$(\eval{$p_2$}{\env})
+    \eval{$p_1$ \lstinline'<==>' $p_2$}{\env\store} &=&
+    (\eval{$p_1$}{\env\store}) $\Leftrightarrow$(\eval{$p_2$}{\env\store})
     & \eqlabel{P-eq} \\
-    \eval{$t$ \texttt{?} $p_1$ \texttt{:} $p_2$}{\env} &=&
-    \eval{$p_1$}{\env} si (\eval{$t$}{\env}) $\neq 0$, \eval{$p_2$}{\env} sinon
+    \eval{$t$ \texttt{?} $p_1$ \texttt{:} $p_2$}{\env\store} &=&
+    \eval{$p_1$}{\env\store} si (\eval{$t$}{\env\store}) $\neq 0$,
+    \eval{$p_2$}{\env\store} sinon
     & \eqlabel{P-pif} \\
-    \eval{$t_1~\mathit{rel}~t_2$}{\env}
-    &=& (\eval{$t_1$}{\env}) $\mathit{rel}$
-    (\eval{$t_2$}{\env}) & \eqlabel{P-rel} \\
+    \eval{$t_1~\mathit{rel}~t_2$}{\env\store}
+    &=& (\eval{$t_1$}{\env\store}) $\mathit{rel}$
+    (\eval{$t_2$}{\env\store}) & \eqlabel{P-rel} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des prédicats}
   \label{fig:sem-pred}
