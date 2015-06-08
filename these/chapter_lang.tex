@@ -494,13 +494,13 @@ obtenu après exécution du corps de la boucle dans \env.
 
 
 La sémantique dénotationnelle des fonctions est exprimée avec la fonction
-$\mathcal{F} : FCT \rightarrow ENV \rightarrow ENV$ où $FCT$ correspond à
+$\mathcal{F} : FCT \rightarrow ENV \rightarrow STORE \rightarrow (ENV \times STORE)$ où $FCT$ correspond à
 l'entité syntaxique \textit{function} définie par la figure~\ref{fig:gram-c}.
-Cette fonction calcule un nouvel environnement à partir d'une
-fonction annotée et d'un environnement \env, ce qui permet de traiter les appels
-de fonction (règles \eqlabel{C-fct1} et \eqlabel{C-fct2} de la
-figure~\ref{fig:sem-instr}) et la fonction sous vérification (qui n'est pas
-appelée).
+Cette fonction calcule un nouvel environnement et un nouveau store à partir
+d'une fonction annotée, d'un environnement \env{} et d'un store \store, ce qui
+permet de traiter les appels de fonction (règles \eqlabel{C-fct1} et
+\eqlabel{C-fct2} de la figure~\ref{fig:sem-instr}) et la fonction sous
+vérification (qui n'est pas appelée).
 
 La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
 Si $f$ est la fonction sous vérification, alors sa
