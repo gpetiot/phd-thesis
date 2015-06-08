@@ -1,62 +1,90 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
-    \comp{$T~\mathit{id}\semicolon$}{\env}
-    &=& \env[$\mathit{id}\mapsto$ $\bot$] & \eqlabel{C-decl} \\
-    \comp{$\mathit{lv}$ \lstinline'=' $e\semicolon$}{\env}
-    &=& \env[$\mathit{lv}\mapsto$ \eval{$e$}{\env}]
+    \comp{$T~\mathit{id}\semicolon$}{\env\store}
+    &=& \env[$\mathit{id}\mapsto$ $\loc$], \store{}
+    où $\loc$ est une adresse fraîche & \eqlabel{C-decl} \\
+    \comp{$\mathit{lv}$ \lstinline'=' $e\semicolon$}{\env\store}
+    &=& \env, \store[\env($\mathit{lv}$) $\mapsto$ \eval{$e$}{\env\store}]
     \scriptsize{(arith. bornée)} & \eqlabel{C-set} \\
-    \comp{$\Zinit$ \underline{$\mathit{lv}$ \lstinline'=' $e$} $\semicolon$}{\env}
-    &=& \env[$\mathit{lv} \mapsto$ \eval{$e$}{\env}]
+    \comp{$\Zinit$ \underline{$\mathit{lv}$ \lstinline'=' $e$} $\semicolon$}{\env\store}
+    &=& \env, \store[\env($\mathit{lv}$) $\mapsto$ \eval{$e$}{\env\store}]
     \scriptsize{(arith. non bornée)}
     & \eqlabel{C-Z-set} \\
-    \comp{\underline{$\mathit{lv}$} $\Zclear \semicolon$}{\env}
-    &=& \env $-~\{\mathit{lv}\}$ & \eqlabel{C-Z-unset} \\
-    \comp{\lstinline'fassert('$e$\lstinline');'}{\env}
-    &=& \env{} si (\eval{$e$}{\env}) $\neq 0$, \errorenv sinon
+    \comp{\underline{$\mathit{lv}$} $\Zclear \semicolon$}{\env\store}
+    &=& \env, \store $-~\{$\env($\mathit{lv}$)$\}$ & \eqlabel{C-Z-unset} \\
+    \comp{\lstinline'fassert('$e$\lstinline');'}{\env\store}
+    &=& \env, \store{} si (\eval{$e$}{\env\store}) $\neq 0$, \errorenv sinon
     & \eqlabel{C-fassert} \\
-    \comp{\lstinline'fassume('$e$\lstinline');'}{\env}
-    &=& \env{} si (\eval{$e$}{\env}) $\neq 0$
+    \comp{\lstinline'fassume('$e$\lstinline');'}{\env\store}
+    &=& \env, \store{} si (\eval{$e$}{\env\store}) $\neq 0$
     & \eqlabel{C-fassume} \\
 
-    \comp{$\mathit{lv}$ \lstinline'= fvalid('$e$\lstinline');'}{\env}
-    &=& \env[$\mathit{lv} \mapsto 1$] si $e$ est valide dans \env,
+    \comp{$\mathit{lv}$ \lstinline'= fvalid('$e$\lstinline');'}{\env\store}
+    &=&
+    \env,
+    \store[\env($\mathit{lv}$) $\mapsto 1$]
+    si \store(\eval{$e$}{\env\store}) $\in LOC$,
     & \eqlabel{C-valid} \\
-    && \env[$\mathit{lv} \mapsto 0$] sinon & \\
+    && \env, \store[\env($\mathit{lv}$) $\mapsto 0$] sinon & \\
 
     \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
-      \lstinline');'}{\env}
-    &=& \env[$\mathit{lv} \mapsto 1$] si $(e_1+e_2)$, ..., $(e_1+e_3)$ sont
-    valides dans \env, & \eqlabel{C-validr} \\
-    & & \env[$\mathit{lv} \mapsto 0$] sinon & \\
+      \lstinline');'}{\env\store}
+    &=& \env, \store[\env($\mathit{lv}$) $\mapsto 1$] si
+    \store(\eval{$e_1+e_2$}{\env\store}) $\in LOC$ & \eqlabel{C-validr} \\
+    && $\land \cdots \land$ \store(\eval{$e_1+e_3$}{\env\store}) $\in LOC$, &\\
+    & & \env, \store[\env($\mathit{lv}$) $\mapsto 0$] sinon & \\
 
-    \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{\env} &=&
-    & \eqlabel{C-fct1} \\
-    \multicolumn{4}{c}{
-      \compf{$f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
-        \lstinline')\{...\}'}{
-        \env[$\mathit{id_1} \mapsto$ \eval{$e_1$}{\env}, ...,
-          $\mathit{id_N} \mapsto$ \eval{$e_N$}{\env}]}
-    } \\
+    \comp{$\mathit{id}$ \lstinline' = malloc('$e$\lstinline');'}{\env\store}
+    &=&
+    \env[$\mathit{id}$\lstinline'[0]' $\mapsto \loc_1$, ...,
+      $\mathit{id}$\lstinline'['\eval{$n$}{\env\store}\lstinline'-1]' $\mapsto \loc_N$
+    ],
+    & \eqlabel{C-malloc} \\
+    && \store[\env($\mathit{id}$) $\mapsto$ \env($\mathit{id}$\lstinline'[0]')] &\\
+    && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
+
+    \comp{\lstinline'free('$\mathit{id}$\lstinline')'}{\env\store}
+    &=&
+    \env[$\mathit{id}$\lstinline'[0]' $\mapsto \bot$, ...,
+      $\mathit{id}$\lstinline'['\eval{$n$}{\env\store}\lstinline'-1]' $\mapsto \bot$
+    ],
+    & \eqlabel{C-free} \\
+    && \store[\env($\mathit{id}$) $\mapsto \bot$] &\\
+
+    \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{\env\store} &=&
+    $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
+    \lstinline')' $\bopen ... \bclose \rrbracket$ & \eqlabel{C-fct1} \\
+    && \env[$\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N$], &\\
+    && \store[\env($\mathit{id_1}$) $\mapsto$ \eval{$e_1$}{\env\store}, ...
+      \env($\mathit{id_N}$) $\mapsto$ \eval{$e_N$}{\env\store}
+    ] &\\
+    && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{$\mathit{lv}$ \lstinline'=' $f$\lstinline'('$e_1$,...,$e_N$
-      \lstinline');'}{\env} &=& & \eqlabel{C-fct2} \\
-    \multicolumn{4}{c}{
-      \env[$\mathit{lv} \mapsto$ \eval{\lstinline'ret'}{
-          (\compf{$f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
-            \lstinline')\{...\}'}{
-            \env[$\mathit{id_1} \mapsto$ \eval{$e_1$}{\env}, ...,
-              $\mathit{id_N} \mapsto$ \eval{$e_N$}{\env}]
-          })}]
-    } \\
+      \lstinline');'}{\env\store} &=&
+    \env$'$,
+    \store$'$[
+      \env($\mathit{lv}$) $\mapsto$ \eval{\lstinline'ret'}{\env$'$\store$'$}]
+    & \eqlabel{C-fct2} \\
+    && où \env$'$, \store$'$ =
+    $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
+    \lstinline')' $\bopen ... \bclose \rrbracket$ &\\
+    && \env[$\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N$], &\\
+    && \store[\env($\mathit{id_1}$) $\mapsto$ \eval{$e_1$}{\env\store}, ...
+      \env($\mathit{id_N}$) $\mapsto$ \eval{$e_N$}{\env\store}
+    ] &\\
+    && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
-    \comp{\lstinline'return' $e\semicolon$}{\env}
-    &=& \env[\lstinline'ret' $\mapsto$ \eval{$e$}{\env}] & \eqlabel{C-return} \\
+    \comp{\lstinline'return ret;'}{\env\store}
+    &=& \env, \store & \eqlabel{C-return} \\
     \comp{\lstinline'if('$e$\lstinline')' $\bopen A \bclose$
-      \lstinline'else' $\bopen B \bclose$}{\env}
-    &=& \comps{$A$}{\env} si (\eval{$e$}{\env})
-    $\neq 0$, \comps{$B$}{\env} sinon & \eqlabel{C-if} \\
-    \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{\env}
-    &=& \env{} si (\eval{$p$}{\env}), \errorenv sinon
+      \lstinline'else' $\bopen B \bclose$}{\env\store}
+    &=& \comps{$A$}{\env\store} si (\eval{$e$}{\env\store})
+    $\neq 0$, \comps{$B$}{\env\store} sinon & \eqlabel{C-if} \\
+    \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{\env\store}
+    &=& \env, \store{} si (\eval{$p$}{\env\store}), \errorenv sinon
     & \eqlabel{C-assert} \\
     \multicolumn{4}{l}{
       \comp{
@@ -64,25 +92,26 @@
         \lstinline'loop assigns' $X\semicolon$
         \lstinline'loop variant' $t\semicolon$
         \lstinline'*/ while(' $e$ \lstinline')'
-        $\bopen A \bclose$}{\env}
+        $\bopen A \bclose$}{\env\store}
     } \\
-    & = & \errorenv si $\lnot$ \eval{$p$}{\env}
+    & = & \errorenv si $\lnot$ \eval{$p$}{\env\store}
     & \eqlabel{C-while-1} \\
-    &  & \env{} si (\eval{$e$}{\env}) $= 0$ & \eqlabel{C-while-2} \\
-    &  & \errorenv si (\eval{$t$}{\env}) $< 0$
+    &  & \env, \store{} si (\eval{$e$}{\env\store}) $= 0$
+    & \eqlabel{C-while-2} \\
+    &  & \errorenv si (\eval{$t$}{\env\store}) $< 0$
     & \eqlabel{C-while-3} \\
-    &  & \errorenv si $\lnot$ \eval{$p$}{(\comps{$A$}{\env})}
+    &  & \errorenv si $\lnot$ \eval{$p$}{(\comps{$A$}{\env\store})}
     & \eqlabel{C-while-4} \\
     &  & \errorenv
-    si (\eval{$t$}{(\comps{$A$}{\env})}) $\ge$
-    (\eval{$t$}{\env}) & \eqlabel{C-while-5} \\
+    si (\eval{$t$}{(\comps{$A$}{\env\store})}) $\ge$
+    (\eval{$t$}{\env\store}) & \eqlabel{C-while-5} \\
     &  & \errorenv si
     $\exists x. (x \in G-X.$
-    (\eval{$x$}{(\comps{$A$}{\env})}) $\ne$
-    (\eval{$x$}{\env}) $)$ & \eqlabel{C-while-6} \\
+    (\eval{$x$}{(\comps{$A$}{\env\store})}) $\ne$
+    (\eval{$x$}{\env\store}) $)$ & \eqlabel{C-while-6} \\
     &  & \comp{\lstinline'/*@ ... */ while('$e$\lstinline')'
       $\bopen A \bclose$}{
-      (\comps{$A$}{\env})} sinon & \eqlabel{C-while-7} \\
+      (\comps{$A$}{\env\store})} sinon & \eqlabel{C-while-7} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des instructions}
   \label{fig:sem-instr}
