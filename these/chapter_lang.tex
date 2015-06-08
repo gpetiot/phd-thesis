@@ -367,13 +367,13 @@ dans \store$_1$, alors $v$ est également à l'adresse $\loc$ dans \store$_2$.
 
 La sémantique dénotationnelle des expressions C, des termes et des prédicats
 \eacsl est exprimée avec la fonction
-$\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow ENV \rightarrow VAL$.
+$\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow ENV \rightarrow STORE \rightarrow VAL$.
 Le domaines $EXP$, $TERM$ et $PRED$ correspondent respectivement aux entités
 syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
 figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
-Cette fonction associe à une expression C (ou un terme ou prédicat \eacsl) dans
-un environnement une valeur, à condition que cette expression ne génère pas
-d'effet de bord, hypothèse satisfaite par le langage considéré après
+Cette fonction associe une valeur à une expression C (ou un terme ou prédicat
+\eacsl) dans un environnement et un store, à condition que cette expression ne
+génère pas d'effet de bord, hypothèse satisfaite par le langage considéré après
 normalisation du code par \framac.
 
 La figure~\ref{fig:sem-exp-term} donne la sémantique des expressions et des
@@ -396,12 +396,12 @@ partie~\ref{sec:ptr-valid}.
 \subsection{Sémantique Dénotationnelle des Instructions}
 
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
-$\mathcal{C} : INSTR \rightarrow ENV \rightarrow ENV$.
-Cette fonction associe à une instruction $i$ et un environnement \env un nouvel
-environnement qui prend en compte les modifications effectuées par $i$ dans
-l'environnement \env.
+$\mathcal{C} : INSTR \rightarrow ENV \rightarrow STORE \rightarrow (ENV \times STORE)$.
+Cette fonction associe à une instruction $i$, à un environnement \env{} et à un
+store \store{} un nouvel environnement et un nouveau store qui tiennent compte
+des effets de bord effectués par $i$ dans \env{} et \store{}.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
-$\mathcal{C}^{*} : INSTR^{*} \rightarrow ENV \rightarrow ENV$.
+$\mathcal{C}^{*} : INSTR^{*} \rightarrow ENV \rightarrow STORE \rightarrow (ENV \times STORE)$.
 Cette fonction revient à appeler succesivement $\mathcal{C}$ sur chaque
 instruction de la séquence.
 
