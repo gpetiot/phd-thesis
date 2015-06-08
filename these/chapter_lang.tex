@@ -241,26 +241,29 @@ Dans la suite, nous utilisons les notations suivantes :
 
 
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
+$LOC$ est le domaine des adresses (locations en mémoire).
 Le domaine des valeurs $VAL$ est défini comme l'union des types que
-peuvent prendre les termes et prédicats \eacsl :
-$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~\bot$, où le symbole
+peuvent prendre les termes et prédicats \eacsl et les expressions C :
+$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
 $\bot$ dénote une valeur non initialisée.
+$LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
+est une adresse.
 
-Un environnement \env{} est une fonction totale \env $: LV \rightarrow VAL$
-des identificateurs de variables dans le domaine sémantique des valeurs
-possibles.
-La notation \env[$\mathit{lv} \mapsto v$] désigne un nouvel environnement,
-correspondant à l'environnement \env{} auquel la paire $(\mathit{lv}, v)$ a été
-ajoutée, ce qui signifie que $v$ est la nouvelle valeur de $\mathit{lv}$ dans
-cet environnement.
-L'accès à la valeur d'une left-value $\mathit{lv}$ dans un environnement \env{}
+Un environnement \env{} est une fonction totale \env : $LV \rightarrow LOC$
+qui associe une adresses à une left-value.
+Nous notons $ENV : LV \rightarrow LOC$ le domaine des environnements.
+La notation \env[$\mathit{lv} \mapsto \loc$] désigne un nouvel environnement,
+correspondant à l'environnement \env{} dans lequel la left-value $\mathit{lv}$
+a l'adresse $\loc$.
+L'accès à l'adresse d'une left-value $\mathit{lv}$ dans un environnement \env{}
 est noté \env($\mathit{lv}$).
 Il est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
-  (\env[$\mathit{lv} \mapsto v$])($\mathit{lv}$) &=& $v$ & \eqlabel{env-get-1}\\
-  (\env[$\mathit{lv_1} \mapsto v$])($\mathit{lv_2}$) & =
+  (\env[$\mathit{lv} \mapsto \loc$])($\mathit{lv}$) &=& $\loc$
+  & \eqlabel{env-get-1}\\
+  (\env[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & \env($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
   \env($\mathit{lv}$) & = & $\bot$ (par défaut) & \eqlabel{env-get-3} \\
@@ -268,18 +271,18 @@ Il est défini par :
 \end{center}
 
 Dans la suite, nous utiliserons la notation
-\env[$\mathit{lv_1} \mapsto v_1, \mathit{lv_2} \mapsto v_2$] (en supposant que
-$\mathit{lv_1} \neq \mathit{lv_2}$)
+\env[$\mathit{lv_1} \mapsto \loc_1, \mathit{lv_2} \mapsto \loc_2$] (en supposant
+que $\mathit{lv_1} \neq \mathit{lv_2}$)
 comme un raccourci pour
-\env[$\mathit{lv_1} \mapsto v_1$][$\mathit{lv_2} \mapsto v_2$].
+\env[$\mathit{lv_1} \mapsto \loc_1$][$\mathit{lv_2} \mapsto \loc_2$].
 La notation \env $-~\{\mathit{lv}\}$ signifie que la left-value
-$\mathit{lv}$ et sa valeur sont enlevées de l'environnement \env :
+$\mathit{lv}$ et son adresse sont enlevées de l'environnement \env :
 
 \begin{center}
 \begin{tabular}{rclr}
-  (\env[$\mathit{lv} \mapsto v$])$-~\{lv\}$ &=& \env & \eqlabel{env-del-1} \\
-  (\env[$\mathit{lv_1} \mapsto v$])$-~\{\mathit{lv_2}\}$
-  &=& (\env$-~\{\mathit{lv_2}\}$)[$\mathit{lv_1} \mapsto v$] si
+  (\env[$\mathit{lv} \mapsto \loc$])$-~\{lv\}$ &=& \env & \eqlabel{env-del-1} \\
+  (\env[$\mathit{lv_1} \mapsto \loc$])$-~\{\mathit{lv_2}\}$
+  &=& (\env$-~\{\mathit{lv_2}\}$)[$\mathit{lv_1} \mapsto \loc$] si
   $\mathit{lv_1} \neq \mathit{lv_2}$ & \eqlabel{env-del-2} \\
   \env$-~\{\mathit{lv}\}$ &=& \env{}  si \env($\mathit{lv}$) = $\bot$
   & \eqlabel{env-del-3} \\
@@ -287,24 +290,76 @@ $\mathit{lv}$ et sa valeur sont enlevées de l'environnement \env :
 \end{center}
 
 Nous définissons également une relation d'inclusion sur les environnements,
-c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si
-chaque paire $(\mathit{lv}, v)$ présente dans l'environnement \env$_1$ est
-également présente dans \env$_2$ :
+c'est-à-dire \env$_1$ est inclus dans \env$_2$ si et seulement si pour chaque
+paire $(\mathit{lv}, \loc)$ telle que : si $\loc$ est l'adresse de $\mathit{lv}$
+dans \env$_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans \env$_2$.
+
 \[
 \mbox{\env}_1~\mbox{\subenv}~\mbox{\env}_2~\equiv~
-\forall \mathit{lv}.~\forall v.
-~(\mbox{\env}_1(\mathit{lv})=v) \Rightarrow (\mbox{\env}_2(\mathit{lv})=v)
+\forall \mathit{lv}.~\forall \loc.
+~(\mbox{\env}_1(\mathit{lv})=\loc) \Rightarrow (\mbox{\env}_2(\mathit{lv})=\loc)
 \]
 
-Nous définissons un ``environnement d'erreur'', noté \errorenv.
-Un tel environnement est le résultat de l'évaluation d'une instruction
-provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
-expression fausse) ou d'une annotation invalide (par exemple,
-\lstinline'assert' ou \lstinline'loop invariant' faux).
-L'évaluation des instructions s'arrête dès qu'un environnement d'erreur est
-produit.
-Nous notons $ENV$ le domaine des environnements.
+%% Nous définissons un ``environnement d'erreur'', noté \errorenv.
+%% Un tel environnement est le résultat de l'évaluation d'une instruction
+%% provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
+%% expression fausse) ou d'une annotation invalide (par exemple,
+%% \lstinline'assert' ou \lstinline'loop invariant' faux).
+%% L'évaluation des instructions s'arrête dès qu'un environnement d'erreur est
+%% produit.
 
+
+\subsection{Stores}
+
+
+Un store \store{} est une fonction totale \store : $LOC \rightarrow VAL$ qui
+associe une valeur à une adresse.
+Nous notons $STORE : LOC \rightarrow VAL$ le domaine des stores.
+La notation \env[$\loc \mapsto v$] désigne un nouveau store, correspondant au
+store \store{} dans lequel la valeur $v$ est à l'adresse mémoire $\loc$.
+L'accès à la valeur d'une adresse $\loc$ dans un store \store{} est noté
+\store($\loc$).
+Il est défini par :
+
+\begin{center}
+\begin{tabular}{rclr}
+  (\store[$\loc \mapsto v$])($\loc$) &=& $v$ & \eqlabel{store-get-1}\\
+  (\store[$\loc_1 \mapsto v$])($\loc_2$) & =
+  & \store($\loc_2$) si $\loc_1 \neq \loc_2$
+  & \eqlabel{store-get-2}\\
+  \store($\loc$) & = & $\bot$ (par défaut) & \eqlabel{store-get-3} \\
+\end{tabular}
+\end{center}
+
+Dans la suite, nous utiliserons la notation
+\store[$\loc_1 \mapsto v_1, \loc_2 \mapsto v_2$] (en supposant
+que $\loc_1 \neq \loc_2$)
+comme un raccourci pour
+\store[$\loc_1 \mapsto v_1$][$\loc_2 \mapsto v_2$].
+La notation \store $-~\{\loc\}$ signifie que l'adresse
+$\loc$ et la valeur associée sont enlevées du store \store :
+
+\begin{center}
+\begin{tabular}{rclr}
+  (\store[$\loc \mapsto v$])$-~\{\loc\}$ &=& \store & \eqlabel{store-del-1} \\
+  (\store[$\loc_1 \mapsto v$])$-~\{\loc_2\}$
+  &=& (\store$-~\{\loc_2\}$)[$\loc_1 \mapsto v$] si
+  $\loc_1 \neq \loc_2$ & \eqlabel{store-del-2} \\
+  \store$-~\{\loc\}$ &=& \store{}  si \store($\loc$) = $\bot$
+  & \eqlabel{store-del-3} \\
+\end{tabular}
+\end{center}
+
+Nous définissons également une relation d'inclusion sur les stores, c'est-à-dire
+\store$_1$ est inclus dans \store$_2$ si et seulement si pour chaque
+paire $(\loc, v)$ telle que : si $v$ est la valeur à l'adresse $\loc$
+dans \store$_1$, alors $v$ est également à l'adresse $\loc$ dans \store$_2$.
+
+\[
+\mbox{\store}_1~\mbox{\subenv}~\mbox{\store}_2~\equiv~
+\forall \loc.~\forall v.
+~(\mbox{\store}_1(\loc)=v) \Rightarrow (\mbox{\store}_2(\loc)=v)
+\]
 
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
