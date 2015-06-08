@@ -7,18 +7,18 @@
         \lstinline'ensures' $p_2\semicolon$
         \lstinline'*/' $f$\lstinline'('$\mathit{id_1}$, ..., $\mathit{id_N}$
         \lstinline')'
-        $\bopen A \bclose$}{\env}
+        $\bopen A \bclose$}{\env\store}
     } \\
-    =& \errorenv si $\lnot$ \eval{$p_1$}{\env} et $f$ est
+    =& \errorenv si $\lnot$ \eval{$p_1$}{\env\store} et $f$ est
     une fonction appelée & \eqlabel{F-1} \\
     =& \errorenv si
     $\exists x. (x \in G-X.$
-    (\eval{$x$}{(\comps{$A$}{\env})}) $\ne$
-    (\eval{$x$}{\env}) $)$ & \eqlabel{F-2} \\
+    (\eval{$x$}{(\comps{$A$}{\env\store})}) $\ne$
+    (\eval{$x$}{\env\store}) $)$ & \eqlabel{F-2} \\
     =& \errorenv si
-    $\lnot$ \eval{$p_2$}{(\comps{$A$}{\env})}
+    $\lnot$ \eval{$p_2$}{(\comps{$A$}{\env\store})}
     & \eqlabel{F-3} \\
-    =& \comps{$A$}{\env} sinon & \eqlabel{F-4} \\
+    =& \comps{$A$}{\env\store} sinon & \eqlabel{F-4} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des fonctions}
   \label{fig:sem-fct}
