@@ -244,9 +244,12 @@ Dans la suite, nous utilisons les notations suivantes :
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 $LOC$ est le domaine des adresses (locations en mémoire).
 
-Un environnement \env{} est une fonction totale \env : $LV \rightarrow LOC$
-qui associe une adresses à une left-value.
-Nous notons $ENV : LV \rightarrow LOC$ le domaine des environnements.
+Un environnement \env{} est une fonction totale \env :
+$LV \rightarrow LOC \cup \{\bot\}$
+qui associe une adresse à une left-value.
+$\bot$ dénote une adresse indéfinie et donc invalide.
+Nous notons $ENV : LV \rightarrow LOC \cup \{\bot\}$ le domaine des
+environnements.
 La notation \env[$\mathit{lv} \mapsto \loc$] désigne un nouvel environnement,
 correspondant à l'environnement \env{} dans lequel la left-value $\mathit{lv}$
 a l'adresse $\loc$.
