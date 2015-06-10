@@ -300,14 +300,6 @@ dans \env$_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans \env$_2$.
 ~(\mbox{\env}_1(\mathit{lv})=\loc) \Rightarrow (\mbox{\env}_2(\mathit{lv})=\loc)
 \]
 
-%% Nous définissons un ``environnement d'erreur'', noté \errorenv.
-%% Un tel environnement est le résultat de l'évaluation d'une instruction
-%% provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
-%% expression fausse) ou d'une annotation invalide (par exemple,
-%% \lstinline'assert' ou \lstinline'loop invariant' faux).
-%% L'évaluation des instructions s'arrête dès qu'un environnement d'erreur est
-%% produit.
-
 
 \subsection{Stores}
 
@@ -394,6 +386,13 @@ partie~\ref{sec:ptr-valid}.
 
 
 \subsection{Sémantique Dénotationnelle des Instructions}
+
+Nous définissons un état d'erreur, noté \errorenv, de type $ENV \times STORE$.
+Un tel état est le résultat de l'évaluation d'une instruction
+provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
+expression fausse) ou d'une annotation invalide (par exemple,
+\lstinline'assert' ou \lstinline'loop invariant' faux).
+L'évaluation des instructions s'arrête dès qu'un état d'erreur est produit.
 
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
 $\mathcal{C} : INSTR \rightarrow ENV \rightarrow STORE \rightarrow (ENV \times STORE)$.
