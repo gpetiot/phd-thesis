@@ -243,12 +243,6 @@ Dans la suite, nous utilisons les notations suivantes :
 
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 $LOC$ est le domaine des adresses (locations en mémoire).
-Le domaine des valeurs $VAL$ est défini comme l'union des types que
-peuvent prendre les termes et prédicats \eacsl et les expressions C :
-$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
-$\bot$ dénote une valeur non initialisée.
-$LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
-est une adresse.
 
 Un environnement \env{} est une fonction totale \env : $LV \rightarrow LOC$
 qui associe une adresses à une left-value.
@@ -305,6 +299,12 @@ dans \env$_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans \env$_2$.
 \subsection{Stores}
 
 
+Le domaine des valeurs $VAL$ est défini comme l'union des types que
+peuvent prendre les termes et prédicats \eacsl et les expressions C :
+$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
+$\bot$ dénote une valeur non initialisée.
+$LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
+est une adresse.
 Un store \store{} est une fonction totale \store : $LOC \rightarrow VAL$ qui
 associe une valeur à une adresse.
 Nous notons $STORE : LOC \rightarrow VAL$ le domaine des stores.
