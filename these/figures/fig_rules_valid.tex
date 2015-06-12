@@ -3,7 +3,7 @@
     {\myinference[$\pi$-valid]
       {}
       {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
-        (I \concat (l, \mbox{\lstinline'int var_n = fvalid(t);'}),
+        ((l, \mbox{\lstinline'int var_n = fvalid(t);'}),
         \mbox{\lstinline'var_n'})
       }
     }
@@ -12,8 +12,7 @@
       {}
       {
         (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
-        (I_1 \concat I_2 \concat I_3
-        \concat (l, \mbox{\lstinline'int var_n = fvalidr(t1,t2,t3);'}),
+        ((l, \mbox{\lstinline'int var_n = fvalidr(t1,t2,t3);'}),
         \mbox{\lstinline'var_n'})
       }
     }

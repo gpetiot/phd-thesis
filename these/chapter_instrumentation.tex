@@ -142,9 +142,10 @@ Une fois ce pré-traitement effectué, toute annotation \eacsl de la forme
 est traduite.
 D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
 réduites au fragment \eacsl considéré.
-Par exemple, un \lstinline'behavior' peut être réécrit comme une implication
-dans une clause \lstinline'ensures' et les contrats d'instruction peuvent être
-réécrits comme des implications dans des assertions.
+Par exemple, un \lstinline'behavior' est réécrit dans la forme normalisée des
+programmes comme une implication dans une clause \lstinline'ensures' et les
+contrats d'instruction peuvent être réécrits comme des implications dans des
+assertions.
 
 \input{figures/fig_code_gen}
 
@@ -168,7 +169,8 @@ figure.
 La partie droite de la figure montre la séquence d'insertions, étiquetées par
 des labels, obtenue après traduction complète de l'invariant de boucle.
 La figure~\ref{fig:code-ins} illustre le principe d'insertion des fragments de
-code de la figure~\ref{fig:code-gen}, qui produit le programme instrumenté.
+code de la figure~\ref{fig:code-gen}, qui produit le programme instrumenté en
+appliquant les règles d'insertion décrites ci-dessus.
 
 
 Maintenant que le principe général de la traduction a été présenté, revenons
@@ -210,7 +212,7 @@ Dans ces règles, les notations supplémentaires suivantes sont utilisées :
 \item $x$ est un identificateur de variable C (donc une left-value);
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)^*$;
-\item $x$, $y$ et $z$ sont des left-values;
+\item $y$ et $z$ sont des left-values;
 \item $i$, $i_1$, $i_2$ sont des instructions C;
 \item $P$ est un programme C annoté et $P'$ est le programme instrumenté
   obtenu après traduction du programme $P$.
@@ -273,8 +275,8 @@ l'exécution pour \lstinline'x = INT_MAX' : en arithmétique modulaire
 Une traduction correcte utilisant les entiers non bornés (non présentée ici)
 conserve le comportement attendu : l'assertion est vraie pour tout entier
 positif \lstinline'x'.
-Une traduction naïve des annotations dans ces deux exemples résulterait en un
-faux négatif dans le premier cas et en un faux positif dans le deuxième cas, ce
+D'une traduction naïve des annotations dans ces deux exemples résulterait un
+faux négatif dans le premier cas et un faux positif dans le deuxième cas, ce
 qui porterait atteinte à la correction et à la précision de notre méthode.
 Les règles de traduction pour les constructions \eacsl que nous présentons
 respectent la sémantique des entiers non bornés d'\eacsl et suppose
@@ -316,7 +318,7 @@ Cette même règle permet de traduire les clauses \lstinline'typically'
 (précondition pour le test qui permet de limiter l'explosion combinatoire du
 nombre de chemins du programme) et les clauses \lstinline'requires', elle
 suppose avec la fonction \lstinline'fassume' que la valeur \lstinline'e' de la
-traduction du prédicat \lstinline'p' au début de la fonction soit vrai.
+traduction du prédicat \lstinline'p' au début de la fonction est vraie.
 La règle \textsc{$\alpha$-check-assigns} vérifie que les left-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 L'ensemble des left-values considérées est la différence $G-X$, où $G$ est
@@ -365,8 +367,8 @@ strictement (par rapport à sa valeur au début de l'itération).
 
 La fonction de traduction des termes, notée $\tau$, est définie comme une
 fonction partielle qui, à un label $l$ et un terme \lstinline't' de type $T$,
-associe une séquence d'insertions de code $(l_i, c_i)^*$ et une expression
-\lstinline'e' du C :
+associe une séquence d'insertions de code $(l_i, c_i)^*$ et une expression C
+dénotée \lstinline'e' :
 
 \[
 (l, \mbox{\lstinline't'}:T) \rulearrow
@@ -376,10 +378,10 @@ associe une séquence d'insertions de code $(l_i, c_i)^*$ et une expression
 
 Les instances de cette fonction sont définies par les
 figures~\ref{fig:const-id}, \ref{fig:coerce}, \ref{fig:op} et~\ref{fig:builtin},
-ces figures présentes les règles permettant de traduire les termes du langage
+ces figures présentent les règles permettant de traduire les termes du langage
 \eacsl considéré.
 $T$ peut être $\mathbb{Z}$ (\lstinline'integer'), un type pointeur quelconque
-(\lstinline'int*', \lstinline'char*', etc.) noté $ptr$ ou un type intégral du C
+(\lstinline'int*', \lstinline'char*', etc.) noté $ptr$ ou un type scalaire du C
 (\lstinline'char', \lstinline'int', \lstinline'long', etc.) noté $ctype$.
 Les insertions de code sont les instructions C nécessaires à l'évaluation du
 terme.
@@ -421,7 +423,7 @@ Le terme \lstinline'\result' est traduit par la règle \textsc{$\tau$-res}, il
 fait référence à la valeur de retour de la fonction en \eacsl qui, par la
 normalisation, est désignée par la variable \lstinline'res'.
 Cette variable est unique dans chaque fonction après normalisation de l'arbre de
-syntaxe abstrait par \framac.
+syntaxe abstraite par \framac.
 La règle \textsc{$\tau$-const} établit qu'une variable entière est définie pour
 prendre la valeur d'une contante entière.
 
@@ -440,7 +442,7 @@ La figure~\ref{fig:op} détaille les règles pour les opérations unaires
 \textsc{$\tau$-lv} traite le cas de l'indirection de pointeur
 (\lstinline'*').
 \textsc{$\tau$-unop} traite le cas du moins unaire et du complément
-bit-à-bit ($\sim$) pour lesquelles on suppose que ces opérations prennent un
+bit-à-bit ($\sim$) pour lesquels on suppose que ces opérations prennent un
 \lstinline'integer' en entrée et en sortie.
 
 \textsc{$\tau$-binop$_1$} traite l'arithmétique de pointeur, l'opérande gauche
@@ -451,9 +453,9 @@ opérandes et le résultat sont des entiers), $binop$ est un des opérateurs
 arithmétiques suivants : \lstinline'+', \lstinline'-', \lstinline'/',
 \lstinline'%', \lstinline'*'.
 Dans la règle \textsc{$\tau$-if}, les évaluations de $t_2$ et $t_3$ sont dans
-des branches conditionnelles : on calcule uniquement l'un des deux, en fonction
-de l'évaluation de $t_1$.
-La notation
+des branches conditionnelles : on calcule paresseusement l'un des deux, en
+fonction de l'évaluation de $t_1$.
+La notation suivante :
 \[
 (l,
 \mbox{\lstinline'if('}
@@ -533,8 +535,8 @@ Nous définissons dans les figures~\ref{fig:pred-logic}, \ref{fig:valid}
 et~\ref{fig:quantif} les règles de traduction pour les principaux
 prédicats \eacsl que nous traitons.
 Pour chacune de ces règles, une variable fraîche \lstinline'var_n' est générée
-(même quand la traduction du prédicat est triviale) afin de faciliter la
-justification de correction des règles.
+(même quand la traduction du prédicat est triviale) afin de standardiser les
+règles et ainsi de faciliter la justification de leur correction des règles.
 
 \input{figures/fig_rules_pred}
 
@@ -608,7 +610,7 @@ ligne 31).
 
 
 \section[Test vs. Validation à l'Exécution]{Similarités et Différences selon
-  l'objectif Test vs. Validation à l'Exécution}
+  l'objectif, Test vs. Validation à l'Exécution}
 \label{sec:rac}
 
 
@@ -621,7 +623,7 @@ tests avec \pathcrawler \cite{\citepathcrawler}.
 Cette partie discute les similarités et les différences entre ces deux façons
 d'instrumenter.
 
-La traduction et la traduction pour la validation à l'exécution et pour la
+La traduction pour la validation à l'exécution et la traduction pour la
 génération de tests ont toutes deux besoin de générer du code exécutable, c'est
 pourquoi un sous-ensemble exécutable du langage de spécification est considéré
 dans les deux cas.
@@ -790,33 +792,74 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 \label{sec:properties}
 
 
-Définissons maintenant les propriétés maintenues par le processus
-d'instrumentation des programmes annotés.
-Ces propriétés sont prouvées dans les parties suivantes.
+Définissons maintenant les propriétés exprimant la correction de la traduction,
+c'est-à-dire que le code instrumenté a la même sémantique que le code annoté
+dont il est issu.
 
+Ces propriétés se décomposent en deux parties qui sont la préservation des
+erreurs et l'inclusion des mémoires.
 
 \begin{myproperty}[Préservation des erreurs]
   \label{th:error}
-  Si l'exécution des instructions obtenues par traduction d'une annotation $a$
+  Pour toute mémoire (\env, \store), si l'exécution des instructions obtenues
+  par traduction d'une annotation $a$
   du programme $P$ provoque une erreur dans le programme instrumenté $P'$ par
   cette traduction de $a$, alors l'annotation $a$ est invalide.
 \end{myproperty}
 
-La propriété~\ref{th:error} assure l'absence de faux positifs lors de la
-génération de tests sur le programme instrumenté.
+La préservation des erreurs (propriété~\ref{th:error}) assure l'absence de faux
+positifs lors de la génération de tests sur le programme instrumenté,
+c'est-à-dire que toute erreur détectée par la génération de tests correspond à
+une erreur du programme annoté.
 
-\begin{myproperty}[Inclusion des environnements]
+
+\begin{myproperty}[Inclusion des mémoires]
   \label{th:inclusion}
-  Si toutes les annotations d'un programme $P$ sont valides, à chaque point
-  d'exécution de $P$ l'environnement \env{} produit par $P$ est inclus dans
-  l'environnement \env$'$ du programme instrumenté $P'$ au même point
-  d'exécution : \env{} \subenv{} \env$'$.
+  Soit le fragment de programme $A$ obtenu à partir d'une liste d'insertions de
+  code $I$.
+  Soit une mémoire quelconque (\env, \store).
+  Pour tout préfixe $B$ de $A$ tel que :
+  (\env$'$, \store$'$) = \comps{$B$}{\env\store} alors
+  \env \subenv{} \env$'$ et \store \subenv{} \store$'$
 \end{myproperty}
 
-La propriété~\ref{th:inclusion} énonce que les seules variables modifiées par le
-programme instrumenté sont les variables fraîchement créées par la traduction,
-les variables existantes dans le programme d'origine ne sont pas modifiées par
-la traduction.
+\begin{myproperty}[Absence d'erreur]
+  \label{lem:noerror}
+  Soit le fragment de programme $A$ obtenu à partir d'une liste d'insertions de
+  code $I$.
+  Soit une mémoire quelconque (\env, \store).
+  Pour tout préfixe $B$ de $A$ tel que :
+  (\env$'$, \store$'$) = \comps{$B$}{\env\store} alors
+  (\env$'$, \store$'$) $\neq$ \errorenv
+\end{myproperty}
+
+\begin{definition}[Point d'exécution associé]
+  Soit un compteur de programme $c_P$ du programme source $P$, incrémenté de 1 à
+  chaque exécution d'instruction.
+  Soit un compteur de programme $c_{P'}$ du programme instrumenté $P'$,
+  incrémenté de 1 à chaque instruction de $P'$ qui est une instruction de $P$.
+  Un point d'exécution du programme source est associé à un point d'exécution du
+  programme instrumenté si et seulement si $c_P = c_{P'}$.
+\end{definition}
+
+L'inclusion des environnements (propriété~\ref{th:inclusion}) est un lemme
+nécessaire à la justification de la propriété~\ref{th:error}.
+Il énonce que les seules variables modifiées dans les instructions ajoutées dans
+le programme instrumenté sont les variables fraîchement créées par la
+traduction, les variables existantes dans le programme d'origine ne sont pas
+modifiées par la traduction.
+Il affirme que si toutes les annotations d'un programme $P$ sont valides, à
+chaque point d'exécution de $P$ la mémoire (\env, \store) produite par
+l'exécution du programme $P$ est incluse dans la mémoire (\env$'$, \store$'$)
+produite par l'exécution du programme instrumenté $P'$ au point d'exécution
+associé (voir définition ??) :
+\env{} \subenv{} \env$'$ et \store{} \subenv{} \store$'$.
+
+Dans les sections ?? et ?? nous déclinons ces propriétés sur les termes et sur
+les prédicats.
+Dans la section ?? nous justifions les propriétés~\ref{th:error}
+et~\ref{th:inclusion} à partir des propriétés prouvées dans les sections ?? et
+??.
 
 
 \subsection{Justification de la correction de la Traduction des Termes}
@@ -832,31 +875,22 @@ nous devons prouver la correction de la traduction des termes.
   d'insertions de code et \lstinline'e' l'expression donnant la valeur du terme
   \lstinline't'.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
-  $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
-  environnement \env{} tel que
-  \eval{\lstinline't'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
-  \env = \comps{$A$}{\env$_l$}.
+  $I$ et exécuté à partir d'une mémoire quelconque (\env, \store) donne une
+  mémoire (\env$'$, \store$'$) = \comps{$A$}{\env \store}, telle que :
+  \eval{\lstinline't'}{\env \store} = \eval{\lstinline'e'}{\env$'$ \store$'$}.
 \end{myproperty}
 
-\begin{myproperty}[Traduction des Termes : Absence d'erreur]
-  \label{lem:term-noerror}
-  \env $\neq$ \errorenv
-\end{myproperty}
-
-\begin{myproperty}[Traduction des Termes : Inclusion des environnements]
-  \label{lem:term-subset}
-  \env$_l$ \subenv{} \env
-\end{myproperty}
-
+\commentGP{TODO: ref label}
+La propriété 4 est la déclinaison sur les termes de la propriété 1.
 La propriété~\ref{lem:term-correct} énonce que l'évaluation des insertions de
 code
 $I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
-variable \lstinline'e' (fraîche) à l'environnement courant, dont la valeur
-correspond à l'évaluation de \lstinline't' dans \env.
-Les variables qui sont déjà dans l'environnement initial \env$_l$ ne sont pas
-impactées dans l'environnement \env{} (propriété~\ref{lem:term-subset}), et
-l'environnement résulant de la traduction du terme n'est pas l'environnement
-d'erreur \errorenv (propriété~\ref{lem:term-noerror}).
+variable \lstinline'e' (fraîche) à la mémoire courante, dont la valeur
+correspond à l'évaluation de \lstinline't' dans la mémoire (\env, \store).
+Les variables qui sont déjà dans la mémoire initiale ne sont pas
+impactées dans la mémoire résultante (propriété~\ref{lem:term-subset}), et
+la mémoire résulant de la traduction du terme n'est pas la mémoire d'erreur
+\errorenv (propriété~\ref{lem:term-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
@@ -864,7 +898,7 @@ Pour ne pas alourdir ce chapitre, la preuve est uniquement fournie pour la règl
 \textsc{$\tau$-const} de traduction des constantes.
 
 
-\subsection{Justification de correction de la Traduction des Constantes}
+\subsubsection{Justification de correction de la Traduction des Constantes}
 
 Rappelons la règle de traduction des constantes :
 
@@ -875,54 +909,62 @@ Rappelons la règle de traduction des constantes :
     \mbox{\lstinline'var_n'}) }
 }
 
-Prouvons que pour n'importe quel environnement \env{} :
+Les propriétés 2, 3 et 4 sont déclinées ainsi sur le cas de la constante :
 
-1. \eval{\lstinline'cst'}{\env} =
+Propriété 4. \eval{\lstinline'cst'}{\env\store} =
 \eval{\lstinline'var_n'}{
-  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env})}.
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store})}.
 
 
-2. \env{} \subenv{} \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env}.
+Propriété 2. (\env, \store) \subenv{}
+\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}.
 
 
-3. \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env} $\neq$ \errorenv.
+Propriété 3. \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}
+$\neq$ \errorenv.
 
+Nous les justifions une à une :
 
-\begin{proof}[Justification du point 1.]~\\
-  Développons le membre droit :
+\begin{proof}[Justification de la propriété 4.]~\\
+  Nous transformons le membre droit en une expression identique au membre gauche
+  en appliquant les règles de sémantique dénotationnelle et de définition des
+  mémoires :
 
   \begin{tabular}{rcl}
   \eval{\lstinline'var_n'}{
-  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env})}
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store})}
   &$\eq{\eqlabel{C-Z-set}}$&
   \eval{\lstinline'var_n'}{
-    (\env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}])} \\
+    (\env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}])} \\
   &$\eq{\eqlabel{E-lval}}$&
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}]
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}]
   (\lstinline'var_n') \\
-  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{\env} \\
+  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{\env\store} \\
   \end{tabular}
   ~\\
 \end{proof}
 
 
-\begin{proof}[Justification du point 2.]~\\
+\begin{proof}[Justification de la propriété 2.]~\\
   L'affectation générée $\Zinit$\underline{\lstinline'var_n = cst;'} ne modifie
-  que la variable fraîche \lstinline'var_n', on peut donc en conclure
+  que la variable fraîche \lstinline'var_n', on peut donc en conclure que
   \env{} \subenv{}
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}] et donc :
-  \env{} \subenv{} \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env}.
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}] et donc :
+  \env{} \subenv{}
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}.
   ~\\
 \end{proof}
 
 
-\begin{proof}[Justification du point 3.]~\\
+\begin{proof}[Justification de la propriété 3.]~\\
   Le nouvel environnement étant
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env}], ce n'est pas
+  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}], ce
+  n'est pas
   un environnement d'erreur car l'évaluation d'une constante ne produit pas
   d'erreur.
   On a donc bien :
-  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env} $\neq$ \errorenv.
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}
+  $\neq$ \errorenv.
   ~\\
 \end{proof}
 
@@ -953,22 +995,13 @@ nous devons prouver la correction de la traduction des prédicats.
   d'insertions de code et \lstinline'e' l'expression donnant la valeur du
   prédicat \lstinline'p'.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
-  $I$ et exécuté à partir d'un environnement quelconque \env$_l$ donne un
-  environnement \env{} tel que
-  \eval{\lstinline'p'}{\env$_l$} = \eval{\lstinline'e'}{\env}, où
-  \env = \comps{$A$}{\env$_l$}.
+  $I$ et exécuté à partir d'une mémoire quelconque (\env, \store) donne une
+  mémoire (\env$'$, \store$'$) = \comps{$A$}{\env\store} telle que :
+  \eval{\lstinline'p'}{\env\store} = \eval{\lstinline'e'}{\env$'$\store$'$}.
 \end{myproperty}
 
-\begin{myproperty}[Traduction des Prédicats : Absence d'erreurs]
-  \label{lem:pred-noerror}
-  \env $\neq$ \errorenv
-\end{myproperty}
-
-\begin{myproperty}[Traduction des Prédicats : Inclusion des environnements]
-  \label{lem:pred-subset}
-  \env$_l$ \subenv{} \env
-\end{myproperty}
-
+\commentGP{TODO: ref label}
+La propriété 5 est la déclinaison sur les prédicats de la propriété 1.
 La propriété~\ref{lem:pred-correct} énonce que l'évaluation des insertions de
 code
 $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
@@ -985,9 +1018,9 @@ Pour des raisons de lisibilité, la justification est uniquement fournie pour la
 règle \textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
 
 
-\subsection{Justification de correction de la Traduction des Conjonctions}
+\subsubsection{Justification de correction de la Traduction des Conjonctions}
 
-La règle de traduction du prédicat de conjonction est \textsc{$\pi$-and},
+La règle de traduction du prédicat de conjonction \textsc{$\pi$-and} est
 définie ainsi :
 
 {\myinference[$\pi$-and]
@@ -1001,15 +1034,15 @@ définie ainsi :
   }
 }~\\
 
-Prouvons que pour n'importe quel environnement \env :
+Les propriétés 2, 3 et 5 sont déclinées ainsi sur le cas de la conjonction :
 
-1.
-\eval{\lstinline'p1 && p2'}{\env} =
+Propriété 5.\\
+\eval{\lstinline'p1 && p2'}{\env\store} =
 \eval{\lstinline'var_n'}{(
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{\env}
+  }{\env\store}
   )}
 en admettant que le fragment de programme
 $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
@@ -1020,31 +1053,32 @@ $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
 (l, \mbox{\lstinline'var_n = e2;'}) \bclose )$.
 
-2.
-\env{} \subenv{}
+Propriété 2.\\
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-}{\env}.
+}{\env\store} $\neq$ \errorenv.
 
-3.
+Propriété 3.\\
+\env{} \subenv{} \env$'$ et \store{} \subenv{} \store$'$ où
+(\env$'$,\store$'$) =
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-}{\env} $\neq$ \errorenv.
+}{\env\store}.
 
 
 
-\begin{proof}[Justification du point 1.]~\\
+\begin{proof}[Justification de la propriété 5.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
   \begin{center}
     \begin{tabular}{rclr}
-      \eval{\lstinline'p1'}{\env}
-      &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} & \eqlabel{h1} \\
-      \eval{\lstinline'p2'}{\env}
-      &=& \eval{\lstinline'e2'}{(\comps{$A_2$}{\env})} & \eqlabel{h2} \\
+      \eval{\lstinline'p1'}{\env\store}
+      &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env\store})} & \eqlabel{h1} \\
+      \eval{\lstinline'p2'}{\env\store}
+      &=& \eval{\lstinline'e2'}{(\comps{$A_2$}{\env\store})} & \eqlabel{h2} \\
     \end{tabular}
   \end{center}
 
@@ -1179,7 +1213,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 \end{proof}
 
 
-\begin{proof}[Justification du point 2.]~\\
+\begin{proof}[Justification de la propriété 2.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
@@ -1211,7 +1245,7 @@ $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 \end{proof}
 
 
-\begin{proof}[Justification du point 3.]~\\
+\begin{proof}[Justification de la propriété 3.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
@@ -1602,6 +1636,7 @@ La justification de cette propriété est fournie de manière formelle pour les
 assertions et de manière informelle mais intuitive pour les contrats de boucle
 et les contrats de fonction.
 
+\commentGP{TODO: complétude: équivalence ou implication}
 
 
 %% \newpage

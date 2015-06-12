@@ -1,7 +1,8 @@
 \begin{figure}[h!]
   \begin{tabular}{lrl}
     \textit{left-value} & ::= & \textit{id}
-    $\mid$ \underline{\lstinline'*'} \textit{id} \\
+    $\mid$  \textit{id} \underline{\lstinline'['} \textit{exp}
+      \underline{\lstinline']'} \\
     \textit{instr} & ::= & \textit{type} \textit{id} \underline{\semicolon} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{exp}
     \underline{\semicolon} \\

@@ -1,44 +1,57 @@
 \begin{figure}[h!]
   \begin{tabular}{rclr}
-    \eval{$\mathit{cst}$}{\env\store} &=& $\mathit{cst}$ & \eqlabel{E-cst} \\
-    \eval{$\mathit{lv}$}{\env\store} &=& \store(\env($\mathit{lv}$))
+    \eval{$\mathit{cst}$}{$\mem$} &=& $\mathit{cst}$ & \eqlabel{E-cst} \\
+
+    \eval{$\mathit{x}$}{$\env \store$} &=& $\store(\env(\mathit{x}))$
     & \eqlabel{E-lval} \\
-    \eval{\lstinline'*'$\mathit{lv}$}{\env\store}
-    &=& \store(\eval{$\mathit{lv}$}{\env\store})
+
+    \eval{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'}{$\store \env$}
+    &=&
+    $\store(\env(\mathit{x}$
+    \lstinline'['\eval{$\mathit{e}$}{$\env\store$}\lstinline']'$))$
     & \eqlabel{E-deref} \\
-    \eval{$\mathit{unop}~t$}{\env\store}
-    &=& $\mathit{unop}$ (\eval{$t$}{\env\store}) & \eqlabel{E-unop} \\
-    \eval{$t_1~\mathit{binop}~t_2$}{\env\store}
-    &=& (\eval{$t_1$}{\env\store}) $\mathit{binop}$
-    (\eval{$t_2$}{\env\store}) & \eqlabel{E-binop} \\
-    \eval{\lstinline'\\abs('$t$\lstinline')'}{\env\store} &=&
-    $\lvert$ \eval{$t$}{\env\store} $\rvert$ & \eqlabel{E-abs} \\
+
+    \eval{$\mathit{unop}~t$}{$\mem$}
+    &=& $\mathit{unop}$ (\eval{$t$}{$\mem$}) & \eqlabel{E-unop} \\
+
+    \eval{$t_1~\mathit{binop}~t_2$}{$\mem$}
+    &=& (\eval{$t_1$}{$\mem$}) $\mathit{binop}$
+    (\eval{$t_2$}{$\mem$}) & \eqlabel{E-binop} \\
+
+    \eval{\lstinline'\\abs('$t$\lstinline')'}{$\mem$} &=&
+    $\lvert$ \eval{$t$}{$\mem$} $\rvert$ & \eqlabel{E-abs} \\
+
     \eval{\lstinline'\\sum('$t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{\env\store}
+      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{\env\store}}}^{\mbox{\eval{$t_2$}{\env\store}}} \mbox{\eval{$t_3$}{\env\store}}$
+    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
     & \eqlabel{E-sum} \\
+
     \eval{\lstinline'\\product(' $t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{\env\store}
+      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\prod_{k = \mbox{\eval{$t_1$}{\env\store}}}^{\mbox{\eval{$t_2$}{\env\store}}} \mbox{\eval{$t_3$}{\env\store}}$
+    $\prod_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
     & \eqlabel{E-prod} \\
+
     \eval{\lstinline'\\numof(' $t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{\env\store}
+      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{\env\store}}}^{\mbox{\eval{$t_2$}{\env\store}}} \mbox{\eval{$t_3 ? 1 : 0$}{\env\store}}$
+    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3 ? 1 : 0$}{$\mem$}}$
     & \eqlabel{E-num} \\
-    \eval{$t_1$ \texttt{?} $t_2$ \texttt{:} $t_3$}{\env\store}
-    &=& \eval{$t_2$}{\env\store} si (\eval{$t_1$}{\env\store}) $\neq 0$,
+
+    \eval{$t_1$ \texttt{?} $t_2$ \texttt{:} $t_3$}{$\mem$}
+    &=& \eval{$t_2$}{$\mem$} si (\eval{$t_1$}{$\mem$}) $\neq 0$,
     & \eqlabel{E-tif} \\
-    & & \eval{$t_3$}{\env\store} sinon & \\
-    \eval{\lstinline'\\old('$t$\lstinline')'}{\env\store}
-    &=& \eval{$t$}{\env$_{old}$\store$_{old}$}
+    & & \eval{$t_3$}{$\mem$} sinon & \\
+
+    \eval{\lstinline'\\old('$t$\lstinline')'}{$\mem$}&=& \eval{$t$}{$\mem_{old}$}
     & \eqlabel{E-old} \\
-    \eval{\lstinline'\\null'}{\env\store} &=& \lstinline'NULL'
+
+    \eval{\lstinline'\\null'}{$\mem$} &=& \lstinline'NULL'
     & \eqlabel{E-null} \\
-    \eval{\lstinline'\\result'}{\env\store}
-    &=& \eval{\lstinline'res'}{\env\store} & \eqlabel{E-res} \\
+
+    \eval{\lstinline'\\result'}{$\mem$}
+    &=& \eval{\lstinline'res'}{$\mem$} & \eqlabel{E-res} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des termes et expressions}
   \label{fig:sem-exp-term}

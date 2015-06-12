@@ -1,90 +1,103 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
-    \comp{$T~\mathit{id}\semicolon$}{\env\store}
-    &=& \env[$\mathit{id}\mapsto$ $\loc$], \store{}
+    \comp{$T~\mathit{id}\semicolon$}{$\env,\store$}
+    &=& $\env$[$\mathit{id}\mapsto$ $\loc$], $\store$
     où $\loc$ est une adresse fraîche & \eqlabel{C-decl} \\
-    \comp{$\mathit{lv}$ \lstinline'=' $e\semicolon$}{\env\store}
-    &=& \env, \store[\env($\mathit{lv}$) $\mapsto$ \eval{$e$}{\env\store}]
+    \comp{$\mathit{x}$ \lstinline'=' $e\semicolon$}{$\env,\store$}
+    &=& $\env, \store$[$\env(\mathit{x}) \mapsto$ \eval{$e$}{$\env,\store$}]
     \scriptsize{(arith. bornée)} & \eqlabel{C-set} \\
-    \comp{$\Zinit$ \underline{$\mathit{lv}$ \lstinline'=' $e$} $\semicolon$}{\env\store}
-    &=& \env, \store[\env($\mathit{lv}$) $\mapsto$ \eval{$e$}{\env\store}]
+
+    \comp{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'
+      \lstinline'=' $e_2\semicolon$}{$\env,\store$}
+    &=& $\env, \store[\env(\mathit{x}$
+      \lstinline'['\eval{$\mathit{e}$}{$\env,\store$}\lstinline']') $\mapsto$
+      \eval{$e_2$}{$\env,\store$}]
+    \scriptsize{(arith. bornée)} & \eqlabel{C-set-2} \\
+
+    \comp{$\Zinit$ \underline{$\mathit{x}$ \lstinline'=' $e$} $\semicolon$}{$\env,\store$}
+    &=& $\env, \store[\env(\mathit{x}) \mapsto$ \eval{$e$}{$\env,\store$}]
     \scriptsize{(arith. non bornée)}
     & \eqlabel{C-Z-set} \\
-    \comp{\underline{$\mathit{lv}$} $\Zclear \semicolon$}{\env\store}
-    &=& \env, \store $-~\{$\env($\mathit{lv}$)$\}$ & \eqlabel{C-Z-unset} \\
-    \comp{\lstinline'fassert('$e$\lstinline');'}{\env\store}
-    &=& \env, \store{} si (\eval{$e$}{\env\store}) $\neq 0$, \errorenv sinon
+
+    \comp{\underline{$\mathit{x}$} $\Zclear \semicolon$}{$\env,\store$}
+    &=& $\env[\mathit{x} \mapsto \bot], \store - \{\env(\mathit{x})\}$
+    & \eqlabel{C-Z-unset} \\
+
+    \comp{\lstinline'fassert('$e$\lstinline');'}{$\mem$}
+    &=& $\mem$ si (\eval{$e$}{$\mem$}) $\neq 0$, $\errormem$ sinon
     & \eqlabel{C-fassert} \\
-    \comp{\lstinline'fassume('$e$\lstinline');'}{\env\store}
-    &=& \env, \store{} si (\eval{$e$}{\env\store}) $\neq 0$
+
+    \comp{\lstinline'fassume('$e$\lstinline');'}{$\mem$}
+    &=& $\mem$ si (\eval{$e$}{$\mem$}) $\neq 0$
     & \eqlabel{C-fassume} \\
 
-    \comp{$\mathit{lv}$ \lstinline'= fvalid('$e$\lstinline');'}{\env\store}
+    \comp{$\mathit{lv}$ \lstinline'= fvalid('$e$\lstinline');'}{$\env,\store$}
     &=&
-    \env,
-    \store[\env($\mathit{lv}$) $\mapsto 1$]
-    si \store(\eval{$e$}{\env\store}) $\in LOC$,
+    $\env, \store[\env(\mathit{lv}) \mapsto 1]$
+    si $\store($\eval{$e$}{$\env,\store$}$) \in LOC$,
     & \eqlabel{C-valid} \\
-    && \env, \store[\env($\mathit{lv}$) $\mapsto 0$] sinon & \\
+    && $\env, \store[\env(\mathit{lv}) \mapsto 0]$ sinon & \\
 
     \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
-      \lstinline');'}{\env\store}
-    &=& \env, \store[\env($\mathit{lv}$) $\mapsto 1$] si
-    \store(\eval{$e_1+e_2$}{\env\store}) $\in LOC$ & \eqlabel{C-validr} \\
-    && $\land \cdots \land$ \store(\eval{$e_1+e_3$}{\env\store}) $\in LOC$, &\\
-    & & \env, \store[\env($\mathit{lv}$) $\mapsto 0$] sinon & \\
+      \lstinline');'}{$\env,\store$}
+    &=& $\env, \store[\env(\mathit{lv}) \mapsto 1]$ si
+    $\store($\eval{$e_1+e_2$}{$\env,\store$}$) \in LOC$ & \eqlabel{C-validr} \\
+    && $\land \cdots \land$ $\store($\eval{$e_1+e_3$}{$\env,\store$}$) \in LOC$,
+    &\\
+    & & $\env, \store[\env(\mathit{lv}) \mapsto 0]$ sinon & \\
 
-    \comp{$\mathit{id}$ \lstinline' = malloc('$e$\lstinline');'}{\env\store}
+    \comp{$\mathit{id}$ \lstinline' = malloc('$e$\lstinline');'}{$\env\store$}
     &=&
-    \env[$\mathit{id}$\lstinline'[0]' $\mapsto \loc_1$, ...,
-      $\mathit{id}$\lstinline'['\eval{$n$}{\env\store}\lstinline'-1]' $\mapsto \loc_N$
-    ],
+    $\env[\mathit{id}$\lstinline'[0]' $\mapsto \loc_1$, ...,
+      $\mathit{id}$\lstinline'['\eval{$n$}{$\env,\store$}\lstinline'-1]'
+      $\mapsto \loc_N]$,
     & \eqlabel{C-malloc} \\
-    && \store[\env($\mathit{id}$) $\mapsto$ \env($\mathit{id}$\lstinline'[0]')] &\\
+    && $\store[\env(\mathit{id}) \mapsto \env(\mathit{id}$\lstinline'[0]'$)]$
+    &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
-    \comp{\lstinline'free('$\mathit{id}$\lstinline')'}{\env\store}
+    \comp{\lstinline'free('$\mathit{id}$\lstinline')'}{$\env,\store$}
     &=&
-    \env[$\mathit{id}$\lstinline'[0]' $\mapsto \bot$, ...,
-      $\mathit{id}$\lstinline'['\eval{$n$}{\env\store}\lstinline'-1]' $\mapsto \bot$
-    ],
+    $\env[\mathit{id}$\lstinline'[0]' $\mapsto \bot$, ...,
+      $\mathit{id}$\lstinline'['\eval{$n$}{$\env,\store$}\lstinline'-1]'
+      $\mapsto \bot]$,
     & \eqlabel{C-free} \\
-    && \store[\env($\mathit{id}$) $\mapsto \bot$] &\\
+    && $\store[\env(\mathit{id}) \mapsto \bot]$ &\\
 
-    \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{\env\store} &=&
+    \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$\env,\store$} &=&
     $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
     \lstinline')' $\bopen ... \bclose \rrbracket$ & \eqlabel{C-fct1} \\
-    && \env[$\mathit{id_1} \mapsto \loc_1$, ...,
-      $\mathit{id_N} \mapsto \loc_N$], &\\
-    && \store[\env($\mathit{id_1}$) $\mapsto$ \eval{$e_1$}{\env\store}, ...
-      \env($\mathit{id_N}$) $\mapsto$ \eval{$e_N$}{\env\store}
-    ] &\\
+    && $\env[\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N]$ &\\
+    && $\store[\loc_1 \mapsto$ \eval{$e_1$}{$\env,\store$}, ...,
+       $\loc_N \mapsto$ \eval{$e_N$}{$\env,\store$} $]$ &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{$\mathit{lv}$ \lstinline'=' $f$\lstinline'('$e_1$,...,$e_N$
-      \lstinline');'}{\env\store} &=&
-    \env$'$,
-    \store$'$[
-      \env($\mathit{lv}$) $\mapsto$ \eval{\lstinline'ret'}{\env$'$\store$'$}]
+      \lstinline');'}{$\env,\store$} &=&
+    $\env, \store[\env(\mathit{lv}) \mapsto$
+      \eval{\lstinline'res'}{$\env',\store'$}$]$
     & \eqlabel{C-fct2} \\
-    && où \env$'$, \store$'$ =
+    && où $\env'$, $\store'$ =
     $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
     \lstinline')' $\bopen ... \bclose \rrbracket$ &\\
-    && \env[$\mathit{id_1} \mapsto \loc_1$, ...,
-      $\mathit{id_N} \mapsto \loc_N$], &\\
-    && \store[\env($\mathit{id_1}$) $\mapsto$ \eval{$e_1$}{\env\store}, ...
-      \env($\mathit{id_N}$) $\mapsto$ \eval{$e_N$}{\env\store}
+    && $\env[\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N]$ &\\
+    && $\store[\loc_1 \mapsto$ \eval{$e_1$}{$\env,\store$}, ...,
+      $\loc_N \mapsto$ \eval{$e_N$}{$\env,\store$}
     ] &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
-    \comp{\lstinline'return ret;'}{\env\store}
-    &=& \env, \store & \eqlabel{C-return} \\
+    \comp{\lstinline'return res;'}{$\mem$}
+    &=& $\mem$ & \eqlabel{C-return} \\
+
     \comp{\lstinline'if('$e$\lstinline')' $\bopen A \bclose$
-      \lstinline'else' $\bopen B \bclose$}{\env\store}
-    &=& \comps{$A$}{\env\store} si (\eval{$e$}{\env\store})
-    $\neq 0$, \comps{$B$}{\env\store} sinon & \eqlabel{C-if} \\
-    \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{\env\store}
-    &=& \env, \store{} si (\eval{$p$}{\env\store}), \errorenv sinon
+      \lstinline'else' $\bopen B \bclose$}{$\mem$}
+    &=& \comps{$A$}{$\mem$} si (\eval{$e$}{$\mem$})
+    $\neq 0$, \comps{$B$}{$\mem$} sinon & \eqlabel{C-if} \\
+
+    \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{$\mem$}
+    &=& $\mem$ si (\eval{$p$}{$\mem$}), $\errormem$ sinon
     & \eqlabel{C-assert} \\
     \multicolumn{4}{l}{
       \comp{
@@ -92,26 +105,23 @@
         \lstinline'loop assigns' $X\semicolon$
         \lstinline'loop variant' $t\semicolon$
         \lstinline'*/ while(' $e$ \lstinline')'
-        $\bopen A \bclose$}{\env\store}
+        $\bopen A \bclose$}{$\mem$}
     } \\
-    & = & \errorenv si $\lnot$ \eval{$p$}{\env\store}
-    & \eqlabel{C-while-1} \\
-    &  & \env, \store{} si (\eval{$e$}{\env\store}) $= 0$
-    & \eqlabel{C-while-2} \\
-    &  & \errorenv si (\eval{$t$}{\env\store}) $< 0$
-    & \eqlabel{C-while-3} \\
-    &  & \errorenv si $\lnot$ \eval{$p$}{(\comps{$A$}{\env\store})}
+    & = & $\errormem$ si $\lnot$ \eval{$p$}{$\mem$} & \eqlabel{C-while-1} \\
+    &  & $\mem$ si (\eval{$e$}{$\mem$}) $= 0$ & \eqlabel{C-while-2} \\
+    &  & $\errormem$ si (\eval{$t$}{$\mem$}) $< 0$ & \eqlabel{C-while-3} \\
+    &  & $\errormem$ si $\lnot$ \eval{$p$}{(\comps{$A$}{$\mem$})}
     & \eqlabel{C-while-4} \\
-    &  & \errorenv
-    si (\eval{$t$}{(\comps{$A$}{\env\store})}) $\ge$
-    (\eval{$t$}{\env\store}) & \eqlabel{C-while-5} \\
-    &  & \errorenv si
+    &  & $\errormem$
+    si (\eval{$t$}{(\comps{$A$}{$\mem$})}) $\ge$ (\eval{$t$}{$\mem$})
+    & \eqlabel{C-while-5} \\
+    &  & $\errormem$ si
     $\exists x. (x \in G-X.$
-    (\eval{$x$}{(\comps{$A$}{\env\store})}) $\ne$
-    (\eval{$x$}{\env\store}) $)$ & \eqlabel{C-while-6} \\
+    (\eval{$x$}{(\comps{$A$}{$\mem$})}) $\ne$ (\eval{$x$}{$\mem$}) $)$
+    & \eqlabel{C-while-6} \\
     &  & \comp{\lstinline'/*@ ... */ while('$e$\lstinline')'
-      $\bopen A \bclose$}{
-      (\comps{$A$}{\env\store})} sinon & \eqlabel{C-while-7} \\
+      $\bopen A \bclose$}{(\comps{$A$}{$\mem$})} sinon
+    & \eqlabel{C-while-7} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des instructions}
   \label{fig:sem-instr}
