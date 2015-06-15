@@ -88,8 +88,8 @@ $\texttt{End}_f$ dans le corps de cette fonction doivent être
 $\texttt{Beg}_{\texttt{foo}}$ et $\texttt{End}_{\texttt{foo}}$, ce qui assure des
 labels uniques au début et à la fin du corps de la fonction.
 Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
-de chaque fonction, qu'elle retourne une variable appelée \lstinline'res' et que
-cette variable n'entre pas en conflit avec une autre variable du programme.
+de chaque fonction, qu'elle retourne une variable appelée \lstinline'res'$_f$ et
+que cette variable n'entre pas en conflit avec une autre variable du programme.
 Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
 Les symboles terminaux sont \underline{soulignés}.
 Les symboles non-terminaux sont en \textit{italique}.
@@ -474,84 +474,117 @@ $\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 \input{figures/fig_semantics}
 
 La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
-La règle \eqlabel{C-decl} ajoute une variable non initialisée (notée par le
-symbole $\bot$) à l'environnement $\env$.
-Dans la règle \eqlabel{C-Z-set}, la variable entière (GMP) $\mathit{lv}$ est
-allouée et on lui affecte la valeur de $e$.
-Dans la règle \eqlabel{C-Z-unset}, la variable entière (GMP) $\mathit{lv}$
-est désallouée et enlevée de l'environnement $\env$.
-Une instruction \underline{soulignée} manipule des entiers non bornés.
+La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $\mathit{id}$
+dans l'environnement $\env$, où $\loc$ est fraîche (non utilisée).
+Les règles \eqlabel{C-set} et \eqlabel{C-set-2} associent la valeur de $e$
+à l'adresse de la left-value correspondante dans le store.
+Dans la règle \eqlabel{C-Z-set}, la variable entière (non bornée) $x$ est
+allouée et on lui affecte la valeur de $e$ dans $\store$.
+Dans la règle \eqlabel{C-Z-unset}, la variable entière (non bornée) $x$
+est désallouée et enlevée de la mémoire.
+Une instruction soulignée manipule des entiers non bornés.
+Les règles \eqlabel{C-Z-set} et \eqlabel{C-Z-unset} traitent uniquement le cas
+où une left-value est un identificateur et pas un accès à un tableau car le
+langage \eacsl ne supporte pas les tableaux d'entiers non bornés.
 
-Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
-d'une expression.
-Cette fonction correspond à un \lstinline'if' dont la branche
-\lstinline'else' génère une erreur et la rapporte.
-Nous définissons également une fonction \lstinline'fassume' permettant de poser
-une hypothèse de validité sur la valeur d'une expression.
-Cette fonction correspond à un \lstinline'if' dont
-la branche \textit{true} est toujours vraie, les exécutions pour lesquelles
-la branche \textit{false} est activée sont ignorées.
-Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
-d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
-permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
+%% Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
+%% d'une expression.
+%% Cette fonction correspond à un \lstinline'if' dont la branche
+%% \lstinline'else' génère une erreur et la rapporte.
+%% Nous définissons également une fonction \lstinline'fassume' permettant de poser
+%% une hypothèse de validité sur la valeur d'une expression.
+%% Cette fonction correspond à un \lstinline'if' dont
+%% la branche \textit{true} est toujours vraie, les exécutions pour lesquelles
+%% la branche \textit{false} est activée sont ignorées.
+%% Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
+%% d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
+%% permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
 
 La sémantique de la fonction \lstinline'fassert' donnée par la règle
-\eqlabel{C-fassert} énonce que si l'expression $e$ s'évalue en une
-expression non nulle, alors l'environnement $\env$ est inchangé, sinon on obtient
-l'environnement d'erreur $\errormem$.
+\eqlabel{C-fassert} énonce que si l'expression $e$ s'évalue en une expression
+non nulle, alors la mémoire $\mem$ est inchangée, sinon on obtient
+la mémoire d'erreur $\errormem$.
 La sémantique de la fonction \lstinline'fassume' donnée par la règle
 \eqlabel{C-fassume} énonce que l'expression $e$ est supposée vraie et
 doit donc s'évaluer en une expression non nulle.
-L'environnement est inchangé après cet appel de fonction.
+La mémoire est inchangée après cet appel de fonction.
 $e$ ne peut pas s'évaluer en $0$ par définition de la fonction, si c'est
 le cas on aboutit à une contradiction.
 
 La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donnée
-par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
-Elles énoncent que dans le nouvel environnement, la left-value $\mathit{lv}$ a
+par les règles \eqlabel{C-fvalid} et \eqlabel{C-fvalidr}.
+Elles énoncent que dans la nouvelle mémoire, la left-value $\mathit{lv}$ a
 la valeur $1$ si les pointeurs en argument de la fonction sont valides, et $0$
 sinon.
+
+La sémantique de la fonction \lstinline'malloc' donnée par la règle
+\eqlabel{C-malloc} énonce que de nouvelles adresses (fraîches) sont associées
+aux left-values allouées pour la variable $\textit{id}$, et que la valeur
+associée à l'adresse de $\textit{id}$ dans le store est l'adresse du premier
+élémént alloué ($\env(\mathit{id}$\lstinline'[0]'$)$).
+La sémantique de la fonction \lstinline'free' donnée par la règle
+\eqlabel{C-free} est l'inverse de la sémantique de \lstinline'malloc' : la
+valeur indéfinie $\bot$ est associée aux left-values désallouées et à l'adresse
+de la variable $\textit{id}$.
+Dans ces deux règles, $\textit{id}$ est une variable de type pointeur, la
+valeur associée à son adresse dans la règle \eqlabel{C-malloc} est donc une
+adresse.
 
 La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct1}
 et \eqlabel{C-fct2}.
 Dans ces règles, la sémantique de la fonction $f$ est calculée à
 l'aide de la fonction $\mathcal{F}$ donnée en figure~\ref{fig:sem-fct}.
-$\env[\mathit{id_1} \mapsto$ \eval{$e_1$}{$\env$}, ...,
-  $\mathit{id_N} \mapsto$ \eval{$e_N$}{$\env$}] est l'environnement
-dans lequel les paramètres effectifs (les expressions $e_1$, ..., $e_N$) sont
-affectés aux paramètres formels (les identificateurs
+$(\env[\mathit{id_1} \mapsto \loc_1$, ...,
+  $\mathit{id_N} \mapsto \loc_N], \store[\loc_1 \mapsto$
+  \eval{$e_1$}{$(\env, \store)$}, ...,
+  $\loc_N \mapsto$ \eval{$e_N$}{$(\env, \store)$} $])$
+est la mémoire dans laquelle les paramètres effectifs (les expressions
+$e_1$, ..., $e_N$) sont affectés aux paramètres formels (les identificateurs
 $\mathit{id_1}$, ..., $\mathit{id_N}$).
+
+Les règles \eqlabel{C-fassert}, \eqlabel{C-fassume} et \eqlabel{C-free} sont
+des instances particulières de la règle \eqlabel{C-fct1}.
+Les règles \eqlabel{C-fvalid}, \eqlabel{C-fvalidr} et \eqlabel{C-malloc} sont
+des instances particulières de la règle \eqlabel{C-fct2}.
+
+La règle \eqlabel{C-return} énonce qu'une instruction \lstinline'return' ne
+modifie pas la mémoire.
+En effet, le programme est dans une forme normalisée où la valeur de retour
+d'une fonction est stockée dans une variable \lstinline'res'$_f$, où
+$f$ est le nom de la fonction courante.
+Cette variable est lue après l'appel de la fonction comme l'énonce la règle
+\eqlabel{C-fct2}.
 
 La sémantique des assertions \eacsl donnée par la règle \eqlabel{C-assert} est
 similaire à la sémantique de la fonction \lstinline'fassert'.
 Si le prédicat $p$ s'évalue en une expression non nulle,
-l'environnement $\env$ est inchangé, sinon l'environnement $\errormem$ est
-obtenu.
+la mémoire $\mem$ est inchangée, sinon la mémoire d'ereur $\errormem$ est
+obtenue.
 
 La sémantique des boucles annotées par un contrat contenant un invariant
 $p$, une liste de termes $X$ et un variant $t$ est
-donnée par les règles \eqlabel{C-while-1} à \eqlabel{C-while-7}.
-La règle \eqlabel{C-while-1} énonce que $\errormem$ est obtenu si l'invariant de
-boucle n'est pas établi avant l'exécution du corps de la boucle.
-La règle \eqlabel{C-while-2} énonce que l'environnement $\env$ est inchangé si
-la condition de boucle $e$ s'évalue à $0$ et donc la boucle n'est pas
-exécutée.
-La règle \eqlabel{C-while-3} énonce que $\errormem$ est obtenu si le variant de
-boucle n'est pas positif avant l'exécution de la boucle.
-La règle \eqlabel{C-while-4} énonce que $\errormem$ est obtenu si l'invariant de
-boucle n'est pas maintenu après l'exécution du corps de boucle.
-L'environnement \comps{$A$}{$\env$} est obtenu après exécution du
-corps de la boucle dans $\env$.
-La règle \eqlabel{C-while-5} énonce que $\errormem$ est obtenu si le variant de
-boucle ne décroît pas strictement entre le début et la fin de l'exécution du
-corps de boucle.
-La règle \eqlabel{C-while-6} énonce que $\errormem$ est obtenu si l'évaluation
-d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
-la clause \lstinline'loop assigns' de la boucle) est différente entre le début
-et la fin de l'exécution du corps de la boucle.
-La règle \eqlabel{C-while-7} énonce que si aucun des six cas précédents ne s'est
-produit, il faut ré-évaluer la sémantique de la boucle dans l'environnement
-obtenu après exécution du corps de la boucle dans $\env$.
+donnée par la règle \eqlabel{C-while}.
+Les différents cas possibles sont notés \eqlabel{C-while-1} à
+\eqlabel{C-while-7} et sont ordonnés.
+Tout d'abord, si l'invariant de boucle n'est pas établi avant l'exécution du
+corps de la boucle, alors la mémoire d'erreur $\errormem$ est obtenue
+(\eqlabel{C-while-1}).
+Si la condition de boucle $e$ s'évalue à $0$ (la boucle n'est pas exécutée),
+alors la mémoire reste inchangée (\eqlabel{C-while-2}).
+Si le variant de boucle n'est pas positif avant l'exécution de la boucle, alors
+$\errormem$ est obtenue (\eqlabel{C-while-3}).
+Si l'invariant de boucle n'est pas maintenu après l'exécution du corps de
+boucle, alors $\errormem$ est obtenue (\eqlabel{C-while-4}).
+Si le variant de boucle ne décroît pas strictement entre le début et la fin de
+l'exécution du corps de boucle, alors $\errormem$ est obtenue
+(\eqlabel{C-while-5}).
+Si l'évaluation d'un élément appartenant à $G-X$ (ensemble des left-values
+n'appartenant pas à la clause \lstinline'loop assigns' de la boucle) est
+différente entre le début et la fin de l'exécution du corps de la boucle, alors
+$\errormem$ est obtenue (\eqlabel{C-while-6}).
+Si aucun des six cas précédents ne s'applique, alors il faut ré-évaluer la
+sémantique de la boucle dans la mémoire obtenue après exécution du corps de la
+boucle dans $\mem$ (\eqlabel{C-while-7}).
 
 
 \input{figures/fig_semantics_fct}
@@ -560,28 +593,29 @@ obtenu après exécution du corps de la boucle dans $\env$.
 La sémantique dénotationnelle des fonctions est exprimée avec la fonction
 $\mathcal{F} : FCT \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$ où $FCT$ correspond à
 l'entité syntaxique \textit{function} définie par la figure~\ref{fig:gram-c}.
-Cette fonction calcule un nouvel environnement et un nouveau store à partir
-d'une fonction annotée, d'un environnement $\env$ et d'un store $\store$, ce qui
-permet de traiter les appels de fonction (règles \eqlabel{C-fct1} et
-\eqlabel{C-fct2} de la figure~\ref{fig:sem-instr}) et la fonction sous
-vérification (qui n'est pas appelée).
+Cette fonction calcule une nouvelle mémoire à partir d'une fonction annotée et
+d'une mémoire $\mem$, ce qui permet de traiter les appels de fonction (règles
+\eqlabel{C-fct1} et \eqlabel{C-fct2} de la figure~\ref{fig:sem-instr}) et la
+fonction sous vérification (qui n'est pas appelée).
 
-La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct}.
-Si $f$ est la fonction sous vérification, alors sa
-précondition $p_1$ est supposée vraie par définition.
+La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct} par la règle
+\eqlabel{F}.
+Les différents cas possibles sont notés \eqlabel{F-1} à \eqlabel{F-4} et sont
+ordonnés.
+Si $f$ est la fonction sous vérification, alors sa précondition $p_1$ est
+supposée vraie par définition.
 Si la fonction considérée n'est pas la fonction sous vérification, alors la
-règle \eqlabel{F-1} énonce que $\errormem$ est obtenu si le prédicat
-$p_1$ s'évalue en faux.
-Si $f$ est la fonction sous vérification, alors le prédicat
-$p_1$ est vrai par hypothèse.
-La règle \eqlabel{F-2} énonce que $\errormem$ est obtenu si l'évaluation
-d'un élément appartenant à $G-X$ (ensemble des left-values n'appartenant pas à
-la clause \lstinline'assigns' de la fonction) est différente entre le début
-et la fin de l'exécution du corps de la fonction.
-La règle \eqlabel{F-3} énonce que $\errormem$ est obtenu si le prédicat de la
-postcondition $p_2$ est faux à la fin de la fonction.
-Enfin, si aucun des trois cas précédents ne s'est produit, il faut calculer la
-sémantique des instructions du corps de la fonction.
+la mémoire d'erreur $\errormem$ est obtenue si le prédicat $p_1$ s'évalue en
+faux (\eqlabel{F-1}).
+Si l'évaluation d'un élément appartenant à $G-X$ (ensemble des left-values
+n'appartenant pas à la clause \lstinline'assigns' de la fonction) est différente
+entre le début et la fin de l'exécution du corps de la fonction, alors
+$\errormem$ est obtenue (\eqlabel{F-2}).
+Si le prédicat de la postcondition $p_2$ est faux à la fin de la fonction, alors
+$\errormem$ est obtenue (\eqlabel{F-3}).
+Enfin, si aucun des trois cas précédents ne s'est produit, le résultat est la
+mémoire obtenue après exécution des instructions du corps de la fonction
+(\eqlabel{F-4}).
 
 
 \section*{Conclusion du chapitre}
