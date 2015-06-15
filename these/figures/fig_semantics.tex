@@ -44,14 +44,14 @@
     &=&
     $(\env, \store[\env(\mathit{lv}) \mapsto 1]$)
     si $\store($\eval{$e$}{$(\env, \store)$}$) \in LOC$,
-    & \eqlabel{C-valid} \\
+    & \eqlabel{C-fvalid} \\
     && $(\env, \store[\env(\mathit{lv}) \mapsto 0])$ sinon & \\
 
     \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
       \lstinline');'}{$(\env, \store)$}
     &=& $(\env, \store[\env(\mathit{lv}) \mapsto 1])$ si
     $\store($\eval{$e_1+e_2$}{$(\env, \store)$}$) \in LOC$
-    & \eqlabel{C-validr} \\
+    & \eqlabel{C-fvalidr} \\
     && $\land \cdots \land$ $\store($\eval{$e_1+e_3$}{$(\env, \store)$}$) \in LOC$,
     &\\
     & & $(\env, \store[\env(\mathit{lv}) \mapsto 0])$ sinon & \\
