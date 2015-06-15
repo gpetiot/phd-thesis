@@ -217,11 +217,11 @@ Le symbole \lstinline'==>' encode l'implication logique et le symbole
 \label{sec:lang-semantics}
 
 
-Nous définissons maintenant la notion de mémoire d'un programme, comme un couple
-environnement, $store$, définis respectivement ci-dessous en sections
-?? et ??.
+Nous définissons en sections~\ref{sec:env} et~\ref{sec:store} les notions
+d'environnement et $store$, qui nous permettent de définir la notion de mémoire
+en section~\ref{sec:mem}.
 Cette notion de mémoire nous permet de définir la sémantique dénotationnelle des
-instructions et fonctions d'un programme annoté par rapport à un environnement.
+instructions et fonctions d'un programme annoté par rapport à une mémoire.
 Dans la suite du document, nous utilisons les notations suivantes :
 \begin{itemize}
 \item $\mem$, $\mem'$, $\errormem$ sont des mémoires;
@@ -245,7 +245,7 @@ Dans la suite du document, nous utilisons les notations suivantes :
 
 
 \subsection{Environnements}
-
+\label{sec:env}
 
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 $LOC$ est le domaine des adresses (locations en mémoire), incluant l'adresse
@@ -306,7 +306,7 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 
 
 \subsection{Stores}
-
+\label{sec:store}
 
 Le domaine des valeurs $VAL$ est défini comme l'union des types que
 peuvent prendre les termes et prédicats \eacsl et les expressions C :
@@ -365,7 +365,7 @@ dans $\store_1$, alors $v$ est également à l'adresse $\loc$ dans $\store_2$.
 
 
 \subsection{Mémoires}
-
+\label{sec:mem}
 
 Nous définissons la notion de mémoire, correspondant à un couple environnement,
 store : $\mem \in ENV \times STORE$.
