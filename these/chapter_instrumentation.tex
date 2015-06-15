@@ -1555,10 +1555,15 @@ Ces différentes instrumentations des annotations nous permettront par la suite
 de détecter différentes erreurs dans le code et la spécification.
 
 Grâce à notre justification de correction, nous pouvons assurer l'absence de
-faux positifs lors de la génération de tests sur le programme instrumenté, ainsi
-que la non-modification par le code généré des variables du programme d'origine.
+faux positifs lors de la génération de tests sur le programme instrumenté : si
+une erreur est trouvée par la génération de tests alors il y a une erreur dans
+le programme d'origine.
+Cette propriété est énoncée comme une implication si l'on considère le langage
+C et le langage \eacsl dans leur ensemble, mais si on se restreint au
+sous-ensemble du langage décrit par la grammaire du chapitre précédent elle
+s'énonce comme une équivalence, c'est-à-dire que toute erreur dans le programme
+original est également trouvée par la génération de tests.
+
 La justification de cette propriété est fournie de manière formelle pour les
 assertions et de manière informelle mais intuitive pour les contrats de boucle
 et les contrats de fonction.
-
-\commentGP{TODO: complétude: équivalence ou implication}
