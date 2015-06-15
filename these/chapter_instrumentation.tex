@@ -801,7 +801,7 @@ erreurs et l'inclusion des mémoires.
 
 \begin{myproperty}[Préservation des erreurs]
   \label{th:error}
-  Pour toute mémoire (\env, \store), si l'exécution des instructions obtenues
+  Pour toute mémoire $\mem$, si l'exécution des instructions obtenues
   par traduction d'une annotation $a$
   du programme $P$ provoque une erreur dans le programme instrumenté $P'$ par
   cette traduction de $a$, alors l'annotation $a$ est invalide.
@@ -817,23 +817,24 @@ une erreur du programme annoté.
   \label{th:inclusion}
   Soit le fragment de programme $A$ obtenu à partir d'une liste d'insertions de
   code $I$.
-  Soit une mémoire quelconque (\env, \store).
+  Soit une mémoire quelconque $(\env, \store)$.
   Pour tout préfixe $B$ de $A$ tel que :
-  (\env$'$, \store$'$) = \comps{$B$}{\env\store} alors
-  \env \subenv{} \env$'$ et \store \subenv{} \store$'$
+  $(\env', \store')$ = \comps{$B$}{$(\env, \store)$} alors
+  $\env \subenv \env'$ et $\store \subenv \store'$
 \end{myproperty}
 
 \begin{myproperty}[Absence d'erreur]
   \label{lem:noerror}
   Soit le fragment de programme $A$ obtenu à partir d'une liste d'insertions de
   code $I$.
-  Soit une mémoire quelconque (\env, \store).
+  Soit une mémoire quelconque $\mem$.
   Pour tout préfixe $B$ de $A$ tel que :
-  (\env$'$, \store$'$) = \comps{$B$}{\env\store} alors
-  (\env$'$, \store$'$) $\neq$ \errorenv
+  $\mem'$ = \comps{$B$}{$\mem$} alors
+  $\mem' \neq \errormem$
 \end{myproperty}
 
 \begin{definition}[Point d'exécution associé]
+  \label{def:exec-point}
   Soit un compteur de programme $c_P$ du programme source $P$, incrémenté de 1 à
   chaque exécution d'instruction.
   Soit un compteur de programme $c_{P'}$ du programme instrumenté $P'$,
@@ -842,24 +843,24 @@ une erreur du programme annoté.
   programme instrumenté si et seulement si $c_P = c_{P'}$.
 \end{definition}
 
-L'inclusion des environnements (propriété~\ref{th:inclusion}) est un lemme
+L'inclusion des mémoires (propriété~\ref{th:inclusion}) est un lemme
 nécessaire à la justification de la propriété~\ref{th:error}.
 Il énonce que les seules variables modifiées dans les instructions ajoutées dans
 le programme instrumenté sont les variables fraîchement créées par la
 traduction, les variables existantes dans le programme d'origine ne sont pas
 modifiées par la traduction.
 Il affirme que si toutes les annotations d'un programme $P$ sont valides, à
-chaque point d'exécution de $P$ la mémoire (\env, \store) produite par
-l'exécution du programme $P$ est incluse dans la mémoire (\env$'$, \store$'$)
+chaque point d'exécution de $P$ la mémoire $(\env, \store)$ produite par
+l'exécution du programme $P$ est incluse dans la mémoire $(\env', \store')$
 produite par l'exécution du programme instrumenté $P'$ au point d'exécution
-associé (voir définition ??) :
-\env{} \subenv{} \env$'$ et \store{} \subenv{} \store$'$.
+associé (voir définition~\ref{def:exec-point}) :
+$\env \subenv \env'$ et $\store \subenv \store'$.
 
-Dans les sections ?? et ?? nous déclinons ces propriétés sur les termes et sur
-les prédicats.
-Dans la section ?? nous justifions les propriétés~\ref{th:error}
-et~\ref{th:inclusion} à partir des propriétés prouvées dans les sections ?? et
-??.
+Dans les sections~\ref{sec:term-translation} et~\ref{sec:pred-translation}
+nous déclinons ces propriétés sur les termes et sur les prédicats.
+Dans la section~\ref{sec:annotation-translation} nous justifions les
+propriétés~\ref{th:error} et~\ref{th:inclusion} à partir des propriétés prouvées
+dans les sections~\ref{sec:term-translation} et~\ref{sec:pred-translation}.
 
 
 \subsection{Justification de la correction de la Traduction des Termes}
@@ -875,22 +876,21 @@ nous devons prouver la correction de la traduction des termes.
   d'insertions de code et \lstinline'e' l'expression donnant la valeur du terme
   \lstinline't'.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
-  $I$ et exécuté à partir d'une mémoire quelconque (\env, \store) donne une
-  mémoire (\env$'$, \store$'$) = \comps{$A$}{\env \store}, telle que :
-  \eval{\lstinline't'}{\env \store} = \eval{\lstinline'e'}{\env$'$ \store$'$}.
+  $I$ et exécuté à partir d'une mémoire quelconque $\mem$ donne une
+  mémoire $\mem'$ = \comps{$A$}{$\mem$}, telle que :
+  \eval{\lstinline't'}{$\mem$} = \eval{\lstinline'e'}{$\mem'$}.
 \end{myproperty}
 
-\commentGP{TODO: ref label}
-La propriété 4 est la déclinaison sur les termes de la propriété 1.
+La propriété~\ref{lem:term-correct} est la déclinaison sur les termes de la
+propriété~\ref{th:error}.
 La propriété~\ref{lem:term-correct} énonce que l'évaluation des insertions de
-code
-$I$ générées lors de la traduction d'un terme \lstinline't' ajoute une nouvelle
-variable \lstinline'e' (fraîche) à la mémoire courante, dont la valeur
-correspond à l'évaluation de \lstinline't' dans la mémoire (\env, \store).
+code $I$ générées lors de la traduction d'un terme \lstinline't' ajoute une
+nouvelle variable \lstinline'e' (fraîche) à la mémoire courante, dont la valeur
+correspond à l'évaluation de \lstinline't' dans la mémoire $\mem$.
 Les variables qui sont déjà dans la mémoire initiale ne sont pas
 impactées dans la mémoire résultante (propriété~\ref{lem:term-subset}), et
 la mémoire résulant de la traduction du terme n'est pas la mémoire d'erreur
-\errorenv (propriété~\ref{lem:term-noerror}).
+$\errormem$ (propriété~\ref{lem:term-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
@@ -909,62 +909,65 @@ Rappelons la règle de traduction des constantes :
     \mbox{\lstinline'var_n'}) }
 }
 
-Les propriétés 2, 3 et 4 sont déclinées ainsi sur le cas de la constante :
+Les propriétés~\ref{th:inclusion}, \ref{lem:noerror} et~\ref{lem:term-correct}
+sont déclinées ainsi sur le cas de la constante :
 
-Propriété 4. \eval{\lstinline'cst'}{\env\store} =
+Propriété~\ref{lem:term-correct}. \eval{\lstinline'cst'}{$\mem$} =
 \eval{\lstinline'var_n'}{
-  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store})}.
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$})}.
 
 
-Propriété 2. (\env, \store) \subenv{}
-\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}.
+Propriété~\ref{th:inclusion}. $\mem \subenv$
+\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$}.
 
 
-Propriété 3. \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}
-$\neq$ \errorenv.
+Propriété~\ref{lem:noerror}.
+\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$}
+$\neq \errormem$.
 
-Nous les justifions une à une :
+Nous les justifions une à une :\commentGP{TODO}
 
-\begin{proof}[Justification de la propriété 4.]~\\
+\begin{proof}[Justification de la propriété~\ref{lem:term-correct}.]~\\
   Nous transformons le membre droit en une expression identique au membre gauche
   en appliquant les règles de sémantique dénotationnelle et de définition des
   mémoires :
 
   \begin{tabular}{rcl}
   \eval{\lstinline'var_n'}{
-  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store})}
+  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$})}
   &$\eq{\eqlabel{C-Z-set}}$&
   \eval{\lstinline'var_n'}{
-    (\env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}])} \\
+    ($\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}])} \\
   &$\eq{\eqlabel{E-lval}}$&
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}]
+  $\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}]
   (\lstinline'var_n') \\
-  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{\env\store} \\
+  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{$\env\store$} \\
   \end{tabular}
   ~\\
 \end{proof}
 
 
-\begin{proof}[Justification de la propriété 2.]~\\
+\begin{proof}[Justification de la propriété~\ref{th:inclusion}.]~\\
+  
   L'affectation générée $\Zinit$\underline{\lstinline'var_n = cst;'} ne modifie
   que la variable fraîche \lstinline'var_n', on peut donc en conclure que
-  \env{} \subenv{}
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}] et donc :
-  \env{} \subenv{}
-  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}.
+  $\env \subenv
+  \env[$\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}] et donc :
+  $\env \subenv$
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$}.
   ~\\
 \end{proof}
 
 
-\begin{proof}[Justification de la propriété 3.]~\\
-  Le nouvel environnement étant
-  \env[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{\env\store}], ce
+\begin{proof}[Justification de la propriété~\ref{lem:noerror}.]~\\
+  La nouvelle mémoire étant
+  $\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}], ce
   n'est pas
-  un environnement d'erreur car l'évaluation d'une constante ne produit pas
+  une mémoire d'erreur car l'évaluation d'une constante ne produit pas
   d'erreur.
   On a donc bien :
-  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{\env\store}
-  $\neq$ \errorenv.
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$}
+  $\neq \errormem$.
   ~\\
 \end{proof}
 
@@ -995,22 +998,21 @@ nous devons prouver la correction de la traduction des prédicats.
   d'insertions de code et \lstinline'e' l'expression donnant la valeur du
   prédicat \lstinline'p'.
   La traduction est correcte si le fragment de programme $A$ obtenu à partir de
-  $I$ et exécuté à partir d'une mémoire quelconque (\env, \store) donne une
-  mémoire (\env$'$, \store$'$) = \comps{$A$}{\env\store} telle que :
-  \eval{\lstinline'p'}{\env\store} = \eval{\lstinline'e'}{\env$'$\store$'$}.
+  $I$ et exécuté à partir d'une mémoire quelconque $\mem$ donne une
+  mémoire $\mem'$ = \comps{$A$}{$\mem$} telle que :
+  \eval{\lstinline'p'}{$\mem$} = \eval{\lstinline'e'}{$\mem'$}.
 \end{myproperty}
 
-\commentGP{TODO: ref label}
-La propriété 5 est la déclinaison sur les prédicats de la propriété 1.
+La propriété~\ref{lem:pred-correct} est la déclinaison sur les prédicats de la
+propriété~\ref{th:error}.
 La propriété~\ref{lem:pred-correct} énonce que l'évaluation des insertions de
-code
-$I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
-nouvelle variable \lstinline'e' (fraîche) à l'environnement courant, dont la
-valeur correspond à l'évaluation de \lstinline'p' dans \env.
-Les variables qui sont déjà dans l'environnement initial \env$_l$ ne sont pas
-impactées dans l'environnement \env{} (propriété~\ref{lem:pred-subset}), et
-l'environnement résulant de la traduction du prédicat n'est pas l'environnement
-d'erreur \errorenv (propriété~\ref{lem:pred-noerror}).
+code $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
+nouvelle variable \lstinline'e' (fraîche) à la mémoire, dont la
+valeur correspond à l'évaluation de \lstinline'p' dans $\mem$.
+Les variables qui sont déjà dans la mémoire initial $\mem_l$ ne sont pas
+impactées dans la mémoire $\env$ (propriété~\ref{lem:pred-subset}), et
+la mémoire résultant de la traduction du prédicat n'est pas la mémoire
+d'erreur $\errormem$ (propriété~\ref{lem:pred-noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
 Elles nous permettent de prouver les deux propriétés~\ref{th:error}
 et~\ref{th:inclusion}.
@@ -1034,15 +1036,16 @@ définie ainsi :
   }
 }~\\
 
-Les propriétés 2, 3 et 5 sont déclinées ainsi sur le cas de la conjonction :
+Les propriétés~\ref{th:inclusion}, \ref{lem:noerror} et~\ref{lem:pred-correct}
+sont déclinées ainsi sur le cas de la conjonction :
 
-Propriété 5.\\
-\eval{\lstinline'p1 && p2'}{\env\store} =
+Propriété~\ref{lem:pred-correct}.\\
+\eval{\lstinline'p1 && p2'}{$\mem$} =
 \eval{\lstinline'var_n'}{(
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{\env\store}
+  }{$\mem$}
   )}
 en admettant que le fragment de programme
 $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
@@ -1053,32 +1056,32 @@ $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
 (l, \mbox{\lstinline'var_n = e2;'}) \bclose )$.
 
-Propriété 2.\\
+Propriété~\ref{th:inclusion}.\\
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-}{\env\store} $\neq$ \errorenv.
+}{$\mem$} $\neq \errormem$.
 
-Propriété 3.\\
-\env{} \subenv{} \env$'$ et \store{} \subenv{} \store$'$ où
-(\env$'$,\store$'$) =
+Propriété~\ref{lem:noerror}.\\
+$\env \subenv \env'$ et $\store \subenv \store'$ où
+$(\env', \store')$ =
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-}{\env\store}.
+}{$(\env \store)$}.
 
+Nous les justifions une à une :\commentGP{TODO}
 
-
-\begin{proof}[Justification de la propriété 5.]~\\
+\begin{proof}[Justification de la propriété~\ref{lem:pred-correct}.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
   correctes, c'est-à-dire :
 
   \begin{center}
     \begin{tabular}{rclr}
-      \eval{\lstinline'p1'}{\env\store}
-      &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env\store})} & \eqlabel{h1} \\
-      \eval{\lstinline'p2'}{\env\store}
-      &=& \eval{\lstinline'e2'}{(\comps{$A_2$}{\env\store})} & \eqlabel{h2} \\
+      \eval{\lstinline'p1'}{$\mem$}
+      &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{$\mem$})} & \eqlabel{h1} \\
+      \eval{\lstinline'p2'}{$\mem$}
+      &=& \eval{\lstinline'e2'}{(\comps{$A_2$}{$\mem$})} & \eqlabel{h2} \\
     \end{tabular}
   \end{center}
 
@@ -1090,25 +1093,25 @@ Propriété 3.\\
         \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
           \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
           \mbox{\lstinline' var_n = e2;'} \bclose$
-        }{\env}
+        }{$\mem$}
         )}
     } \\
     &=& \eval{\lstinline'var_n'}{(\comps{$\mbox{\lstinline' int var_n = e1;'}
         \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
-        \mbox{\lstinline' var_n = e2;'} \bclose$}{(\comps{$A_1$}{\env})})} \\
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{(\comps{$A_1$}{$\env$})})} \\
     &$\eq{\eqlabel{C-set}}$& \eval{\lstinline'var_n'}{(\comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[
+        ((\comps{$A_1$}{$\env$})[
           \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
       })
     } \\
   \end{tabular}
 
   (a) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
-  vraie, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = true, c'est-à-dire
-  par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = true.
+  vraie, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} = true, c'est-à-dire
+  par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\env$} = true.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc
   $A_2\semicolon~ \mbox{\lstinline' var_n = e2;'}$ :
 
@@ -1117,25 +1120,25 @@ Propriété 3.\\
       \comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[
+        ((\comps{$A_1$}{$\env$})[
           \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
       }
     } \\
     &$\eq{\eqlabel{C-if}}$& \comps{
       $A_2\semicolon~\mbox{\lstinline' var_n = e2;'}$}{
-      ((\comps{$A_1$}{\env})[
+      ((\comps{$A_1$}{$\env$})[
         \lstinline'var_n' $\mapsto$
-        \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+        \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
     } \\
     &=& \comp{
       \lstinline' var_n = e2;'
     }{$\underbracket{
         \mbox{
           (\comps{$A_2$}{
-            ((\comps{$A_1$}{\env})[
+            ((\comps{$A_1$}{$\env$})[
               \lstinline'var_n' $\mapsto$
-              \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+              \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
           })
         }
       }_{\Gamma_f}$
@@ -1153,16 +1156,16 @@ Propriété 3.\\
       ])
     }
     &=& \eval{\lstinline'e2'}{$\Gamma_f$} \\
-    &$\eq{\eqlabel{h2}}$& \eval{\lstinline'p2'}{\env} \\
-    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env}
+    &$\eq{\eqlabel{h2}}$& \eval{\lstinline'p2'}{$\env$} \\
+    &=& \eval{\lstinline'p1'}{$\env$} $\land$ \eval{\lstinline'p2'}{$\env$}
          {\scriptsize
-           (car on est dans le cas \eval{\lstinline'p1'}{\env} = true)} \\
-         &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
+           (car on est dans le cas \eval{\lstinline'p1'}{$\env$} = true)} \\
+         &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\env$} \\
   \end{tabular}
 
   (b) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
-  fausse, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} = false,
-  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{\env} = false.
+  fausse, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} = false,
+  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\env$} = false.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc du
   \lstinline'else' (qui ici est vide et n'apparaît pas car facultatif) :
 
@@ -1171,15 +1174,15 @@ Propriété 3.\\
       \comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{\env})[
+        ((\comps{$A_1$}{$\env$})[
           \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
       }
     } \\
     &$\eq{\eqlabel{C-if}}$
-    & (\comps{$A_1$}{\env})[
+    & (\comps{$A_1$}{$\env$})[
       \lstinline'var_n' $\mapsto$
-      \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}] \\
+      \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}] \\
   \end{tabular}
 
   Donc :
@@ -1187,27 +1190,27 @@ Propriété 3.\\
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
       \eval{\lstinline'var_n'}{
-        ((\comps{$A_1$}{\env})[
+        ((\comps{$A_1$}{$\env$})[
           \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})}])
+          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
       }
     } \\
-    &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{\env})} \\
-    &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{\env} \\
-    &=& \eval{\lstinline'p1'}{\env} $\land$ \eval{\lstinline'p2'}{\env} {
+    &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} \\
+    &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{$\env$} \\
+    &=& \eval{\lstinline'p1'}{$\env$} $\land$ \eval{\lstinline'p2'}{$\env$} {
       \scriptsize
-      (car on est dans le cas \eval{\lstinline'p1'}{\env} = false)} \\
-    &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{\env} \\
+      (car on est dans le cas \eval{\lstinline'p1'}{$\env$} = false)} \\
+    &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\env$} \\
   \end{tabular}
   
   On a donc bien :
 
-  \eval{\lstinline'p1 && p2'}{\env} =
+  \eval{\lstinline'p1 && p2'}{$\env$} =
   \eval{\lstinline'var_n'}{(
     \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
       \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
       \mbox{\lstinline' var_n = e2;'} \bclose$
-    }{\env}
+    }{$\env$}
     )}.
   ~\\
 \end{proof}
@@ -1219,8 +1222,8 @@ Propriété 3.\\
 
   \begin{center}
     \begin{tabular}{rclr}
-      \env & \subenv & \comps{$A_1$}{\env} & \eqlabel{h3} \\
-      \env & \subenv & \comps{$A_2$}{\env} & \eqlabel{h4} \\
+      $\env$ & $\subenv$ & \comps{$A_1$}{$\env$} & \eqlabel{h3} \\
+      $\env$ & $\subenv$ & \comps{$A_2$}{$\env$} & \eqlabel{h4} \\
     \end{tabular}
   \end{center}
 
@@ -1228,19 +1231,19 @@ Propriété 3.\\
   et \lstinline'var_n = e2;' ne modifient que la variable fraîche
   \lstinline'var_n' et les hypothèses \eqlabel{h3} et \eqlabel{h4} nous assurent
   que les blocs $A_1$ et $A_2$ ne modifient pas les variables de
-  l'environnement \env.
+  l'environnement $\env$.
   On en conclut donc que le fragment de programme généré
   $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-  ne modifie pas les variables de l'environnement \env.
+  ne modifie pas les variables de l'environnement $\env$.
   On a donc bien :
 
-  \env{} \subenv{}
+  $\env \subenv$
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{\env}.
+  }{$\env$}.
 ~\\
 \end{proof}
 
@@ -1251,22 +1254,22 @@ Propriété 3.\\
 
   \begin{center}
     \begin{tabular}{rclr}
-      \comps{$A_1$}{\env} & $\neq$ & \errorenv & \eqlabel{h5} \\
-      \comps{$A_2$}{\env} & $\neq$ & \errorenv & \eqlabel{h6} \\
+      \comps{$A_1$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h5} \\
+      \comps{$A_2$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h6} \\
     \end{tabular}
   \end{center}
 
   Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
   code générés ne produisent pas d'erreur (seule la variable fraîche
-  \lstinline'var_n' est affectée) nous assurent que si \env{} n'est pas un
-  environnement d'erreur (\env{} ne peut pas être \errorenv puisque la
+  \lstinline'var_n' est affectée) nous assurent que si $\env${} n'est pas un
+  environnement d'erreur ($\env${} ne peut pas être $\errormem$ puisque la
   traduction se serait arrêtée dès l'obtention de l'erreur).
   On a donc bien :
 
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{\env} $\neq$ \errorenv.
+  }{$\env$} $\neq$ $\errormem$.
 ~\\
 \end{proof}
 
@@ -1294,16 +1297,16 @@ La règle de traduction d'une annotation \lstinline'assert' est la suivante :
 }
 \end{center}
 
-Prouvons que pour tout environnement \env{} :
-\comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv
-si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} = \errorenv
+Prouvons que pour tout environnement $\env${} :
+\comp{\lstinline'/*@ assert p; */ ;'}{$\env$} = $\errormem$
+si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} = $\errormem$
 (propriété~\ref{th:error}),
 où le fragment de programme $A$ est obtenu à partir de la séquence d'insertions
 de code $I$ selon les règles d'insertion énoncées dans la
 partie~\ref{sec:principles}.
 
 Prouvons également que si l'\lstinline'assert' est valide :
-\env{} \subenv{} \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
+$\env \subenv$ \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
 (propriété~\ref{th:inclusion}).
 
 
@@ -1311,46 +1314,46 @@ Prouvons également que si l'\lstinline'assert' est valide :
   Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
 
   \begin{tabular}{rclr}
-    \eval{\lstinline'e'}{(\comps{$A$}{\env})} &=& \eval{\lstinline'p'}{\env}
+    \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} &=& \eval{\lstinline'p'}{$\env$}
     & \eqlabel{h1} \\
-    \comps{$A$}{\env} & $\neq$ & \errorenv & \eqlabel{h2} \\
+    \comps{$A$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h2} \\
   \end{tabular}
 
   Supposons
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} = \errorenv
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} = $\errormem$
   (\eqlabel{h3}) et
-  prouvons que \comp{\lstinline'/*@ assert p; */ ;'}{\env} = \errorenv.
+  prouvons que \comp{\lstinline'/*@ assert p; */ ;'}{$\env$} = $\errormem$.
 
   (a) Cas où l'assertion est vraie, soit
-  \eval{\lstinline'e'}{(\comps{$A$}{\env})} = true, c'est-à-dire par hypothèse
-  \eqlabel{h1} : \eval{\lstinline'p'}{\env} = true.
-  Développons \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env} :
+  \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = true, c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{$\env$} = true.
+  Développons \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} :
 
   \begin{tabular}{rcl}
-    \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
-    &=& \comp{\lstinline'fassert(e);'}{(\comps{$A$}{\env})} \\
+    \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
+    &=& \comp{\lstinline'fassert(e);'}{(\comps{$A$}{$\env$})} \\
     &$\eq{\eqlabel{C-fassert}}$
-    & \comps{$A$}{\env} {\scriptsize (car \eval{\lstinline'e'}{(\comps{$A$}{\env})} = true)} \\
+    & \comps{$A$}{$\env$} {\scriptsize (car \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = true)} \\
   \end{tabular}
 
   D'autre part, l'hypothèse \eqlabel{h3} nous donne :
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
-  = \errorenv.
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
+  = $\errormem$.
 
   On obtient par substitution :
-  \comps{$A$}{\env} = \errorenv, ce qui contredit l'hypothèse \eqlabel{h2} selon
-  laquelle \comps{$A$}{\env} $\neq$ \errorenv.
+  \comps{$A$}{$\env$} = $\errormem$, ce qui contredit l'hypothèse \eqlabel{h2} selon
+  laquelle \comps{$A$}{$\env$} $\neq$ $\errormem$.
 
   (b) Cas où l'assertion est fausse, soit
-  \eval{\lstinline'e'}{(\comps{$A$}{\env})} = false, c'est-à-dire par hypothèse
-  \eqlabel{h1} : \eval{\lstinline'p'}{\env} = false.
+  \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = false, c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{$\env$} = false.
 
-  Développons \comp{\lstinline'/*@ assert p; */ ;'}{\env} :
+  Développons \comp{\lstinline'/*@ assert p; */ ;'}{$\env$} :
 
   \begin{tabular}{rcl}
-    \comp{\lstinline'/*@ assert p; */ ;'}{\env}
+    \comp{\lstinline'/*@ assert p; */ ;'}{$\env$}
     &$\eq{\eqlabel{C-assert}}$
-    & \errorenv{} {\scriptsize (car \eval{\lstinline'p'}{\env} = false)} \\
+    & $\errormem${} {\scriptsize (car \eval{\lstinline'p'}{$\env$} = false)} \\
   \end{tabular}
 
   La propriété~\ref{th:error} est ainsi prouvée.
@@ -1362,14 +1365,14 @@ Prouvons également que si l'\lstinline'assert' est valide :
   Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
 
   \begin{tabular}{rclr}
-    \env & \subenv & \comps{$A$}{\env} & \eqlabel{h1} \\
+    $\env$ & $\subenv$ & \comps{$A$}{$\env$} & \eqlabel{h1} \\
   \end{tabular}
 
   Nous avons montré que si l'assertion est valide, alors
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}
-  = \comps{$A$}{\env}.
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
+  = \comps{$A$}{$\env$}.
   Par substitution dans \eqlabel{h1}, on obtient :
-  \env{} \subenv{} \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{\env}.
+  $\env \subenv$ \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}.
   ~\\
 \end{proof}
 
@@ -1684,45 +1687,45 @@ et les contrats de fonction.
 %% }~\\
 
 
-%% Prouvons que pour n'importe quel environnement \env :
+%% Prouvons que pour n'importe quel environnement $\env$ :
 
-%% \eval{\lstinline'e'}{(\compi{$I$}{\env})} =
-%% \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{\env}
-
-%% et
-
-%% \env \subenv \compi{$I$}{\env}
+%% \eval{\lstinline'e'}{(\compi{$I$}{$\env$})} =
+%% \eval{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'}{$\env$}
 
 %% et
 
-%% \compi{$I$}{\env} $\neq$ \errorenv.
+%% $\env$ \subenv \compi{$I$}{$\env$}
+
+%% et
+
+%% \compi{$I$}{$\env$} $\neq$ $\errormem$.
 
 
 %% \begin{proof}
 %%   ~\\
 %%   Hypothèses : \lstinline't1', \lstinline't2' et \lstinline'p' sont correctement
 %%   traduits.
-%%   Pour tout environnement \env :
+%%   Pour tout environnement $\env$ :
 
 %%   \begin{tabular}{rclr}
-%%     \eval{\lstinline'e1'}{(\compi{$I_1$}{\env})}
-%%     & = & \eval{\lstinline't1'}{\env} & \eqlabel{h1} \\
-%%     \eval{\lstinline'e2'}{(\compi{$I_2$}{\env})}
-%%     & = & \eval{\lstinline't2'}{\env} & \eqlabel{h2} \\
-%%     \eval{\lstinline'e3'}{(\comp{$I_3$}{\env})}
-%%     & = & \eval{\lstinline'p'}{\env} & \eqlabel{h3} \\
-%%     \env & \subenv & \compi{$I_1$}{\env} & \eqlabel{h4} \\
-%%     \env & \subenv & \compi{$I_2$}{\env} & \eqlabel{h5} \\
-%%     \env & \subenv & \compi{$I_3$}{\env} & \eqlabel{h6} \\
-%%     \compi{$I_1$}{\env} & $\neq$ & \errorenv & \eqlabel{h7} \\
-%%     \compi{$I_2$}{\env} & $\neq$ & \errorenv & \eqlabel{h8} \\
-%%     \compi{$I_3$}{\env} & $\neq$ & \errorenv & \eqlabel{h9} \\
+%%     \eval{\lstinline'e1'}{(\compi{$I_1$}{$\env$})}
+%%     & = & \eval{\lstinline't1'}{$\env$} & \eqlabel{h1} \\
+%%     \eval{\lstinline'e2'}{(\compi{$I_2$}{$\env$})}
+%%     & = & \eval{\lstinline't2'}{$\env$} & \eqlabel{h2} \\
+%%     \eval{\lstinline'e3'}{(\comp{$I_3$}{$\env$})}
+%%     & = & \eval{\lstinline'p'}{$\env$} & \eqlabel{h3} \\
+%%     $\env$ & \subenv & \compi{$I_1$}{$\env$} & \eqlabel{h4} \\
+%%     $\env$ & \subenv & \compi{$I_2$}{$\env$} & \eqlabel{h5} \\
+%%     $\env$ & \subenv & \compi{$I_3$}{$\env$} & \eqlabel{h6} \\
+%%     \compi{$I_1$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h7} \\
+%%     \compi{$I_2$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h8} \\
+%%     \compi{$I_3$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h9} \\
 %%   \end{tabular}
 
-%%   Développons \compi{$I$}{\env} :
+%%   Développons \compi{$I$}{$\env$} :
   
 %%   \begin{tabular}{p{0cm} p{.5cm} p{14cm}}
-%%     \multicolumn{3}{l}{\compi{$I$}{\env}} \\
+%%     \multicolumn{3}{l}{\compi{$I$}{$\env$}} \\
 %%     &=&
 %%     \compi{$I_1 \cdot I_2 \cdot (l, \mbox{\lstinline'int e = 1;'}) \cdot
 %%       (l, \Zinit \underline{\mbox{\lstinline'k = e1;'}} ) \cdot
@@ -1732,7 +1735,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose ) \cdot
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
-%%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{\env}
+%%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{$\env$}
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
 %%     \compi{$I_2 \cdot (l, \mbox{\lstinline'int e = 1;'}) \cdot
@@ -1744,7 +1747,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       (\compi{$I_1$}{\env})}
+%%       (\compi{$I_1$}{$\env$})}
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
 %%     \compi{$(l, \mbox{\lstinline'int e = 1;'}) \cdot
@@ -1756,7 +1759,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       (\compi{$I_2$}{(\compi{$I_1$}{\env})})
+%%       (\compi{$I_2$}{(\compi{$I_1$}{$\env$})})
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
@@ -1769,7 +1772,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
 %%       (\compi{$(l, \mbox{\lstinline'int e = 1;'})$}{
-%%         (\compi{$I_2$}{(\compi{$I_1$}{\env})})})
+%%         (\compi{$I_2$}{(\compi{$I_1$}{$\env$})})})
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-instr}}$&
@@ -1781,7 +1784,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       (\comp{\lstinline'int e = 1;'}{(\compi{$I_2$}{(\compi{$I_1$}{\env})})})
+%%       (\comp{\lstinline'int e = 1;'}{(\compi{$I_2$}{(\compi{$I_1$}{$\env$})})})
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{C-set}}$&
@@ -1793,7 +1796,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
@@ -1805,7 +1808,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
 %%       (\compi{$(l, \Zinit \underline{\mbox{\lstinline'k = e1;'}} )$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])})
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])})
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-instr}}$&
@@ -1817,7 +1820,7 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
 %%       (\comp{$\Zinit \underline{\mbox{\lstinline'k = e1;'}}$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])})
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])})
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{C-Z-set}}$&
@@ -1828,8 +1831,8 @@ et les contrats de fonction.
 %%       (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%         \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%         \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
@@ -1840,8 +1843,8 @@ et les contrats de fonction.
 %%         \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
 %%         \bopen I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%         (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose )$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%       })
 %%     }
 %%     \\
@@ -1853,14 +1856,14 @@ et les contrats de fonction.
 %%         \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
 %%         \bopen I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%         (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%       })
 %%     }
 %%     \\
 %%   \end{tabular}
 
-%%   (1) Cas \eval{\lstinline't1'}{\env} $>$ \eval{\lstinline't2'}{\env}
+%%   (1) Cas \eval{\lstinline't1'}{$\env$} $>$ \eval{\lstinline't2'}{$\env$}
 %%   (nouvelle hypothèse \eqlabel{rel1}) :
 
 %%   \begin{tabular}{p{0cm} p{.5cm} p{14cm}}
@@ -1868,16 +1871,16 @@ et les contrats de fonction.
 %%     \compi{$(l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%         \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%         \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
 %%     \compi{$(l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
 %%       (\compi{$(l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon )$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%       })
 %%     }
 %%     \\
@@ -1885,45 +1888,45 @@ et les contrats de fonction.
 %%     \compi{$(l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
 %%       (\comp{$\underline{\mbox{\lstinline'k'}} \Zclear \semicolon$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%           \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%       })
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{C-Z-unset}}$&
 %%     \compi{$(l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon ) \cdot
 %%       (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-split}}$&
 %%     \compi{$(l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{(
 %%       \compi{$(l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon )$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       })
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-instr}}$&
 %%     \compi{$(l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{(
 %%       \comp{$\underline{\mbox{\lstinline'e1'}} \Zclear \semicolon$}{
-%%         ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%         ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       })
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{C-Z-unset}}$&
 %%     \compi{$(l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon )$}{(
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       $-~\{\mbox{\lstinline'e1'}\}$)
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{I-instr}}$&
 %%     \comp{$\underline{\mbox{\lstinline'e2'}} \Zclear \semicolon$}{(
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       $-~\{\mbox{\lstinline'e1'}\}$)
 %%     }
 %%     \\
 %%     &$\eq{\eqlabel{C-Z-unset}}$&
-%%       ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       $-~\{\mbox{\lstinline'e1',\lstinline'e2'}\}$
 %%     \\
 %%   \end{tabular}
@@ -1932,7 +1935,7 @@ et les contrats de fonction.
 
 %%   \begin{tabular}{rcl}
 %%     \eval{\lstinline'e'}{
-%%       (((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%       (((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%       $-~\{\mbox{\lstinline'e1',\lstinline'e2'}\}$)}
 %%     & $\eq{\eqlabel{E-lval}}$ & 1 \\
 %%     & = & \lstinline'\forall integer k; \false ==> p' \\
@@ -1944,16 +1947,16 @@ et les contrats de fonction.
 %%   variables modifiées ont été générées par l'instrumentation (\lstinline'e',
 %%   \lstinline'e1' et \lstinline'e2'), on a :
 
-%%   \env \subenv
-%%   (((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
+%%   $\env$ \subenv
+%%   (((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
 %%   $-~\{\mbox{\lstinline'e1',\lstinline'e2'}\}$).
 
 %%   Les hypothèses \eqlabel{h7} et \eqlabel{h8} nous permettent de déduire que :
 
-%%   (((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1])
-%%   $-~\{\mbox{\lstinline'e1',\lstinline'e2'}\}$) $\neq$ \errorenv.
+%%   (((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1])
+%%   $-~\{\mbox{\lstinline'e1',\lstinline'e2'}\}$) $\neq$ $\errormem$.
 
-%%   (2) Cas \eval{\lstinline't1'}{\env} $\le$ \eval{\lstinline't2'}{\env}
+%%   (2) Cas \eval{\lstinline't1'}{$\env$} $\le$ \eval{\lstinline't2'}{$\env$}
 %%   (nouvelle hypothèse \eqlabel{rel2}) :
 
 %%   Pour calculer le nouvel environnement résultant de l'exécution de la boucle
@@ -1961,30 +1964,30 @@ et les contrats de fonction.
 
 %%   \begin{tabular}{rclr}
 %%     \multicolumn{3}{c}{
-%%       \eval{\lstinline't1'}{\env} $\le$ \eval{\lstinline'k'}{\env} $\le$
-%%       \eval{\lstinline't2'}{\env} + 1
+%%       \eval{\lstinline't1'}{$\env$} $\le$ \eval{\lstinline'k'}{$\env$} $\le$
+%%       \eval{\lstinline't2'}{$\env$} + 1
 %%     }
 %%     & \eqlabel{inv-1} \\
-%%     \eval{\lstinline'e'}{\env} &=&
-%%     \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{\env}
+%%     \eval{\lstinline'e'}{$\env$} &=&
+%%     \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{$\env$}
 %%     & \eqlabel{inv-2} \\
 %%   \end{tabular}
 
 %%   Supposons que ces propriétés ont été prouvées.
 %%   \commentGP{Preuve longue. Pas nécessaire ?}
-%%   Notons \env$'$ l'environnement après exécution de la boucle :
+%%   Notons $\env$$'$ l'environnement après exécution de la boucle :
 
-%%   \env$'$ = 
+%%   $\env$$'$ = 
 %%   \comp{$\mbox{\lstinline'while('}
 %%     \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
 %%     \bopen I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%     (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose$}{
-%%     ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%       \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%     ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%       \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%   }
 
 %%   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-%%     \eval{\lstinline'e'}{\compi{$I$}{\env}}
+%%     \eval{\lstinline'e'}{\compi{$I$}{$\env$}}
 %%     &=&
 %%     \eval{\lstinline'e'}{
 %%       (\compi{$(l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon ) \cdot
@@ -1994,8 +1997,8 @@ et les contrats de fonction.
 %%           \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
 %%           \bopen I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%           (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose )$}{
-%%           ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%             \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%           ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%             \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%         })
 %%       })
 %%     } \\
@@ -2005,86 +2008,86 @@ et les contrats de fonction.
 %%           \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& e)'}
 %%           \bopen I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%           (l, \underline{\mbox{\lstinline'k++'}} \semicolon) \bclose )$}{
-%%           ((\compi{$I_2$}{(\compi{$I_1$}{\env})})[\lstinline'e' $\mapsto$ 1,
-%%             \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{\env}])
+%%           ((\compi{$I_2$}{(\compi{$I_1$}{$\env$})})[\lstinline'e' $\mapsto$ 1,
+%%             \lstinline'k' $\mapsto$ \eval{\lstinline't1'}{$\env$}])
 %%         })
 %%     } \\
-%%     &=& \eval{\lstinline'e'}{\env$'$} \\
-%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{\env} \\
+%%     &=& \eval{\lstinline'e'}{$\env$$'$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{$\env$} \\
 %%   \end{tabular}
 
 %%   Rappelons que
-%%   \eval{\lstinline't1'}{\env$'$} $\le$ \eval{\lstinline'k'}{\env$'$} $\le$
-%%   \eval{\lstinline't2'}{\env$'$} + 1
+%%   \eval{\lstinline't1'}{$\env$$'$} $\le$ \eval{\lstinline'k'}{$\env$$'$} $\le$
+%%   \eval{\lstinline't2'}{$\env$$'$} + 1
 %%   (premier invariant de boucle).
 
-%%   On sait que la condition de boucle est fausse dans cet environnement \env$'$ :
+%%   On sait que la condition de boucle est fausse dans cet environnement $\env$$'$ :
 
-%%   \eval{\lstinline'k <= e2 && e'}{\env$'$} = \textit{false}
+%%   \eval{\lstinline'k <= e2 && e'}{$\env$$'$} = \textit{false}
 
 %%   Il y a donc deux cas non exclusifs :
 %%   \begin{itemize}
-%%   \item[$\bullet$] \eval{\lstinline'k <= e2'}{\env$'$} = \textit{false}
-%%   \item[$\bullet$] \eval{\lstinline'e'}{\env$'$} = \textit{false}
+%%   \item[$\bullet$] \eval{\lstinline'k <= e2'}{$\env$$'$} = \textit{false}
+%%   \item[$\bullet$] \eval{\lstinline'e'}{$\env$$'$} = \textit{false}
 %%   \end{itemize}
 
-%%   (2-a) Cas \eval{\lstinline'k <= e2'}{\env$'$} = \textit{false}, soit
-%%   \eval{\lstinline'k > t2'}{\env$'$} = \textit{true} :
+%%   (2-a) Cas \eval{\lstinline'k <= e2'}{$\env$$'$} = \textit{false}, soit
+%%   \eval{\lstinline'k > t2'}{$\env$$'$} = \textit{true} :
   
-%%   On sait que \eval{\lstinline'k > t2'}{\env$'$} et
-%%   \eval{\lstinline'k <= t2+1'}{\env$'$},
+%%   On sait que \eval{\lstinline'k > t2'}{$\env$$'$} et
+%%   \eval{\lstinline'k <= t2+1'}{$\env$$'$},
 %%   donc on
-%%   a \eval{\lstinline'k'}{\env$'$} = \eval{\lstinline't2+1'}{\env$'$}.
+%%   a \eval{\lstinline'k'}{$\env$$'$} = \eval{\lstinline't2+1'}{$\env$$'$}.
 %%   Avec cette nouvelle connaissance, on a :
 
 %%   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-%%     \eval{\lstinline'e'}{\compi{$I$}{\env}}
-%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < t2+1 ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{\env} \\
+%%     \eval{\lstinline'e'}{\compi{$I$}{$\env$}}
+%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z < t2+1 ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{$\env$} \\
 %%   \end{tabular}
 
-%%   (2-b) Cas \eval{$e$}{\env$'$} = \textit{false} :
+%%   (2-b) Cas \eval{$e$}{$\env$$'$} = \textit{false} :
 
 %%   \begin{tabular}{p{3cm} p{.5cm} p{11.5cm}}
-%%     \eval{\lstinline'e'}{\env$'$} = \textit{false}
+%%     \eval{\lstinline'e'}{$\env$$'$} = \textit{false}
 %%     &$\equiv$&
-%%     \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{\env$'$}
+%%     \eval{\lstinline'\\forall integer z; t1 <= z < k ==> p'}{$\env$$'$}
 %%     = \textit{false} \\
 %%     &$\equiv$&
-%%     \eval{\lstinline'\\forall integer z; t1 <= z < t2+1 ==> p'}{\env$'$}
+%%     \eval{\lstinline'\\forall integer z; t1 <= z < t2+1 ==> p'}{$\env$$'$}
 %%     = \textit{false} \\
-%%     \multicolumn{3}{c}{car \eval{\lstinline'k'}{\env$'$} $\le$
-%%       \eval{\lstinline't2+1'}{\env$'$}} \\
+%%     \multicolumn{3}{c}{car \eval{\lstinline'k'}{$\env$$'$} $\le$
+%%       \eval{\lstinline't2+1'}{$\env$$'$}} \\
 %%     &$\equiv$&
-%%     \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{\env$'$}
+%%     \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{$\env$$'$}
 %%     = \textit{false} \\
 %%     &$\equiv$&
-%%     \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{\env}
+%%     \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{$\env$}
 %%     = \textit{false} \\
 %%     \multicolumn{3}{c}{
-%%       car (\eval{\lstinline't1'}{\env}) = (\eval{\lstinline't1'}{\env$'$}) et
-%%       (\eval{\lstinline't2'}{\env}) = (\eval{\lstinline't2'}{\env$'$})
+%%       car (\eval{\lstinline't1'}{$\env$}) = (\eval{\lstinline't1'}{$\env$$'$}) et
+%%       (\eval{\lstinline't2'}{$\env$}) = (\eval{\lstinline't2'}{$\env$$'$})
 %%     } \\
 %%   \end{tabular}
 
 %%   Donc on a :
-%%   \eval{\lstinline'e'}{\env$'$} $\equiv$
-%%   \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{\env}.
+%%   \eval{\lstinline'e'}{$\env$$'$} $\equiv$
+%%   \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{$\env$}.
 
 %%   On a donc aussi :
 
-%%   \eval{\lstinline'e'}{\compi{$I$}{\env}} =
-%%   \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{\env}.
+%%   \eval{\lstinline'e'}{\compi{$I$}{$\env$}} =
+%%   \eval{\lstinline'\\forall integer z; t1 <= z <= t2 ==> p'}{$\env$}.
 
 %%   Grâce aux hypothèses \eqlabel{h4}, \eqlabel{h5}, \eqlabel{h6} et le fait que
 %%   les seules variables affectées sont \lstinline'e' et \lstinline'k', qui
-%%   n'appartiennent pas à l'environnement initial \env, on peut établir :
-%%   \env \subenv \compi{$I$}{\env}.
+%%   n'appartiennent pas à l'environnement initial $\env$, on peut établir :
+%%   $\env$ \subenv \compi{$I$}{$\env$}.
 
 %%   De manière similaire, grâce aux hypothèses \eqlabel{h7}, \eqlabel{h8},
 %%   \eqlabel{h9}, et le fait que les fragments de code générés de provoquent pas
-%%   d'erreur, le nouvel environnement est différent de \errorenv.
+%%   d'erreur, le nouvel environnement est différent de $\errormem$.
 %% \end{proof}
 
 
@@ -2097,50 +2100,50 @@ et les contrats de fonction.
 %%   \commentGP{je pense que la preuve n'est pas nécessaire}
 
 %%   Montrons que \eqlabel{inv-1} et \eqlabel{inv-2} sont vrais pour tout
-%%   environnement \env.
+%%   environnement $\env$.
 %%   Montrons tout d'abord que ces invariants sont établis avant la première
 %%   itération.
 
 %%   Développons
-%%   \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1 :
+%%   \eval{$t_1$}{$\env$} $\le$ \eval{$k$}{$\env$} $\le$ \eval{$t_2$}{$\env$} + 1 :
 
 %%   \begin{tabular}{rcl}
-%%     \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
-%%     &=& \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env}
-%%     $\le$ \eval{$t_2$}{\env} + 1 \\
-%%     &=& \eval{$t_1$}{\env} $\le$ \eval{$t_2$}{\env} + 1 \\
+%%     \eval{$t_1$}{$\env$} $\le$ \eval{$k$}{$\env$} $\le$ \eval{$t_2$}{$\env$} + 1
+%%     &=& \eval{$t_1$}{$\env$} $\le$ \eval{$k$}{$\env$}
+%%     $\le$ \eval{$t_2$}{$\env$} + 1 \\
+%%     &=& \eval{$t_1$}{$\env$} $\le$ \eval{$t_2$}{$\env$} + 1 \\
 %%     &$\eq{rel2}$& \textit{true} \\
 %%   \end{tabular}
 
 %%   Développons le membre droit de
 
-%%   \eval{$e$}{\env} =
-%%   \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env} :
+%%   \eval{$e$}{$\env$} =
+%%   \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$} :
 
 %%   \begin{tabular}{rcl}
 %%     \multicolumn{3}{l}{
-%%       \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}
+%%       \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}
 %%     } \\
-%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\true'}{\env} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k-1 ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= t_1-1 ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; \\false ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\true'}{$\env$} \\
 %%     &=& 1 \\
-%%     &=& \eval{$e$}{\env} \\
+%%     &=& \eval{$e$}{$\env$} \\
 %%   \end{tabular}
 
 %%   Ces deux invariants sont établis avant la première itération, montrons qu'ils
 %%   sont maintenus après chaque itération.
 %%   On suppose donc que ces invariants sont vrais après une itération quelconque
 %%   et sont donc des hypothèses.
-%%   Soit \env l'environnement au début de l'itération.
+%%   Soit $\env$ l'environnement au début de l'itération.
 
 %%   Prouvons que le premier invariant est maintenu après chaque itération :
 
-%%   On a : \eval{$t_1$}{\env} $\le$ \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} + 1
+%%   On a : \eval{$t_1$}{$\env$} $\le$ \eval{$k$}{$\env$} $\le$ \eval{$t_2$}{$\env$} + 1
   
 %%   Ce qui peut être réécrit en :
-%%   \eval{$t_1 \le k \le t_2 + 1$}{\env} = \textit{true}
+%%   \eval{$t_1 \le k \le t_2 + 1$}{$\env$} = \textit{true}
 
 %%   Montrons :
 
@@ -2148,10 +2151,10 @@ et les contrats de fonction.
 %%       $I_3 \cdot (l, \mbox{\lstinline'e = e3;'}) \cdot
 %%       (l, \underline{\mbox{\lstinline'k++'}} \semicolon)$
 %%     }{
-%%       (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%       ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%         $e \mapsto$
-%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
+%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}])
 %%     }} = \textit{true}
 
 %%   Développons le membre gauche :
@@ -2161,36 +2164,36 @@ et les contrats de fonction.
 %%       $I_3 \cdot \mbox{\lstinline'e = e_3;'}
 %%       \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
 %%     }{
-%%       (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%       ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%         $e \mapsto$
-%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
+%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}])
 %%     }}
 %%     &=&
 %%     \eval{$t_1 \le k \le t_2 + 1$}{
-%%       \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
-%%         $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $e \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $k \mapsto$ (\eval{\lstinline'k'}{\env})+1]
+%%       $\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
+%%         $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $e \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $k \mapsto$ (\eval{\lstinline'k'}{$\env$})+1]
 %%     } \\
 %%     &=&
 %%     \eval{$t_1 \le k+1 \le t_2 + 1$}{
-%%       \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
-%%         $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $e \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $k \mapsto$ (\eval{\lstinline'k'}{\env})]
+%%       $\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
+%%         $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $e \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $k \mapsto$ (\eval{\lstinline'k'}{$\env$})]
 %%     } \\
-%%     &=& \eval{$t_1 \le k+1 \le t_2 + 1$}{\env} \\
-%%     &=& \eval{$t_1 \le k+1$}{\env} $\land$ \eval{$k+1 \le t_2 + 1$}{\env} \\
-%%     &=& \eval{$t_1 \le k+1$}{\env} $\land$ \eval{$k \le t_2$}{\env} \\
-%%     &=& \textit{true} $\land$ \eval{$k \le t_2$}{\env} \\
+%%     &=& \eval{$t_1 \le k+1 \le t_2 + 1$}{$\env$} \\
+%%     &=& \eval{$t_1 \le k+1$}{$\env$} $\land$ \eval{$k+1 \le t_2 + 1$}{$\env$} \\
+%%     &=& \eval{$t_1 \le k+1$}{$\env$} $\land$ \eval{$k \le t_2$}{$\env$} \\
+%%     &=& \textit{true} $\land$ \eval{$k \le t_2$}{$\env$} \\
 %%     \multicolumn{3}{c}{par hypothèse de récurrence} \\
-%%     &=& \eval{$k \le t_2$}{\env} \\
-%%     &=& \eval{$k$}{\env} $\le$ \eval{$t_2$}{\env} \\
-%%     &=& \eval{$k$}{\env} $\le$ \eval{$e_2$}{\env} \\
-%%     &=& \eval{$k \le e_2$}{\env} \\
+%%     &=& \eval{$k \le t_2$}{$\env$} \\
+%%     &=& \eval{$k$}{$\env$} $\le$ \eval{$t_2$}{$\env$} \\
+%%     &=& \eval{$k$}{$\env$} $\le$ \eval{$e_2$}{$\env$} \\
+%%     &=& \eval{$k \le e_2$}{$\env$} \\
 %%     &=& \textit{true} \\
 %%     \multicolumn{3}{c}{la condition de boucle est vraie sinon on n'exécuterait
 %%       pas le code de la boucle} \\
@@ -2206,19 +2209,19 @@ et les contrats de fonction.
 %%       $I_3 \cdot \mbox{\lstinline'e = e_3;'}
 %%       \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
 %%     }{
-%%       (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%       ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%         $e \mapsto$
-%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
+%%         \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}])
 %%     })(e)
 %%     &=&
 %%     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
 %%       \comp{\lstinline'e = e_3;'}{(
 %%         \comp{$I_3$}{(
-%%           \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%             $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%           $\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%             $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%             $e \mapsto$
-%%             \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}]
+%%             \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}]
 %%           )}
 %%         )}
 %%       )}
@@ -2226,32 +2229,32 @@ et les contrats de fonction.
 %%     &=&
 %%     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
 %%       \comp{\lstinline'e = e_3;'}{(
-%%         \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%           $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%         $\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%           $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%           $e \mapsto$
-%%           \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env},
-%%           $e_3 \mapsto$ \eval{\lstinline'p'}{\env}]
+%%           \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$},
+%%           $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$}]
 %%         )}
 %%       )}
 %%     )(e) \\
 %%     &=&
 %%     (\comp{$\underline{\mbox{\lstinline'k++'}} \semicolon$}{(
-%%       \env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
-%%         $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $e \mapsto$ \eval{\lstinline'p'}{\env}]
+%%       $\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
+%%         $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $e \mapsto$ \eval{\lstinline'p'}{$\env$}]
 %%       )}
 %%     )(e) \\
 %%     &=&
-%%     (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%       $e_2 \mapsto$ \eval{$t_2$}{\env},
-%%       $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
-%%       $e \mapsto$ \eval{\lstinline'p'}{\env},
-%%       $k \mapsto$ (\eval{\lstinline'k'}{\env})+1]
+%%     ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%       $e_2 \mapsto$ \eval{$t_2$}{$\env$},
+%%       $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%       $e \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%       $k \mapsto$ (\eval{\lstinline'k'}{$\env$})+1]
 %%     )(e) \\
-%%     &=& \eval{\lstinline'p'}{\env} \\
-%%     &=& \eval{\lstinline'e'}{\env} $\land$ \eval{\lstinline'p'}{\env} \\
-%%     \multicolumn{3}{c}{\eval{\lstinline'e'}{\env} est vrai sinon on
+%%     &=& \eval{\lstinline'p'}{$\env$} \\
+%%     &=& \eval{\lstinline'e'}{$\env$} $\land$ \eval{\lstinline'p'}{$\env$} \\
+%%     \multicolumn{3}{c}{\eval{\lstinline'e'}{$\env$} est vrai sinon on
 %%       n'exécuterait pas le code de la boucle} \\
 %%   \end{tabular}
 
@@ -2263,30 +2266,30 @@ et les contrats de fonction.
 %%         $I_3 \cdot \mbox{\lstinline'e = e_3;'}
 %%         \cdot \underline{\mbox{\lstinline'k++'}} \semicolon$
 %%       }{
-%%         (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%           $e_2 \mapsto$ \eval{$t_2$}{\env},
+%%         ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%           $e_2 \mapsto$ \eval{$t_2$}{$\env$},
 %%           $e \mapsto$
-%%           \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env}])
+%%           \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$}])
 %%       })
 %%     }
 %%     &=&
 %%     \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{
-%%       (\env[$e_1 \mapsto$ \eval{$t_1$}{\env},
-%%         $e_2 \mapsto$ \eval{$t_2$}{\env},
-%%         $e_3 \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $e \mapsto$ \eval{\lstinline'p'}{\env},
-%%         $k \mapsto$ (\eval{\lstinline'k'}{\env})+1])
+%%       ($\env$[$e_1 \mapsto$ \eval{$t_1$}{$\env$},
+%%         $e_2 \mapsto$ \eval{$t_2$}{$\env$},
+%%         $e_3 \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $e \mapsto$ \eval{\lstinline'p'}{$\env$},
+%%         $k \mapsto$ (\eval{\lstinline'k'}{$\env$})+1])
 %%     } \\
-%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z < k+1 ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k ==> p'}{\env} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z < k+1 ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'\\forall integer z; t_1 <= z <= k ==> p'}{$\env$} \\
 %%     &=&
-%%     \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{\env} \newline
-%%     $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{\env} \\
+%%     \eval{\lstinline'\\forall integer z; t_1 <= z < k ==> p'}{$\env$} \newline
+%%     $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$\env$} \\
 %%     &=&
-%%     \eval{\lstinline'e'}{\env}
-%%     $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{\env} \\
-%%     &=& \eval{\lstinline'e'}{\env} $\land$ \eval{\lstinline'p'}{\env} \\
-%%     \multicolumn{3}{c}{car \eval{\lstinline'p'}{\env} est la valeur de $p$ pour
+%%     \eval{\lstinline'e'}{$\env$}
+%%     $\land$ \eval{\lstinline'\\forall integer z; z == k ==> p'}{$\env$} \\
+%%     &=& \eval{\lstinline'e'}{$\env$} $\land$ \eval{\lstinline'p'}{$\env$} \\
+%%     \multicolumn{3}{c}{car \eval{\lstinline'p'}{$\env$} est la valeur de $p$ pour
 %%     le $k$ courant} \\
 %%   \end{tabular}
 
