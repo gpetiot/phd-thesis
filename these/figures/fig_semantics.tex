@@ -1,27 +1,35 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
     \comp{$T~\mathit{id}\semicolon$}{$(\env, \store)$}
-    &=& $\env$[$\mathit{id}\mapsto$ $\loc$], $\store$
+    &=& ($\env$[$\mathit{id}\mapsto$ $\loc$], $\store$)
     où $\loc$ est une adresse fraîche & \eqlabel{C-decl} \\
     \comp{$\mathit{x}$ \lstinline'=' $e\semicolon$}{$(\env, \store)$}
-    &=& $\env, \store$[$\env(\mathit{x}) \mapsto$ \eval{$e$}{$(\env, \store)$}]
-    \scriptsize{(arith. bornée)} & \eqlabel{C-set} \\
+    &=&
+    ($\env, \store$[$\env(\mathit{x}) \mapsto$ \eval{$e$}{$(\env, \store)$}])
+    & \eqlabel{C-set} \\
 
     \comp{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'
       \lstinline'=' $e_2\semicolon$}{$(\env, \store)$}
-    &=& $\env, \store[\env(\mathit{x}$
+    &=& ($\env, \store[\env(\mathit{x}$
       \lstinline'['\eval{$\mathit{e}$}{$(\env, \store)$}\lstinline']') $\mapsto$
-      \eval{$e_2$}{$(\env, \store)$}]
-    \scriptsize{(arith. bornée)} & \eqlabel{C-set-2} \\
+      \eval{$e_2$}{$(\env, \store)$}])
+    & \eqlabel{C-set-2} \\
 
     \comp{$\Zinit$ \underline{$\mathit{x}$ \lstinline'=' $e$} $\semicolon$}{
       $(\env, \store)$}
-    &=& $\env, \store[\env(\mathit{x}) \mapsto$ \eval{$e$}{$(\env, \store)$}]
-    \scriptsize{(arith. non bornée)}
+    &=& ($\env, \store[\env(\mathit{x}) \mapsto$
+      \eval{$\underline{e}$}{$(\env, \store)$}])
     & \eqlabel{C-Z-set} \\
 
+    %% \comp{$\Zinit$ \underline{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'
+    %%   \lstinline'=' $e_2$} $\semicolon$}{$(\env, \store)$}
+    %% &=& ($\env, \store[\env(\mathit{x}$
+    %%   \lstinline'['\eval{$\mathit{e}$}{$(\env, \store)$}\lstinline']') $\mapsto$
+    %%   \eval{$\underline{e_2}$}{$(\env, \store)$}])
+    %% & \eqlabel{C-Z-set-2} \\
+
     \comp{\underline{$\mathit{x}$} $\Zclear \semicolon$}{$(\env, \store)$}
-    &=& $\env[\mathit{x} \mapsto \bot], \store - \{\env(\mathit{x})\}$
+    &=& ($\env[\mathit{x} \mapsto \bot], \store[\env(\mathit{x}) \mapsto \bot]$)
     & \eqlabel{C-Z-unset} \\
 
     \comp{\lstinline'fassert('$e$\lstinline');'}{$\mem$}
@@ -34,60 +42,60 @@
 
     \comp{$\mathit{lv}$\lstinline'= fvalid('$e$\lstinline');'}{$(\env, \store)$}
     &=&
-    $\env, \store[\env(\mathit{lv}) \mapsto 1]$
+    $(\env, \store[\env(\mathit{lv}) \mapsto 1]$)
     si $\store($\eval{$e$}{$(\env, \store)$}$) \in LOC$,
     & \eqlabel{C-valid} \\
-    && $\env, \store[\env(\mathit{lv}) \mapsto 0]$ sinon & \\
+    && $(\env, \store[\env(\mathit{lv}) \mapsto 0])$ sinon & \\
 
     \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
       \lstinline');'}{$(\env, \store)$}
-    &=& $\env, \store[\env(\mathit{lv}) \mapsto 1]$ si
+    &=& $(\env, \store[\env(\mathit{lv}) \mapsto 1])$ si
     $\store($\eval{$e_1+e_2$}{$(\env, \store)$}$) \in LOC$
     & \eqlabel{C-validr} \\
     && $\land \cdots \land$ $\store($\eval{$e_1+e_3$}{$(\env, \store)$}$) \in LOC$,
     &\\
-    & & $\env, \store[\env(\mathit{lv}) \mapsto 0]$ sinon & \\
+    & & $(\env, \store[\env(\mathit{lv}) \mapsto 0])$ sinon & \\
 
     \comp{$\mathit{id}$ \lstinline' = malloc('$e$\lstinline');'}{$(\env, \store)$}
     &=&
-    $\env[\mathit{id}$\lstinline'[0]' $\mapsto \loc_1$, ...,
+    $(\env[\mathit{id}$\lstinline'[0]' $\mapsto \loc_1$, ...,
       $\mathit{id}$\lstinline'['\eval{$n$}{$(\env, \store)$}\lstinline'-1]'
       $\mapsto \loc_N]$,
     & \eqlabel{C-malloc} \\
-    && $\store[\env(\mathit{id}) \mapsto \env(\mathit{id}$\lstinline'[0]'$)]$
+    && $\store[\env(\mathit{id}) \mapsto \env(\mathit{id}$\lstinline'[0]'$)])$
     &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{\lstinline'free('$\mathit{id}$\lstinline')'}{$(\env, \store)$}
     &=&
-    $\env[\mathit{id}$\lstinline'[0]' $\mapsto \bot$, ...,
+    $(\env[\mathit{id}$\lstinline'[0]' $\mapsto \bot$, ...,
       $\mathit{id}$\lstinline'['\eval{$n$}{$(\env, \store)$}\lstinline'-1]'
       $\mapsto \bot]$,
     & \eqlabel{C-free} \\
-    && $\store[\env(\mathit{id}) \mapsto \bot]$ &\\
+    && $\store[\env(\mathit{id}) \mapsto \bot])$ &\\
 
     \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$(\env, \store)$} &=&
     $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
     \lstinline')' $\bopen ... \bclose \rrbracket$ & \eqlabel{C-fct1} \\
-    && $\env[\mathit{id_1} \mapsto \loc_1$, ...,
-      $\mathit{id_N} \mapsto \loc_N]$ &\\
+    && $(\env[\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N],$ &\\
     && $\store[\loc_1 \mapsto$ \eval{$e_1$}{$(\env, \store)$}, ...,
-       $\loc_N \mapsto$ \eval{$e_N$}{$(\env, \store)$} $]$ &\\
+       $\loc_N \mapsto$ \eval{$e_N$}{$(\env, \store)$} $])$ &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{$\mathit{lv}$ \lstinline'=' $f$\lstinline'('$e_1$,...,$e_N$
       \lstinline');'}{$(\env, \store)$} &=&
-    $\env, \store[\env(\mathit{lv}) \mapsto$
-      \eval{\lstinline'res'}{$(\env', \store')$}$]$
+    $(\env, \store[\env(\mathit{lv}) \mapsto$
+      \eval{\lstinline'res'}{$(\env', \store')$}$])$
     & \eqlabel{C-fct2} \\
     && où $(\env'$, $\store')$ =
     $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
     \lstinline')' $\bopen ... \bclose \rrbracket$ &\\
-    && $\env[\mathit{id_1} \mapsto \loc_1$, ...,
-      $\mathit{id_N} \mapsto \loc_N]$ &\\
+    && $(\env[\mathit{id_1} \mapsto \loc_1$, ...,
+      $\mathit{id_N} \mapsto \loc_N],$ &\\
     && $\store[\loc_1 \mapsto$ \eval{$e_1$}{$(\env, \store)$}, ...,
       $\loc_N \mapsto$ \eval{$e_N$}{$(\env, \store)$}
-    ] &\\
+    $])$ &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{\lstinline'return res;'}{$\mem$}
