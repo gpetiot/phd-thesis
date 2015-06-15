@@ -458,8 +458,8 @@ une nouvelle mémoire $\mem'$ qui tient compte des effets de bord effectués par
 $i$ dans $\mem$.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
 $\mathcal{C}^{*} : INSTR^{*} \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$.
-Cette fonction revient à appeler successivement $\mathcal{C}$ sur chaque
-instruction dans l'ordre de la séquence.
+Cette fonction définie en figure~\ref{fig:c*} revient à appeler successivement
+$\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 
 \begin{figure}
 \begin{center}
@@ -468,7 +468,7 @@ instruction dans l'ordre de la séquence.
   &=& \comps{$A$}{(\comp{\lstinline'i'}{$\mem$})} \\
   \comps{$\semicolon$}{$\mem$} &=& $\mem$ \\
 \end{tabular}
-\caption{Sémantique dénotationnelle des séquences d'instructions}
+\caption{Sémantique dénotationnelle des séquences d'instructions\label{fig:c*}}
 \end{center}
 \end{figure}
 
