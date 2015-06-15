@@ -2,8 +2,8 @@
   \begin{tabular}{rclr}
     \eval{\lstinline'\\true'}{$\mem$} &=& $1$ & \eqlabel{P-true} \\
     \eval{\lstinline'\\false'}{$\mem$} &=& $0$ & \eqlabel{P-false} \\
-    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline')'}{$\env \store$}
-    &=& $1$ si $\store($\eval{$\mathit{lv}$}{$\mem$}$) \in LOC$,
+    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline')'}{$(\env, \store)$}
+    &=& $1$ si $\store($\eval{$\mathit{lv}$}{$(\env, \store)$}$) \in LOC$,
     $0$ sinon & \eqlabel{P-valid} \\
     \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline'+('$\mathit{t_1}$
       \lstinline'..'$\mathit{t_2}$\lstinline'))'}{$\mem$} &=&
