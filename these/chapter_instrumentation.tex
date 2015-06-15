@@ -822,12 +822,11 @@ code $I$ générées lors de la traduction d'un terme \lstinline't' ajoute une
 nouvelle variable \lstinline'e' (fraîche) à la mémoire courante, dont la valeur
 correspond à l'évaluation de \lstinline't' dans la mémoire $\mem$.
 Les variables qui sont déjà dans la mémoire initiale ne sont pas
-impactées dans la mémoire résultante (propriété~\ref{lem:term-subset}), et
+impactées dans la mémoire résultante (propriété~\ref{th:inclusion}), et
 la mémoire résulant de la traduction du terme n'est pas la mémoire d'erreur
-$\errormem$ (propriété~\ref{lem:term-noerror}).
+$\errormem$ (propriété~\ref{lem:noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
-Elles nous permettent de prouver les deux propriétés~\ref{th:error}
-et~\ref{th:inclusion}.
+Elles nous permettent de prouver la propriété~\ref{th:error}.
 Pour ne pas alourdir ce chapitre, la preuve est uniquement fournie pour la règle
 \textsc{$\tau$-const} de traduction des constantes.
 
@@ -932,12 +931,11 @@ code $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute u
 nouvelle variable \lstinline'e' (fraîche) à la mémoire, dont la
 valeur correspond à l'évaluation de \lstinline'p' dans $\mem$.
 Les variables qui sont déjà dans la mémoire initial $\mem_l$ ne sont pas
-impactées dans la mémoire $\env$ (propriété~\ref{lem:pred-subset}), et
+impactées dans la mémoire $\mem$ (propriété~\ref{th:inclusion}), et
 la mémoire résultant de la traduction du prédicat n'est pas la mémoire
-d'erreur $\errormem$ (propriété~\ref{lem:pred-noerror}).
+d'erreur $\errormem$ (propriété~\ref{lem:noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
-Elles nous permettent de prouver les deux propriétés~\ref{th:error}
-et~\ref{th:inclusion}.
+Elles nous permettent de prouver la propriété~\ref{th:error}.
 Pour des raisons de lisibilité, la justification est uniquement fournie pour la
 règle \textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
 
