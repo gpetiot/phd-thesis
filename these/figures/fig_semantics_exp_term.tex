@@ -2,13 +2,13 @@
   \begin{tabular}{rclr}
     \eval{$\mathit{cst}$}{$\mem$} &=& $\mathit{cst}$ & \eqlabel{E-cst} \\
 
-    \eval{$\mathit{x}$}{$\env \store$} &=& $\store(\env(\mathit{x}))$
+    \eval{$\mathit{x}$}{$(\env, \store)$} &=& $\store(\env(\mathit{x}))$
     & \eqlabel{E-lval} \\
 
-    \eval{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'}{$\store \env$}
+    \eval{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'}{$(\store, \env)$}
     &=&
     $\store(\env(\mathit{x}$
-    \lstinline'['\eval{$\mathit{e}$}{$\env\store$}\lstinline']'$))$
+    \lstinline'['\eval{$\mathit{e}$}{$(\env, \store)$}\lstinline']'$))$
     & \eqlabel{E-deref} \\
 
     \eval{$\mathit{unop}~t$}{$\mem$}
