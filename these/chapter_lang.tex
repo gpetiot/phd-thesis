@@ -378,6 +378,12 @@ En admettant $\mem = (\env, \store)$, la mémoire sera notée :
 \item $\mem$ sinon.
 \end{itemize}
 
+Nous définissons une mémoire d'erreur, notée $\errormem \in ENV \times STORE$.
+Une telle mémoire est le résultat de l'évaluation d'une instruction
+provoquant une erreur ou d'une annotation invalide (par exemple,
+\lstinline'assert' ou \lstinline'loop invariant' faux).
+L'évaluation des instructions s'arrête dès qu'un état d'erreur est produit.
+
 
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
@@ -442,14 +448,6 @@ accessibles en écriture.
 
 
 \subsection{Sémantique Dénotationnelle des Instructions}
-
-Nous définissons une mémoire d'erreur, notée $\errormem$, de type
-$ENV \times STORE$.
-Une telle mémoire est le résultat de l'évaluation d'une instruction
-provoquant une erreur (par exemple un appel à \lstinline'fassert' sur une
-expression fausse) ou d'une annotation invalide (par exemple,
-\lstinline'assert' ou \lstinline'loop invariant' faux).
-L'évaluation des instructions s'arrête dès qu'un état d'erreur est produit.
 
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
 $\mathcal{C} : INSTR \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$.
