@@ -363,6 +363,22 @@ dans $\store_1$, alors $v$ est également à l'adresse $\loc$ dans $\store_2$.
 ~(\store_1(\loc)=v) \Rightarrow (\store_2(\loc)=v)
 \]
 
+
+\subsection{Mémoires}
+
+
+Nous définissons la notion de mémoire, correspondant à un couple environnement,
+store : $\mem \in ENV \times STORE$.
+Une mémoire $\mem$ est un paramètre (et parfois le résultat) des fonctions
+sémantiques définies dans la suite du chapitre.
+En admettant $\mem = (\env, \store)$, la mémoire sera notée :
+\begin{itemize}
+\item $(\env, \store)$ si nous devons accéder à l'environnement $\env$ ou au
+  store $\store$;
+\item $\mem$ sinon.
+\end{itemize}
+
+
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
 \input{figures/fig_semantics_exp_term}
