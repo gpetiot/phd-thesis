@@ -250,20 +250,17 @@ Dans la suite du document, nous utilisons les notations suivantes :
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 $LOC$ est le domaine des adresses (locations en mémoire), incluant l'adresse
 nulle, notée \lstinline'NULL'.
-
-Un environnement $\env$ est une fonction totale
+$\bot$ dénote une adresse indéfinie et donc invalide.
+Un environnement $\env$ est une fonction partielle
 $\env \in LV \rightarrow LOC \cup \{\bot\}$
 qui associe une adresse à une left-value.
-
-$\bot$ dénote une adresse indéfinie et donc invalide.
 Nous notons $ENV \subseteq LV \rightarrow LOC \cup \{\bot\}$ le domaine des
 environnements.
 La notation $\env$[$\mathit{lv} \mapsto \loc$] désigne un nouvel environnement,
-correspondant à l'environnement $\env$ dans lequel la left-value $\mathit{lv}$
-a l'adresse $\loc$.
+correspondant à l'environnement $\env$ dans lequel l'adresse $\loc$ est associée
+à la left-value $\mathit{lv}$.
 L'accès à l'adresse d'une left-value $\mathit{lv}$ dans un environnement $\env$
-est noté $\env(\mathit{lv})$.
-Il est défini par :
+est noté $\env(\mathit{lv})$ et est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -272,7 +269,7 @@ Il est défini par :
   ($\env$[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & $\env$($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
-  $\env$($\mathit{lv}$) & = & $\bot$ (par défaut) & \eqlabel{env-get-3} \\
+  $\env$($\mathit{lv}$) & = & $\bot$ sinon & \eqlabel{env-get-3} \\
 \end{tabular}
 \end{center}
 
@@ -282,7 +279,7 @@ $\env$[$\mathit{lv_1} \mapsto \loc_1, \mathit{lv_2} \mapsto \loc_2$]
 comme un raccourci pour
 $\env$[$\mathit{lv_1} \mapsto \loc_1$][$\mathit{lv_2} \mapsto \loc_2$].
 La notation $\env - \{\mathit{lv}\}$ signifie que la left-value
-$\mathit{lv}$ et son adresse sont enlevées de l'environnement $\env$ :
+$\mathit{lv}$ et l'adresse associée sont enlevées de l'environnement $\env$ :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -317,14 +314,13 @@ $VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
 $\bot$ dénote une valeur non initialisée.
 $LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
 est une adresse.
-Un store est une fonction totale $\store \in LOC \rightarrow VAL$ qui
+Un store est une fonction partielle $\store \in LOC \rightarrow VAL$ qui
 associe une valeur à une adresse.
 Nous notons $STORE : LOC \rightarrow VAL$ le domaine des stores.
 La notation $\store$[$\loc \mapsto v$] désigne un nouveau store, correspondant
-au store $\store$ dans lequel la valeur $v$ est à l'adresse mémoire $\loc$.
+au store $\store$ dans lequel la valeur $v$ est stockée à l'adresse $\loc$.
 L'accès à la valeur d'une adresse $\loc$ dans un store $\store$ est noté
-$\store(\loc)$.
-Il est défini par :
+$\store(\loc)$ et est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -332,7 +328,7 @@ Il est défini par :
   ($\store$[$\loc_1 \mapsto v$])($\loc_2$) & =
   & $\store$($\loc_2$) si $\loc_1 \neq \loc_2$
   & \eqlabel{store-get-2}\\
-  $\store$($\loc$) & = & $\bot$ (par défaut) & \eqlabel{store-get-3} \\
+  $\store$($\loc$) & = & $\bot$ sinon & \eqlabel{store-get-3} \\
 \end{tabular}
 \end{center}
 
