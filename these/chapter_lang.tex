@@ -416,8 +416,27 @@ qu'une telle mémoire est conservée à chaque appel.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
 La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
-La sémantique du prédicat \lstinline'\valid' est expliquée en
-partie~\ref{sec:ptr-valid}.
+La règle \eqlabel{P-valid} énonce qu'une left-value $\mathit{lv}$ est valide,
+si après évaluation, la valeur associée dans le store est de type $LOC$.
+$\mathit{lv}$ doit être de type pointeur, donc son évaluation est de type
+$LOC$, et la valeur associée dans le store est soit de type $LOC$ (car c'est
+un pointeur) soit $\bot$.
+
+Un pointeur est valide en mémoire si on peut le déréférencer afin de pouvoir
+accéder ou modifier l'emplacement mémoire qu'il référence (c'est-à-dire vers
+lequel il pointe).
+Un pointeur alloué dynamiquement (à l'aide de la fonction \lstinline'malloc' par
+exemple) est valide tant qu'il n'est pas libéré (par la fonction
+\lstinline'free').
+Le pointeur égal à l'adresse d'une variable globale est toujours valide, et le
+pointeur égal à l'adresse d'une variable locale est valide dans la portée de
+cette variable.
+Ainsi, le prédicat \lstinline'\valid(t)' est vrai si \lstinline't'
+peut être déréférencé et est accessible en écriture, c'est-à-dire n'est pas une
+constante.
+De la même manière, \lstinline'\valid(t+(t1..t2))' est valide si les pointeurs
+\lstinline'(t+t1)', ..., \lstinline'(t+t2)' peuvent être déréférencés et sont
+accessibles en écriture.
 
 \input{figures/fig_semantics_pred}
 
@@ -494,8 +513,6 @@ par les règles \eqlabel{C-valid} et \eqlabel{C-validr}.
 Elles énoncent que dans le nouvel environnement, la left-value $\mathit{lv}$ a
 la valeur $1$ si les pointeurs en argument de la fonction sont valides, et $0$
 sinon.
-Plus de détails sur la sémantique de ces fonctions sont donnés en
-partie~\ref{sec:ptr-valid}.
 
 La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct1}
 et \eqlabel{C-fct2}.
@@ -567,45 +584,6 @@ La règle \eqlabel{F-3} énonce que $\errormem$ est obtenu si le prédicat de la
 postcondition $p_2$ est faux à la fin de la fonction.
 Enfin, si aucun des trois cas précédents ne s'est produit, il faut calculer la
 sémantique des instructions du corps de la fonction.
-
-
-\subsection{Validité des pointeurs}
-\label{sec:ptr-valid}
-\commentGP{TODO: supprimer}
-Un pointeur est valide en mémoire si on peut le déréférencer afin de pouvoir
-accéder ou modifier l'emplacement mémoire qu'il référence (c'est-à-dire vers
-lequel il pointe).
-Un pointeur alloué dynamiquement (à l'aide de la fonction \lstinline'malloc' par
-exemple) est valide tant qu'il n'est pas libéré (par la fonction
-\lstinline'free').
-Le pointeur égal à l'adresse d'une variable globale est toujours valide, et le
-pointeur égal à l'adresse d'une variable locale est valide dans la portée de
-cette variable.
-
-Ainsi, le prédicat \lstinline'\valid(t)' est vrai si \lstinline't'
-peut être déréférencé et est accessible en écriture, c'est-à-dire n'est pas une
-constante.
-De la même manière, \lstinline'\valid(t+(t1..t2))' est valide si les pointeurs
-\lstinline'(t+t1)', ..., \lstinline'(t+t2)' peuvent être déréférencés et sont
-accessibles en écriture.
-L'expression de la sémantique dénotationnelle de ces prédicats requiert une
-fonction $\mathcal{E}$ plus complexe et n'est pas donnée ici.
-
-Afin de refléter le fonctionnement de ces prédicats, nous avons défini les
-fonctions \lstinline'fvalid' et \lstinline'fvalidr'.
-Grossièrement, \lstinline'fvalid(t)' a la même sémantique que
-\lstinline'\valid(t)' et \lstinline'fvalidr(t,t1,t2)' a la même sémantique que
-\lstinline'\valid(t+(t1..t2))'.
-De la même manière, la sémantique dénotationnelle de ces fonctions requiert une
-fonction $\mathcal{C}$ plus complexe et n'est pas donnée ici.
-
-Ces fonctions seront utilisées au chapitre~\ref{sec:traduction}, Traduction en
-C des annotations pour le Test, afin de générer du code C préservant la
-sémantique du prédicat \lstinline'\valid'.
-Le chapitre~\ref{sec:runtime}, Vérification à l'exécution des annotations liées
-au modèle mémoire, présente la conception de telles fonctions permettant de
-refléter la sémantique de \lstinline'\valid' et d'autres prédicats \eacsl liés
-au modèle mémoire.
 
 
 \section*{Conclusion du chapitre}
