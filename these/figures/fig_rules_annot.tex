@@ -1,19 +1,19 @@
 \begin{figure}[h!]
   \scriptsize{
-    {\myinference[$\alpha$-assert]
+    {\myinference{$\alpha$-assert}
       {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'assert p;'})
-        \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+        \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}{}
     }
 
-    {\myinference[$\alpha$-check-pre\hspace{-2mm}]
+    {\myinference{$\alpha$-check-pre\hspace{-2mm}}
       {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(Beg_f, \mbox{\lstinline'requires p;'})
         \rulearrow
-        I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
+        I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}{}
     }
 
-    {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
+    {\myinference{$\alpha$-assume-pre\hspace{-2mm}}
       {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(Beg_f, \left \{\hspace{-2mm}
         \begin{array}{r}
@@ -22,10 +22,10 @@
         \end{array} \mbox{\lstinline'p;'} \right.
         )
         \rulearrow
-        I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
+        I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}{}
     }
 
-    {\myinference[$\alpha$-check-assigns]
+    {\myinference{$\alpha$-check-assigns}
       {}
       {
         \splitfrac{
@@ -39,14 +39,14 @@
             \concat (End_f, \mbox{\lstinline'fassert(x == var_x);'}) )
           }
         }
-      }
+      }{}
     }
 
-    {\myinference[$\alpha$-check-post]
+    {\myinference{$\alpha$-check-post}
       {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(End_f, \mbox{\lstinline'ensures p;'})
         \rulearrow
-        I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
+        I \concat (End_f, \mbox{\lstinline'fassert(e);'})}{}
     }
   }
   \caption{Règles de traduction pour les assertions, pré-/postconditions et

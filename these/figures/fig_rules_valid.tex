@@ -1,20 +1,20 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\pi$-valid]
+    {\myinference{$\pi$-valid}
       {}
       {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
         ((l, \mbox{\lstinline'int var_n = fvalid(t);'}),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
 
-    {\myinference[$\pi$-valid-range]
+    {\myinference{$\pi$-valid-range}
       {}
       {
         (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
         ((l, \mbox{\lstinline'int var_n = fvalidr(t1,t2,t3);'}),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
   }
   \caption{Règles de traduction pour les prédicats de validité mémoire}

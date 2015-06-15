@@ -1,13 +1,13 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\tau$-lv]
+    {\myinference{$\tau$-lv}
       {}
       {(l, (\mbox{\lstinline'* t'}): ctype) \rulearrow
         (I \concat (l, ctype~\mbox{\lstinline'var_n = *t;'}),
-        \mbox{\lstinline'var_n'})}
+        \mbox{\lstinline'var_n'})}{}
     }
 
-    {\myinference[$\tau$-unop]
+    {\myinference{$\tau$-unop}
       {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
       } {(l, (\mathit{unop}~\mbox{\lstinline't'}):\mathbb{Z}) \rulearrow
         (I
@@ -15,11 +15,10 @@
           ~\mathit{unop}~\mbox{\lstinline'e'} \Zclear}
         \semicolon),
         \mbox{\lstinline'var_n'})
-        \quad
-        \mathit{unop} \in \{ -, \sim\}}
+      }{\mathit{unop} \in \{ -, \sim\}}
     }
 
-    {\myinference[$\tau$-binop$_1$]
+    {\myinference{$\tau$-binop$_1$}
       {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
         \quad
         (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})}
@@ -29,11 +28,10 @@
         \concat (l, ptr~\mbox{\lstinline'var_n = e1'}~\mathit{binop}
         ~\mbox{\lstinline'e2;'}),
         \mbox{\lstinline'var_n'})
-        \quad
-        \mathit{binop} \in \{+, -\}}
+      }{\mathit{binop} \in \{+, -\}}
     }
 
-    {\myinference[$\tau$-binop$_2$]
+    {\myinference{$\tau$-binop$_2$}
       {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \quad
         (l, \mbox{\lstinline't2'}:\mathbb{Z})
@@ -45,12 +43,13 @@
           ~\mathit{binop}~\mbox{\lstinline'e2'} \Zclear}
         \semicolon
         ), \mbox{\lstinline'var_n'})
-        \quad
+      }{
         \mathit{binop} \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
-        \mathtt{*} \}}
+        \mathtt{*} \}
+      }
     }
 
-    {\myinference[$\tau$-if]
+    {\myinference{$\tau$-if}
       {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
@@ -77,7 +76,7 @@
         \semicolon )
         \bclose ),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
   }
   \caption{Règles de traduction pour les opérations unaires et binaires}

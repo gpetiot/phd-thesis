@@ -1,16 +1,16 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\pi$-equiv]
+    {\myinference{$\pi$-equiv}
       {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 <==> p2'})
         \rulearrow
         (I_1 \concat I_2 \concat
         (l, \mbox{\lstinline'int var_n = ((!e1 || e2) && (!e2 || e1));'}),
-        \mbox{\lstinline'var_n'})}
+        \mbox{\lstinline'var_n'})}{}
     }
 
-    {\myinference[$\pi$-and]
+    {\myinference{$\pi$-and}
       { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
       { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
@@ -18,29 +18,29 @@
         (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
         (l, \mbox{\lstinline'var_n = e2;'}) \bclose ),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
 
-    {\myinference[$\pi$-true]
+    {\myinference{$\pi$-true}
       {}
       {(l, \mbox{\lstinline'\\true'}) \rulearrow
-        ((l, \mbox{\lstinline'int var_n = 1;'}), \mbox{\lstinline'var_n'})}
+        ((l, \mbox{\lstinline'int var_n = 1;'}), \mbox{\lstinline'var_n'})}{}
     }
 
-    {\myinference[$\pi$-false]
+    {\myinference{$\pi$-false}
       {}
       {(l, \mbox{\lstinline'\\false'}) \rulearrow
-       ((l, \mbox{\lstinline'int var_n = 0;'}), \mbox{\lstinline'var_n'})}
+       ((l, \mbox{\lstinline'int var_n = 0;'}), \mbox{\lstinline'var_n'})}{}
     }
 
-    {\myinference[$\pi$-not]
+    {\myinference{$\pi$-not}
       {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
       {(l, \mbox{\lstinline'\!p'}) \rulearrow
         (I \concat (l, \mbox{\lstinline'int var_n = \!e;'}),
-        \mbox{\lstinline'var_n'})}
+        \mbox{\lstinline'var_n'})}{}
     }
 
-    {\myinference[$\pi$-or]
+    {\myinference{$\pi$-or}
       {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 || p2'})
@@ -50,10 +50,10 @@
         I_2
         \concat (l, \mbox{\lstinline'var_n = e2;'}) \bclose),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
 
-    {\myinference[$\pi$-impl]
+    {\myinference{$\pi$-impl}
       {(l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline'p1 ==> p2'})
@@ -63,10 +63,10 @@
         I_2
         \concat (l, \mbox{\lstinline'var_n = e2;'}) \bclose),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
 
-    {\myinference[$\pi$-if]
+    {\myinference{$\pi$-if}
       {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \\
         (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) \\
@@ -81,23 +81,24 @@
         \mbox{\lstinline'else'} \bopen
         I_3 \concat (l, \mbox{\lstinline'var_n=e3;'}) \bclose),
         \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
 
-    {\myinference[$\pi$-rel]
+    {\myinference{$\pi$-rel}
       {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
         (I_1, \mbox{\lstinline'e1'}) \quad
         (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \quad
-        rel \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
-        \mathtt{==}, \mathtt{!=}\}}
+        (I_2, \mbox{\lstinline'e2'})}
       {(l, \mbox{\lstinline't1 rel t2'}) \rulearrow
         (I_1 \concat I_2 \concat (l,
         \mbox{\lstinline'int var_n ='}~
         \underline{\mbox{\lstinline' e1'} \Zclear \mbox{\lstinline' rel e2'}
           \Zclear}
         \semicolon
-        ), \mbox{\lstinline'var_n'})}
+        ), \mbox{\lstinline'var_n'})}{
+        rel \in \{\mathtt{<}, \mathtt{<=}, \mathtt{>}, \mathtt{>=},
+        \mathtt{==}, \mathtt{!=}\}
+      }
     }
   }
   \caption{Règles de traduction pour les prédicats simples}

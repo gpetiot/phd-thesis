@@ -1,32 +1,32 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\tau$-old\hspace{-2mm}{}]
+    {\myinference{$\tau$-old\hspace{-2mm}{}}
       {}
       {(l, \mbox{\lstinline'\\old(x)'}) \rulearrow
-        (\emptylist, \mbox{\lstinline'old_x'})}
+        (\emptylist, \mbox{\lstinline'old_x'})}{}
     }
-    {\myinference[$\tau$-var\hspace{-2mm}{}]
+    {\myinference{$\tau$-var\hspace{-2mm}{}}
       {}
       {(l, \mbox{\lstinline'x'}) \rulearrow
-        (\emptylist, \mbox{\lstinline'x'})}
+        (\emptylist, \mbox{\lstinline'x'})}{}
     }
 
-    {\myinference[$\tau$-old-val\hspace{-2mm}{}]
+    {\myinference{$\tau$-old-val\hspace{-2mm}{}}
       {}
       {(l, \mbox{\lstinline'\\old(*(x+t))'}) \rulearrow
-        (I,\mbox{\lstinline'*(old_val_x+t)'})}
+        (I,\mbox{\lstinline'*(old_val_x+t)'})}{}
     }
 
-    {\myinference[$\tau$-res\hspace{-2mm}{}]
+    {\myinference{$\tau$-res\hspace{-2mm}{}}
       {}
       {(l, \mbox{\lstinline'\\result'}) \rulearrow
-        (\emptylist, \mbox{\lstinline'res'})}
+        (\emptylist, \mbox{\lstinline'res'})}{}
     }
-    {\myinference[$\tau$-const\hspace{-1mm}{}]
+    {\myinference{$\tau$-const\hspace{-1mm}{}}
       {}
       {(l, \mbox{\lstinline'cst'}:\mathbb{Z}) \rulearrow
         ((l, \underline{\Zinit\mbox{\lstinline'var_n = cst'}}\semicolon),
-        \mbox{\lstinline'var_n'})}
+        \mbox{\lstinline'var_n'})}{}
     }
   }
   \caption{Règles de traduction pour les constantes, identificateurs,

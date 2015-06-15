@@ -836,11 +836,11 @@ Pour ne pas alourdir ce chapitre, la preuve est uniquement fournie pour la règl
 
 Rappelons la règle de traduction des constantes :
 
-{\myinference[$\tau$-const]
+{\myinference{$\tau$-const}
   {}
   { (l, \mbox{\lstinline'cst'} : \mathbb{Z}) \rulearrow
     ((l, \Zinit\underline{\mbox{\lstinline'var_n = cst;'}}),
-    \mbox{\lstinline'var_n'}) }
+    \mbox{\lstinline'var_n'}) }{}
 }
 
 Les propriétés~\ref{th:inclusion}, \ref{lem:noerror} et~\ref{lem:term-correct}
@@ -947,7 +947,7 @@ règle \textsc{$\pi$-and}.% et \textsc{$\pi$-forall} (en annexe).
 La règle de traduction du prédicat de conjonction \textsc{$\pi$-and} est
 définie ainsi :
 
-{\myinference[$\pi$-and]
+{\myinference{$\pi$-and}
   { (l, \mbox{\lstinline'p1'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
     (l, \mbox{\lstinline'p2'}) \rulearrow (I_2, \mbox{\lstinline'e2'}) }
   { (l, \mbox{\lstinline'p1 && p2'}) \rulearrow
@@ -955,7 +955,7 @@ définie ainsi :
     (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
     (l, \mbox{\lstinline'var_n = e2;'}) \bclose ),
     \mbox{\lstinline'var_n'})
-  }
+  }{}
 }~\\
 
 Les propriétés~\ref{th:inclusion}, \ref{lem:noerror} et~\ref{lem:pred-correct}
@@ -1212,10 +1212,10 @@ des prédicats justifiée dans les parties précédentes.
 La règle de traduction d'une annotation \lstinline'assert' est la suivante :
 
 \begin{center}
-{\myinference[$\alpha$-assert]
+{\myinference{$\alpha$-assert}
   {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
   {(l, \mbox{\lstinline'assert p;'})
-    \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}
+    \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}{}
 }
 \end{center}
 
@@ -1310,7 +1310,7 @@ La traduction utilise les trois règles suivantes :
 
 
 {\scriptsize
-  {\myinference[$\alpha$-check-loop-assigns]
+  {\myinference{$\alpha$-check-loop-assigns}
     {}
     {
       \splitfrac {
@@ -1324,24 +1324,24 @@ La traduction utilise les trois règles suivantes :
           \concat (EndIter_l, \mbox{\lstinline'fassert(x == var_x);'})
         }
       }
-    }
+    }{}
   }
 }
 
 {\scriptsize
-  {\myinference[$\alpha$-check-invariant]
+  {\myinference{$\alpha$-check-invariant}
     {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
       (EndIter_l, \mbox{\lstinline'p'}) \rulearrow (I_2, \mbox{\lstinline'e2'})}
     {
       (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
       I_1 \concat (l, \mbox{\lstinline'fassert(e1);'})
       \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
-    }
+    }{}
   }
 }
 
 {\scriptsize
-  {\myinference[$\alpha$-variant]
+  {\myinference{$\alpha$-variant}
     {
       (BegIter_l, \mbox{\lstinline't'}) \rulearrow (I_1, \mbox{\lstinline'e1'})
       \\
@@ -1362,7 +1362,7 @@ La traduction utilise les trois règles suivantes :
           \mbox{\lstinline'< e1'} \Zclear}
         \mbox{\lstinline');'})
       }
-    }
+    }{}
   }
 }
 
@@ -1432,7 +1432,7 @@ Nous considérons une fonction \lstinline'f' sous vérification annotée avec
 La traduction utilise les trois règles suivantes :
 
 {\scriptsize
-  {\myinference[$\alpha$-assume-pre\hspace{-2mm}]
+  {\myinference{$\alpha$-assume-pre\hspace{-2mm}}
     {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {(Beg_f, \left \{\hspace{-2mm}
       \begin{array}{r}
@@ -1441,12 +1441,12 @@ La traduction utilise les trois règles suivantes :
       \end{array} \mbox{\lstinline'p;'} \right.
       )
       \rulearrow
-      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}
+      I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}{}
   }
 }
 
 {\scriptsize
-  {\myinference[$\alpha$-check-assigns]
+  {\myinference{$\alpha$-check-assigns}
     {}
     {
       \splitfrac{
@@ -1457,16 +1457,16 @@ La traduction utilise les trois règles suivantes :
         (Beg_f, \mbox{\lstinline'ctype var_x = x;'})
         \concat (End_f, \mbox{\lstinline'fassert(x == var_x);'})
       }
-    }
+    }{}
   }
 }
 
 {\scriptsize
-  {\myinference[$\alpha$-check-post]
+  {\myinference{$\alpha$-check-post}
     {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {(End_f, \mbox{\lstinline'ensures p;'})
       \rulearrow
-      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}
+      I \concat (End_f, \mbox{\lstinline'fassert(e);'})}{}
   }
 }
 
@@ -1506,11 +1506,11 @@ supposer vraie, la règle \textsc{$\alpha$-assume-pre} est remplacée par la rè
 suivante :
 
 {\scriptsize
-  {\myinference[$\alpha$-check-pre\hspace{-2mm}]
+  {\myinference{$\alpha$-check-pre\hspace{-2mm}}
     {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
     {(Beg_f, \mbox{\lstinline'requires p;'})
       \rulearrow
-      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}
+      I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}{}
   }
 }
 

@@ -1,6 +1,6 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference[$\tau$-coerce$_1$]
+    {\myinference{$\tau$-coerce$_1$}
       {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow
         (I, \mbox{\lstinline'e'})}
       {
@@ -10,14 +10,14 @@
         \underline{\mbox{\lstinline'e'} \Zclear}
         \semicolon
         ), \mbox{\lstinline'var_n'})
-      }
+      }{}
     }
-    {\myinference[$\tau$-coerce$_2$]
+    {\myinference{$\tau$-coerce$_2$}
       {}
       {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
         \underline{\Zinit \mbox{\lstinline'var_n = t'}}
         \semicolon
-        ), \mbox{\lstinline'var_n'})}
+        ), \mbox{\lstinline'var_n'})}{}
     }
   }
   \caption{Règles de traduction pour les conversions}
