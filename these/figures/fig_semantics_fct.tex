@@ -1,6 +1,6 @@
 \begin{figure}[h!]
   \begin{tabular}{p{.5cm} p{12cm} p{2cm}}
-    \multicolumn{3}{l}{
+    \multicolumn{2}{l}{
       \compf{
         \lstinline'/*@ requires' $p_1\semicolon$
         \lstinline'assigns' $X\semicolon$
@@ -8,17 +8,17 @@
         \lstinline'*/' $f$\lstinline'('$\mathit{id_1}$, ..., $\mathit{id_N}$
         \lstinline')'
         $\bopen A \bclose$}{$\mem$}
-    } \\
+    } & \eqlabel{F} \\
     =& $\errormem$ si $\lnot$ \eval{$p_1$}{$\mem$} et $f$ est
     une fonction appelée & \eqlabel{F-1} \\
-    =& $\errormem$ si
+    & $\errormem$ si
     $\exists x. (x \in G-X.$
     (\eval{$x$}{(\comps{$A$}{$\mem$})}) $\ne$
     (\eval{$x$}{$\mem$}) $)$ & \eqlabel{F-2} \\
-    =& $\errormem$ si
+    & $\errormem$ si
     $\lnot$ \eval{$p_2$}{(\comps{$A$}{$\mem$})}
     & \eqlabel{F-3} \\
-    =& \comps{$A$}{$\mem$} sinon & \eqlabel{F-4} \\
+    & \comps{$A$}{$\mem$} sinon & \eqlabel{F-4} \\
   \end{tabular}
   \caption{Sémantique dénotationnelle des fonctions}
   \label{fig:sem-fct}
