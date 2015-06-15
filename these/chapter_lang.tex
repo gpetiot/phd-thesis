@@ -390,9 +390,9 @@ Le domaines $EXP$, $TERM$ et $PRED$ correspondent respectivement aux entités
 syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
 figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
 Cette fonction associe une valeur à une expression C (ou un terme ou prédicat
-\eacsl) en fonction d'une mémoire, à condition que cette expression ne
-génère pas d'effet de bord, hypothèse satisfaite par le langage considéré après
-normalisation du code par \framac.
+\eacsl) en fonction d'une mémoire $\mem = (\env, \store)$, à condition que cette
+expression ne génère pas d'effet de bord, hypothèse satisfaite par le langage
+considéré après normalisation du code par \framac.
 L'absence d'effet de bord permet à la fonction $\mathcal{E}$ de ne pas devoir
 retourner une nouvelle mémoire.
 
@@ -402,9 +402,17 @@ Ces deux éléments du langage se retrouvent sur la même figure car les termes
 peuvent être vus comme une extension des expressions C.
 Les cinq premières règles de la figure~\ref{fig:sem-exp-term} sont communes aux
 termes et aux expressions, les autres sont spécifiques aux termes.
-\commentGP{TODO: empiler contexte d'appel}
-Dans la règle \eqlabel{E-old}, $\env_{Old}$ est l'environnement au début de la
-fonction.
+La règle \eqlabel{E-lval} traite le cas où une left-value est un identificateur
+de variable $x$.
+$\env(x)$ est l'adresse de $x$, la valeur à cette adresse est $\store(\env(x))$.
+La règle \eqlabel{E-deref} traite le cas où une left-value est un identificateur
+de variable $x$, accédé à l'offset $e$.
+Rappelons que \lstinline'x[e]' $=$ \lstinline'*(x+e)'.
+L'unique différence avec la règle \eqlabel{E-lval} est l'évaluation de $e$, qui
+doit retourner une constante entière.
+Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ correspond à la mémoire au
+début de l'exécution de la fonction courante \lstinline'f', nous supposons
+qu'une telle mémoire est conservée à chaque appel.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
 La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
