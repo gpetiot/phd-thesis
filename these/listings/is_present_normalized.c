@@ -4,7 +4,7 @@
     ensures \result != 0 <==> \exists integer i; 0<=i<=\old(n)-1
                                 && \old(*(t+i))==\old(v); */
 int is_present(int* t, int n, int v) {
-  §$Beg_{\texttt{is\_present}}:$§ int res = 0; int i = 0;
+  §$Beg_{\texttt{is\_present}}:$§ int res§$_{\texttt{is\_present}}$§ = 0; int i = 0;
  l§$_0$§: 
   /*@ loop invariant 0 <= i && i <= n;
       loop variant n - i; */
@@ -14,5 +14,5 @@ int is_present(int* t, int n, int v) {
     §$EndIter_{l_0}:$§ ;
   }
   if(i < n) { res = 1; }
- §$End_{\texttt{is\_present}}:$§ return res;
+ §$End_{\texttt{is\_present}}:$§ return res§$_{\texttt{is\_present}}$§;
 }

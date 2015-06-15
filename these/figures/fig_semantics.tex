@@ -86,7 +86,7 @@
     \comp{$\mathit{lv}$ \lstinline'=' $f$\lstinline'('$e_1$,...,$e_N$
       \lstinline');'}{$(\env, \store)$} &=&
     $(\env, \store[\env(\mathit{lv}) \mapsto$
-      \eval{\lstinline'res'}{$(\env', \store')$}$])$
+      \eval{\lstinline'res'$_f$}{$(\env', \store')$}$])$
     & \eqlabel{C-fct2} \\
     && où $(\env'$, $\store')$ =
     $\mathcal{F} \llbracket$ $f$\lstinline'('$\mathit{id_1}$,...,$\mathit{id_N}$
@@ -98,7 +98,7 @@
     $])$ &\\
     && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
-    \comp{\lstinline'return res;'}{$\mem$}
+    \comp{\lstinline'return res'$_f\semicolon$}{$\mem$}
     &=& $\mem$ & \eqlabel{C-return} \\
 
     \comp{\lstinline'if('$e$\lstinline')' $\bopen A \bclose$
@@ -109,14 +109,14 @@
     \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{$\mem$}
     &=& $\mem$ si (\eval{$p$}{$\mem$}), $\errormem$ sinon
     & \eqlabel{C-assert} \\
-    \multicolumn{4}{l}{
+    \multicolumn{3}{l}{
       \comp{
         \lstinline'/*@ loop invariant' $p\semicolon$
         \lstinline'loop assigns' $X\semicolon$
         \lstinline'loop variant' $t\semicolon$
         \lstinline'*/ while(' $e$ \lstinline')'
         $\bopen A \bclose$}{$\mem$}
-    } \\
+    } & \eqlabel{C-while} \\
     & = & $\errormem$ si $\lnot$ \eval{$p$}{$\mem$} & \eqlabel{C-while-1} \\
     &  & $\mem$ si (\eval{$e$}{$\mem$}) $= 0$ & \eqlabel{C-while-2} \\
     &  & $\errormem$ si (\eval{$t$}{$\mem$}) $< 0$ & \eqlabel{C-while-3} \\
