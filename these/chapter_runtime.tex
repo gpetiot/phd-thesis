@@ -226,6 +226,8 @@ est précisément \texttt{1110\,0000}.
 
 \subsubsection*{Recherche exacte}
 
+\commentGP{TODO: algo}
+
 Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
 au pointeur passé en paramètre.
 On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
@@ -237,6 +239,8 @@ Quand on arrive sur une feuille, cette dernière contient donc forcément
 l'adresse que l'on cherchait.
 
 \subsubsection*{Recheche du ``contenant''}
+
+\commentGP{TODO: algo}
 
 Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
 paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$.
@@ -257,6 +261,8 @@ a trouvé le bloc qu'on cherchait, sinon on utilise le dernier n\oe{}ud empilé
 
 \subsection{Ajout}
 
+
+\commentGP{TODO: algo}
 
 \input{figures/fig_add_patricia_trie}
 
@@ -280,6 +286,8 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 
 \subsubsection*{Recherche du n\oe{}ud le plus similaire}
 
+\commentGP{TODO: algo}
+
 Dès qu'on arrive sur une feuille on la renvoie.
 Sinon on calcule le plus grand préfixe commun de l'adresse passée en paramètre
 avec le fils gauche, de même avec le fils droit.
@@ -290,6 +298,7 @@ branche correspondante, sinon on renvoie le n\oe{}ud courant.
 
 \subsection{Suppression}
 
+\commentGP{TODO: algo}
 
 \input{figures/fig_rem_patricia_trie}
 
