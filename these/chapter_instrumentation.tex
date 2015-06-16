@@ -993,18 +993,18 @@ $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 (l, \mbox{\lstinline'var_n = e2;'}) \bclose )$.
 
 Propriété~\ref{th:inclusion}.\\
-\comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
-  \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
-  \mbox{\lstinline' var_n = e2;'} \bclose$
-}{$\mem$} $\neq \errormem$.
-
-Propriété~\ref{lem:noerror}.\\
 $\env \subenv \env'$ et $\store \subenv \store'$ où
 $(\env', \store')$ =
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
 }{$(\env \store)$}.
+
+Propriété~\ref{lem:noerror}.\\
+\comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
+  \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
+  \mbox{\lstinline' var_n = e2;'} \bclose$
+}{$\mem$} $\neq \errormem$.
 
 Nous les justifions une à une :\commentGP{TODO}
 
