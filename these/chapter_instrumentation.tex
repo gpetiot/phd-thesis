@@ -1271,66 +1271,82 @@ La règle de traduction d'une annotation \lstinline'assert' est la suivante :
 }
 \end{center}
 
+Les propriétés~\ref{th:error} et~\ref{th:inclusion} sont déclinées sur le cas
+de l'assertion :
+
+Propriété~\ref{th:error}.\\
 Prouvons que pour toute mémoire $\mem$ :
 \comp{\lstinline'/*@ assert p; */ ;'}{$\mem$} = $\errormem$
-si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$} = $\errormem$
-(propriété~\ref{th:error}),
+si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$} = $\errormem$,
 où le fragment de programme $A$ est obtenu à partir de la séquence d'insertions
 de code $I$ selon les règles d'insertion énoncées dans la
 partie~\ref{sec:principles}.
 
-Prouvons également que si l'\lstinline'assert' est valide :
-$\env \subenv$ \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
-(propriété~\ref{th:inclusion}).
+Propriété~\ref{th:inclusion}.\\
+Prouvons que si l'\lstinline'assert' est valide, alors
+$\env \subenv \env'$ et $\store \subenv \store'$, où $(\env', \store') =$
+\comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$(\env, \store)$}.
 
+Nous les justifions une à une :
 
 \begin{proof}[Justification de la propriété~\ref{th:error}]~\\
   Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
 
-  \begin{tabular}{rclr}
-    \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} &=& \eval{\lstinline'p'}{$\env$}
-    & \eqlabel{h1} \\
-    \comps{$A$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h2} \\
-  \end{tabular}
+  \begin{center}
+    \begin{tabular}{rclr}
+      \eval{\lstinline'e'}{(\comps{$A$}{$\mem$})}
+      &=& \eval{\lstinline'p'}{$\mem$} & \eqlabel{h1} \\
+      \comps{$A$}{$\mem$} & $\neq$ & $\errormem$ & \eqlabel{h2} \\
+    \end{tabular}
+  \end{center}
 
-  Supposons
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} = $\errormem$
-  (\eqlabel{h3}) et
-  prouvons que \comp{\lstinline'/*@ assert p; */ ;'}{$\env$} = $\errormem$.
+  Supposons :
+
+  \begin{center}
+    \begin{tabular}{rclr}
+      \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$}
+      & = & $\errormem$ & \eqlabel{h3} \\
+    \end{tabular}
+  \end{center}
+
+  et prouvons que \comp{\lstinline'/*@ assert p; */ ;'}{$\mem$} = $\errormem$.
 
   (a) Cas où l'assertion est vraie, soit
-  \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = true, c'est-à-dire par hypothèse
-  \eqlabel{h1} : \eval{\lstinline'p'}{$\env$} = true.
-  Développons \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} :
+  \eval{\lstinline'e'}{(\comps{$A$}{$\mem$})} = true, c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{$\mem$} = true.
+  Développons \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$} :
 
   \begin{tabular}{rcl}
-    \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
-    &=& \comp{\lstinline'fassert(e);'}{(\comps{$A$}{$\env$})} \\
+    \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$}
+    &=& \comp{\lstinline'fassert(e);'}{(\comps{$A$}{$\mem$})} \\
     &$\eq{\eqlabel{C-fassert}}$
-    & \comps{$A$}{$\env$} {\scriptsize (car \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = true)} \\
+    & \comps{$A$}{$\mem$}{
+      \scriptsize (car \eval{\lstinline'e'}{(\comps{$A$}{$\mem$})} = true)} \\
   \end{tabular}
 
   D'autre part, l'hypothèse \eqlabel{h3} nous donne :
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$}
   = $\errormem$.
-
   On obtient par substitution :
-  \comps{$A$}{$\env$} = $\errormem$, ce qui contredit l'hypothèse \eqlabel{h2} selon
-  laquelle \comps{$A$}{$\env$} $\neq$ $\errormem$.
+  \comps{$A$}{$\mem$} = $\errormem$,
+  ce qui contredit l'hypothèse \eqlabel{h2} selon
+  laquelle \comps{$A$}{$\mem$} $\neq \errormem$.
 
   (b) Cas où l'assertion est fausse, soit
-  \eval{\lstinline'e'}{(\comps{$A$}{$\env$})} = false, c'est-à-dire par hypothèse
-  \eqlabel{h1} : \eval{\lstinline'p'}{$\env$} = false.
-
-  Développons \comp{\lstinline'/*@ assert p; */ ;'}{$\env$} :
+  \eval{\lstinline'e'}{(\comps{$A$}{$\mem$})} = false,
+  c'est-à-dire par hypothèse
+  \eqlabel{h1} : \eval{\lstinline'p'}{$\mem$} = false.
+  Développons \comp{\lstinline'/*@ assert p; */ ;'}{$\mem$} :
 
   \begin{tabular}{rcl}
-    \comp{\lstinline'/*@ assert p; */ ;'}{$\env$}
+    \comp{\lstinline'/*@ assert p; */ ;'}{$\mem$}
     &$\eq{\eqlabel{C-assert}}$
-    & $\errormem${} {\scriptsize (car \eval{\lstinline'p'}{$\env$} = false)} \\
+    & $\errormem${} {\scriptsize (car \eval{\lstinline'p'}{$\mem$} = false)} \\
   \end{tabular}
 
-  La propriété~\ref{th:error} est ainsi prouvée.
+  Nous avons ainsi prouvé que si
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$} = $\errormem$,\\
+  alors \comp{\lstinline'/*@ assert p; */ ;'}{$\mem$} = $\errormem$.
   ~\\
 \end{proof}
 
@@ -1338,15 +1354,26 @@ $\env \subenv$ \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
 \begin{proof}[Justification de la propriété~\ref{th:inclusion}]~\\
   Par hypothèse, la traduction de \lstinline'p' est correcte, c'est-à-dire :
 
-  \begin{tabular}{rclr}
-    $\env$ & $\subenv$ & \comps{$A$}{$\env$} & \eqlabel{h1} \\
-  \end{tabular}
+  \begin{center}
+    \begin{tabular}{lr}
+      $\env \subenv \env''$ & \eqlabel{h1} \\
+      $\store \subenv \store''$
+      où $(\env'', \store'') = $ \comps{$A$}{$(\env, \store)$} & \eqlabel{h2} \\
+    \end{tabular}
+  \end{center}
 
-  Nous avons montré que si l'assertion est valide, alors
-  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}
-  = \comps{$A$}{$\env$}.
-  Par substitution dans \eqlabel{h1}, on obtient :
-  $\env \subenv$ \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$}.
+  Nous avons montré (voir justification de la propriété~\ref{th:error}) que si
+  l'assertion est valide, alors
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$}
+  = \comps{$A$}{$\mem$}.
+
+  Prouver
+  $\env \subenv \env'$ et $\store \subenv \store'$, avec $(\env', \store') =$
+  \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$(\env, \store)$}
+  revient alors à prouver
+  $\env \subenv \env''$ et $\store \subenv \store''$,
+  avec $(\env'', \store'') =$ \comps{$A$}{$(\env, \store)$}, ce qui correspond
+  aux hypothèses \eqlabel{h1} et \eqlabel{h2}.
   ~\\
 \end{proof}
 
