@@ -118,23 +118,23 @@ L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
 \label{sec:mem-model}
 
 
-\subsection{Structure de données du store}
+\subsection{Structure de données ``store''}
 
 Le code instrumenté pouvant accéder et modifier fréquemment les données du
-store, une implémentation efficace requiert une structure de données
+\textit{store}, une implémentation efficace requiert une structure de données
 offrant une bonne complexité en temps et en espace.
 Cette structure doit être triée : on peut avoir besoin d'accéder directement à
 un bloc à partir de son adresse de base, mais aussi à partir de n'importe quelle
 adresse contenue dans le bloc (donc accéder au bloc précédent).
-Par exemple, la fonction \lstinline'__base_addr(p)' utilisée pour le traitement
-de la construction \acsl \lstinline'\base_addr(p)' cherche l'adresse de base la
-plus proche et inférieure à \lstinline'p' (et enfin vérifie les bornes du bloc).
+Par exemple, la fonction \lstinline'__base_addr' utilisée pour le traitement
+de la construction \baseaddrt cherche l'adresse de base la
+plus proche et inférieure à \textit{t} (et enfin vérifie les bornes du bloc).
 Cette contrainte ne nous permet pas d'utiliser une table de hachage.
 Les listes chaînées ne sont pas assez efficaces à cause de la complexité
-linéaire au pire cas.
+linéaire dans le pire cas.
 Les arbres binaires de recherche non équilibrés ont aussi une complexité
-linéaire au pire cas quand les données sont insérées dans un ordre strictement
-monotone, ce qui est souvent le cas.
+linéaire dans le pire des cas quand les données sont insérées dans un ordre
+strictement croissant ou strictement décroissant.
 Enfin, le coût du rééquilibrage de l'arbre (pour un arbre binaire de recherche
 équilibré) serait amorti dans le cas où les modifications de la structure de
 l'arbre sont moins nombreuses que les accès simples; ce qui n'est pas
@@ -143,7 +143,7 @@ nous le verrons au chapitre~\ref{sec:eacsl}.
 
 Notre choix s'est donc porté sur la structure de {\em Patricia trie}
 \cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
-compact'', cette structure est efficace même si l'abre n'est pas équilibré.
+compact'', cette structure est efficace même si l'arbre n'est pas équilibré.
 Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
 bits) ou des préfixes d'adresses.
 Chaque feuille contient les données relatives à un bloc en mémoire (voir
@@ -153,15 +153,18 @@ n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun de
 l'adresse de base de ses deux fils.
 
 La figure~\ref{fig:insertion-Patricia-trie} \textbf{a)} illustre un Patricia
-trie (sur des adresses 8-bits pour des raisons de simplicité).
-Il contient 3 blocs dans ses feuilles (seules les adresses de base apparaissent
-sur le schéma), et 2 préfixes stockés dans les n\oe{}uds internes.
+trie sur des adresses 8 bits, limite choisie pour des raisons de simplicité.
+Il contient trois blocs représentés par trois feuilles.
+Seules les adresses de base apparaissent sur le schéma.
+Il contient deux préfixes stockés dans les n\oe{}uds qui ne sont pas des
+feuilles.
 Le symbole ``{\tt *}'' signifie que la valeur du bit à cette position n'a pas
 d'importance.
 
-La complexité théorique au pire cas d'un accès dans un Patricia trie dans notre
-cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire 32 ou 64
-bits). En pratique, un programme ne pouvant allouer des blocs que dans un
+La complexité théorique dans le pire des cas d'un accès dans un Patricia trie
+dans notre cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire
+32 ou 64 bits).
+En pratique, un programme ne pouvant allouer des blocs que dans un
 espace mémoire limité, la profondeur de l'arbre est inférieure à cette borne.
 De plus, contrairement aux chaînes de caractères (la première application des
 Patricia tries), la comparaison des mots peut être implémentée très
@@ -337,16 +340,17 @@ booléen indiquant si le bloc est en lecture seule (par exemple si c'est une
 chaîne littérale).
 
 Afin d'enregistrer ces informations nous définissons les fonctions C suivantes.
-La fonction \lstinline'__store_block', qui prend un pointeur et une taille en
-octets en paramètre, est la primitive d'ajout d'un bloc dans ce que nous
-appelerons le ``store''.
-Le store est une structure de donnée qui recense tous les blocs en mémoire que
-nous souhaitons surveiller.
-Nous donnerons plus de détails sur le store en partie~\label{sec:mem-model}.
+La fonction \lstinline'__store_block', qui prend en paramètre un pointeur et une
+taille en octets, ajoute un bloc dans ce que nous appelerons le \textit{store}.
+Le \textit{store} est une structure de donnée qui recense tous les blocs en
+mémoire que nous souhaitons surveiller.
+Nous donnerons plus de détails sur le \textit{store} en
+partie~\ref{sec:mem-model}.
 La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
 et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
 variable globale (au début de la fonction \lstinline'main').
-La fonction \lstinline'__delete_block' permet d'enlever un bloc du store.
+La fonction \lstinline'__delete_block' permet d'enlever un bloc du
+\textit{store}.
 Elle est appelée en fin de portée d'une variable.
 
 Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
@@ -356,8 +360,8 @@ L'instrumentation va substituer les appels à ces fonctions par un appel à nos
 fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
 et \lstinline'__free'.
 Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
-au store, ainsi que de transférer les informations d'initialisations d'un bloc
-à un autre en cas de \lstinline'realloc'.
+au \textit{store}, ainsi que de transférer les informations d'initialisations
+d'un bloc à un autre en cas de \lstinline'realloc'.
 
 Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
 marquer un certain nombre d'octets d'un bloc comme étant initialisés.
@@ -430,14 +434,14 @@ défaut en C).
 \end{figure*}
 
 
-Afin de pouvoir exploiter les informations sur les blocs stockés dans le store,
-nous définissons les fonctions \lstinline'__base_addr',
+Afin de pouvoir exploiter les informations sur les blocs stockés dans le
+\textit{store}, nous définissons les fonctions \lstinline'__base_addr',
 \lstinline'__block_length', \lstinline'__offset', \lstinline'__valid',
 \lstinline'__valid_read' et \lstinline'__initialized'.
-La sémantique de ces fonction est calquée sur la sémantique des annotations
+La sémantique de ces fonctions est calquée sur la sémantique des annotations
 \eacsl donnée en partie~\ref{sec:mem-annots}.
-La fonction \lstinline'__base_addr' retourne l'adresse d'un bloc à partir du
-pointeur qu'elle reçoit en argument.
+La fonction \lstinline'__base_addr' retourne l'adresse de début d'un bloc à
+partir du pointeur qu'elle reçoit en argument.
 La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
 le bloc.
 La fonction \lstinline'__ofset' retourne le décalage d'un pointeur par rapport à
