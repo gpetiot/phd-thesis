@@ -344,7 +344,7 @@ La fonction \lstinline'__store_block', qui prend en paramètre un pointeur et un
 taille en octets, ajoute un bloc dans ce que nous appelerons le \textit{store}.
 Le \textit{store} est une structure de donnée qui recense tous les blocs en
 mémoire que nous souhaitons surveiller.
-Nous donnerons plus de détails sur le \textit{store} en
+Nous donnons plus de détails sur le \textit{store} en
 partie~\ref{sec:mem-model}.
 La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
 et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
@@ -354,14 +354,14 @@ La fonction \lstinline'__delete_block' permet d'enlever un bloc du
 Elle est appelée en fin de portée d'une variable.
 
 Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
-standart du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
+standard du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
 \lstinline'free'.
 L'instrumentation va substituer les appels à ces fonctions par un appel à nos
 fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
 et \lstinline'__free'.
 Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
 au \textit{store}, ainsi que de transférer les informations d'initialisations
-d'un bloc à un autre en cas de \lstinline'realloc'.
+d'un bloc à un autre en cas d'application de la fonction \lstinline'realloc'.
 
 Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
 marquer un certain nombre d'octets d'un bloc comme étant initialisés.
