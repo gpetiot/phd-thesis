@@ -1382,9 +1382,11 @@ Nous les justifions une à une :
   Boucles}
 
 
-Nous considérons une boucle complètement annotée avec
-\lstinline'loop invariant', \lstinline'loop variant' et
-\lstinline'loop assigns'.
+Donnons une intuition de la preuve des propriétés~\ref{th:error}
+et~\ref{th:inclusion} dans le cas des contrats de boucles.
+Nous considérons une boucle \lstinline'while' annotée dont le contrat est
+composé d'un \lstinline'loop invariant', d'un \lstinline'loop variant' et
+d'une clause \lstinline'loop assigns'.
 La traduction utilise les trois règles suivantes :
 
 
@@ -1461,25 +1463,25 @@ $Spec2Code$\lstinline'('$I_1$\lstinline', e1)' est une notation signifiant que
 règle \textsc{$\alpha$-check-invariant}.
 
 Si l'invariant (ligne 2) n'est pas établi avant la boucle, alors on obtient
-l'environnement d'erreur (règle \eqlabel{C-while-1}), ce qui correspond aux
+la mémoire d'erreur (cas \eqlabel{C-while-1}), ce qui correspond aux
 lignes 2--3 du code généré.
-Si la condition de boucle (ligne 5) est fausse, l'environnement est inchangé
-(règle \eqlabel{C-while-2}) car le code que nous générons n'impacte pas les
+Si la condition de boucle (ligne 5) est fausse, la mémoire est inchangée
+(cas \eqlabel{C-while-2}) car le code que nous générons n'impacte pas les
 variables du programme original, donc la condition de boucle \lstinline'e' a la
 même valeur en chaque point dans le programme original et le programme
 instrumenté.
 Si le variant de la boucle (ligne 4) est négatif au début de la boucle, on
-obtient l'environnement d'erreur (règle \eqlabel{C-while-3}), ce qui correspond
+obtient la mémoire d'erreur (cas \eqlabel{C-while-3}), ce qui correspond
 aux lignes 9--10 du code généré.
 Si l'invariant de boucle n'est pas préservé à la fin de l'itération de boucle,
-l'environnement d'erreur est obtenu (règle \eqlabel{C-while-4}), ce qui
+la mémoire d'erreur est obtenue (cas \eqlabel{C-while-4}), ce qui
 correspond aux lignes 13--14 du code généré.
 Si le variant ne décroît pas strictement entre deux itérations de boucle, alors
-l'environnement d'erreur est obtenu (règle \eqlabel{C-while-5}), ce qui
+la mémoire d'erreur est obtenue (cas \eqlabel{C-while-5}), ce qui
 correspond aux lignes 18--19 (la comparaison est faite avec la valeur du variant
 mémorisée à la ligne 9).
 Si une left-value n'appartenant pas à la clause assigns (ligne 3) a été modifiée
-par la boucle, alors l'environnement d'erreur est obtenu (règle
+par la boucle, alors la mémoire d'erreur est obtenue (cas
 \eqlabel{C-while-6}), ce qui correspond aux lignes 6--8 (pour la sauvegarde des
 valeurs) et 15--17 (pour les comparaisons) du code généré.
 
@@ -1490,6 +1492,9 @@ valeurs) et 15--17 (pour les comparaisons) du code généré.
 \subsection{Justification de correction de la Traduction des Contrats de
   Fonctions}
 
+
+Donnons maintenant une intuition de la preuve des propriétés~\ref{th:error}
+et~\ref{th:inclusion} dans le cas des contrats de fonctions.
 Il nous faut distinguer deux cas : le
 cas où la fonction est ``sous vérification'' -- c'est-à-dire où c'est la
 fonction de plus haut niveau et sa précondition est supposée vraie -- et le cas
@@ -1505,9 +1510,9 @@ suivantes.
 \input{figures/fig_proof_fct_contract_main}
 
 
-Nous considérons une fonction \lstinline'f' sous vérification annotée avec
-\lstinline'requires' (ou \lstinline'typically'), \lstinline'assigns' et
-\lstinline'ensures'.
+Nous considérons une fonction \lstinline'f' sous vérification annotée, dont le
+contrat est composé d'une clause \lstinline'requires', d'une clause
+\lstinline'assigns' et d'une clause \lstinline'ensures'.
 La traduction utilise les trois règles suivantes :
 
 {\scriptsize
@@ -1551,9 +1556,8 @@ La traduction utilise les trois règles suivantes :
 
 
 La figure~\ref{fig:proof-fct-contract-main}, illustre la justification de
-correction
-de la traduction des contrats pour la fonction sous vérification sur un schéma
-générique normalisé de fonction.
+correction de la traduction des contrats pour la fonction sous vérification sur
+un schéma générique normalisé de fonction.
 La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
 contrat, avec un corps quelconque $A$.
 En partie droite est affichée le code résultant de la traduction de cette
@@ -1564,10 +1568,10 @@ traduction.
 Par hypothèse, la précondition de la fonction sous vérification est vraie, ce
 qui correspond aux lignes 3--4 du code généré.
 Si la fonction modifie une des left-values n'appartenant pas à la clause
-assigns, alors l'environnement d'erreur est obtenu (règle \eqlabel{f-2}), ce qui
+assigns, alors la méoire d'erreur est obtenue (cas \eqlabel{f-2}), ce qui
 correspond aux lignes 5--7 et 10--12 du code généré.
 Si la postcondition n'est pas vérifiée à la fin de la fonction, on obtient
-l'environnement d'erreur (règle \eqlabel{f-3}), ce qui correspond aux lignes
+la mémoire d'erreur (cas \eqlabel{f-3}), ce qui correspond aux lignes
 13--14 du code généré.
 
 
@@ -1575,14 +1579,15 @@ l'environnement d'erreur (règle \eqlabel{f-3}), ce qui correspond aux lignes
 
 \input{figures/fig_proof_fct_contract_call}
 
-Nous considérons une fonction \lstinline'f' appelée annotée avec
-\lstinline'requires', \lstinline'assigns' et \lstinline'ensures'.
+Considérons enfin une fonction \lstinline'f' appelée, dont le contrat est
+composé d'une clause \lstinline'requires', d'une clause \lstinline'assigns' et
+d'une clause \lstinline'ensures'.
 La traduction des contrats d'une fonction appelée réutilise les règles
 \textsc{$\alpha$-check-assigns} et \textsc{$\alpha$-check-post} de la partie
 précédente.
 En revanche, afin de vérifier la précondition d'une fonction appelée et non la
 supposer vraie, la règle \textsc{$\alpha$-assume-pre} est remplacée par la règle
-suivante :
+\textsc{$\alpha$-check-pre} :
 
 {\scriptsize
   {\myinference{$\alpha$-check-pre\hspace{-2mm}}
@@ -1594,8 +1599,8 @@ suivante :
 }
 
 La figure~\ref{fig:proof-fct-contract-call}, illustre la justification de
-correction
-de la traduction des contrats pour la fonction sous vérification sur un exemple.
+correction de la traduction des contrats pour les fonctions appelées sur
+un exemple.
 La partie gauche de la figure montre une fonction \lstinline'f' disposant d'un
 contrat, avec un corps quelconque $A$.
 En partie droite est affichée le code résultant de la traduction de cette
@@ -1604,13 +1609,13 @@ mis en relation avec l'annotation du programme original dont il est la
 traduction.
 
 Si la précondition n'est pas vérifiée au début de la fonction, alors
-l'environnement d'erreur est obtenu (règle \eqlabel{f-1}), ce qui correspond aux
+la méoire d'erreur est obtenue (cas \eqlabel{f-1}), ce qui correspond aux
 lignes 3--4 du code généré.
 Si la fonction modifie une des left-values n'appartenant pas à la clause
-assigns, alors l'environnement d'erreur est obtenu (règle \eqlabel{f-2}), ce qui
+assigns, alors la mémoire d'erreur est obtenue (cas \eqlabel{f-2}), ce qui
 correspond aux lignes 5--7 et 10--12 du code généré.
 Si la postcondition n'est pas vérifiée à la fin de la fonction, on obtient
-l'environnement d'erreur (règle \eqlabel{f-3}), ce qui correspond aux lignes
+la mémoire d'erreur (cas \eqlabel{f-3}), ce qui correspond aux lignes
 13--14 du code généré.
 
 
