@@ -333,6 +333,10 @@ instrumentées afin de pouvoir utiliser ces informations.
 \subsection{Instrumentation des allocations et affectations}
 
 
+Dans cette partie, nous définissons de manière informelle l'instrumentation à
+opérer sur le programme annoté afin de pouvoir observer les allocations et
+les affectations en mémoire.
+
 Comme nous l'avons vu, pour traiter ces annotations \eacsl, nous devons
 conserver pour chaque bloc les informations suivantes : l'adresse de base, le
 nombre d'octets occupés en mémoire, l'initialisation de chaque octet et un
@@ -349,8 +353,8 @@ partie~\ref{sec:mem-model}.
 La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
 et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
 variable globale (au début de la fonction \lstinline'main').
-La fonction \lstinline'__delete_block' permet d'enlever un bloc du
-\textit{store}.
+La fonction \lstinline'__delete_block' permet d'enlever du \textit{store} un
+bloc reçu en paramètre.
 Elle est appelée en fin de portée d'une variable.
 
 Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
@@ -388,7 +392,7 @@ défaut en C).
       {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
       {(l, \mbox{\lstinline'\\block_length(t)'}) \rulearrow
         (I \concat
-        (l, \mbox{\lstinline'size_t var_n = __block_length(e);'}),
+        (l, \mbox{\lstinline'unsigned long var_n = __block_length(e);'}),
         \mbox{\lstinline'var_n'})
       }{}
     }
@@ -444,14 +448,19 @@ La fonction \lstinline'__base_addr' retourne l'adresse de début d'un bloc à
 partir du pointeur qu'elle reçoit en argument.
 La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
 le bloc.
-La fonction \lstinline'__ofset' retourne le décalage d'un pointeur par rapport à
-son adresse de base dans le bloc.
+La fonction \lstinline'__offset' retourne le décalage d'un pointeur par rapport
+à son adresse de base dans le bloc.
 Les fonctions \lstinline'__valid' et \lstinline'__valid_read'
 retournent le statut de validité à partir d'un pointeur et d'un nombre d'octets.
 La fonction \lstinline'__initialized' retourne le statut d'initialisation
 d'un nombre d'octets d'un pointeur en argument.
 La figure~\ref{fig:mem-annots-rules} présente les règles de traduction des
 annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}.
+Dans les règles \textsc{$\pi$-valid-read} et \textsc{$\pi$-initialized},
+\lstinline'typeof(e)' désigne le type de l'expression \lstinline'e', qui est un
+type C tel \lstinline'int' ou \lstinline'char'.
+\lstinline'sizeof(typeof(e))' correspond au nombre d'octets occupés par un objet
+de ce type en mémoire.
 
 
 \section*{Conclusion du chapitre}
