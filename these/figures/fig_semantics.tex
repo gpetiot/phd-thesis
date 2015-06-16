@@ -17,9 +17,10 @@
 
     \comp{$\Zinit$ \underline{$\mathit{x}$ \lstinline'=' $e$} $\semicolon$}{
       $(\env, \store)$}
-    &=& ($\env, \store[\env(\mathit{x}) \mapsto$
+    &=& ($\env[\mathit{id}\mapsto \loc], \store[\loc \mapsto$
       \eval{$\underline{e}$}{$(\env, \store)$}])
     & \eqlabel{C-Z-set} \\
+    && où $\loc$ est une adresse fraîche &\\
 
     %% \comp{$\Zinit$ \underline{$\mathit{x}$\lstinline'['$\mathit{e}$\lstinline']'
     %%   \lstinline'=' $e_2$} $\semicolon$}{$(\env, \store)$}
