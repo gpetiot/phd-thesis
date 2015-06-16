@@ -998,7 +998,7 @@ $(\env', \store')$ =
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-}{$(\env \store)$}.
+}{$(\env, \store)$}.
 
 Propriété~\ref{lem:noerror}.\\
 \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
@@ -1006,7 +1006,7 @@ Propriété~\ref{lem:noerror}.\\
   \mbox{\lstinline' var_n = e2;'} \bclose$
 }{$\mem$} $\neq \errormem$.
 
-Nous les justifions une à une :\commentGP{TODO}
+Nous les justifions une à une :
 
 \begin{proof}[Justification de la propriété~\ref{lem:pred-correct}.]~\\
   Par hypothèse, les traductions de \lstinline'p1' et \lstinline'p2' sont
@@ -1021,7 +1021,9 @@ Nous les justifions une à une :\commentGP{TODO}
     \end{tabular}
   \end{center}
 
-  Développons le membre droit :
+  Nous transformons le membre droit en une expression identique au membre gauche
+  en appliquant les règles de sémantique dénotationnelle et de définition des
+  mémoires :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
@@ -1034,20 +1036,24 @@ Nous les justifions une à une :\commentGP{TODO}
     } \\
     &=& \eval{\lstinline'var_n'}{(\comps{$\mbox{\lstinline' int var_n = e1;'}
         \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
-        \mbox{\lstinline' var_n = e2;'} \bclose$}{(\comps{$A_1$}{$\env$})})} \\
-    &$\eq{\eqlabel{C-set}}$& \eval{\lstinline'var_n'}{(\comps{
+        \mbox{\lstinline' var_n = e2;'} \bclose$}{(\comps{$A_1$}{$\mem$})})} \\
+    &$\eq{\eqlabel{C-decl} \circ \eqlabel{C-set}}$
+    & \eval{\lstinline'var_n'}{(\comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{$\env$})[
-          \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
-      })
+        $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+        $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
+      }
+      )
     } \\
+    && où $(\env', \store') = \mem' = $ \comps{$A_1$}{$\mem$}
+    et $\loc$ est une adresse fraîche. \\
   \end{tabular}
 
   (a) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
-  vraie, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} = true, c'est-à-dire
-  par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\env$} = true.
+  vraie, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\mem$})} = true,
+  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\mem$} =
+  true.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc
   $A_2\semicolon~ \mbox{\lstinline' var_n = e2;'}$ :
 
@@ -1056,52 +1062,68 @@ Nous les justifions une à une :\commentGP{TODO}
       \comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{$\env$})[
-          \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
+        $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+        $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
       }
     } \\
     &$\eq{\eqlabel{C-if}}$& \comps{
       $A_2\semicolon~\mbox{\lstinline' var_n = e2;'}$}{
-      ((\comps{$A_1$}{$\env$})[
-        \lstinline'var_n' $\mapsto$
-        \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
+      $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+      $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
     } \\
     &=& \comp{
       \lstinline' var_n = e2;'
     }{$\underbracket{
         \mbox{
           (\comps{$A_2$}{
-            ((\comps{$A_1$}{$\env$})[
-              \lstinline'var_n' $\mapsto$
-              \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
+            $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+            $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
           })
         }
-      }_{\Gamma_f}$
+      }_{\mem_f}$
     } \\
     &$\eq{\eqlabel{C-set}}$
-    & $\Gamma_f$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}]
+    & $(\env_f, \store_f[\env_f($\lstinline'var_n'$) \mapsto$ \eval{
+        \lstinline'e2'}{$\mem_f$}$])$
+    où $\mem_f = (\env_f, \store_f)$ \\
+    &$\eq{\eqlabel{env-get-1}}$
+    & $(\env_f, \store_f[\loc \mapsto$ \eval{\lstinline'e2'}{$\mem_f$}$])$
+    car $\env_f($\lstinline'var_n'$) = \loc$. \\
   \end{tabular}
 
   Donc :
 
   \begin{tabular}{rcl}
-    \eval{\lstinline'var_n'}{
-      ($\Gamma_f$[
-        \lstinline'var_n' $\mapsto$ \eval{\lstinline'e2'}{$\Gamma_f$}
-      ])
-    }
-    &=& \eval{\lstinline'e2'}{$\Gamma_f$} \\
-    &$\eq{\eqlabel{h2}}$& \eval{\lstinline'p2'}{$\env$} \\
-    &=& \eval{\lstinline'p1'}{$\env$} $\land$ \eval{\lstinline'p2'}{$\env$}
+    \multicolumn{3}{l}{
+      \eval{\lstinline'var_n'}{
+        $(\env_f, \store_f[\loc \mapsto$ \eval{\lstinline'e2'}{$\mem_f$}$])$
+      }
+    } \\
+    &$\eq{\eqlabel{E-lval}}$
+    &$\store_f[\loc \mapsto$ \eval{\lstinline'e2'}{
+        $\mem_f$}$](\env_f($\lstinline'var_n'$))$ \\
+    &$\eq{\eqlabel{env-get-1}}$
+    &$\store_f[\loc \mapsto$ \eval{\lstinline'e2'}{$\mem_f$}$](\loc)$ \\
+    &$\eq{\eqlabel{store-get-1}}$
+    &\eval{\lstinline'e2'}{$\mem_f$}\\
+    &=
+    &\eval{\lstinline'e2'}{
+      (\comps{$A_2$}{
+        $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+        $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
+      })
+    }\\
+    &$\eq{\eqlabel{h2}}$& \eval{\lstinline'p2'}{$\mem$} \\
+    &=& \eval{\lstinline'p1'}{$\mem$} $\land$ \eval{\lstinline'p2'}{$\mem$}
          {\scriptsize
-           (car on est dans le cas \eval{\lstinline'p1'}{$\env$} = true)} \\
-         &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\env$} \\
+           (car on est dans le cas \eval{\lstinline'p1'}{$\mem$} = true)} \\
+         &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\mem$} \\
   \end{tabular}
 
   (b) Cas où la valeur de l'expression conditionnelle \lstinline'var_n' est
-  fausse, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} = false,
-  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\env$} = false.
+  fausse, soit \eval{\lstinline'e1'}{(\comps{$A_1$}{$\mem$})} = false,
+  c'est-à-dire par hypothèse \eqlabel{h1} : \eval{\lstinline'p1'}{$\mem$} =
+  false.
   Dans ce cas, par définition de \eqlabel{C-if} on exécute le bloc du
   \lstinline'else' (qui ici est vide et n'apparaît pas car facultatif) :
 
@@ -1110,15 +1132,13 @@ Nous les justifions une à une :\commentGP{TODO}
       \comps{
         \lstinline'if(var_n)' $\bopen A_2\semicolon~
         \mbox{\lstinline' var_n = e2;'} \bclose$}{
-        ((\comps{$A_1$}{$\env$})[
-          \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
+        $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+        $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
       }
     } \\
     &$\eq{\eqlabel{C-if}}$
-    & (\comps{$A_1$}{$\env$})[
-      \lstinline'var_n' $\mapsto$
-      \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}] \\
+    & $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+    $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$ \\
   \end{tabular}
 
   Donc :
@@ -1126,27 +1146,35 @@ Nous les justifions une à une :\commentGP{TODO}
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
       \eval{\lstinline'var_n'}{
-        ((\comps{$A_1$}{$\env$})[
-          \lstinline'var_n' $\mapsto$
-          \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})}])
+        $(\env'[$\lstinline'var_n' $\mapsto \loc],$
+        $\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $])$
       }
     } \\
-    &=& \eval{\lstinline'e1'}{(\comps{$A_1$}{$\env$})} \\
-    &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{$\env$} \\
-    &=& \eval{\lstinline'p1'}{$\env$} $\land$ \eval{\lstinline'p2'}{$\env$} {
+    &$\eq{\eqlabel{E-lval}}$
+    &$\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $]$
+    $(\env'[$\lstinline'var_n' $\mapsto \loc] ($
+    \lstinline'var_n'
+    $))$ \\
+    &$\eq{\eqlabel{env-get-1}}$
+    &$\store'[\loc \mapsto$ \eval{\lstinline'e1'}{$\mem'$} $](\loc)$ \\
+    &$\eq{\eqlabel{store-get-1}}$
+    &\eval{\lstinline'e1'}{$\mem'$} \\
+    &=&\eval{\lstinline'e1'}{(\comps{$A_1$}{$\mem$})} \\
+    &$\eq{\eqlabel{h1}}$& \eval{\lstinline'p1'}{$\mem$} \\
+    &=& \eval{\lstinline'p1'}{$\mem$} $\land$ \eval{\lstinline'p2'}{$\mem$} {
       \scriptsize
-      (car on est dans le cas \eval{\lstinline'p1'}{$\env$} = false)} \\
-    &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\env$} \\
+      (car on est dans le cas \eval{\lstinline'p1'}{$\mem$} = false)} \\
+    &$\eq{\eqlabel{P-and}}$& \eval{\lstinline'p1 \&\& p2'}{$\mem$} \\
   \end{tabular}
   
   On a donc bien :
 
-  \eval{\lstinline'p1 && p2'}{$\env$} =
+  \eval{\lstinline'p1 && p2'}{$\mem$} =
   \eval{\lstinline'var_n'}{(
     \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
       \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
       \mbox{\lstinline' var_n = e2;'} \bclose$
-    }{$\env$}
+    }{$\mem$}
     )}.
   ~\\
 \end{proof}
@@ -1157,29 +1185,36 @@ Nous les justifions une à une :\commentGP{TODO}
   correctes, c'est-à-dire :
 
   \begin{center}
-    \begin{tabular}{rclr}
-      $\env$ & $\subenv$ & \comps{$A_1$}{$\env$} & \eqlabel{h3} \\
-      $\env$ & $\subenv$ & \comps{$A_2$}{$\env$} & \eqlabel{h4} \\
+    \begin{tabular}{lr}
+      $\env \subenv \env_1$ & \eqlabel{h3} \\
+      $\store \subenv \store_1$
+      où $(\env_1, \store_1) = $ \comps{$A_1$}{$(\env, \store)$}
+      & \eqlabel{h4} \\
+      $\env \subenv \env_2$ & \eqlabel{h5} \\
+      $\store \subenv \store_2$
+      où $(\env_2, \store_2) = $ \comps{$A_2$}{$(\env, \store)$}
+      & \eqlabel{h6} \\
     \end{tabular}
   \end{center}
 
-  De manière informelle, les affectations générées \lstinline'int var_n = e1;'
+  De manière informelle, les instructions générées \lstinline'int var_n = e1;'
   et \lstinline'var_n = e2;' ne modifient que la variable fraîche
-  \lstinline'var_n' et les hypothèses \eqlabel{h3} et \eqlabel{h4} nous assurent
+  \lstinline'var_n' et les hypothèses \eqlabel{h3} à \eqlabel{h6} nous assurent
   que les blocs $A_1$ et $A_2$ ne modifient pas les variables de
-  l'environnement $\env$.
-  On en conclut donc que le fragment de programme généré
+  la mémoire $\mem = (\env, \store)$.
+  On en conclut donc que le fragment de programme instrumenté
   $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
   \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
   \mbox{\lstinline' var_n = e2;'} \bclose$
-  ne modifie pas les variables de l'environnement $\env$.
+  ne modifie pas la mémoire $\mem$.
   On a donc bien :
 
-  $\env \subenv$
+  $\env \subenv \env'$ et $\store \subenv \store'$ où
+  $(\env', \store')$ =
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{$\env$}.
+  }{$(\env, \store)$}.
 ~\\
 \end{proof}
 
@@ -1190,22 +1225,22 @@ Nous les justifions une à une :\commentGP{TODO}
 
   \begin{center}
     \begin{tabular}{rclr}
-      \comps{$A_1$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h5} \\
-      \comps{$A_2$}{$\env$} & $\neq$ & $\errormem$ & \eqlabel{h6} \\
+      \comps{$A_1$}{$\mem$} & $\neq$ & $\errormem$ & \eqlabel{h7} \\
+      \comps{$A_2$}{$\mem$} & $\neq$ & $\errormem$ & \eqlabel{h8} \\
     \end{tabular}
   \end{center}
 
-  Les hypothèses \eqlabel{h5} et \eqlabel{h6} et le fait que les fragments de
+  Les hypothèses \eqlabel{h7} et \eqlabel{h8} et le fait que les fragments de
   code générés ne produisent pas d'erreur (seule la variable fraîche
-  \lstinline'var_n' est affectée) nous assurent que si $\env${} n'est pas un
-  environnement d'erreur ($\env${} ne peut pas être $\errormem$ puisque la
+  \lstinline'var_n' est affectée) nous assurent que si $\mem$ n'est pas une
+  environnement d'erreur ($\mem$ ne peut pas être $\errormem$ puisque la
   traduction se serait arrêtée dès l'obtention de l'erreur).
   On a donc bien :
 
   \comps{$A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
     \mbox{\lstinline'if(var_n)'} \bopen A_2\semicolon~
     \mbox{\lstinline' var_n = e2;'} \bclose$
-  }{$\env$} $\neq$ $\errormem$.
+  }{$\mem$} $\neq \errormem$.
 ~\\
 \end{proof}
 
