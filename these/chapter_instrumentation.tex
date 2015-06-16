@@ -850,15 +850,17 @@ Propriété~\ref{lem:term-correct}. \eval{\lstinline'cst'}{$\mem$} =
   (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$})}.
 
 
-Propriété~\ref{th:inclusion}. $\mem \subenv$
-\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$}.
+Propriété~\ref{th:inclusion}.
+$\env \subenv \env'$ et $\store \subenv \store'$ où
+ $(\env', \store') =$
+\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$(\env, \store)$}.
 
 
 Propriété~\ref{lem:noerror}.
 \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$}
 $\neq \errormem$.
 
-Nous les justifions une à une :\commentGP{TODO}
+Nous les justifions une à une :
 
 \begin{proof}[Justification de la propriété~\ref{lem:term-correct}.]~\\
   Nous transformons le membre droit en une expression identique au membre gauche
@@ -866,41 +868,55 @@ Nous les justifions une à une :\commentGP{TODO}
   mémoires :
 
   \begin{tabular}{rcl}
-  \eval{\lstinline'var_n'}{
-  (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$})}
-  &$\eq{\eqlabel{C-Z-set}}$&
-  \eval{\lstinline'var_n'}{
-    ($\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}])} \\
-  &$\eq{\eqlabel{E-lval}}$&
-  $\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}]
-  (\lstinline'var_n') \\
-  &$\eq{\eqlabel{env-get-1}}$& \eval{\lstinline'cst'}{$\env\store$} \\
+    \multicolumn{3}{l}{
+      \eval{\lstinline'var_n'}{
+        (\comps{$\Zinit$\underline{\lstinline'var_n = cst;'}
+        }{$(\env, \store)$})}
+    }\\ 
+    &$\eq{\eqlabel{C-Z-set}}$&
+    \eval{\lstinline'var_n'}{
+      ($\env$[\lstinline'var_n' $\mapsto \loc]$,
+      $\store$[$\loc \mapsto$
+        \eval{\lstinline'cst'}{$(\env, \store)$}])} \\
+    && où $\loc$ est une adresse fraîche \\
+    &$\eq{\eqlabel{E-lval}}$&
+    $\store$[$\loc \mapsto$
+      \eval{\lstinline'cst'}{$(\env, \store)$}]
+    (
+    $\env$[\lstinline'var_n' $\mapsto \loc]$
+    (\lstinline'var_n')
+    )\\
+    &$\eq{\eqlabel{env-get-1}}$&
+    $\store$[$\loc \mapsto$
+      \eval{\lstinline'cst'}{$(\env, \store)$}]
+    ($\loc$)\\
+    &$\eq{\eqlabel{store-get-1}}$&
+    \eval{\lstinline'cst'}{$(\env, \store)$} \\
   \end{tabular}
   ~\\
 \end{proof}
 
 
 \begin{proof}[Justification de la propriété~\ref{th:inclusion}.]~\\
-  
-  L'affectation générée $\Zinit$\underline{\lstinline'var_n = cst;'} ne modifie
-  que la variable fraîche \lstinline'var_n', on peut donc en conclure que
-  $\env \subenv
-  \env[$\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}] et donc :
-  $\env \subenv$
-  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$}.
+  L'instruction générée $\Zinit$\underline{\lstinline'var_n = cst;'} ne modifie
+  que la variable fraîche \lstinline'var_n'.
+  Le nouvel environnement est
+  $\env' = \env[$\lstinline'var_n' $\mapsto \loc]$
+  et le nouveau store est
+  $\store' = \store[\loc \mapsto$ \eval{\lstinline'cst'}{$(\env, \store)$}$]$.
+  On peut donc en conclure $\env \subenv \env'$ et $\store \subenv \store'$.
   ~\\
 \end{proof}
 
 
 \begin{proof}[Justification de la propriété~\ref{lem:noerror}.]~\\
-  La nouvelle mémoire étant
-  $\env$[\lstinline'var_n' $\mapsto$ \eval{\lstinline'cst'}{$\env\store$}], ce
-  n'est pas
-  une mémoire d'erreur car l'évaluation d'une constante ne produit pas
-  d'erreur.
-  On a donc bien :
-  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\env\store$}
-  $\neq \errormem$.
+  La nouvelle mémoire est
+  $(\env[$\lstinline'var_n' $\mapsto \loc],$
+  $\store[\loc \mapsto$ \eval{\lstinline'cst'}{$(\env, \store)$}$])$.
+  Ce n'est pas une mémoire d'erreur car l'évaluation d'une constante ne produit
+  pas d'erreur.
+  On a donc bien
+  \comps{$\Zinit$\underline{\lstinline'var_n = cst;'}}{$\mem$} $\neq \errormem$.
   ~\\
 \end{proof}
 
