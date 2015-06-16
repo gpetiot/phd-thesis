@@ -750,7 +750,8 @@ une erreur du programme annoté.
 \begin{myproperty}[Inclusion des mémoires]
   \label{th:inclusion}
   Soit le fragment de programme $A$ obtenu à partir d'une liste d'insertions de
-  code $I$.
+  code $I$ selon les règles d'insertion énoncées dans la
+  partie~\ref{sec:principles}.
   Soit une mémoire quelconque $(\env, \store)$.
   Pour tout préfixe $B$ de $A$ tel que :
   $(\env', \store')$ = \comps{$B$}{$(\env, \store)$} alors
@@ -990,7 +991,9 @@ $A_1\semicolon~ \mbox{\lstinline' int var_n = e1;'}
 est obtenu à partir des listes d'insertions
 $I_1 \cdot (l, \mbox{\lstinline'int var_n = e1;'}) \cdot
 (l, \mbox{\lstinline'if(var_n)'} \bopen I_2 \cdot
-(l, \mbox{\lstinline'var_n = e2;'}) \bclose )$.
+(l, \mbox{\lstinline'var_n = e2;'}) \bclose )$
+selon les règles d'insertion énoncées dans la
+partie~\ref{sec:principles}.
 
 Propriété~\ref{th:inclusion}.\\
 $\env \subenv \env'$ et $\store \subenv \store'$ où
@@ -1268,9 +1271,9 @@ La règle de traduction d'une annotation \lstinline'assert' est la suivante :
 }
 \end{center}
 
-Prouvons que pour tout environnement $\env${} :
-\comp{\lstinline'/*@ assert p; */ ;'}{$\env$} = $\errormem$
-si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\env$} = $\errormem$
+Prouvons que pour toute mémoire $\mem$ :
+\comp{\lstinline'/*@ assert p; */ ;'}{$\mem$} = $\errormem$
+si \comps{$A\semicolon~ \mbox{\lstinline'fassert(e);'}$}{$\mem$} = $\errormem$
 (propriété~\ref{th:error}),
 où le fragment de programme $A$ est obtenu à partir de la séquence d'insertions
 de code $I$ selon les règles d'insertion énoncées dans la
