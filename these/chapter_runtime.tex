@@ -7,15 +7,18 @@
 Dans ce chapitre nous abordons la vérification dynamique des annotations liées
 au modèle mémoire.
 Ceci requiert de pouvoir simuler un modèle mémoire bas niveau afin de pouvoir
-surveiller les opérations bas niveau des programmes C.
-Les générateurs de tests structurels pouvant rarement traiter les opérations
-bas niveau, nous avons décidé de changer d'approche pour ces propriétés.
+surveiller les opérations bas niveau des programmes C (allocations,
+initialisations, etc.).
+Le support de ces opérations par un générateur de tests structurels nécessite
+de pouvoir les interpréter symboliquement, ce qui n'est pas toujours le cas.
+Nous avons donc décidé de changer d'approche pour ces propriétés.
 En effet, contrairement au chapitre~\ref{sec:traduction}, ces annotations ne
 seront pas vérifiées par test structurel mais par validation à l'exécution
 ({\em runtime assertion checking}).
 
-Dans un premier temps nous présentons les différentes annotations qui nous
-intéressent (partie~\ref{sec:mem-annots}).
+Dans un premier temps nous présentons les différentes annotations que nous ne
+pouvons pas traiter par génération de tests et que nous qualifions d'opérations
+de bas niveau (partie~\ref{sec:mem-annots}).
 Puis nous abordons les principes de l'instrumentation nécessaire pour leur
 vérification (partie~\ref{sec:mem-instru}).
 Enfin, nous présentons quelques détails de conception de notre modèle mémoire
@@ -32,41 +35,60 @@ Chaque bloc est caractérisé par une adresse de base, une taille (en octets) et
 un contenu (qui peut être initialisé ou non).
 Tout ceci constitue le modèle mémoire.
 
-Détaillons maintenant les annotations \eacsl que nous considérons :
-\lstinline{\base_addr}, \lstinline{\block_length},
-\lstinline{\offset}, \lstinline{\valid}, \lstinline{\valid_read} et
-\lstinline{\initialized}.
-Les trois premières sont des termes \eacsl, les trois dernières sont des
-prédicats \eacsl.
+Soit \textit{t} un terme \eacsl de type pointeur.
+Les annotations \eacsl que nous considérons sont les suivantes :
 
-\lstinline'\base_addr(p)' retourne l'adresse de base du bloc alloué
-qui contient le pointeur \lstinline{p}.
-\lstinline'\block_length(p)' retourne la longueur (en octets) du
-bloc alloué qui contient, le porinteur \lstinline{p}.
-\lstinline'\offset(p)' retourne le décalage (en octets) entre \lstinline{p} et
-son adresse de base.
-\lstinline'\valid(p)' (respectivement \lstinline'\valid_read(p)') est vrai
-si le déréférencement de \lstinline{p} est autorisé en
-lecture et en écriture (respectivement au moins en lecture).
-\lstinline'\valid(p)' implique \lstinline'\valid_read(p)'
-mais l'inverse n'est pas vrai.
-\lstinline'\initialized(p)' est un prédicat prenant un pointeur \lstinline{p}
-sur une left-value en argument.
-Ce prédicat est vrai si la left-value en question est initialisée.
+\begin{center}
+\begin{tabular}{lrl}
+  \textit{term} ::= & ... \\
+  & $\mid$
+  & \underline{\lstinline'\\base_addr('} \textit{t} \underline{\lstinline')'} \\
+  & $\mid$
+  & \underline{\lstinline'\\block_length('} \textit{t} \underline{\lstinline')'} \\
+  & $\mid$
+  & \underline{\lstinline'\\offset('} \textit{t} \underline{\lstinline')'} \\
+  \textit{pred} ::= & ... \\
+  & $\mid$
+  & \underline{\lstinline'\\valid('} \textit{t} \underline{\lstinline')'} \\
+  & $\mid$
+  & \underline{\lstinline'\\valid_read('} \textit{t} \underline{\lstinline')'} \\
+  & $\mid$
+  & \underline{\lstinline'\\initialized('} \textit{t} \underline{\lstinline')'} \\
+\end{tabular}
+\end{center}
+
+
+Donnons la sémantique informelle de chacune de ces annotations.
+\baseaddrt retourne l'adresse de base du bloc alloué qui contient le pointeur
+\textit{t}.
+\blocklengtht retourne la longueur (en octets) du bloc alloué qui contient, le
+pointeur \textit{t}.
+\offsett retourne le décalage (en octets) entre \textit{t} et son adresse de
+base.
+\validt (respectivement \validreadt) est vrai si le déréférencement de
+\textit{t} est autorisé en lecture et en écriture (respectivement au moins en
+lecture).
+\validt implique \validreadt mais l'inverse n'est pas vrai.
+\initializedt est un prédicat prenant en paramètre un pointeur \textit{t} sur
+une left-value, ce prédicat est vrai si la left-value en question est
+initialisée.
 
 
 \input{figures/fig_mem_annots}
 
 
 La figure~\ref{fig:mem-annots} illustre les annotations \lstinline{\base_addr},
-\lstinline{\block_length} et \lstinline{\offset} qui sont des termes \eacsl.
+\lstinline{\block_length} et \lstinline{\offset}.
 On y voit un modèle mémoire simplifié contenant 3 blocs.
-Le second bloc contient le pointeur \lstinline'p' à l'offset 1.
-L'adresse de base de \lstinline'p' (\lstinline'\base_addr(p)') est indiquée au
+Le pointeur \lstinline'p' pointe vers la deuxième case du second block.
+L'adresse de base de \lstinline'p' (\lstinline'\base_addr(p)') désigne le
 début du bloc.
-La longueur du bloc de \lstinline'p' (\lstinline'\block_length(p)') mesure la
+La longueur du bloc de \lstinline'p' (\lstinline'\block_length(p)') est la
 taille du bloc à partir de son adresse de base.
-L'offset de \lstinline'p' (\lstinline'\offset(p)') dans le bloc est 1.
+L'offset de \lstinline'p' (\lstinline'\offset(p)') est le décalage de
+\lstinline'p' par rapport à son adresse de base.
+Sur l'exemple de la figure~\ref{fig:mem-annots}, l'offset de \lstinline'p' est
+1.
 
 
 \lstinputlisting[caption={Annotations mémoire -- Exemple en C},
@@ -77,9 +99,10 @@ Le Listing~\ref{lst:mem-annots} illustre toutes ces annotations sur un programme
 C.
 Un tableau \lstinline't' de trois entiers est alloué ligné 2.
 Les deux premières cases du tableau sont initialisées à 1 aux lignes 3--4.
-Un pointeur \lstinline'p' est ensuite initialisé à \lstinline't+1' ligne 5.
+Un pointeur \lstinline'p' est ensuite initialisé à \lstinline't+1' ligne 5,
+c'est-à-dire pointe la deuxième case du tableau.
 Les annotations du programme sont correctes : leur vérification à l'exécution
-né produit pas d'erreur.
+ne produit pas d'erreur.
 L'assertion ligne 6 affirme que \lstinline'p' et \lstinline't' ont la même
 adresse de base.
 L'assertion ligne 7 affirme que le bloc contenant \lstinline'p' a une taille de
@@ -99,7 +122,7 @@ Nous présentons l'instrumentation d'un programme C annoté dans une optique de
 vérification à l'exécution des annotations liées au modèle mémoire.
 Certaines instructions C doivent être instrumentées afin d'enregistrer
 des informations sur la mémoire à l'exécution, et les annotations sont
-instrumentées afin de pouvoir exploiter ces informations.
+instrumentées afin de pouvoir utiliser ces informations.
 
 
 \subsection{Instrumentation des allocations et affectations}
