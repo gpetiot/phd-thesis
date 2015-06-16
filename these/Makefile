@@ -49,7 +49,7 @@ chapter_swd_DEPS=listings/ex1.c \
 		listings/rgf_0.c
 chapter_motiv_contrib_DEPS=figures/user_f.png \
 			figures/user_m.png
-chapter_scenarios_DEPS=
+chapter_ncd_DEPS=
 chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
 		figures/fig_rem_patricia_trie.tex \
 		figures/mmodel_architecture.pdf
