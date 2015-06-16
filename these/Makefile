@@ -51,14 +51,14 @@ chapter_motiv_contrib_DEPS=figures/user_f.png \
 			figures/user_m.png
 chapter_ncd_DEPS=
 chapter_method_DEPS=
-chapter_eacsl_DEPS=figures/fig_add_patricia_trie.tex \
-		figures/fig_rem_patricia_trie.tex \
-		figures/mmodel_architecture.pdf
+chapter_eacsl_DEPS=figures/mmodel_architecture.pdf
 chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/mem_annots.c \
-		listings/common_prefix_mask.c
+		listings/common_prefix_mask.c \
+		figures/fig_add_patricia_trie.tex \
+		figures/fig_rem_patricia_trie.tex
 chapter_lang_DEPS=figures/fig_grammar.tex \
 		figures/fig_grammar_exp_term.tex \
 		figures/fig_grammar_pred.tex \
