@@ -44,7 +44,7 @@ CHAPTERS_TEX=$(wildcard chapter_*.tex)
 CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
 
 all_DEPS=chapter.tex header.tex $(BIB) style_listings.tex commands.tex
-chapter_ce_DEPS=listings/ex1.c \
+chapter_swd_DEPS=listings/ex1.c \
 		listings/ex2.c \
 		listings/rgf_0.c
 chapter_motiv_contrib_DEPS=figures/user_f.png \
