@@ -930,8 +930,8 @@ La propriété~\ref{lem:pred-correct} énonce que l'évaluation des insertions d
 code $I$ générées lors de la traduction d'un prédicat \lstinline'p' ajoute une
 nouvelle variable \lstinline'e' (fraîche) à la mémoire, dont la
 valeur correspond à l'évaluation de \lstinline'p' dans $\mem$.
-Les variables qui sont déjà dans la mémoire initiale $\mem_l$ ne sont pas
-impactées dans la mémoire $\mem$ (propriété~\ref{th:inclusion}), et
+Les variables qui sont déjà dans la mémoire initiale ne sont pas
+impactées dans la mémoire résultante (propriété~\ref{th:inclusion}), et
 la mémoire résultant de la traduction du prédicat n'est pas la mémoire
 d'erreur $\errormem$ (propriété~\ref{lem:noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
