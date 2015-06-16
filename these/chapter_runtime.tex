@@ -114,140 +114,6 @@ L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
 \lstinline'p+1'.
 
 
-\section{Instrumentation pour la Vérification à l'exécution}
-\label{sec:mem-instru}
-
-
-Nous présentons l'instrumentation d'un programme C annoté dans une optique de
-vérification à l'exécution des annotations liées au modèle mémoire.
-Certaines instructions C doivent être instrumentées afin d'enregistrer
-des informations sur la mémoire à l'exécution, et les annotations sont
-instrumentées afin de pouvoir utiliser ces informations.
-
-
-\subsection{Instrumentation des allocations et affectations}
-
-
-Comme nous l'avons vu, pour traiter ces annotations \eacsl, nous devons
-conserver pour chaque bloc les informations suivantes : l'adresse de base, le
-nombre d'octets occupés en mémoire, l'initialisation de chaque octet et un
-booléen indiquant si le bloc est en lecture seule (par exemple si c'est une
-chaîne littérale).
-
-Afin d'enregistrer ces informations nous définissons les fonctions C suivantes.
-La fonction \lstinline'__store_block', qui prend un pointeur et une taille en
-octets en paramètre, est la primitive d'ajout d'un bloc dans ce que nous
-appelerons le ``store''.
-Le store est une structure de donnée qui recense tous les blocs en mémoire que
-nous souhaitons surveiller.
-Nous donnerons plus de détails sur le store en partie~\label{sec:mem-model}.
-La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
-et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
-variable globale (au début de la fonction \lstinline'main').
-La fonction \lstinline'__delete_block' permet d'enlever un bloc du store.
-Elle est appelée en fin de portée d'une variable.
-
-Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
-standart du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
-\lstinline'free'.
-L'instrumentation va substituer les appels à ces fonctions par un appel à nos
-fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
-et \lstinline'__free'.
-Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
-au store, ainsi que de transférer les informations d'initialisations d'un bloc
-à un autre en cas de \lstinline'realloc'.
-
-Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
-marquer un certain nombre d'octets d'un bloc comme étant initialisés.
-L'instrumentation ajoute des appels à cette fonction pour chaque affectation du
-programme original, ainsi que pour chaque variable globale (initialisée à 0 par
-défaut en C).
-
-
-\subsection{Instrumentation des annotations}
-
-
-\begin{figure*}[bt]
-  \scriptsize{
-    {\myinference{$\tau$-base-addr}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\base_addr(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'void* var_n = __base_addr(e);'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-
-    {\myinference{$\tau$-block-length}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\block_length(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'size_t var_n = __block_length(e);'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-
-    {\myinference{$\tau$-offset}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\offset(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'int var_n = __offset(e);'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-
-    {\myinference{$\pi$-valid}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'int var_n = __valid(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-
-    {\myinference{$\pi$-valid-read}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid_read(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'int var_n = __valid_read(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-
-    {\myinference{$\pi$-initialized}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\initialized(t)'}) \rulearrow
-        (I \concat
-        (l, \mbox{\lstinline'int var_n = __initialized(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
-      }{}
-    }
-  }
-  \caption{Règles de traduction pour les annotations liées au modèle mémoire}
-  \label{fig:mem-annots-rules}
-\end{figure*}
-
-
-Afin de pouvoir exploiter les informations sur les blocs stockés dans le store,
-nous définissons les fonctions \lstinline'__base_addr',
-\lstinline'__block_length', \lstinline'__offset', \lstinline'__valid',
-\lstinline'__valid_read' et \lstinline'__initialized'.
-La sémantique de ces fonction est calquée sur la sémantique des annotations
-\eacsl donnée en partie~\ref{sec:mem-annots}.
-La fonction \lstinline'__base_addr' retourne l'adresse d'un bloc à partir du
-pointeur qu'elle reçoit en argument.
-La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
-le bloc.
-La fonction \lstinline'__ofset' retourne le décalage d'un pointeur par rapport à
-son adresse de base dans le bloc.
-Les fonctions \lstinline'__valid' et \lstinline'__valid_read'
-retournent le statut de validité à partir d'un pointeur et d'un nombre d'octets.
-La fonction \lstinline'__initialized' retourne le statut d'initialisation
-d'un nombre d'octets d'un pointeur en argument.
-La figure~\ref{fig:mem-annots-rules} présente les règles de traduction des
-annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}.
-
-
 \section{Modèle mémoire pour la Vérification à l'exécution}
 \label{sec:mem-model}
 
@@ -439,6 +305,140 @@ La figure~\ref{fig:suppression-Patricia-trie} illustre la suppression de
 l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie.
 Ce n\oe{}ud ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 \ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
+
+
+\section{Instrumentation pour la Vérification à l'exécution}
+\label{sec:mem-instru}
+
+
+Nous présentons l'instrumentation d'un programme C annoté dans une optique de
+vérification à l'exécution des annotations liées au modèle mémoire.
+Certaines instructions C doivent être instrumentées afin d'enregistrer
+des informations sur la mémoire à l'exécution, et les annotations sont
+instrumentées afin de pouvoir utiliser ces informations.
+
+
+\subsection{Instrumentation des allocations et affectations}
+
+
+Comme nous l'avons vu, pour traiter ces annotations \eacsl, nous devons
+conserver pour chaque bloc les informations suivantes : l'adresse de base, le
+nombre d'octets occupés en mémoire, l'initialisation de chaque octet et un
+booléen indiquant si le bloc est en lecture seule (par exemple si c'est une
+chaîne littérale).
+
+Afin d'enregistrer ces informations nous définissons les fonctions C suivantes.
+La fonction \lstinline'__store_block', qui prend un pointeur et une taille en
+octets en paramètre, est la primitive d'ajout d'un bloc dans ce que nous
+appelerons le ``store''.
+Le store est une structure de donnée qui recense tous les blocs en mémoire que
+nous souhaitons surveiller.
+Nous donnerons plus de détails sur le store en partie~\label{sec:mem-model}.
+La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
+et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
+variable globale (au début de la fonction \lstinline'main').
+La fonction \lstinline'__delete_block' permet d'enlever un bloc du store.
+Elle est appelée en fin de portée d'une variable.
+
+Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
+standart du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
+\lstinline'free'.
+L'instrumentation va substituer les appels à ces fonctions par un appel à nos
+fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
+et \lstinline'__free'.
+Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
+au store, ainsi que de transférer les informations d'initialisations d'un bloc
+à un autre en cas de \lstinline'realloc'.
+
+Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
+marquer un certain nombre d'octets d'un bloc comme étant initialisés.
+L'instrumentation ajoute des appels à cette fonction pour chaque affectation du
+programme original, ainsi que pour chaque variable globale (initialisée à 0 par
+défaut en C).
+
+
+\subsection{Instrumentation des annotations}
+
+
+\begin{figure*}[bt]
+  \scriptsize{
+    {\myinference{$\tau$-base-addr}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\base_addr(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'void* var_n = __base_addr(e);'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\tau$-block-length}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\block_length(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'size_t var_n = __block_length(e);'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\tau$-offset}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\offset(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __offset(e);'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\pi$-valid}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __valid(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\pi$-valid-read}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid_read(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __valid_read(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\pi$-initialized}
+      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\initialized(t)'}) \rulearrow
+        (I \concat
+        (l, \mbox{\lstinline'int var_n = __initialized(e,sizeof(typeof(e)));'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+  }
+  \caption{Règles de traduction pour les annotations liées au modèle mémoire}
+  \label{fig:mem-annots-rules}
+\end{figure*}
+
+
+Afin de pouvoir exploiter les informations sur les blocs stockés dans le store,
+nous définissons les fonctions \lstinline'__base_addr',
+\lstinline'__block_length', \lstinline'__offset', \lstinline'__valid',
+\lstinline'__valid_read' et \lstinline'__initialized'.
+La sémantique de ces fonction est calquée sur la sémantique des annotations
+\eacsl donnée en partie~\ref{sec:mem-annots}.
+La fonction \lstinline'__base_addr' retourne l'adresse d'un bloc à partir du
+pointeur qu'elle reçoit en argument.
+La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
+le bloc.
+La fonction \lstinline'__ofset' retourne le décalage d'un pointeur par rapport à
+son adresse de base dans le bloc.
+Les fonctions \lstinline'__valid' et \lstinline'__valid_read'
+retournent le statut de validité à partir d'un pointeur et d'un nombre d'octets.
+La fonction \lstinline'__initialized' retourne le statut d'initialisation
+d'un nombre d'octets d'un pointeur en argument.
+La figure~\ref{fig:mem-annots-rules} présente les règles de traduction des
+annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}.
 
 
 \section*{Conclusion du chapitre}
