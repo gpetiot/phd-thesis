@@ -118,6 +118,12 @@ L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
 \label{sec:mem-model}
 
 
+Dans cette partie, nous présentons les détails de conception du modèle mémoire
+proposé.
+Nous justifions nos choix d'implémentation puis présentons les algorithmes de
+recherche, d'ajout et de suppression d'un bloc dans le modèle mémoire.
+
+
 \subsection{Structure de données ``store''}
 
 Le code instrumenté pouvant accéder et modifier fréquemment les données du
@@ -301,11 +307,11 @@ L'algorithme~\ref{algo:get-exact} retourne le block $B$ tel que l'adresse de
 base de $B$ soit égale au pointeur $a$ passé en paramètre.
 On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
 
-Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
-fils -- on se dirige vers le fils ayant le plus grand préfixe commun avec
-l'adresse passée en paramètre de l'algorithme.
-Quand on arrive sur une feuille, cette dernière contient donc forcément
-l'adresse que l'on cherchait.
+Tant que $\mathit{leaf}$ n'est pas sur une feuille -- on est donc sur un
+n\oe{}ud ayant deux fils -- on se dirige vers le fils ayant le plus grand
+préfixe commun avec $a$ passée en paramètre de l'algorithme.
+Quand on arrive sur une feuille, cette dernière contient l'adresse que l'on
+cherchait.
 
 \subsubsection*{Recheche du ``contenant''}
 
@@ -355,7 +361,7 @@ l'adresse que l'on cherchait.
 
 L'algorithme~\ref{algo:get-cont} retourne le block $B$ contenant
 l'adresse $a$ passée en paramètre, tel que :
-$beginAddr_B \le a < beginAddr_B + size_B$.
+$beginAddr(B) \le a < beginAddr(B) + size(B)$.
 Si un tel bloc n'existe pas, \lstinline{NULL} est renvoyé.
 Cet algorithme est utilisé pour des requêtes du type \lstinline{\valid} ou
 \lstinline{\initialized} où l'adresse passée en paramètre ne correspond pas
@@ -490,13 +496,13 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 \State \lstinline'free('$\mathit{leaf}$\lstinline')'
 \end{algorithmic}
 \caption{Suppression d'un bloc $b$
-  \label{algo:remove-block}}
+  \label{algo:rem-block}}
 \end{algorithm}
 
 \input{figures/fig_rem_patricia_trie}
 
 
-L'algorithme~\ref{algo:remove-block} supprime une feuille $b$ du Patricia trie.
+L'algorithme~\ref{algo:rem-block} supprime une feuille $b$ du Patricia trie.
 Si cet élément est la racine, l'arbre devient vide.
 Sinon, Cette feuille a un frère $y$ et un père.
 $b$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend donc la
@@ -535,17 +541,16 @@ chaîne littérale).
 
 Afin d'enregistrer ces informations nous définissons les fonctions C suivantes.
 La fonction \lstinline'__store_block', qui prend en paramètre un pointeur et une
-taille en octets, ajoute un bloc dans ce que nous appelerons le \textit{store}.
-Le \textit{store} est une structure de donnée qui recense tous les blocs en
-mémoire que nous souhaitons surveiller.
-Nous donnons plus de détails sur le \textit{store} en
-partie~\ref{sec:mem-model}.
+taille en octets, ajoute un bloc dans le \textit{store} (présenté en
+partie~\ref{sec:mem-model}).
 La fonction \lstinline'__store_block' est invoquée sur chaque variable locale
 et paramètre formel de fonction (au début de leur portée), ainsi que sur chaque
 variable globale (au début de la fonction \lstinline'main').
+Elle utilise l'algorithme~\ref{algo:add-block}.
 La fonction \lstinline'__delete_block' permet d'enlever du \textit{store} un
 bloc reçu en paramètre.
-Elle est appelée en fin de portée d'une variable.
+Elle est appelée en fin de portée d'une variable et utilise
+l'algorithme~\ref{algo:rem-block}.
 
 Nous définissons également des ``surcouches'' aux fonctions de la bibliothèque
 standard du C : \lstinline'malloc', \lstinline'realloc', \lstinline'calloc' et
