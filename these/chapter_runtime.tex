@@ -39,22 +39,27 @@ Soit \textit{t} un terme \eacsl de type pointeur.
 Les annotations \eacsl que nous considérons sont les suivantes :
 
 \begin{center}
-\begin{tabular}{lrl}
-  \textit{term} ::= & ... \\
-  & $\mid$
-  & \underline{\lstinline'\\base_addr('} \textit{t} \underline{\lstinline')'} \\
-  & $\mid$
-  & \underline{\lstinline'\\block_length('} \textit{t} \underline{\lstinline')'} \\
-  & $\mid$
-  & \underline{\lstinline'\\offset('} \textit{t} \underline{\lstinline')'} \\
-  \textit{pred} ::= & ... \\
-  & $\mid$
-  & \underline{\lstinline'\\valid('} \textit{t} \underline{\lstinline')'} \\
-  & $\mid$
-  & \underline{\lstinline'\\valid_read('} \textit{t} \underline{\lstinline')'} \\
-  & $\mid$
-  & \underline{\lstinline'\\initialized('} \textit{t} \underline{\lstinline')'} \\
-\end{tabular}
+  \begin{tabular}{cc}
+    \begin{tabular}{lrl}
+      \textit{term} ::= & ... \\
+      & $\mid$
+      & \underline{\lstinline'\\base_addr('} \textit{t} \underline{\lstinline')'} \\
+      & $\mid$
+      & \underline{\lstinline'\\block_length('} \textit{t} \underline{\lstinline')'} \\
+      & $\mid$
+      & \underline{\lstinline'\\offset('} \textit{t} \underline{\lstinline')'} \\
+    \end{tabular}
+    &
+    \begin{tabular}{lrl}
+      \textit{pred} ::= & ... \\
+      & $\mid$
+      & \underline{\lstinline'\\valid('} \textit{t} \underline{\lstinline')'} \\
+      & $\mid$
+      & \underline{\lstinline'\\valid_read('} \textit{t} \underline{\lstinline')'} \\
+      & $\mid$
+      & \underline{\lstinline'\\initialized('} \textit{t} \underline{\lstinline')'} \\
+    \end{tabular}
+  \end{tabular}
 \end{center}
 
 
