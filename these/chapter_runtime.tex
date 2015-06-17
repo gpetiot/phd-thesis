@@ -285,23 +285,23 @@ Elle est notamment utilisée dans l'instrumenation des annotations
 \begin{algorithmic}
 \Require $\mathit{root} \neq \mnull$
 \Require $a \neq \mnull$
-\State $\mathit{tmp} \gets \mathit{root}$ de type Patricia trie
-\While{$\mathit{tmp}$ n'est pas une feuille}
-  \If{$\mathit{addr(tmp)} \Band \mathit{mask(tmp)} \neq a \Band \mathit{mask(tmp)}$}
+\State $x \gets \mathit{root}$ de type Patricia trie
+\While{$x$ n'est pas une feuille}
+  \If{$\mathit{addr(x)} \Band \mathit{mask(x)} \neq a \Band \mathit{mask(x)}$}
     \Return $\mnull$
   \EndIf
-  \If{$\mathit{addr(right(tmp))} \Band \mathit{mask(right(tmp))} == a \Band \mathit{mask(right(tmp))}$}
-    \State $\mathit{tmp} \gets \mathit{right(tmp)}$
-  \ElsIf{$\mathit{addr(left(tmp))} \Band \mathit{mask(left(tmp))} == a \Band \mathit{mask(left(tmp))}$}
-    \State $\mathit{tmp} \gets \mathit{left(tmp)}$
+  \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} == a \Band \mathit{mask(right(x))}$}
+    \State $x \gets \mathit{right(x)}$
+  \ElsIf{$\mathit{addr(left(x))} \Band \mathit{mask(left(x))} == a \Band \mathit{mask(left(x))}$}
+    \State $x \gets \mathit{left(x)}$
   \Else
     \Return $\mnull$
   \EndIf
 \EndWhile
-\If{$a \neq \mathit{ptr(leaf(tmp))}$}
+\If{$a \neq \mathit{ptr(leaf(x))}$}
   \Return $\mnull$
 \Else
-  \Return $\mathit{leaf(tmp)}$
+  \Return $\mathit{leaf(x)}$
 \EndIf
 \end{algorithmic}
 \caption{Recherche d'une adresse exacte $a$
@@ -312,7 +312,7 @@ L'algorithme~\ref{algo:get-exact} retourne le block $B$ tel que l'adresse de
 base de $B$ soit égale au pointeur $a$ passé en paramètre.
 On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
 
-Tant que $\mathit{leaf}$ n'est pas sur une feuille -- on est donc sur un
+Tant que $x$ n'est pas sur une feuille -- on est donc sur un
 n\oe{}ud ayant deux fils -- on se dirige vers le fils ayant le plus grand
 préfixe commun avec $a$ passée en paramètre de l'algorithme.
 Quand on arrive sur une feuille, cette dernière contient l'adresse que l'on
@@ -325,37 +325,37 @@ cherchait.
 \If{$(\mathit{root} == \mnull) \lor (a == \mnull)$}
   \Return $\mnull$
 \Else
-  \State $\mathit{tmp} \gets \mathit{root}$ de type Patricia trie
+  \State $x \gets \mathit{root}$ de type Patricia trie
   \State $\mathit{stack} \gets$ pile vide
   \While{$\mathit{true}$}
-    \If{$\mathit{tmp}$ est une feuille}
-      \If{$\mathit{addr(tmp)} > a$}
+    \If{$x$ est une feuille}
+      \If{$\mathit{addr(x)} > a$}
         \If{$\mathit{stack} =$ pile vide}
           \Return $\mnull$
         \Else
-          \State $\mathit{tmp} \gets \mathit{pop(stack)}$
+          \State $x \gets \mathit{pop(stack)}$
           \State $\mathit{continue}$
         \EndIf
-      \ElsIf{$a < \mathit{size(leaf(tmp))} + \mathit{addr(tmp)}$}
-        \Return $\mathit{leaf(tmp)}$
-      \ElsIf{$\mathit{size(leaf(tmp))} == 0 \land a == \mathit{ptr(leaf(tmp))}$}
-        \Return $\mathit{leaf(tmp)}$
+      \ElsIf{$a < \mathit{size(leaf(x))} + \mathit{addr(x)}$}
+        \Return $\mathit{leaf(x)}$
+      \ElsIf{$\mathit{size(leaf(x))} == 0 \land a == \mathit{ptr(leaf(x))}$}
+        \Return $\mathit{leaf(x)}$
       \ElsIf{$\mathit{stack} =$ pile vide}
         \Return $\mnull$
       \Else
-        \State $\mathit{tmp} \gets \mathit{pop(stack)}$
+        \State $x \gets \mathit{pop(stack)}$
         \State $\mathit{continue}$
       \EndIf
     \EndIf
-    \If{$\mathit{addr(right(tmp))} \Band \mathit{mask(right(tmp))} \le a \Band \mathit{mask(right(tmp))}$}
-      \State $\mathit{stack} \gets \mathit{push(left(tmp))}$
-      \State $\mathit{tmp} \gets \mathit{right(tmp)}$
-    \ElsIf{$\mathit{addr(left(tmp))} \Band \mathit{mask(left(tmp))} \le a \Band \mathit{mask(left(tmp))}$}
-      \State $\mathit{tmp} \gets \mathit{left(tmp)}$
+    \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} \le a \Band \mathit{mask(right(x))}$}
+      \State $\mathit{stack} \gets \mathit{push(left(x))}$
+      \State $x \gets \mathit{right(x)}$
+    \ElsIf{$\mathit{addr(left(x))} \Band \mathit{mask(left(x))} \le a \Band \mathit{mask(left(x))}$}
+      \State $x \gets \mathit{left(x)}$
     \ElsIf{$\mathit{stack} =$ pile vide}
       \Return $\mnull$
     \Else
-      \State $\mathit{tmp} \gets \mathit{pop(stack)}$
+      \State $x \gets \mathit{pop(stack)}$
     \EndIf
   \EndWhile
 \EndIf
@@ -474,19 +474,19 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 \begin{algorithmic}
 \Require $\mathit{root} \neq \mnull$
 \Require $b \neq \mnull$
-\State $\mathit{leaf} \gets \mathit{root}$ de type Patricia trie
-\While{$\mathit{leaf}$ n'est pas une feuille}
-  \If{$\mathit{addr(right(leaf))} \Band \mathit{mask(right(leaf))} == \mathit{ptr(b)} \Band \mathit{mask(right(leaf))}$}
-    \State $\mathit{leaf} \gets \mathit{right(leaf)}$
+\State $x \gets \mathit{root}$ de type Patricia trie
+\While{$x$ n'est pas une feuille}
+  \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} == \mathit{ptr(b)} \Band \mathit{mask(right(x))}$}
+    \State $x \gets \mathit{right(x)}$
   \Else
-    \State $\mathit{leaf} \gets \mathit{left(leaf)}$
+    \State $x \gets \mathit{left(x)}$
   \EndIf
 \EndWhile
-\If{$\mathit{father(leaf)} == \mnull$}
+\If{$\mathit{father(x)} == \mnull$}
   \State $\mathit{root} \gets \mnull$
 \Else
-  \State $\mathit{father} \gets \mathit{father(leaf)}$
-  \State $\mathit{brother} \gets (\mathit{leaf} == \mathit{left(father))} ~?~ \mathit{right(father)} ~:~ \mathit{left(father)}$
+  \State $\mathit{father} \gets \mathit{father(x)}$
+  \State $\mathit{brother} \gets (x == \mathit{left(father))} ~?~ \mathit{right(father)} ~:~ \mathit{left(father)}$
   \State $\mathit{father} \gets \mathit{brother}$
   \If{$\mathit{brother}$ n'est pas une feuille}
     \State $\mathit{father(left(brother))} \gets \mathit{father}$
@@ -498,7 +498,7 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
     \State $\mathit{mask(ff)} \gets$ PGPC de $\mathit{addr(left(ff))} \Band \mathit{mask(left(ff))}$ et $\mathit{addr(right(ff))} \Band \mathit{mask(right(ff))}$
   \EndIf
 \EndIf
-\State \lstinline'free('$\mathit{leaf}$\lstinline')'
+\State \lstinline'free('$x$\lstinline')'
 \end{algorithmic}
 \caption{Suppression d'un bloc $b$
   \label{algo:rem-block}}
@@ -509,11 +509,11 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 
 L'algorithme~\ref{algo:rem-block} supprime une feuille $b$ du Patricia trie.
 Si cet élément est la racine, l'arbre devient vide.
-Sinon, Cette feuille a un frère $y$ et un père.
-$b$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend donc la
-place du père).
-Enfin, les champs du nouveau père de $y$ sont mis à jour pour maintenir la
-cohérence de l'arbre (le plus grand préfixe commun est recalculé).
+Sinon, Cette feuille a un frère $\mathit{brother}$ et un père.
+$b$ et son père sont supprimés, et $\mathit{brother}$ remonte d'un niveau (et
+prend donc la place du père).
+Enfin, les champs du nouveau père de $\mathit{brother}$ sont mis à jour pour
+maintenir la cohérence de l'arbre (le plus grand préfixe commun est recalculé).
 La figure~\ref{fig:suppression-Patricia-trie} illustre la suppression de
 l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie.
 Ce n\oe{}ud ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
