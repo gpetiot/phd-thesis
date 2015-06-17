@@ -188,8 +188,37 @@ d'initialisation sur chaque octet du bloc.
 \subsection{Calcul du plus grand préfixe commun}
 
 
-\lstinputlisting[caption={Calcul du plus grand préfixe commun},
-  label=lst:prefix]{listings/common_prefix_mask.c}
+%\lstinputlisting[caption={Calcul du plus grand préfixe commun},
+%  label=lst:prefix]{listings/common_prefix_mask.c}
+
+\newcommand{\Band}{\land_{\mathbb{B}}}
+\newcommand{\Bor}{\lor_{\mathbb{B}}}
+\newcommand{\Bnot}{\lnot_{\mathbb{B}}}
+\newcommand{\Bxor}{\oplus_{\mathbb{B}}}
+\newcommand{\mresult}{\mbox{\lstinline'\\result'}}
+
+\begin{algorithm}
+\begin{algorithmic}
+\State $masks[ 0 .. WORDBITS ] \gets$ masques par préfixes croissants
+\State $longer[ 0 .. WORDBITS ] \gets$ indices des masques plus longs à tester
+\State $shorter[ 0 .. WORDBITS ] \gets$ indices des masques plus courts à tester
+\State $nxor \gets \Bnot(A \Bxor B)$
+\State $i \gets WORDBITS/2$
+\While{$i > 0$}
+  \If{$nxor \ge masks[i]$}
+    \State i $\gets longer[i]$ 
+  \Else
+    \State i $\gets shorter[i]$
+  \EndIf
+\EndWhile\\
+\Return $masks[-i]$
+\Ensure $\forall i. (0 \le i \le WORDBITS \implies (masks[i] \Band a) == (masks[i] \Band B) \implies \mresult \ge masks[i])$
+\Ensure $(A \Band \mresult) == (B \Band \mresult)$
+\Ensure $\exists i. (0 \le i \le WORDBITS \land \mresult == masks[i])$
+\end{algorithmic}
+\caption{Calcul du plus grand préfixe commun de $a$ et $b$
+  \label{algo:prefix}}
+\end{algorithm}
 
 
 Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
@@ -212,11 +241,18 @@ dichotomique dans un tableau pré-calculé qui contient tous les préfixes
 possibles.
 Les transitions entre les étapes de la recherche se font en utilisant des
 indices pré-calculés, de manière à obtenir le prochain masque à essayer.
-Le listing~\ref{lst:prefix} illustre cette implémentation du calcul sur des
-mots de 8 bits.
-Les masques sont stockés dans le tableau de la ligne 3.
+%Le listing~\ref{lst:prefix} illustre cette implémentation du calcul sur des
+%mots de 8 bits.
+%Les masques sont stockés dans le tableau de la ligne 3.
+%Les indices à utiliser pour tester un masque plus long (respectivement plus
+%court) sont stockés dans le tableau ligne 4 (respectivement ligne 5).
+L'algorithme~\ref{algo:prefix} présente la méthode de calcul du plus grand
+préfixe commun de deux adresses A et B.
+Le tableau $masks$ contient tous les $WORDBITS+1$ masques possibles sur
+$WORDBITS$ bits.
 Les indices à utiliser pour tester un masque plus long (respectivement plus
-court) sont stockés dans le tableau ligne 4 (respectivement ligne 5).
+court) sont stockés dans le tableau $longer$ (respectivement $shorter$).
+Un indice négatif signifie la fin de la recherche par dichotomie.
 Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
 et la fonction essaie \lstinline'i = 4', puis \lstinline'i = shorter[4] = 2',
 puis \lstinline'i = longer[2] = 3', puis \lstinline'i = longer[3] = -3', pour
