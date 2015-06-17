@@ -194,22 +194,22 @@ d'initialisation sur chaque octet du bloc.
 
 \begin{algorithm}
 \begin{algorithmic}
-\State $masks[ 0 .. WORDBITS ] \gets$ masques par préfixes croissants
-\State $longer[ 0 .. WORDBITS ] \gets$ indices des masques plus longs à tester
-\State $shorter[ 0 .. WORDBITS ] \gets$ indices des masques plus courts à tester
-\State $nxor \gets \Bnot(A \Bxor B)$
-\State $i \gets WORDBITS/2$
+\State $\mathit{masks}[ 0 .. \mathit{WORDBITS} ] \gets$ masques par préfixes croissants
+\State $\mathit{longer}[ 0 .. \mathit{WORDBITS} ] \gets$ indices des masques plus longs à tester
+\State $\mathit{shorter}[ 0 .. \mathit{WORDBITS} ] \gets$ indices des masques plus courts à tester
+\State $\mathit{nxor} \gets \Bnot(A \Bxor B)$
+\State $i \gets \mathit{WORDBITS}/2$
 \While{$i > 0$}
-  \If{$nxor \ge masks[i]$}
-    \State i $\gets longer[i]$ 
+  \If{$\mathit{nxor} \ge \mathit{masks}[i]$}
+    \State $i \gets \mathit{longer}[i]$ 
   \Else
-    \State i $\gets shorter[i]$
+    \State $i \gets \mathit{shorter}[i]$
   \EndIf
 \EndWhile\\
 \Return $masks[-i]$
-\Ensure $\forall i. (0 \le i \le WORDBITS \implies (masks[i] \Band a) == (masks[i] \Band B) \implies \mresult \ge masks[i])$
+\Ensure $\forall i. (0 \le i \le \mathit{WORDBITS} \Rightarrow (\mathit{masks}[i] \Band a) == (\mathit{masks}[i] \Band B) \Rightarrow \mresult \ge \mathit{masks}[i])$
 \Ensure $(A \Band \mresult) == (B \Band \mresult)$
-\Ensure $\exists i. (0 \le i \le WORDBITS \land \mresult == masks[i])$
+\Ensure $\exists i. (0 \le i \le \mathit{WORDBITS} \land \mresult == \mathit{masks}[i])$
 \end{algorithmic}
 \caption{Calcul du plus grand préfixe commun de $A$ et $B$
   \label{algo:prefix}}
@@ -272,25 +272,25 @@ Elle est notamment utilisée dans l'instrumenation des annotations
 
 \begin{algorithm}
 \begin{algorithmic}
-\Require $root \neq NULL$
-\Require $a \neq NULL$
-\State tmp $\gets root$ de type Patricia trie
-\While{$tmp$ n'est pas une feuille}
-  \If{$addr(tmp) \Band mask(tmp) \neq a \Band mask(tmp)$}
-    \Return $NULL$
+\Require $\mathit{root} \neq \mnull$
+\Require $a \neq \mnull$
+\State $\mathit{tmp} \gets \mathit{root}$ de type Patricia trie
+\While{$\mathit{tmp}$ n'est pas une feuille}
+  \If{$\mathit{addr(tmp)} \Band \mathit{mask(tmp)} \neq a \Band \mathit{mask(tmp)}$}
+    \Return $\mnull$
   \EndIf
-  \If{$addr(right(tmp)) \Band mask(right(tmp)) == a \Band mask(right(tmp))$}
-    \State tmp $\gets right(tmp)$
-  \ElsIf{$addr(left(tmp)) \Band mask(left(tmp)) == a \Band mask(left(tmp))$}
-    \State tmp $\gets left(tmp)$
+  \If{$\mathit{addr(right(tmp))} \Band \mathit{mask(right(tmp))} == a \Band \mathit{mask(right(tmp))}$}
+    \State $\mathit{tmp} \gets \mathit{right(tmp)}$
+  \ElsIf{$\mathit{addr(left(tmp))} \Band \mathit{mask(left(tmp))} == a \Band \mathit{mask(left(tmp))}$}
+    \State $\mathit{tmp} \gets \mathit{left(tmp)}$
   \Else
-    \Return $NULL$
+    \Return $\mnull$
   \EndIf
 \EndWhile
-\If{$a \neq ptr(leaf(tmp))$}
-  \Return $NULL$
+\If{$a \neq \mathit{ptr(leaf(tmp))}$}
+  \Return $\mnull$
 \Else
-  \Return $leaf(tmp)$
+  \Return $\mathit{leaf(tmp)}$
 \EndIf
 \end{algorithmic}
 \caption{Recherche d'une adresse exacte $a$
@@ -311,40 +311,40 @@ l'adresse que l'on cherchait.
 
 \begin{algorithm}
 \begin{algorithmic}
-\If{$(root == NULL) \lor (a == NULL)$}
-  \Return $NULL$
+\If{$(\mathit{root} == \mnull) \lor (a == \mnull)$}
+  \Return $\mnull$
 \Else
-  \State tmp $\gets root$ de type Patricia trie
-  \State stack $\gets$ pile vide
-  \While{$true$}
-    \If{$tmp$ est une feuille}
-      \If{$addr(tmp) > a$}
-        \If{$stack =$ pile vide}
-          \Return $NULL$
+  \State $\mathit{tmp} \gets \mathit{root}$ de type Patricia trie
+  \State $\mathit{stack} \gets$ pile vide
+  \While{$\mathit{true}$}
+    \If{$\mathit{tmp}$ est une feuille}
+      \If{$\mathit{addr(tmp)} > a$}
+        \If{$\mathit{stack} =$ pile vide}
+          \Return $\mnull$
         \Else
-          \State tmp $\gets pop(stack)$
-          \State continue
+          \State $\mathit{tmp} \gets \mathit{pop(stack)}$
+          \State $\mathit{continue}$
         \EndIf
-      \ElsIf{$a < size(leaf(tmp)) + addr(tmp)$}
-        \Return $leaf(tmp)$
-      \ElsIf{$size(leaf(tmp)) == 0 \land a == ptr(leaf(tmp))$}
-        \Return $leaf(tmp)$
-      \ElsIf{$stack =$ pile vide}
-        \Return $NULL$
+      \ElsIf{$a < \mathit{size(leaf(tmp))} + \mathit{addr(tmp)}$}
+        \Return $\mathit{leaf(tmp)}$
+      \ElsIf{$\mathit{size(leaf(tmp))} == 0 \land a == \mathit{ptr(leaf(tmp))}$}
+        \Return $\mathit{leaf(tmp)}$
+      \ElsIf{$\mathit{stack} =$ pile vide}
+        \Return $\mnull$
       \Else
-        \State tmp $\gets pop(stack)$
-        \State continue
+        \State $\mathit{tmp} \gets \mathit{pop(stack)}$
+        \State $\mathit{continue}$
       \EndIf
     \EndIf
-    \If{$addr(right(tmp)) \Band mask(right(tmp)) \le a \Band mask(right(tmp))$}
-      \State stack $\gets push(left(tmp))$
-      \State tmp $\gets right(tmp)$
-    \ElsIf{$addr(left(tmp)) \Band mask(left(tmp)) \le a \Band mask(left(tmp))$}
-      \State tmp $\gets left(tmp)$
-    \ElsIf{$stack =$ pile vide}
-      \Return $NULL$
+    \If{$\mathit{addr(right(tmp))} \Band \mathit{mask(right(tmp))} \le a \Band \mathit{mask(right(tmp))}$}
+      \State $\mathit{stack} \gets \mathit{push(left(tmp))}$
+      \State $\mathit{tmp} \gets \mathit{right(tmp)}$
+    \ElsIf{$\mathit{addr(left(tmp))} \Band \mathit{mask(left(tmp))} \le a \Band \mathit{mask(left(tmp))}$}
+      \State $\mathit{tmp} \gets \mathit{left(tmp)}$
+    \ElsIf{$\mathit{stack} =$ pile vide}
+      \Return $\mnull$
     \Else
-      \State tmp $\gets pop(stack)$
+      \State $\mathit{tmp} \gets \mathit{pop(stack)}$
     \EndIf
   \EndWhile
 \EndIf
@@ -411,33 +411,33 @@ branche correspondante, sinon on renvoie le n\oe{}ud courant.
 
 \begin{algorithm}
 \begin{algorithmic}
-\Require $root \neq NULL$
-\Require $b \neq NULL$
-\State leaf $\gets root$ de type Patricia trie
-\While{$leaf$ n'est pas une feuille}
-  \If{$addr(right(leaf)) \Band mask(right(leaf)) == ptr(b) \Band mask(right(leaf))$}
-    \State leaf $\gets right(leaf)$
+\Require $\mathit{root} \neq \mnull$
+\Require $b \neq \mnull$
+\State $\mathit{leaf} \gets \mathit{root}$ de type Patricia trie
+\While{$\mathit{leaf}$ n'est pas une feuille}
+  \If{$\mathit{addr(right(leaf))} \Band \mathit{mask(right(leaf))} == \mathit{ptr(b)} \Band \mathit{mask(right(leaf))}$}
+    \State $\mathit{leaf} \gets \mathit{right(leaf)}$
   \Else
-    \State leaf $\gets left(leaf)$
+    \State $\mathit{leaf} \gets \mathit{left(leaf)}$
   \EndIf
 \EndWhile
-\If{$father(leaf) == NULL$}
-  \State root $\gets NULL$
+\If{$\mathit{father(leaf)} == \mnull$}
+  \State $\mathit{root} \gets \mnull$
 \Else
-  \State father $\gets father(leaf)$
-  \State brother $\gets (leaf == left(father))? right(father) : left(father)$
-  \State father $\gets brother$
-  \If{$brother$ n'est pas une feuille}
-    \State father(left(brother)) $\gets father$
-    \State father(right(brother)) $\gets father$
+  \State $\mathit{father} \gets \mathit{father(leaf)}$
+  \State $\mathit{brother} \gets (\mathit{leaf} == \mathit{left(father))} ~?~ \mathit{right(father)} ~:~ \mathit{left(father)}$
+  \State $\mathit{father} \gets \mathit{brother}$
+  \If{$\mathit{brother}$ n'est pas une feuille}
+    \State $\mathit{father(left(brother))} \gets \mathit{father}$
+    \State $\mathit{father(right(brother))} \gets \mathit{father}$
   \EndIf
-  \State free(brother)
-  \State ff $\gets father(father)$
-  \If{$ff \neq NULL$}
-    \State mask(ff) $\gets$ plus grand préfixe commun de $addr(left(ff)) \Band mask(left(ff))$ et $addr(right(ff)) \Band mask(right(ff))$
+  \State \lstinline'free('$\mathit{brother}$\lstinline')'
+  \State $\mathit{ff} \gets \mathit{father(father)}$
+  \If{$\mathit{ff} \neq \mnull$}
+    \State $\mathit{mask(ff)} \gets$ plus grand préfixe commun de $\mathit{addr(left(ff))} \Band \mathit{mask(left(ff))}$ et $\mathit{addr(right(ff))} \Band \mathit{mask(right(ff))}$
   \EndIf
 \EndIf
-\State free(leaf)
+\State \lstinline'free('$\mathit{leaf}$\lstinline')'
 \end{algorithmic}
 \caption{Suppression d'un bloc $b$
   \label{algo:remove}}
