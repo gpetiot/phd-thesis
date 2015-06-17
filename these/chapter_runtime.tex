@@ -185,7 +185,7 @@ d'un bloc sont initialisés d'un coup, au lieu d'invoquer une fonction
 d'initialisation sur chaque octet du bloc.
 
 
-\subsection{Calcul du plus grand préfixe commun}
+\subsection{Calcul du plus grand préfixe commun (PGPC)}
 
 
 %\lstinputlisting[caption={Calcul du plus grand préfixe commun},
@@ -374,37 +374,87 @@ a trouvé le bloc qu'on cherchait, sinon on utilise le dernier n\oe{}ud empilé
 
 \subsection{Ajout d'un bloc}
 
-\commentGP{TODO: algo}
+
+\begin{algorithm}
+\begin{algorithmic}
+\Require $b \neq \mnull$
+\State $\mathit{x} \gets$ \lstinline'malloc',
+$\mathit{addr(x)} \gets \mathit{ptr(b)}$,
+$\mathit{mask(x)} \gets \mathit{Tmasks[WORDBITS]}$,
+$\mathit{left(x)} \gets \mnull$
+\State $\mathit{right(x)} \gets \mnull$,
+$\mathit{father(x)} \gets \mnull$,
+$\mathit{leaf(x)} \gets b$
+\If{$\mathit{root} == \mnull$}
+  \State $\mathit{root} \gets x$
+\Else
+  \State $\mathit{brother} \gets \mathit{root}$
+  \While{$\mathit{true}$}
+    \If{$\mathit{brother}$ est une feuille}
+      \State $\mathit{break}$
+    \EndIf
+    \State $\mathit{lprefix} \gets$ PGPC de $\mathit{addr(left(brother))} \Band \mathit{mask(left(brother))}$ et $\mathit{ptr(b)}$
+    \State $\mathit{rprefix} \gets$ PGPC de $\mathit{addr(right(brother))} \Band \mathit{mask(right(brother))}$ et $\mathit{ptr(b)}$
+    \If{$\mathit{lprefix} > \mathit{rprefix}$}
+      \State $\mathit{brother} \gets \mathit{left(brother)}$
+    \ElsIf{$rprefix > lprefix$}
+      \State $\mathit{brother} \gets \mathit{right(brother)}$
+    \Else
+      \State $\mathit{break}$
+    \EndIf
+  \EndWhile
+  \State $\mathit{father} \gets$ \lstinline'malloc'
+  \State $\mathit{addr(father)} \gets \mathit{addr(brother)} \Band \mathit{addr(x)}$
+  \State $\mathit{leaf(father)} \gets \mnull$
+  \If{$\mathit{addr(x)} \le \mathit{addr(brother)}$}
+    \State $\mathit{left(father)} \gets x$
+    \State $\mathit{right(father)} \gets \mathit{brother}$
+  \Else
+    \State $\mathit{left(father)} \gets \mathit{brother}$
+    \State $\mathit{right(father)} \gets x$
+  \EndIf
+  \State $\mathit{father(x)} \gets \mathit{father}$
+  \If{$\mathit{brother} == \mathit{root}$}
+    \State $\mathit{father(father)} \gets \mnull$
+    \State $\mathit{mask(father)} \gets$ PGPC de $\mathit{addr(brother)} \Band \mathit{mask(brother)}$ et $\mathit{ptr(b)}$
+    \State $\mathit{root} \gets \mathit{father}$
+  \Else
+    \If{$\mathit{left(father(brother))} == \mathit{brother}$}
+      \State $\mathit{left(father(brother))} \gets \mathit{father}$
+    \Else
+      \State $\mathit{right(father(brother))} \gets \mathit{father}$
+    \EndIf
+    \State $\mathit{father(father)} \gets \mathit{father(brother)}$
+    \State $\mathit{mask(father)} \gets$ PGPC de $\mathit{addr(left(father))} \Band \mathit{mask(left(father))}$ et $\mathit{addr(right(father))} \Band \mathit{mask(right(father))}$
+  \EndIf
+  \State $\mathit{father(brother)} \gets \mathit{father}$
+  \If{$\mathit{brother}$ n'est pas une feuille}
+    \State $\mathit{mask(brother)} \gets$ PGPC de $\mathit{addr(left(brother))} \Band \mathit{mask(left(brother))}$ et $\mathit{addr(right(brother))} \Band \mathit{mask(right(brother))}$
+  \EndIf
+\EndIf
+\end{algorithmic}
+\caption{Ajout d'un bloc $b$
+  \label{algo:add-block}}
+\end{algorithm}
 
 \input{figures/fig_add_patricia_trie}
 
 
-L'ajout d'un nouvel élément à l'arbre se déroule comme suit. Si l'arbre est
-vide, l'élément est ajouté à la racine.
-Sinon, on recherche le n\oe{}ud $x$ le plus similaire au n\oe{}ud à insérer.
+L'algorithme~\ref{algo:add-block} ajoute un nouvel élément à l'arbre.
+Si l'arbre est vide, l'élément est ajouté à la racine.
+Sinon, on recherche le n\oe{}ud $b$ le plus similaire au n\oe{}ud à insérer.
 Celui-ci sera son frère dans la nouvelle configuration de l'arbre.
 Nous créons ensuite le n\oe{}ud correspondant au père.
 Le plus grand préfixe commun des deux fils est calculé pour le père, et les fils
 sont ordonnés en fonction de leur adresse (le plus petit à gauche).
-Puis le père est inséré dans l'arbre à l'ancien emplacement de $x$.
-Les champs de $x$ et de l'ancien père de $x$ (s'il existe) sont également mis à
+Puis le père est inséré dans l'arbre à l'ancien emplacement de $b$.
+Les champs de $b$ et de l'ancien père de $b$ (s'il existe) sont également mis à
 jour pour maintenir la cohérence de l'arbre.
 La figure~\ref{fig:insertion-Patricia-trie} illustre l'insertion de l'adresse
 \ppleaf{\texttt{0010\,0111}} dans un arbre.
 L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 \ppleaf{\texttt{0010\,0110}}, et crée le père correspondant :
 \ppnode{\texttt{0010\,011*}}.
-
-
-\subsubsection*{Recherche du n\oe{}ud le plus similaire}
-
-\commentGP{TODO: algo}
-
-Dès qu'on arrive sur une feuille on la renvoie.
-Sinon on calcule le plus grand préfixe commun de l'adresse passée en paramètre
-avec le fils gauche, de même avec le fils droit.
-Si l'un des préfixes est strictement supérieur à l'autre on se dirige vers la
-branche correspondante, sinon on renvoie le n\oe{}ud courant.
 
 
 \subsection{Suppression d'un bloc}
@@ -434,20 +484,19 @@ branche correspondante, sinon on renvoie le n\oe{}ud courant.
   \State \lstinline'free('$\mathit{brother}$\lstinline')'
   \State $\mathit{ff} \gets \mathit{father(father)}$
   \If{$\mathit{ff} \neq \mnull$}
-    \State $\mathit{mask(ff)} \gets$ plus grand préfixe commun de $\mathit{addr(left(ff))} \Band \mathit{mask(left(ff))}$ et $\mathit{addr(right(ff))} \Band \mathit{mask(right(ff))}$
+    \State $\mathit{mask(ff)} \gets$ PGPC de $\mathit{addr(left(ff))} \Band \mathit{mask(left(ff))}$ et $\mathit{addr(right(ff))} \Band \mathit{mask(right(ff))}$
   \EndIf
 \EndIf
 \State \lstinline'free('$\mathit{leaf}$\lstinline')'
 \end{algorithmic}
 \caption{Suppression d'un bloc $b$
-  \label{algo:remove}}
+  \label{algo:remove-block}}
 \end{algorithm}
 
 \input{figures/fig_rem_patricia_trie}
 
 
-L'algorithme~\ref{algo:remove} supprime une feuille $b$ du Patricia trie.
-Il se déroule comme suit.
+L'algorithme~\ref{algo:remove-block} supprime une feuille $b$ du Patricia trie.
 Si cet élément est la racine, l'arbre devient vide.
 Sinon, Cette feuille a un frère $y$ et un père.
 $b$ et son père sont supprimés, et $y$ remonte d'un niveau (et prend donc la
