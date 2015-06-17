@@ -191,10 +191,10 @@ d'initialisation sur chaque octet du bloc.
 %\lstinputlisting[caption={Calcul du plus grand préfixe commun},
 %  label=lst:prefix]{listings/common_prefix_mask.c}
 
-\newcommand{\Band}{\land_{\mathbb{B}}}
-\newcommand{\Bor}{\lor_{\mathbb{B}}}
-\newcommand{\Bnot}{\lnot_{\mathbb{B}}}
-\newcommand{\Bxor}{\oplus_{\mathbb{B}}}
+\newcommand{\Band}{\land_0^1}
+\newcommand{\Bor}{\lor_0^1}
+\newcommand{\Bnot}{\lnot_0^1}
+\newcommand{\Bxor}{\oplus_0^1}
 \newcommand{\mresult}{\mbox{\lstinline'\\result'}}
 
 \begin{algorithm}
@@ -216,7 +216,7 @@ d'initialisation sur chaque octet du bloc.
 \Ensure $(A \Band \mresult) == (B \Band \mresult)$
 \Ensure $\exists i. (0 \le i \le WORDBITS \land \mresult == masks[i])$
 \end{algorithmic}
-\caption{Calcul du plus grand préfixe commun de $a$ et $b$
+\caption{Calcul du plus grand préfixe commun de $A$ et $B$
   \label{algo:prefix}}
 \end{algorithm}
 
@@ -262,13 +262,48 @@ est précisément \texttt{1110\,0000}.
 
 \subsection{Recherche}
 
+Présentons maintenant les algorithmes de recherche d'un bloc dans le
+\textit{store} à partir d'une adresse $a$.
+Ils sont de deux sortes.
+La recherche exacte cherche un bloc dont l'adresse de base est égale à $a$, elle
+est notamment utilisée dans l'instrumenation des fonctions \lstinline'free' et
+\lstinline'realloc'.
+La recherche du contenant cherche un bloc qui contient $a$, c'est-à-dire que
+$a$ est incluse entre le début (adresse de base) et la fin du bloc.
+Elle est notamment utilisée dans l'instrumenation des annotations
+\lstinline'\valid' et \lstinline'\base_addr'.
 
 \subsubsection*{Recherche exacte}
 
-\commentGP{TODO: algo}
+\begin{algorithm}
+\begin{algorithmic}
+\Require $root \neq NULL$
+\Require $a \neq NULL$
+\State tmp $\gets root$
+\While{$tmp$ n'est pas une feuille}
+  \If{$addr(tmp) \Band mask(tmp) \neq a \Band mask(tmp)$}
+    \Return $NULL$
+  \EndIf
+  \If{$addr(right(tmp)) \Band mask(right(tmp)) == a \Band mask(right(tmp))$}
+    \State tmp $\gets right(tmp)$
+  \ElsIf{$addr(left(tmp)) \Band mask(left(tmp)) == a \Band mask(left(tmp))$}
+    \State tmp $\gets left(tmp)$
+  \Else
+    \Return $NULL$
+  \EndIf
+\EndWhile
+\If{$a \neq ptr(leaf(tmp))$}
+  \Return $NULL$
+\Else
+  \Return $leaf(tmp)$
+\EndIf
+\end{algorithmic}
+\caption{Recherche d'une adresse exacte $a$
+  \label{algo:get-exact}}
+\end{algorithm}
 
-Cet algorithme retourne le block $B$ tel que l'adresse de base de $B$ soit égale
-au pointeur passé en paramètre.
+L'algorithme~\ref{algo:get-exact} retourne le block $B$ tel que l'adresse de
+base de $B$ soit égale au pointeur $a$ passé en paramètre.
 On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
 
 Tant qu'on n'est pas sur une feuille -- on est donc sur un n\oe{}ud ayant deux
@@ -279,17 +314,60 @@ l'adresse que l'on cherchait.
 
 \subsubsection*{Recheche du ``contenant''}
 
-\commentGP{TODO: algo}
+\begin{algorithm}
+\begin{algorithmic}
+\If{$(root == NULL) \lor (a == NULL)$}
+  \Return $NULL$
+\Else
+  \State tmp $\gets root$ de type Patricia trie
+  \State stack $\gets$ pile vide
+  \While{$true$}
+    \If{$tmp$ est une feuille}
+      \If{$addr(tmp) > a$}
+        \If{$stack =$ pile vide}
+          \Return $NULL$
+        \Else
+          \State tmp $\gets pop(stack)$
+          \State continue
+        \EndIf
+      \ElsIf{$a < size(leaf(tmp)) + addr(tmp)$}
+        \Return $leaf(tmp)$
+      \ElsIf{$size(leaf(tmp)) == 0 \land a == ptr(leaf(tmp))$}
+        \Return $leaf(tmp)$
+      \ElsIf{$stack =$ pile vide}
+        \Return $NULL$
+      \Else
+        \State tmp $\gets pop(stack)$
+        \State continue
+      \EndIf
+    \EndIf
+    \If{$addr(right(tmp)) \Band mask(right(tmp)) \le a \Band mask(right(tmp))$}
+      \State stack $\gets push(left(tmp))$
+      \State tmp $\gets right(tmp)$
+    \ElsIf{$addr(left(tmp)) \Band mask(left(tmp)) \le a \Band mask(left(tmp))$}
+      \State tmp $\gets left(tmp)$
+    \ElsIf{$stack =$ pile vide}
+      \Return $NULL$
+    \Else
+      \State tmp $\gets pop(stack)$
+    \EndIf
+  \EndWhile
+\EndIf
+\end{algorithmic}
+\caption{Recherche du bloc contenant une adresse $a$
+  \label{algo:get-cont}}
+\end{algorithm}
 
-Cet algorithme retourne le block $B$ contenant l'adresse $ptr$ passée en
-paramètre, tel que : $beginAddr_B \le ptr < beginAddr_B + size_B$.
+L'algorithme~\ref{algo:get-cont} retourne le block $B$ contenant
+l'adresse $a$ passée en paramètre, tel que :
+$beginAddr_B \le a < beginAddr_B + size_B$.
 Si un tel bloc n'existe pas, \lstinline{NULL} est renvoyé.
 Cet algorithme est utilisé pour des requêtes du type \lstinline{\valid} ou
 \lstinline{\initialized} où l'adresse passée en paramètre ne correspond pas
 nécessairement à l'adresse de base d'un bloc.
 
 Cet algorithme est similaire à celui de la recherche exacte, au détail près
-qu'il faut vérifier la formule de l'encadrement de $ptr$ par $B$ quand on arrive
+qu'il faut vérifier la formule de l'encadrement de $a$ par $B$ quand on arrive
 sur une feuille.
 On utilise une pile contenant les n\oe{}uds à partir desquels il faut reprendre
 le parcours si la recherche n'aboutit pas.
