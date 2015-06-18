@@ -99,6 +99,11 @@ Sur l'exemple de la figure~\ref{fig:mem-annots}, l'offset de \lstinline'p' est
 \lstinputlisting[caption={Annotations mémoire -- Exemple en C},
    label=lst:mem-annots,firstline=4,firstnumber=1]{listings/mem_annots.c}
 
+\begin{figure}[h!]
+\lstinputlisting[caption={Version instrumentée du programme du listing~\ref{lst:mem-annots}},
+   label=lst:mem-annots-instru]{listings/mem_annots_instru.c}
+\end{figure}
+
 
 Le Listing~\ref{lst:mem-annots} illustre toutes ces annotations sur un programme
 C.
@@ -117,6 +122,17 @@ L'assertion ligne 9 affirme que \lstinline'p' peut être déréférencé sur les
 offsets 0 et 1 (\lstinline'*(p+0)' et \lstinline'*(p+1)').
 L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
 \lstinline'p+1'.
+
+Le listing~\ref{lst:mem-annots-instru} présente le programme du
+listing~\ref{lst:mem-annots} instrumenté afin de vérifier les annotations à
+l'exécution.
+Les lignes 15--17 du listing~\ref{lst:mem-annots-instru} permettent d'exécuter
+l'assertion ligne 6 du listing~\ref{lst:mem-annots}.
+Les lignes 19--22 permettent d'exécuter l'assertion ligne 7.
+Les lignes 24--26 permettent d'exécuter l'assertion ligne 8.
+Les lignes 28--37 permettent d'exécuter l'assertion ligne 9.
+Les lignes 39--48 permettent d'exécuter l'assertion ligne 10.
+
 
 
 \section{Modèle mémoire pour la Vérification à l'exécution}
@@ -320,7 +336,7 @@ cherchait.
 
 \subsubsection*{Recheche du ``contenant''}
 
-\begin{algorithm}
+\begin{algorithm}[h!]
 \begin{algorithmic}
 \If{$(\mathit{root} == \mnull) \lor (a == \mnull)$}
   \Return $\mnull$
@@ -386,7 +402,7 @@ a trouvé le bloc qu'on cherchait, sinon on utilise le dernier n\oe{}ud empilé
 \subsection{Ajout d'un bloc}
 
 
-\begin{algorithm}
+\begin{algorithm}[h!]
 \begin{algorithmic}
 \Require $b \neq \mnull$
 \State $\mathit{x} \gets$ \lstinline'malloc',
@@ -470,7 +486,7 @@ L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
 
 \subsection{Suppression d'un bloc}
 
-\begin{algorithm}
+\begin{algorithm}[h!]
 \begin{algorithmic}
 \Require $\mathit{root} \neq \mnull$
 \Require $b \neq \mnull$
