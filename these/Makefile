@@ -31,6 +31,7 @@ FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_semantics_fct.tex \
 	figures/mmodel_architecture.pdf
 LISTINGS=listings/mem_annots.c \
+	listings/mem_annots_instru.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
 	listings/naive_false_positive.c \
@@ -56,6 +57,7 @@ chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/mem_annots.c \
+		listings/mem_annots_instru.c \
 		listings/common_prefix_mask.c \
 		figures/fig_add_patricia_trie.tex \
 		figures/fig_rem_patricia_trie.tex
