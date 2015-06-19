@@ -40,7 +40,9 @@ LISTINGS=listings/mem_annots.c \
 	listings/is_present_instrumented.c \
 	listings/ex1.c \
 	listings/ex2.c \
-	listings/rgf_0.c
+	listings/rgf_0.c \
+	listings/deleteSubstrTrous.c \
+	listings/findSubstr.c
 CHAPTERS_TEX=$(wildcard chapter_*.tex)
 CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
 
@@ -50,7 +52,8 @@ chapter_swd_DEPS=listings/ex1.c \
 		listings/rgf_0.c
 chapter_motiv_contrib_DEPS=figures/user_f.png \
 			figures/user_m.png
-chapter_ncd_DEPS=
+chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
+		listings/findSubstr.c
 chapter_method_DEPS=
 chapter_eacsl_DEPS=figures/mmodel_architecture.pdf
 chapter_stady_DEPS=
