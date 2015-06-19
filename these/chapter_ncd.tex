@@ -2,15 +2,227 @@
 \chapter{Découverte de Non-Conformités}
 \label{sec:ncd}
 
-%\chapterintro
+\chapterintro
 
-TODO
+Dans ce chapitre, ...
 
-% Postcondition de la fonction sous test
-% - postcondition fausse (NCCE)
-% - correction, couverture partielle ok
 
-% Vérification modulaire des boucles et fonctions appelées
-% - NCCE boucle
-% - CWCE préservation invariant ou loop assigns imprécis
-% - CWCE fonction appelée
+\section{Verification Scenarios Combining Proof and Testing}
+\label{sec:scenarios}
+
+
+During specification and deductive
+verification, test generation  can automatically provide the
+validation engineer with a fast and helpful feedback facilitating the
+verification task. While specifying a program, test generation
+may find a counter-example showing that the current specification does not hold
+for the current code. It can be used at early stages of specification,
+even when formal verification has no chances to succeed yet (e.g. when loop
+annotations, assertions or callees' contracts are not yet written).
+In case of a proof failure for a specified program
+property during program proof, when the validation engineer has no other
+alternative than manually analyzing the reasons of the failure, test generation 
+can be particularly useful. The absence of counter-examples after a rigorous
+partial (or, when possible, complete) exploration of program paths provides
+additional confidence in (resp., guarantee of) correctness of the
+program with respect to its current specification. This feedback may encourage
+the engineer to think that the failure is due to a missing or insufficiently
+strong annotation (loop invariant, assertion, called function contract etc.) 
+rather than to an error,
+and to write such additional annotations. On the contrary, a counter-example
+immediately shows that the program does not meet its current specification, and
+prevents the waste of time of writing additional annotations. Moreover, the
+concrete test inputs and activated program path reported by the testing
+tool precisely indicate the erroneous situation.
+Notice that the objective is certainly not \emph{to fit the specification to
+(potentially erroneous) code}, but \emph{to help the validation engineer
+to identify the problem (in the specification or in the code)}
+with a counter-example. 
+Let us illustrate these points on concrete verification scenarios.
+
+\begin{figure}[t]
+  \lstinputlisting{listings/deleteSubstrTrous.c}
+  \vspace{-3mm}
+  \caption{Unspecified function \lstinline{delete_substr} calling the function of Fig.\,\ref{fig:findSubstr}}
+  \vspace{-3mm}
+  \label{fig:deleteSubstrTrous}
+\end{figure}
+\begin{figure}[t]
+  \lstinputlisting{listings/findSubstr.c}
+  \vspace{-3mm}
+  \caption{Verified function \lstinline{find_substr} with a ``pretty-printed'' \eacsl contract}
+  \vspace{-3mm}
+  \label{fig:findSubstr}
+\end{figure}
+
+Suppose Alice is a skilled validation engineer in charge of specification 
+and deductive verification of the function \lstinline{delete_substr} 
+(Fig.~\ref{fig:deleteSubstrTrous}).
+We follow Alice throughout her validation process.
+The \lstinline{delete_substr}  function is supposed to delete one occurrence of
+a substring \lstinline{substr} of length \lstinline{sublen} from another string
+\lstinline{str} of length \lstinline{strlen}
+and to put the result into \lstinline{dest} (pre-allocated 
+for \lstinline{strlen} characters), while \lstinline{str} and \lstinline{substr}
+should not be modified.
+For simplicity, we use arrays rather than 
+usual zero-terminated strings.
+The \lstinline{delete_substr}  function returns $1$ if an occurrence of
+the substring was found and deleted, and $0$ otherwise.
+We assume Alice has already successfully proved the correctness of 
+\lstinline{find_substr}  (Fig.~\ref{fig:findSubstr})
+supposed to  return the index of an occurrence of \lstinline{substr}
+in \lstinline{str} if this substring is present, and $-1$ otherwise. 
+
+Alice first writes the following precondition (added before line 1 of Fig.~\ref{fig:deleteSubstrTrous}):
+\begin{pretty-codeACSL}
+requires 0 < sublen <= strlen;
+requires \valid(str+(0..strlen-1));
+requires \valid(dest+(0..strlen-1));
+requires \valid(substr+(0..sublen-1));
+requires \separated(dest+(0..strlen-1), substr+(0..sublen-1));
+requires \separated(dest+(0..strlen-1), str+(0..strlen-1));
+typically strlen <= 5;
+\end{pretty-codeACSL}
+We propose here the new clause \lstinline{typically C;} that extends \eacsl
+and defines the  precondition \lstinline{C} only for test generation.
+It allows Alice to strengthen the precondition if she desires to 
+restrict the (potentially too big) number of paths
+to be explored by test generation to user-controlled partial coverage. 
+Here the clause 
+\lstinline{typically strlen <= 5} asks to cover all feasible
+paths where \lstinline{str} is of length \lstinline{5} or less.
+Ignored by deductive verification, this clause does not impact the proof.
+The extension of \acsl with the \lstinline'typically' keyword is an
+experimental feature, not available in the distributed version of \framac.
+
+
+\subsection{Early Validation}
+\label{subsec:early_validation}
+
+
+Now Alice specifies that the function can assign only the array
+\lstinline{dest}, and defines the postcondition for the case when the
+substring does not occur in the string. She adds the following (erroneous)
+clauses into the contract after the precondition defined above:
+\begin{pretty-codeACSL}
+assigns dest[0..strlen-1];
+behavior not_present:
+ assumes !(\exists integer i; 0 <= i < strlen-sublen && 
+  (\forall integer j; 0 <= j < sublen ==> str[i+j] != substr[j]));
+ ensures \forall integer k; 0 <= k < strlen ==> \old(str[k]) == dest[k];
+ ensures \result == 0;
+\end{pretty-codeACSL}
+To validate it before going further, Alice applies \stady.
+It runs test generation and reports that
+both \lstinline{ensures} clauses are invalidated by the counter-example
+\lstinline{strlen = 2}, \lstinline{sublen = 1}, \lstinline{str[0] = 'A'},
+\lstinline{str[1] = 'B'}, \lstinline{substr[0] = 'A'}, 
+\lstinline{dest[0] = 'B'} and \lstinline{\result = 0}.
+Alice sees that in
+this case the string \lstinline{substr} has to be found in the
+string \lstinline{str} and the behavior \lstinline{not_present} should not
+apply, so its \lstinline{assumes} clause must be erroneous.
+This helps Alice to correct the assumption by replacing \lstinline{!=} with
+\lstinline{==}, to get:
+\begin{pretty-codeACSL}
+  assumes !(\exists integer i; 0 <= i < strlen-sublen && 
+   (\forall integer j; 0 <= j < sublen ==> str[i+j] == substr[j]));
+\end{pretty-codeACSL}
+Running \stady again reports that all feasible paths with
+\lstinline{strlen <= 5} have been covered (within 3.4 sec.) and 9442 test cases
+have been
+successfully generated and executed. Alice is now pretty confident that this
+behavior is correctly defined.
+
+For the complementary case Alice copy-pastes the \lstinline{not_present}
+behavior and (wrongly) modifies it into the following behavior:
+\begin{pretty-codeACSL}
+behavior present:
+ assumes \exists integer i; 0 <= i < strlen-sublen && 
+  (\forall integer j; 0 <= j < sublen ==> str[i+j] == substr[j]);
+ ensures \exists integer i; 0 <= i < strlen-sublen &&
+  (\forall integer j; 0 <= j < sublen ==> \old(str[i+j]) == \old(substr[j])) &&
+  (\forall integer k; 0 <= k < i ==> \old(str[k]) == dest[k]) &&
+  (\forall integer l; i <= l < strlen ==> \old(str[l+sublen]) == dest[l]);
+ ensures \result == 1;
+\end{pretty-codeACSL}
+Again, Alice runs \stady.
+The tool reports an out-of-bounds error in accessing the element 
+of \lstinline{str} at index \lstinline{l+sublen}
+in the last \lstinline{ensures}. This helps Alice to understand that the upper
+bound of index \lstinline'l' should be \lstinline{strlen-sublen} instead of \lstinline{strlen}.
+She fixes this error and re-runs \stady. Test generation reports that 13448
+test cases cover without errors the feasible paths for
+\lstinline{strlen <= 5}. Alice is now satisfied with the defined behaviors.
+Notice that these cases exhibit errors in the specification. In other
+cases errors could be in the program (cf Sec.\,\ref{subsec:experiments}).
+
+
+\subsection{Incremental Loop Validation}
+
+
+Alice now specifies as follows the first for-loop at line 4 in
+Fig.~\ref{fig:deleteSubstrTrous}:
+\begin{pretty-codeACSL}
+loop invariant \forall integer m; 0 <= m < k ==> dest[m] == \at(str[m],Pre);
+loop assigns k, dest[0..strlen-1];
+loop variant strlen-k;
+\end{pretty-codeACSL}
+Then Alice runs \Wp.
+The deductive verification tool cannot 
+validate the postcondition of \lstinline{delete_substr}, in particular
+because the other two loops are not yet specified. 
+However, \Wp could validate the
+annotations of the first loop. Here it fails,
+and Alice does not know whether it is because the loop
+specification is already incorrect, or because it is not complete enough to be
+verified.
+She runs \stady, which does not find any error in the loop specification
+and the postcondition, after 15635 test cases. Alice now believes that  loop
+specification is valid but incomplete. This confidence helps her 
+to add an additional invariant 
+\begin{pretty-codeACSL} 
+loop invariant 0 <= k < strlen;
+\end{pretty-codeACSL} 
+defining the bounds for $k$. Alice tries again to prove the loop, and \Wp fails
+again. She runs \stady and this time the new loop invariant is invalidated.
+After analyzing the failure on a simple counter-example,
+Alice understands that the loop invariant \lstinline{k < strlen}
+is not correct. Indeed, \lstinline{k} is equal to \lstinline{strlen} after 
+the last iteration, so the loop invariant should say \lstinline{k <= strlen}.
+After fixing this error, \Wp succeeds to prove the loop annotations.
+Similarly, Alice iteratively specifies and verifies the other two loops.
+
+
+The now completely specified function \lstinline{delete_substr}
+can be fully proved by \Wp. 
+However its default timeout (10 seconds per property) 
+has to be significantly extended (e.g. to 50 seconds per property).
+The fact that test generation achieves (within only 4 sec.!) a significant partial coverage 
+(restricted by the \lstinline'typically' clause for testing) and finds
+no error convinces Alice to increase the timeout,
+that could be a waste of time when a counter-example can show why the program
+does not respect the specification.
+
+
+\subsection{Adaptation of Callees' Contracts for Modular Verification}
+\label{subsec:callees}
+
+
+It often happens that the contract of a called function is
+fully proved, but is too weak to prove the caller.
+For instance assume that the clause at line 7 of Fig.~\ref{fig:findSubstr} is
+missing. Running \Wp on the whole program, Alice sees that
+\lstinline{find_substr} is totally proved, but the postcondition and loop
+annotations of \lstinline{delete_substr} are not proved. Since test generation
+does not find any counter-example, Alice believes that some necessary clause is
+too weak or missing.
+Moreover, all properties depending on the behavior \lstinline{not_found} being
+fully proved, Alice reasonably suspects that the \lstinline{found} behavior of
+\lstinline{find_substr} is not strong enough.
+
+
+\section*{Conclusion du chapitre}
+
+\commentGP{TODO}
