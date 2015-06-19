@@ -7,6 +7,101 @@
 Dans ce chapitre, ...
 
 
+Let $P$ be a C program annotated in \eacsl, 
+and $f$ the function under verification in $P$.
+Function $f$ is assumed to be recursion-free.
+It may call other functions, let $g$ denote any of them.
+A \emph{test datum} $V$ for $f$ is a vector of values for all input variables of $f$.
+The \emph{program path} activated by a test datum $V$, denoted $\pi_V$,  is the sequence of program statements
+executed by the program on the test datum $V$.
+We use the general term of a \emph{contract} 
+to designate the set of \eacsl annotations describing a loop or a function.
+A function contract is composed of pre- and postconditions including \eacsl clauses
+\lstinline{requires}, \lstinline{assigns} and
+\lstinline{ensures}  (cf. lines 22--30 in Fig.~\ref{fig:rgf1}).
+A loop contract is composed of \lstinline{loop invariant},
+\lstinline{loop variant} and \lstinline{loop assigns} clauses
+(cf. lines 15--18 in Fig.~\ref{fig:rgf1}).
+
+\subsection{Non-Compliance}
+\label{subsec:NC}
+
+
+A previous work~\cite{Petiot/SCAM14} formally described 
+how to transform a C program $P$ annotated in \eacsl
+into an instrumented program, denoted  $P^\NC$ in this paper,
+on which we can apply test generation to produce test data
+violating some annotations at runtime.\footnote{For convenience of the reviewers, 
+this translation 
+is illustrated by Fig.\ref{fig:NC-transf} in Appendix~\ref{sec:appendix}.
+For simplicity, we present it for all annotations at the same time as in~\cite{Petiot/SCAM14}.
+Its adaptation for a modular approach, or even to a particular annotation whose proof fails,
+is straightforward.}
+$P^\NC$ checks all annotations of $P$
+in the corresponding program locations
+and reports any failure.
+For instance, the postcondition $\textit{Post}_f$ of $f$
+is evaluated by the following code inserted at the end of the function $f$ in $P^\NC$:
+\begin{equation}\tag{$\dagger$}
+\mbox{\lstinline[mathescape]'int post_f;  $\ Spec2Code$($\textit{Post}_f$, post_f); fassert(post_f);'}
+\end{equation}
+For an \eacsl predicate \lstinline[mathescape]'$\textit{P}$',
+we denote by \lstinline[mathescape]'$Spec2Code$($\textit{P}$, b)'
+the generated C code  evaluating the predicate
+\lstinline[mathescape]'$\textit{P}$'
+and assigning its validity status to the Boolean 
+variable \lstinline[mathescape]'b' (see~\cite{Petiot/SCAM14} for details).
+The function call \lstinline[mathescape]'fassert(b)'
+is expanded into a conditional
+statement \lstinline[mathescape]'if(b)' that reports the failure and exits 
+whenever \lstinline[mathescape]'b' is false.
+Similarly, preconditions and postconditions of a callee $g$
+are evaluated respectively before and after executing the function $g$.
+A loop invariant is checked before the loop (for being initially true) 
+and after each loop iteration (for being preserved by the previous
+loop iteration). 
+An assertion is checked at its location.
+To generate only test data  that respect
+the precondition $\textit{Pre}_f$ of $f$,
+it is checked  in the beginning of $f$ 
+similarly to ($\dagger$)
+except that \fassert
+is replaced by \fassume
+to assume the given condition.
+
+\vspace{-2mm}
+\begin{definition}[Non-compliance] 
+\label{def:NC}
+We say that there is a \emph{non-compliance} between code and specification in $P$
+if there exists  a test datum $V$ for $f$ respecting its precondition,
+such that $P^{\NC}$ reports an annotation failure on $V$.
+In this case, we say that $V$ is a \emph{non-compliance counter-example} (\NCCE).
+\end{definition}
+\vspace{-2mm}
+
+Test generation on the translated program $P^{\NC}$ 
+can be used to generate \NCCE{}s (cf.~\cite{Petiot/SCAM14}).
+We call this technique \emph{Non-Compliance Detection} (\NCD).
+In this work we use the \pathcrawler test generator that
+will try to cover all program paths.
+Since the translation step has added a branch for the false
+value of each annotation, \pathcrawler will try to cover at
+least one path where the annotation does not hold.
+(An optimization in \pathcrawler avoids covering the 
+same \fassert failure several times.)
+The \NCD step may have three outcomes.
+It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found
+indicating the failing annotation $a$ and recording
+the program path $\pi_V$ activated by $V$ on $P^{\NC}$.
+Second, if it has managed to perform a complete exploration 
+of all program paths without finding an \NCCE, it returns \no
+(cf. the discussion of completeness in the end of Sec. \ref{sec:framac}).
+Otherwise, if only a partial exploration of program paths
+has been performed (due to a timeout,
+partial coverage criterion or any other limitation), it returns 
+\textsf{?} (unknown).
+
+
 \section{Verification Scenarios Combining Proof and Testing}
 \label{sec:scenarios}
 

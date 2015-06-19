@@ -106,6 +106,349 @@ distinguish the three reasons and suggest suitable actions.
 This work proposes a complete methodology to provide such assistance.
 
 
+
+\begin{figure}[tb]
+\begin{minipage}{0.4\columnwidth}
+\begin{lstlisting}[mathescape]
+/*@ assigns k1,...,kN;
+  @ ensures P; */
+$Type_g$ g(...){ code1; }
+
+
+
+
+$Type_f$ f(...){ code2;
+  g($Args_g$);
+  code3; }
+\end{lstlisting}
+\end{minipage}
+\hspace{-6mm}
+\begin{minipage}{0.07\columnwidth}$\to$\end{minipage}
+\begin{minipage}{0.6\columnwidth}
+\begin{lstlisting}[mathescape]
+$Type_g$ g_swd(...){
+  k1=Nondet(); ... kN=Nondet();
+  $Type_g$ ret = Nondet();
+  int post; $Spec2Code$(P, post);
+  fassume(post); return ret;
+} //respects contract of g
+$Type_g$ g(...){ code1; }
+$Type_f$ f(...){ code2;
+  g_swd($Args_g$);
+  code3; }
+\end{lstlisting}
+\end{minipage}
+\vspace{-5mm}
+\caption{(a) A contract $c\in\C$ of callee $g$ in $f$, vs.
+(b) its translation %in $P_\all^{\CW}$ 
+for \CWD}
+\vspace{-3mm}
+\label{fig:CW-transf-functions}
+\end{figure}
+
+
+
+\begin{figure*}[tb]
+\begin{center}
+\begin{minipage}{0.8\columnwidth}
+\begin{lstlisting}[mathescape]
+$Type_f$ f(...){ code1;
+  /*@ loop assigns x1,...,xN;
+    @ loop invariant I; */
+  while(b){ code2; }
+  code3; }
+\end{lstlisting}
+\end{minipage}
+\hspace{-6mm}
+\begin{minipage}{0.07\columnwidth}$\to$\end{minipage}
+\begin{minipage}{0.8\columnwidth}
+\begin{lstlisting}[mathescape]
+$Type_f$ f(...){ code1;
+  x1=Nondet(); ... xN=Nondet();
+  int inv1; $Spec2Code$(I, inv1);
+  fassume(inv1 &$ $& !b); //respects l$ $oop contract
+  code3; }
+\end{lstlisting}
+\end{minipage}
+\vspace{-3mm}
+\caption{(a) A contract $c\in\C$ of a loop in $f$, vs. 
+(b) its translation %in $P_\all^{\CW}$ 
+for \CWD}
+\vspace{-3mm}
+\label{fig:CW-transf-loops}
+\end{center}
+\end{figure*}
+
+
+
+
+\subsection{Subcontract Weakness and Prover Incapacity}
+\label{subsec:SW}
+
+To introduce the new categories of proof failures, we follow
+the modular verification approach and need a few definitions.
+A \emph{non-imbricated} loop (resp. function, assertion) in $f$ is a loop
+ (resp. function called, assertion) in $f$ outside any loop in
+$f$. A \emph{subcontract for $f$} is the contract of some non-imbricated loop or function
+ in $f$. A \emph{non-imbricated annotation} in $f$ is either a
+non-imbricated assertion or an annotation in a subcontract for $f$.
+For instance, the function $f$ of Fig.~\ref{fig:rgf1} has two subcontracts:
+the contract of the called function $g$ and the contract of the loop on lines 33--37.
+The contract of the loop in $g$ on lines 15--19 is not a subcontract for $f$, but is a subcontract for $g$.
+
+We focus on non-imbricated annotations in $f$ and assume  that all subcontracts for $f$ are respected:
+the called functions in $f$ respect their contracts, and the loops in $f$  preserve their loop invariants
+and respect all imbricated annotations.
+Let $c_f$ denote the contract of $f$,
+$\C$ the set of non-imbricated subcontracts for $f$,
+and $\A$ the set of all non-imbricated annotations in $f$ and the annotations of $c_f$.
+In other words, $\A$ contains  
+the annotations included in the contracts $\C\cup\{c_f\}$ as well as non-imbricated  assertions in $f$.
+We also assume that any subcontract of $f$ contains a (loop) assigns clause.
+This assumption is not restrictive since such a clause is anyway necessary 
+for the proof of any nontrivial code.
+
+
+
+\textbf{Subcontract weakness.}
+To apply testing for  the contracts of called functions and loops in $\C$
+instead of their code,
+we use a program transformation of $P$ producing a new program $P^{\GSW}$.
+The code of all non-imbricated function calls and loops in $f$
+is replaced by a new one as follows.
+
+For the contract $c\in\C$ of a called function $g$ in $f$, 
+the program transformation  (illustrated by Fig.~\ref{fig:CW-transf-functions})
+generates a new function \lstinline{g_swd} with the same signature 
+whose code simulates any possible behavior respecting the postcondition in $c$, 
+and replaces all calls to $g$ by  a call to \lstinline{g_swd}.
+First, \lstinline{g_swd} allows any of the variables
+(or, more generally, left-values) present in
+the \lstinline{assigns} clause of $c$ to change its value 
+(line 2 in Fig.\ref{fig:CW-transf-functions}(b)).
+It can be realized by assigning a non-deterministic 
+value of the appropriate type
+using a dedicated function, denoted here by \lstinline{Nondet()}
+(or simply by adding an array of fresh input variables and reading
+a different value for each use and each function invocation).
+If the return type of $g$ is not \lstinline{void},
+another non-deterministic value is read for the returned value
+\lstinline{ret} (line 3 in Fig.\ref{fig:CW-transf-functions}(b)).
+Finally, the validity of the postcondition is evaluated (taking into
+account these new non-deterministic values) 
+and assumed
+in order to consider only executions that respect 
+the postcondition, and
+the function returns (lines 4--5 in Fig.\ref{fig:CW-transf-functions}(b)).
+
+Similarly, for the contract $c\in\C$ of a loop in $f$, 
+the program transformation  
+replaces the code of the loop by 
+another code that simulates any possible behavior respecting $c$, that is, 
+ensuring the ``loop postcondition'' $I\wedge \neg b$ after the loop as shown in Fig.~\ref{fig:CW-transf-loops}.
+In addition, the transformation treats in the same way as in $P^{\NC}$
+all other annotations in $\A$:
+preconditions of called functions, initial loop invariant verifications 
+and the  pre- and postcondition of $f$
+(they are not shown 
+in Fig. \ref{fig:CW-transf-functions}(b) and \ref{fig:CW-transf-loops}(b)).
+
+\begin{tabular}{cc}
+%\begin{figure}[tb]
+  %\begin{minipage}{0.5\columnwidth}
+  %\begin{figure}
+    \lstinputlisting[label=fig:contracts-ex1,caption={Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}]{listings/ex1.c}
+    %\vspace{-2mm}
+    %\caption{Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}
+    %\label{fig:contracts-ex1}
+  %\end{figure}
+  %\hspace{4mm}
+  %\end{minipage}
+  %\begin{minipage}{0.5\columnwidth}
+  %\begin{figure}
+&
+    \lstinputlisting[label=fig:contracts-ex2,caption={Global \CWCE{}s do not help to find precisely a too weak subcontract}]{listings/ex2.c}
+    %\vspace{-2mm}
+    %\caption{Global \CWCE{}s do not help to find precisely a too weak subcontract}
+    %\label{fig:contracts-ex2}
+  %\end{figure}
+  %\end{minipage}
+  %\vspace{-2mm}
+  %\caption{Two examples with several subcontracts}
+  %\vspace{-5mm}
+  %\label{fig:many-contracts}
+%\end{figure}
+\end{tabular}
+
+\begin{definition}[Global subcontract weakness] 
+\label{def:GSW}
+We say that $P$ has a \emph{global subcontract weakness} for $f$ 
+if there exists a test datum $V$ for $f$ respecting its precondition,
+such that $P^{\NC}$ does not report any annotation failure on $V$,
+while $P^{\GSW}$ reports an annotation failure on $V$.
+In this case, we say that $V$ is a 
+\emph{global subcontract weakness counter-example} (\GSWCE)
+for the set  of subcontracts $\C$.
+\end{definition}
+
+Notice that we do not consider the same counter-example as an \NCCE  and 
+an \SWCE. Indeed, even if some counter-examples may illustrate both a
+subcontract weakness and a non-compliance, we consider that
+non-compliances usually come
+from a direct conflict between the code and the specification
+and should be addressed first, while 
+contract weaknesses are often more subtle and will be
+easier to address when non-compliances are eliminated.
+
+Again, test generation can be applied on  $P^{\GSW}$ to generate
+\GSWCE candidates. When it finds a test datum $V$ such that 
+$P^{\GSW}$ fails on $V$, we use runtime assertion checking:
+if $P^{\NC}$ fails on $V$, then
+$V$ is classified as an \NCCE, otherwise  $V$ is a \GSWCE.
+We call this technique \emph{Global Subcontract Weakness Detection} for the set of 
+all subcontracts, denoted $\GSWD$. 
+The $\GSWD$ step may have four outcomes.
+It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found for the failing
+annotation $a$,
+and  (\cw,\,$V$,\,$a$,\,$C$) if $V$ has been finally classified as an \SWCE
+indicating the failing annotation $a$ and the set of subcontracts $C$.
+The program path $\pi_V$ activated by $V$ and leading to the failure 
+(on $P^{\NC}$ or $P^{\GSW}$) is recorded as well.
+If the $\GSWD$ has managed to perform a complete exploration 
+of all program paths without finding an \GSWCE, it returns \no.
+Otherwise, if only a partial exploration of program paths
+has been performed it returns \textsf{?} (unknown).
+
+
+
+
+A \GSWCE indicates a global subcontract weakness but
+does not explicitly identify which single subcontract $c\in\C$ is too 
+weak.
+To do that, we propose another program transformation of $P$ into
+an instrumented program  $P_c^{\SSW}$.
+It is realized by replacing only one non-imbricated function call or loop 
+by the code respecting the postcondition of corresponding subcontract $c$ 
+(as indicated in Fig. \ref{fig:CW-transf-functions} and \ref{fig:CW-transf-loops})
+and transforming other annotations in $\A$ as in $P^{\NC}$.
+
+
+\begin{figure*}[bt]\centering
+\begin{tikzpicture}
+  \node(p) [data] {$P$};
+  \node(ncd) [right of=p,test,node distance=1.7cm] {$\NCD(P)$};
+  \node(ncce1) [below of=ncd,node distance=1.2cm] {\circled{1} $V$ is \NCCE};
+  \path[darrow] (ncd) -- node[left] {(\nc, $V$, $a$)} (ncce1);
+  \path[arrow] (p) -- (ncd);
+  \node(cwd) [right of=ncd,test,node distance=4cm] {$\CWD(P)$};
+  \path[darrow] (ncd.east) -- node[above] {\no{} / \textsf{?}} (cwd);
+  %\path[darrow] (ncd.east)+(0,.2) -- node[above] {\no} (cwd);
+  %\path[darrow] (ncd.east)+(-.1,-.2) -- node[below] {?} (cwd);
+
+  % CWD did not found any CE
+  \node(cov-2) [right of=cwd,test,node distance=4cm]{
+    $\NCD(P)=~$\no$\land$\\ $\CWD(P)=~$\no};
+  \path[darrow] (cwd.east) -- node[above] {\no{} / \textsf{?}} (cov-2);
+  %\path[darrow] (cwd.east)+(0,.2) -- node[above] {\no} (cov-2);
+  %\path[darrow] (cwd.east)+(-.1,-.2) -- node[below] {?} (cov-2);
+  \node(pw) [below of=cov-2,node distance=1.2cm]{\circled{3} Prover incapacity};
+  \path[darrow] (cov-2) -- node[right] {true} (pw);
+  \node(qm) [right of=pw,node distance=4cm] {\circled{4} Unknown};
+  \path[darrow] (cov-2) -| node[below left] {false} (qm);
+
+  % CWD found a CE
+  \node(cwce-ncce) [below of=cwd,node distance=1.2cm]{\circled{2} $V$ is \CWCE};
+  \path[darrow] (cwd) -- node[right] {(\cw, $V$, $a$, $S$)} (cwce-ncce);
+  \path[darrow] (cwd) -- node[above,sloped,xshift=-3mm] {~~~(\nc, $V$, $a$)} (ncce1);
+\end{tikzpicture}
+\vspace{-2mm}
+\caption{Combined verification methodology in case of a proof failure on $P$}
+\vspace{-5mm}
+\label{fig:method-short}
+\end{figure*}
+
+
+\begin{definition}[Single subcontract weakness] 
+\label{def:SSW}
+Let $c$ be a subcontract for $f$.
+We say that $c$ is a \emph{too weak subcontract}
+(or has a \emph{single subcontract weakness}) for $f$ 
+if there exists a test datum $V$ for $f$ respecting its precondition,
+such that $P^{\NC}$ does not report any annotation failure on $V$,
+while $P_c^{\SSW}$ reports an annotation failure on $V$.
+In this case, we say that $V$ is a \emph{single subcontract weakness counter-example} (\SSWCE)
+for the subcontract  $c$ in $f$.
+\end{definition}
+
+For any subcontract $c\in\C$, test generation can be separately applied on  $P_{c}^{\SSW}$ to generate
+\SSWCE candidates. If such a test datum $V$ is generated, it is checked on $P^{\NC}$ to 
+classify it as an \NCCE or an \SSWCE.
+We call this technique,
+applied for all subcontracts one after another until a first counter-example  $V$ is found,  
+\emph{Single Contract Weakness Detection,}
+denoted $\SSWD$. 
+The $\SSWD$ step may have three outcomes.
+It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found for a failing annotation $a$,
+and  (\cw,\,$V$,\,$a$,\,$\{c\}$) if $V$ has been finally classified as an \SSWCE
+indicating the failing annotation $a$ and the single too weak subcontract $c$.
+The program path $\pi_V$ activated by $V$ and leading to the failure 
+(on $P^{\NC}$ or $P_c^{\SSW}$) is recorded as well.
+Otherwise, it returns \textsf{?} (unknown), since even after an exhaustive path testing
+the absence of \SSWCE for any individual subcontract $c$ does not imply
+the absence of a \GSWCE.
+
+Indeed, sometimes $\SSWD$ cannot exhibit a subcontract weakness for a single subcontract
+while there is a global subcontract weakness for all of them at once.
+For example in Fig.~\ref{fig:contracts-ex1},
+if we apply $\SSWD$ to any of the subcontracts, we always have
+\lstinline'x >=  \old(x)+5' at the end of $f$
+(we add $1$ to $x$ by executing the translated subcontract,
+and add $2$ twice by executing the other two functions' code),
+so the postcondition of \lstinline'f' holds and no weakness is detected.
+If we run  $\GSWD$  to consider all subcontracts at once, we only get
+\lstinline'x>= \old(x)+3' after executing the three subcontracts, and can exhibit a counter-example.
+
+On the other hand, running  $\GSWD$
+produces a \GSWCE that does not indicate which one of the subcontracts is too weak,
+while $\SSWD$ can sometimes be more precise.
+For Fig.~\ref{fig:contracts-ex2},
+since the three callees are replaced by their subcontracts for  $\GSWD$,  it is impossible
+to find out which one is too weak.
+Counter-examples generated by a prover suffer from the same precision issue:
+taking into account all subcontracts instead of the corresponding code 
+prevents from a precise identification of a single too week subcontract.
+In this example we can be more precise with $\SSWD$,
+since only the replacement of the  subcontract of  \lstinline'g3' also leads to an \SSWCE:
+we can have \lstinline'x >= \old(x)+3' by executing
+\lstinline'g1',  \lstinline'g2' and the subcontract of \lstinline'g3',
+exhibiting the contract weakness of \lstinline'g3'.
+Thus, the proposed $\SSWD$  technique can provide the verification engineer
+with a more precise diagnostic than counter-examples extracted from a prover.
+
+We define a combined subcontract weakness detection technique, denoted \SWD, applying
+first $\SSWD$ followed by  $\GSWD$ until the first \SWCE is found. 
+$\SWD$ may have the same four outcomes as  $\SSWD$.
+It allows us
+to be both precise (and indicate when possible a single subcontract being too weak),
+and complete (capable to find \GSWCE{}s even when there are no single subcontract weaknesses).
+
+
+
+\textbf{Prover incapacity.}
+When neither a non-compliance nor a global subcontract weakness
+exist, we cannot demonstrate that it is impossible to prove the property.
+
+\begin{definition}[Prover incapacity] 
+\label{def:prov-incap}
+We say that a proof failure in $P$ is due to a \emph{prover incapacity} 
+if for any test datum $V$ for $f$ respecting its precondition,
+neither $P^{NC}$ nor $P^{\GSW}$ report any annotation failure on $V$.
+In other words, there is no \NCCE and no \GSWCE for $P$.
+\end{definition}
+
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO
 
 \begin{figure}[bt]

@@ -15,11 +15,27 @@
 \tikzstyle{ppcommon}=[inner sep=1mm,font=\scriptsize]
 \tikzstyle{parr}=[->,draw,thick]
 
+\tikzstyle{bef}=[align=left,font=\ttfamily,node distance=3mm,text width=\textwidth*.4]
+\tikzstyle{aft}=[align=left,font=\ttfamily,node distance=3mm,text width=\textwidth*.5]
+\tikzstyle{acsl}=[inner sep=0mm,fill=blue!15]
+\tikzstyle{genc}=[inner sep=0mm,fill=blue!15]
+
+\tikzstyle{common}=[node distance=15mm,align=center]
+\tikzstyle{test}=[draw,trapezium,trapezium left angle=70,
+  trapezium right angle=-70,common]
+\tikzstyle{op}=[draw,common]
+\tikzstyle{data}=[draw,common,ellipse,node distance=35mm]
+\tikzstyle{ce}=[data]
+\tikzstyle{arrow}=[draw,->]
+\tikzstyle{darrow}=[draw,o->]
+
 \newcommand{\tikzinsert}[3]{%
   \tikz[remember picture,overlay]{\node[#3] (#1) {#2};}}
 \tikzstyle{ball}=[inner sep=.5mm,draw,thick,circle,font=\bfseries]
 \newcommand{\insertball}[2][]{
   \tikzinsert{}{#2}{ball,node distance=.5cm,xshift=.2cm,yshift=.05cm,font=\scriptsize\bfseries,#1}~~~~}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+    \node[shape=circle,draw,inner sep=.5mm,font=\bfseries] (char) {#1};}}
 
 \newcommand{\ce}[1]{{\scriptsize{$\langle$}}#1{\scriptsize{$\rangle$}}}
 \newcommand{\fassert}{\lstinline'fassert'\xspace}
@@ -35,12 +51,22 @@
 
 \newcommand{\NC}{\ensuremath{\mathrm{NC}}\xspace}
 \newcommand{\NCD}{\ensuremath{\mathrm{NCD}}\xspace}
-\newcommand{\CW}{\ensuremath{\mathrm{SW}}\xspace}
-\newcommand{\CWD}{\ensuremath{\mathrm{SWD}}\xspace}
+\newcommand{\GSW}{\ensuremath{\mathrm{GSW}}\xspace}
+\newcommand{\SSW}{\ensuremath{\mathrm{SSW}}\xspace}  
+\newcommand{\CW}{\ensuremath{\mathrm{SW}}\xspace}  % for compatibility
+\newcommand{\SW}{\ensuremath{\mathrm{SW}}\xspace}  % new version
+\newcommand{\CWD}{\ensuremath{\mathrm{SWD}}\xspace}  % for compatibility
+\newcommand{\SWD}{\ensuremath{\mathrm{SWD}}\xspace}  % new version
+\newcommand{\GSWD}{\ensuremath{\mathrm{GSWD}}\xspace}  
+\newcommand{\SSWD}{\ensuremath{\mathrm{SSWD}}\xspace}  
 \newcommand{\NCCE}{\ensuremath{\mathrm{NCCE}}\xspace}
-\newcommand{\CWCE}{\ensuremath{\mathrm{SWCE}}\xspace}
+\newcommand{\CWCE}{\ensuremath{\mathrm{SWCE}}\xspace}  % for compatibility
+\newcommand{\SWCE}{\ensuremath{\mathrm{SWCE}}\xspace}  % new version
+\newcommand{\GSWCE}{\ensuremath{\mathrm{GSWCE}}\xspace}
+\newcommand{\SSWCE}{\ensuremath{\mathrm{SSWCE}}\xspace}
 \newcommand{\all}{\ensuremath{\mathrm{all}}\xspace}
 \newcommand{\each}{\ensuremath{\mathrm{each}}\xspace}
+
 \newcommand{\nc}{\textsf{nc}\xspace}
 \newcommand{\cw}{\textsf{sw}\xspace}
 \newcommand{\yes}{\textsf{yes}\xspace}
