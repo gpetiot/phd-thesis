@@ -6,8 +6,104 @@
 
 Dans ce chapitre, ...
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
+\section{Illustrating Example}
+\label{subsec:example}
+
+We illustrate the issues arising in deductive verification of programs and the
+solutions we propose on the example of C program of
+Fig.~\ref{fig:rgf1}. It comes from an ongoing work on formal specification and
+deductive verification
+~\cite{ggp15}
+and implements an
+algorithm proposed in \cite[page 235]{DBLP:books/x/ftx2010}.
+The example of Fig.~\ref{fig:rgf1} 
+concerns the generation of
+\emph{Restricted Growth Functions} (RGF),
+defined by the property expressed by the \acsl
+predicate \lstinline{is_rgf} on lines 1--2 of Fig.~\ref{fig:rgf1}, where the RGF
+$a$ is represented by the C array
+of its values. 
+For convenience of the reader, 
+some \acsl notations are  replaced by mathematical symbols
+(e.g. keywords \lstinline[style=c]{\exists}, \lstinline[style=c]{\forall} and
+\lstinline[style=c]{integer} are respectively denoted by $\exists$, $\forall$ and $\mathbb{Z}$).
+
+
+\begin{figure}[tb]
+  \centering
+  \lstinputlisting{listings/rgf_0.c}
+  \caption{Successor function for restricted growth functions (RGF)\label{fig:rgf1}}
+  \vspace{-5mm}
+\end{figure}
+
+
+Fig.~\ref{fig:rgf1} shows a main function \lstinline{f} 
+and an auxiliary function \lstinline{g}.
+The precondition of \lstinline{f} states that \lstinline{a} is a valid array 
+of size  \lstinline{n>0} (lines 22--23) and must be an RGF (line 24).
+The postcondition states 
+that the function is only allowed to modify the values of array \lstinline{a} except
+the first one \lstinline{a[0]} (line 25), 
+and that the generated array \lstinline{a} is still an RGF (line 26).
+Moreover, if the function returns 1 then the generated RGF \lstinline{a} must
+respect an additional property
+(lines 27--30).
+Here \lstinline{\at(a[j],Pre)} denotes the value of \lstinline{a[j]} in the 
+\lstinline{Pre} state, i.e. before the function starts execution.
+
+
+We focus now on the body of the function \lstinline{f} in
+Fig.~\ref{fig:rgf1}. 
+The loop on lines 36--37 goes through the array from right
+to left to find the rightmost non-increasing element, that is,
+the maximal  array index \lstinline{i} such that \lstinline{a[i] <= a[i-1]}.
+If such an index \lstinline{i} is found,
+the function increments \lstinline{a[i]} (line 40) and fills out the rest
+of the array with \lstinline{0}'s (call to \lstinline{g}, line 41).
+The loop contract (lines 33--35) specifies the interval of values of the loop variable,
+the variable that the loop can modify as well as a loop variant 
+that can be used to ensure the termination of the loop.
+The loop variant expression must be non-negative whenever an iteration starts,
+and strictly decrease after it.
+
+The function \lstinline{g} is used to fill the array with zeros to the right of index \lstinline{i}.
+In addition to size and validity constraints (lines 7--8),
+its precondition requires that the elements of \lstinline{a} up to index  \lstinline{i}
+form an RGF (lines 9--10). 
+The function is allowed to modify the elements of \lstinline{a} starting from the index \lstinline{i+1} (line 11)
+and generates an RGF (line 12).
+The loop invariants 
+indicate the value interval of the loop variable \lstinline{k} (line 15), 
+and state that the property \lstinline{is_rgf} is satisfied
+up to \lstinline{k} (line 16).
+This invariant allows a deductive verification tool to deduce the postcondition.
+The annotation \lstinline{loop assigns} (line 17) says that the only values the loop can
+change are \lstinline{k} and the elements of \lstinline{a} starting from the index \lstinline{i+1}.
+The term \lstinline{n-k} is a variant of the loop (line 18).
+
+The \acsl lemma \lstinline'max_rgf' on lines 4--5
+states
+that if an array is an RGF, then each of its elements is at most equal to its
+index.
+This lemma is not proved as such by \Wp but can be used to ensure the absence of
+overflow at line 40.
+
+The functions of Fig.~\ref{fig:rgf1} can be fully proved using \Wp.
+Suppose now this example contains one of the  following four mistakes: 
+the verification engineer \emph{either} forgets the precondition on line 24, 
+\emph{or} writes the wrong assignment \lstinline[style=c]'a[i]=a[i]+2;' on line 40,
+\emph{or} puts a too general clause \lstinline[style=c]'loop assigns i,a[1..n-1];' on line 34,
+\emph{or} forgets to provide the lemma  on lines 4--5.
+In each of these four cases, the proof  fails (for the precondition of \lstinline{g} on line 41 
+and/or the assertion on line 39) for different reasons.
+In fact, only in the first two cases the code and specification are not compliant, while
+the third failure is due to a too weak subcontract, and the last one comes from a prover incapacity.
+To the best of our knowledge, 
+none of the existing  techniques allows to automatically
+distinguish the three reasons and suggest suitable actions.
+This work proposes a complete methodology to provide such assistance.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% TODO
