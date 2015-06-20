@@ -31,12 +31,7 @@ A previous work~\cite{Petiot/SCAM14} formally described
 how to transform a C program $P$ annotated in \eacsl
 into an instrumented program, denoted  $P^\NC$ in this paper,
 on which we can apply test generation to produce test data
-violating some annotations at runtime.\footnote{For convenience of the reviewers, 
-this translation 
-is illustrated by Fig.\ref{fig:NC-transf} in Appendix~\ref{sec:appendix}.
-For simplicity, we present it for all annotations at the same time as in~\cite{Petiot/SCAM14}.
-Its adaptation for a modular approach, or even to a particular annotation whose proof fails,
-is straightforward.}
+violating some annotations at runtime.
 $P^\NC$ checks all annotations of $P$
 in the corresponding program locations
 and reports any failure.
