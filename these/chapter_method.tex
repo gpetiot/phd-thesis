@@ -2,6 +2,215 @@
 \chapter{Méthode d'Aide à la Preuve combinant NCD et SWD}
 \label{sec:method}
 
-%\chapterintro
+\chapterintro
+
+TODO
+
+
+
+In this section, we present an overview of our method for 
+diagnosis of proof failures using the detection techniques of Sec.~\ref{sec:definitions},
+and illustrate it on several examples.
+We also provide a comprehensive list of  suggestions of actions for 
+each category of proof failures.
+
+\textbf{The method.}
+The proposed method is illustrated by Fig.~\ref{fig:method-short}.
+Suppose that the proof of the annotated program $P$ fails for some non-imbricated annotation $a\in\A$.
+The first step tries to find a non-compliance using \NCD. 
+If such a non-compliance is found, it generates an \NCCE (marked by \circled{1}
+in Fig.~\ref{fig:method-short})
+and classifies the proof failure as a non-compliance.
+If the first step cannot generate a counter-example,
+the \SWD step combines $\SSWD$ and $\GSWD$ 
+and tries to generate single \SWCE{}s, then global \SWCE{}s, 
+until the first counter-example is generated and classified 
+(either as an \NCCE \circled{1} or an \SWCE \circled{2}).
+If no counter-example has been found, the last step checks the outcomes.
+If both \NCD and \SWD have returned \textsf{no}, that is, 
+both  $\NCD$  and $\GSWD$ have performed a complete path exploration 
+without finding a counter-example,
+the proof failure is classified as a prover incapacity \circled{3} (cf. Def. \ref{def:prov-incap}).
+Otherwise, it  remains unclassified \circled{4}.
+Fig.~\ref{tab:versions-rgf} associates a variant of the illustrating example to
+each case.
+For each case, we detail the lines we modified in the program of
+Fig.~\ref{fig:rgf1} to obtain a new program, the intermediate results of
+deductive verification, \NCD and \SWD and the final verdict (including the
+generated counter-example if any).
+
+
+\begin{figure*}[bt]\centering
+  \begin{tabular}{c|c|l|c|c|c|c}
+    \multirow{2}{*}{\#} & \multicolumn{2}{c|}{Impacted lines}
+    & \multicolumn{3}{c|}{Intermediate outcome}
+    & \multirow{2}{*}{Final outcome} \\ \cline{2-6}
+    & Line & Changes & Proof (failing annot.) & \NCD & \CWD & \\ \hline
+    % example/rgf_0.c
+    0 & -- & -- & \ok & -- & -- & Proved \\ \hline
+    % example/rgf_1.c
+    1 & 24 & (deleted) & \textsf{?} (l.39, 41, 26) & \nc & --
+    & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$}
+    is \NCCE \\ \hline
+    % example/rgf_2.c
+    2 & 34 & \lstinline'loop assigns i,a[1..n-1];'
+    & \multirow{3}{*}{\textsf{?} (l.39, 41, 42, 26--30)}
+    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} for l.33--34}
+    & $V$ = {\scriptsize{$\langle$}}
+    $\mbox{\lstinline'n=2;'} \textbf{\mbox{\lstinline'a[0]=0'}}
+    \mbox{\lstinline';a[1]=0;'}$ \\
+    &&&&&&
+    $\mathbf{nondet}_{\textbf{\mbox{\lstinline'a[1]'}}} \textbf{\mbox{\lstinline'=97157'}}\mbox{\lstinline';'}$ \\
+    &&&&&& $\mathrm{nondet}_{\mbox{\lstinline'i'}}\mbox{\lstinline'=0'}$
+    {\scriptsize{$\rangle$}} is \SWCE \\ \hline
+    % example/rgf_3.c
+    3 & 4--5 & (deleted) & \multirow{2}{*}{\textsf{?} (l.39)}
+    & \multirow{2}{*}{\no} & \multirow{2}{*}{\no}
+    & \multirow{2}{*}{Prover incapacity} \\
+    & 22 & \lstinline'requires n>0 && n<21;' &&&& \\ \hline
+    % example/rgf_4.c
+    4 & 4--5 & (deleted) & \textsf{?} (l.39) & \textsf{?} & \textsf{?}
+    & Unknown \\
+  \end{tabular}
+  \caption{Method results for different versions of the illustrating example.}
+  \label{tab:versions-rgf}
+\end{figure*}
+
+
+The proof failure category and the counter-example $V$, along with  
+the recorded path $\pi_V$,
+the reported failing annotation $a$ and set of too weak subcontracts $S$,
+can be extremely helpful for the verification engineer.
+Suppose we try to prove in \Wp a modified version of the function $f$ of
+Fig.~\ref{fig:rgf1}
+where the precondition at line 24 is missing.
+The proof of the precondition of $g$ on line 10 for the call on line 41
+fails without indicating a precise reason.
+The \NCD step of \stady  generates an \NCCE (case \circled{1},
+\#1 in Fig.~\ref{tab:versions-rgf}) where \lstinline'is_rgf(a,n)'
+is clearly false due to \lstinline'a[0]' being non-zero, and indicates the
+failing annotation (coming from line 10).  
+That helps the verification engineer to understand and fix the issue. 
+
+
+
+Let us suppose now that the clause on line 34 has been erroneously
+written as follows: \lstinline'loop assigns i, a[1..n-1];'.
+The loop on lines 36--37 still preserves its invariant.
+The \NCD step does not find any \NCCE, as this modification did not introduce
+any non-compliance between the code and its specification.
+Thanks to the replacement shown in Fig.~\ref{fig:CW-transf-loops},
+$\SSWD$ for the contract of this loop will detect a single
+subcontract weakness for the loop contract (case \circled{2},
+\#2 in Fig.~\ref{tab:versions-rgf}),
+and report a fail to establish the 
+precondition of $g$ (on line 10) for the call on line 41.
+With the indication of the single subcontract weakness for the loop, 
+the verification engineer will try to strengthen the loop contract
+and find the issue. 
+
+
+
+Suppose now we want to prove the absence of overflow at line 40
+of Fig.~\ref{fig:rgf1}, but the lemma on lines 4--5 
+(that allows the prover to deduce this property) is missing.
+The proof fails  without giving a precise reason since
+the prover does not perform the induction needed to deduce the right bounds on
+\lstinline'a[i]'.
+Neither \NCD nor \CWD can produce a counter-example, and
+as the initial program has too many paths, their outcomes are \textsf{?}
+(unknown) (case \circled{4}, \#4 in Fig.~\ref{tab:versions-rgf}).
+For such situations, \stady offers the possibility to reduce the input domain.
+The verification engineer can add the \acsl clause 
+\lstinline'typically n<5;' to reduce the array size 
+for testing (this clause is ignored by the proof). 
+Running \stady now allows the tool to complete the exploration of all
+program paths (for \lstinline'n<5') both for \NCD and \CWD without finding a counter-example.
+\stady classifies the proof failure for the program with 
+the reduced domain as a prover incapacity (case \circled{3},
+\#3 in Fig.~\ref{tab:versions-rgf}).
+That gives the verification engineer more confidence that the proof failure
+has the same reason on the initial program for bigger sizes \lstinline{n}.
+
+The verification engineer prefers to  try interactive proof or adding additional
+lemmas or assertions,
+and does not waste time looking for a bug or a too week subcontract.
+
+
+
+
+\textbf{Suggestions of actions.}
+From the possible outcomes of the method illustrated in
+Fig.~\ref{fig:method-short} we are able to suggest to the verification engineer 
+the most suitable actions (displayed in Fig.~\ref{fig:suggestions})
+to help her with the verification task.
+A \emph{non-compliance} of the code w.r.t. annotation $a$  means that 
+there is an inconsistency between the precondition, the annotation $a$ and the code 
+of the path $\pi_V$  leading to $a$.
+Thanks to the counter-example, 
+the values of variables at different program points along $\pi_V$ 
+can be either traced or explored in a debugger \cite{Muller/FM11}. 
+In \framac, the execution on $V$ can be 
+conveniently explored using \Value or \pathcrawler.
+This helps the verification engineer to understand the issue.
+Indeed, if an \NCCE is generated, there is no need to
+try automatic proof or look for a too weak subcontract --- it will not help.
+The reason of the proof failure is necessarily related 
+to a non-compliance between 
+the code and annotations
+traversed by the path $\pi_V$.
+
+A \emph{weakness} of a set of subcontracts $S$ means that at least one of the contracts of $C$
+has to be strengthened. By Definitions \ref{def:GSW} and \ref{def:SSW}, the non-compliance is excluded here, 
+that is, the execution of $P^{\NC}$ on  $V$  respects the annotation $a$, thus
+the suggested action is to strengthen the subcontract(s).
+In the case of single subcontract weakness, $S$ is a singleton so the suggestion
+is very precise and helpful to the user.
+Again, trying interactive proof or additional assertions or lemmas 
+will be useless here since the property can obviously not be proved 
+because of the counter-example.
+For a \emph{prover incapacity,} the verification engineer
+may write lemmas or assertions, add hypotheses that may help the theorem prover to
+succeed or try another theorem prover.
+She also may want to use a proof assistant like \textsc{Coq}, so that she does
+not suffer from the limitations of the theorem provers, but 
+this task can be more complex and time-consuming.
+Finally, when the verdict is \emph{unknown,} test generation for \NCD and/or \SWD times out, 
+so the verification engineer may strengthen the
+precondition for testing to reduce the input domain, or extend the timeout to
+give \stady more time to conclude.
+
+
+\begin{figure*}[bt]\centering
+  \begin{tabular}{p{.7cm}|>{\centering\arraybackslash}p{5.8cm}|>{\centering\arraybackslash}p{8cm}}
+    \textbf{Case} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
+    \hline
+    \circled{1} & Non-compliance w.r.t. the annotation $a$:
+    (\nc, $V$, $a$)
+    &
+    check the violated annotation $a$
+    or the code leading to $a$ in the path $\pi_V$,
+    or strengthen the precondition of the function under verification
+    \\
+    \hline
+    \circled{2} & Weakness of subcontracts in $S$ w.r.t. the annotation $a$:
+    \ (\cw,~$V$,~$a$,~$S$)
+    & strengthen one or several subcontracts in $S$ to exclude the subcontract weakness\\
+    \hline
+    \circled{3} & Prover incapacity
+    & add lemmas or assertions to help the theorem prover,
+    or use another prover,
+    or an interactive  proof assistant \\
+    \hline
+    \circled{4} & Unknown
+    & strengthen the $\mbox{\lstinline'typically'}$ clause or coverage criterion (e.g. $k$-path),
+    or increase the timeout limit for testing \\
+  \end{tabular}
+  \caption{Suggestions of actions for different categories of proof failures}
+  \label{fig:suggestions}
+\end{figure*}
+
+
+\section*{Conclusion du chapitre}
 
 TODO
