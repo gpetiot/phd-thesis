@@ -54,7 +54,7 @@ chapter_motiv_contrib_DEPS=figures/user_f.png \
 			figures/user_m.png
 chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
 		listings/findSubstr.c
-chapter_method_DEPS=
+chapter_method_DEPS=table_rgf.pdf
 chapter_eacsl_DEPS=figures/mmodel_architecture.pdf
 chapter_stady_DEPS=
 chapter_existant_DEPS=listings/swap.c
@@ -100,6 +100,9 @@ main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 	pdflatex $<
 	bibtex main
 	pdflatex $<
+	pdflatex $<
+
+table_rgf.pdf: table_rgf.tex
 	pdflatex $<
 
 compile_chapter= \

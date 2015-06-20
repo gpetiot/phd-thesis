@@ -1,0 +1,168 @@
+
+\documentclass{standalone}
+\usepackage{amsfonts,listings,courier,pgfplotstable,times,xspace,tikz,amssymb,
+  amsmath,comment,stmaryrd,subcaption,multirow,wrapfig,pifont,bigdelim}
+
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{
+    \node[shape=circle,draw,inner sep=.5mm,font=\bfseries] (char) {#1};}}
+
+\newcommand{\ce}[1]{{\scriptsize{$\langle$}}#1{\scriptsize{$\rangle$}}}
+\newcommand{\fassert}{\lstinline'fassert'\xspace}
+\newcommand{\fassume}{\lstinline'fassume'\xspace}
+\newcommand{\cmark}{\ding{51}}
+\newcommand{\xmark}{\ding{55}}
+\newcommand{\ok}{\cmark\xspace}
+\newcommand{\ko}{\xmark\xspace}
+
+\newcommand{\NC}{\ensuremath{\mathrm{NC}}\xspace}
+\newcommand{\NCD}{\ensuremath{\mathrm{NCD}}\xspace}
+\newcommand{\GSW}{\ensuremath{\mathrm{GSW}}\xspace}
+\newcommand{\SSW}{\ensuremath{\mathrm{SSW}}\xspace}  
+\newcommand{\CW}{\ensuremath{\mathrm{SW}}\xspace}  % for compatibility
+\newcommand{\SW}{\ensuremath{\mathrm{SW}}\xspace}  % new version
+\newcommand{\CWD}{\ensuremath{\mathrm{SWD}}\xspace}  % for compatibility
+\newcommand{\SWD}{\ensuremath{\mathrm{SWD}}\xspace}  % new version
+\newcommand{\GSWD}{\ensuremath{\mathrm{GSWD}}\xspace}  
+\newcommand{\SSWD}{\ensuremath{\mathrm{SSWD}}\xspace}  
+\newcommand{\NCCE}{\ensuremath{\mathrm{NCCE}}\xspace}
+\newcommand{\CWCE}{\ensuremath{\mathrm{SWCE}}\xspace}  % for compatibility
+\newcommand{\SWCE}{\ensuremath{\mathrm{SWCE}}\xspace}  % new version
+\newcommand{\GSWCE}{\ensuremath{\mathrm{GSWCE}}\xspace}
+\newcommand{\SSWCE}{\ensuremath{\mathrm{SSWCE}}\xspace}
+\newcommand{\all}{\ensuremath{\mathrm{all}}\xspace}
+\newcommand{\each}{\ensuremath{\mathrm{each}}\xspace}
+
+\newcommand{\nc}{\textsf{nc}\xspace}
+\newcommand{\cw}{\textsf{sw}\xspace}  % for compatibility
+\newcommand{\sw}{\textsf{sw}\xspace}  % new version
+\newcommand{\no}{\textsf{no}\xspace}
+\newcommand{\yes}{\textsf{yes}\xspace}
+
+
+\lstloadlanguages{C}
+
+% Warnings: 
+% - Do not use other quantified variables than i, j and k
+% - Do not add 
+\lstdefinelanguage{pretty-ACSL}{%
+  escapechar={},
+  literate=
+   {==}{{$==$}}2
+   {==>}{{$\Rightarrow$}}1
+   {integer\ i}{{i$\,\in \mathbb{Z}\,$}}4
+   {integer\ j}{{j$\,\in \mathbb{Z}\,$}}4
+   {integer\ k}{{k$\,\in \mathbb{Z}\,$}}4
+   {integer\ m}{{m$\,\in \mathbb{Z}\,$}}4
+   {integer\ l}{{l$\,\in \mathbb{Z}\,$}}4
+   {\\forall}{{$\forall$}}1
+   {\\exists}{{$\exists$}}1
+   {integer}{{$\mathbb{Z}$}}1
+   {real}{{$\mathbb{R}$}}1
+   {&&}{{$\wedge$}}1
+   {||}{{$\vee$}}1
+   {!=}{{$\neq$}}1
+   {<}{{$<$}}1
+   {<=}{{$\le~$}}1
+   {>}{{$>$}}1
+   {>=}{{$\ge~$}}1
+   {<==>}{{$\Leftrightarrow$}}1,
+  morekeywords={assert,assigns,assumes,axiom,axiomatic,behavior,behaviors,
+    boolean,breaks,complete,continues,data,decreases,disjoint,ensures,
+    exit_behavior,ghost,global,inductive,invariant,lemma,logic,loop,
+    model,predicate,reads,requires,sizeof,strong,struct,terminates,
+    %returns,
+    type,union,variant,uchar,byte,typically,\\result,\\old,\\at,\\valid,
+    \\separated,\\nothing,Pre,\\sum,\\numof},
+  alsoletter={\\},
+  morecomment=[l]{//}
+}
+\lstnewenvironment{pretty-codeACSL}{\lstset{language=pretty-ACSL,stepnumber=0}}{\smallskip}
+
+\lstdefinelanguage{ACSL}{%
+  escapechar={},
+  literate=,
+  morekeywords={assert,assigns,assumes,axiom,axiomatic,behavior,behaviors,
+    boolean,breaks,complete,continues,data,decreases,disjoint,ensures,
+    exit_behavior,ghost,global,inductive,invariant,lemma,logic,loop,
+    model,predicate,reads,requires,sizeof,strong,struct,terminates,
+    %returns,
+    type,union,variant,uchar,byte,typically,\\result,\\old,\\at,\\valid,
+    \\separated,\\nothing,Pre,\\exists,\\forall,\\sum,\\numof},
+  alsoletter={\\},
+  morecomment=[l]{//}
+}
+\lstnewenvironment{codeACSL}{\lstset{language=ACSL,stepnumber=0}}{\smallskip}
+
+
+
+\lstdefinestyle{pretty-c}{language={[ANSI]C},%
+  alsolanguage=pretty-ACSL,%
+  %commentstyle=\lp@comment,%
+  moredelim={*[l]{//}},%
+  %moredelim={*[s]{/*}{*/}},%
+  %moredelim={**[s]{/*@}{*/}},%
+  deletecomment={[s]{/*}{*/}},
+  moredelim={*[l]{//@}},%
+}
+
+\lstdefinestyle{c}{language={[ANSI]C},%
+  alsolanguage=ACSL,%
+  %commentstyle=\lp@comment,%
+  moredelim={*[l]{//}},%
+  %moredelim={*[s]{/*}{*/}},%
+  %moredelim={**[s]{/*@}{*/}},%
+  deletecomment={[s]{/*}{*/}},
+  moredelim={*[l]{//@}},%
+}
+
+\lstset{language=C,
+  escapechar=§,
+  style=pretty-c,
+  basicstyle=\scriptsize\ttfamily,
+  numberstyle=\tiny,
+  numbers=left,
+  stepnumber=1,
+  numbersep=5pt,
+  tab=\rightarrowfill,
+  breaklines,
+  breakatwhitespace
+}
+
+\begin{document}
+
+\begin{tabular}{c|c|l|c|c|c|c}
+    \multirow{2}{*}{\#} & \multicolumn{2}{c|}{Impacted lines}
+    & \multicolumn{3}{c|}{Intermediate outcome}
+    & \multirow{2}{*}{Final outcome} \\ \cline{2-6}
+    & Line & Changes & Proof (failing annot.) & \NCD & \CWD & \\ \hline
+    % example/rgf_0.c
+    0 & -- & -- & \ok & -- & -- & Proved \\ \hline
+    % example/rgf_1.c
+    1 & 24 & (deleted) & \textsf{?} (l.39, 41, 26) & \nc & --
+    & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$}
+    is \NCCE \\ \hline
+
+    % example/rgf_2.c
+    2 & 34 & \lstinline[style=c]'loop assigns i,a[1..n-1];'
+    & \multirow{3}{*}{\textsf{?} (l.39, 41, 42, 26--30)}
+    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} for l.33--34}
+    & $V$ = {\scriptsize{$\langle$}}
+    $\mbox{\lstinline'n=2;'} \textbf{\mbox{\lstinline'a[0]=0'}}
+    \mbox{\lstinline';a[1]=0;'}$ \\
+
+    &&&&& &$\mathbf{nondet}_{\textbf{\mbox{\lstinline'a[1]'}}}
+    \textbf{\mbox{\lstinline'=97157'}}\mbox{\lstinline';'}$ \\
+    &&&&& &$\mathrm{nondet}_{\mbox{\lstinline'i'}}\mbox{\lstinline'=0'}$
+    {\scriptsize{$\rangle$}} is \SWCE \\ \hline
+
+    % example/rgf_3.c
+    3 & 4--5 & (deleted) & \multirow{2}{*}{\textsf{?} (l.39)}
+    & \multirow{2}{*}{\no} & \multirow{2}{*}{\no}
+    & \multirow{2}{*}{Prover incapacity} \\
+    & 22 & \lstinline[style=c]'requires n>0 && n<21;' &&&& \\ \hline
+    % example/rgf_4.c
+    4 & 4--5 & (deleted) & \textsf{?} (l.39) & \textsf{?} & \textsf{?}
+    & Unknown \\
+  \end{tabular}
+
+\end{document}
