@@ -108,7 +108,8 @@ This work proposes a complete methodology to provide such assistance.
 
 
 \begin{figure}[tb]
-\begin{minipage}{0.4\columnwidth}
+\begin{center}
+\begin{minipage}{0.35\columnwidth}
 \begin{lstlisting}[mathescape]
 /*@ assigns k1,...,kN;
   @ ensures P; */
@@ -124,7 +125,7 @@ $Type_f$ f(...){ code2;
 \end{minipage}
 \hspace{-6mm}
 \begin{minipage}{0.07\columnwidth}$\to$\end{minipage}
-\begin{minipage}{0.6\columnwidth}
+\begin{minipage}{0.35\columnwidth}
 \begin{lstlisting}[mathescape]
 $Type_g$ g_swd(...){
   k1=Nondet(); ... kN=Nondet();
@@ -138,19 +139,20 @@ $Type_f$ f(...){ code2;
   code3; }
 \end{lstlisting}
 \end{minipage}
-\vspace{-5mm}
+\vspace{-3mm}
 \caption{(a) A contract $c\in\C$ of callee $g$ in $f$, vs.
 (b) its translation %in $P_\all^{\CW}$ 
 for \CWD}
 \vspace{-3mm}
 \label{fig:CW-transf-functions}
+\end{center}
 \end{figure}
 
 
 
 \begin{figure*}[tb]
 \begin{center}
-\begin{minipage}{0.8\columnwidth}
+\begin{minipage}{0.35\columnwidth}
 \begin{lstlisting}[mathescape]
 $Type_f$ f(...){ code1;
   /*@ loop assigns x1,...,xN;
@@ -161,7 +163,7 @@ $Type_f$ f(...){ code1;
 \end{minipage}
 \hspace{-6mm}
 \begin{minipage}{0.07\columnwidth}$\to$\end{minipage}
-\begin{minipage}{0.8\columnwidth}
+\begin{minipage}{0.55\columnwidth}
 \begin{lstlisting}[mathescape]
 $Type_f$ f(...){ code1;
   x1=Nondet(); ... xN=Nondet();
