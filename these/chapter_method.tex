@@ -14,6 +14,45 @@ and illustrate it on several examples.
 We also provide a comprehensive list of  suggestions of actions for 
 each category of proof failures.
 
+
+
+\begin{figure*}[bt]\centering
+\begin{tikzpicture}
+  \node(p) [data] {$P$};
+  \node(ncd) [right of=p,test,node distance=1.7cm] {$\NCD(P)$};
+  \node(ncce1) [below of=ncd,node distance=1.2cm] {\circled{1} $V$ is \NCCE};
+  \path[darrow] (ncd) -- node[left] {(\nc, $V$, $a$)} (ncce1);
+  \path[arrow] (p) -- (ncd);
+  \node(cwd) [right of=ncd,test,node distance=4cm] {$\CWD(P)$};
+  \path[darrow] (ncd.east) -- node[above] {\no{} / \textsf{?}} (cwd);
+  %\path[darrow] (ncd.east)+(0,.2) -- node[above] {\no} (cwd);
+  %\path[darrow] (ncd.east)+(-.1,-.2) -- node[below] {?} (cwd);
+
+  % CWD did not found any CE
+  \node(cov-2) [right of=cwd,test,node distance=4cm]{
+    $\NCD(P)=~$\no$\land$\\ $\CWD(P)=~$\no};
+  \path[darrow] (cwd.east) -- node[above] {\no{} / \textsf{?}} (cov-2);
+  %\path[darrow] (cwd.east)+(0,.2) -- node[above] {\no} (cov-2);
+  %\path[darrow] (cwd.east)+(-.1,-.2) -- node[below] {?} (cov-2);
+  \node(pw) [below of=cov-2,node distance=1.2cm]{\circled{3} Prover incapacity};
+  \path[darrow] (cov-2) -- node[right] {true} (pw);
+  \node(qm) [right of=pw,node distance=4cm] {\circled{4} Unknown};
+  \path[darrow] (cov-2) -| node[below left] {false} (qm);
+
+  % CWD found a CE
+  \node(cwce-ncce) [below of=cwd,node distance=1.2cm]{\circled{2} $V$ is \CWCE};
+  \path[darrow] (cwd) -- node[right] {(\cw, $V$, $a$, $S$)} (cwce-ncce);
+  \path[darrow] (cwd) -- node[above,sloped,xshift=-3mm] {~~~(\nc, $V$, $a$)} (ncce1);
+\end{tikzpicture}
+\vspace{-2mm}
+\caption{Combined verification methodology in case of a proof failure on $P$}
+\vspace{-5mm}
+\label{fig:method-short}
+\end{figure*}
+
+
+
+
 \textbf{The method.}
 The proposed method is illustrated by Fig.~\ref{fig:method-short}.
 Suppose that the proof of the annotated program $P$ fails for some non-imbricated annotation $a\in\A$.
