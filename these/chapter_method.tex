@@ -4,9 +4,6 @@
 
 \chapterintro
 
-TODO
-
-
 
 In this section, we present an overview of our method for 
 diagnosis of proof failures using the detection techniques of Sec.~\ref{sec:definitions},
@@ -14,6 +11,30 @@ and illustrate it on several examples.
 We also provide a comprehensive list of  suggestions of actions for 
 each category of proof failures.
 
+
+\section{Échecs de preuve}
+\label{sec:method-failures}
+
+
+\commentGP{rappeler NC}
+
+\commentGP{rappeler SW}
+
+\textbf{Prover incapacity.}
+When neither a non-compliance nor a global subcontract weakness
+exist, we cannot demonstrate that it is impossible to prove the property.
+
+\begin{definition}[Prover incapacity] 
+\label{def:prov-incap}
+We say that a proof failure in $P$ is due to a \emph{prover incapacity} 
+if for any test datum $V$ for $f$ respecting its precondition,
+neither $P^{NC}$ nor $P^{\GSW}$ report any annotation failure on $V$.
+In other words, there is no \NCCE and no \GSWCE for $P$.
+\end{definition}
+
+
+\section{Présentation de la méthode}
+\label{sec:method-presentation}
 
 
 \begin{figure*}[bt]\centering
@@ -51,9 +72,6 @@ each category of proof failures.
 \end{figure*}
 
 
-
-
-\textbf{The method.}
 The proposed method is illustrated by Fig.~\ref{fig:method-short}.
 Suppose that the proof of the annotated program $P$ fails for some non-imbricated annotation $a\in\A$.
 The first step tries to find a non-compliance using \NCD. 
@@ -102,7 +120,6 @@ failing annotation (coming from line 10).
 That helps the verification engineer to understand and fix the issue. 
 
 
-
 Let us suppose now that the clause on line 34 has been erroneously
 written as follows: \lstinline'loop assigns i, a[1..n-1];'.
 The loop on lines 36--37 still preserves its invariant.
@@ -117,7 +134,6 @@ precondition of $g$ (on line 10) for the call on line 41.
 With the indication of the single subcontract weakness for the loop, 
 the verification engineer will try to strengthen the loop contract
 and find the issue. 
-
 
 
 Suppose now we want to prove the absence of overflow at line 40
@@ -146,24 +162,40 @@ lemmas or assertions,
 and does not waste time looking for a bug or a too week subcontract.
 
 
+\section{Suggestions d'actions}
+\label{sec:method-suggestions}
 
 
+\begin{figure*}[bt]\centering
+  \begin{tabular}{p{.7cm}|>{\centering\arraybackslash}p{5.8cm}|>{\centering\arraybackslash}p{8cm}}
+    \textbf{Case} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
+    \hline
+    \circled{1} & Non-compliance w.r.t. the annotation $a$:
+    (\nc, $V$, $a$)
+    &
+    check the violated annotation $a$
+    or the code leading to $a$ in the path $\pi_V$,
+    or strengthen the precondition of the function under verification
+    \\
+    \hline
+    \circled{2} & Weakness of subcontracts in $S$ w.r.t. the annotation $a$:
+    \ (\cw,~$V$,~$a$,~$S$)
+    & strengthen one or several subcontracts in $S$ to exclude the subcontract weakness\\
+    \hline
+    \circled{3} & Prover incapacity
+    & add lemmas or assertions to help the theorem prover,
+    or use another prover,
+    or an interactive  proof assistant \\
+    \hline
+    \circled{4} & Unknown
+    & strengthen the $\mbox{\lstinline'typically'}$ clause or coverage criterion (e.g. $k$-path),
+    or increase the timeout limit for testing \\
+  \end{tabular}
+  \caption{Suggestions of actions for different categories of proof failures}
+  \label{fig:suggestions}
+\end{figure*}
 
-\textbf{Prover incapacity.}
-When neither a non-compliance nor a global subcontract weakness
-exist, we cannot demonstrate that it is impossible to prove the property.
 
-\begin{definition}[Prover incapacity] 
-\label{def:prov-incap}
-We say that a proof failure in $P$ is due to a \emph{prover incapacity} 
-if for any test datum $V$ for $f$ respecting its precondition,
-neither $P^{NC}$ nor $P^{\GSW}$ report any annotation failure on $V$.
-In other words, there is no \NCCE and no \GSWCE for $P$.
-\end{definition}
-
-
-
-\textbf{Suggestions of actions.}
 From the possible outcomes of the method illustrated in
 Fig.~\ref{fig:method-short} we are able to suggest to the verification engineer 
 the most suitable actions (displayed in Fig.~\ref{fig:suggestions})
@@ -203,36 +235,6 @@ Finally, when the verdict is \emph{unknown,} test generation for \NCD and/or \SW
 so the verification engineer may strengthen the
 precondition for testing to reduce the input domain, or extend the timeout to
 give \stady more time to conclude.
-
-
-\begin{figure*}[bt]\centering
-  \begin{tabular}{p{.7cm}|>{\centering\arraybackslash}p{5.8cm}|>{\centering\arraybackslash}p{8cm}}
-    \textbf{Case} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
-    \hline
-    \circled{1} & Non-compliance w.r.t. the annotation $a$:
-    (\nc, $V$, $a$)
-    &
-    check the violated annotation $a$
-    or the code leading to $a$ in the path $\pi_V$,
-    or strengthen the precondition of the function under verification
-    \\
-    \hline
-    \circled{2} & Weakness of subcontracts in $S$ w.r.t. the annotation $a$:
-    \ (\cw,~$V$,~$a$,~$S$)
-    & strengthen one or several subcontracts in $S$ to exclude the subcontract weakness\\
-    \hline
-    \circled{3} & Prover incapacity
-    & add lemmas or assertions to help the theorem prover,
-    or use another prover,
-    or an interactive  proof assistant \\
-    \hline
-    \circled{4} & Unknown
-    & strengthen the $\mbox{\lstinline'typically'}$ clause or coverage criterion (e.g. $k$-path),
-    or increase the timeout limit for testing \\
-  \end{tabular}
-  \caption{Suggestions of actions for different categories of proof failures}
-  \label{fig:suggestions}
-\end{figure*}
 
 
 \section*{Conclusion du chapitre}
