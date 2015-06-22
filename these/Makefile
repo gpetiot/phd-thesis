@@ -90,7 +90,10 @@ chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
 			figures/fig_proof_fct_contract_call.tex \
 			figures/fig_proof_fct_contract_main.tex
 
-all: main.pdf $(CHAPTERS_PDF)
+all: main.pdf $(CHAPTERS_PDF) abstract.pdf
+
+abstract.pdf: abstract.tex
+	pdflatex $<
 
 main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 		table_eacsl_experiments.tex \
