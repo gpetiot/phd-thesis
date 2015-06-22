@@ -253,32 +253,34 @@ and the  pre- and postcondition of $f$
 (they are not shown 
 in Fig. \ref{fig:CW-transf-functions}(b) and \ref{fig:CW-transf-loops}(b)).
 
-\begin{tabular}{cc}
-%\begin{figure}[tb]
-  %\begin{minipage}{0.5\columnwidth}
+%\begin{tabular}{cc}
+\begin{figure}[tb]
+  \begin{minipage}{0.5\columnwidth}
   %\begin{figure}
-    \lstinputlisting[label=fig:contracts-ex1,caption={Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}]{listings/ex1.c}
+    \lstinputlisting[label=fig:contracts-ex1,caption={Faiblesse globale%Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s
+    }]{listings/ex1.c}
     %\vspace{-2mm}
     %\caption{Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}
     %\label{fig:contracts-ex1}
   %\end{figure}
   %\hspace{4mm}
-  %\end{minipage}
-  %\begin{minipage}{0.5\columnwidth}
+  \end{minipage}
+  \begin{minipage}{0.5\columnwidth}
   %\begin{figure}
-&
-    \lstinputlisting[label=fig:contracts-ex2,caption={Global \CWCE{}s do not help to find precisely a too weak subcontract}]{listings/ex2.c}
+%&
+    \lstinputlisting[label=fig:contracts-ex2,caption={Faiblesse unique%Global \CWCE{}s do not help to find precisely a too weak subcontract
+    }]{listings/ex2.c}
     %\vspace{-2mm}
     %\caption{Global \CWCE{}s do not help to find precisely a too weak subcontract}
     %\label{fig:contracts-ex2}
   %\end{figure}
-  %\end{minipage}
+  \end{minipage}
   %\vspace{-2mm}
-  %\caption{Two examples with several subcontracts}
+  %\caption{(a) Faiblesse globale et (b) Faiblesse unique}
   %\vspace{-5mm}
   %\label{fig:many-contracts}
-%\end{figure}
-\end{tabular}
+\end{figure}
+%\end{tabular}
 
 \begin{definition}[Global subcontract weakness] 
 \label{def:GSW}
