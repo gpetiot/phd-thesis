@@ -17,6 +17,46 @@
   non-conformité du code par rapport à sa spécification, \textsf{b)} à un
   contrat de boucle ou de fonction appelée trop faible pour prouver une autre
   propriété, ou \textsf{c)} à une incapacité du prouveur.
+  Il est souvent difficile pour l'utilisateur de décider laquelle de ces trois
+  raisons est la cause de l'échec de la preuve car cette information n'est pas
+  (ou rarement) donnée par le prouveur et requiert donc une revue approfondie
+  du code et de la spécification.
+  L'objectif de cette thèse est de fournir une méthode de diagnostic automatique
+  des échecs de preuve afin d'améliorer le processus de spécification et de
+  preuve des programmes C.
+  Nous nous plaçons dans le cadre de la plate-forme d'analyse des programmes C
+  Frama-C, qui fournit un langage de spécification unique ACSL, un greffon de
+  vérification déductive WP et un générateur de tests structurels PathCrawler.
+
+  La méthode que nous proposons consiste à diagnostiquer les échecs de preuve en
+  utilisant la génération de tests structurels sur une version instrumentée du
+  programme d'origine.
+  Cette méthode consiste en deux étapes.
+  Premièrement, nous essayons de détecter les non-conformités du code par
+  rapport à la spécification.
+  Cette phase nécessite une traduction en C des annotations ACSL afin
+  d'expliciter les violations potentielles d'annotations par la création de
+  nouvelles branches dans le programme.
+  La préservation de la sémantique par cette traduction nous assure de trouver
+  les erreurs dans le code et dans la spécification par génération de tests
+  structurels à condition de couvrir tous les chemins d'exécution faisables du
+  programme.
+  Deuxièmement, si le programme ne contient pas de non-conformité, nous essayons
+  de détecter les faiblesses de sous-contrats (contrats de boucle ou de fonction
+  appelée).
+  Cette seconde phase nécessite une traduction en C des annotations ACSL
+  différente de la première, car nous voulons pouvoir ``exécuter'' certains
+  contrats au lieu du code qu'ils spécifient.
+  Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
+  et si la génération de tests a couvert tous les chemins d'exécution faisables
+  du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
+  sinon le problème reste indécidable.
+
+  Nous présentons les règles de traduction des deux étapes de notre méthode
+  ainsi qu'une justification rigoureuse de leur correction.
+  Nous présentons également l'implémentation de notre méthode au sein d'un
+  greffon de Frama-C, StaDy, ainsi que nos résultats expérimentaux mettant en
+  évidence sa capacité et son efficacité de diagnostic des échecs de preuve.
 \end{abstract}
 
 \end{document}
