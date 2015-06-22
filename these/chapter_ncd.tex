@@ -4,7 +4,31 @@
 
 \chapterintro
 
-Dans ce chapitre, ...
+Dans ce chapitre, nous présentons la notion de non-conformité entre le code et
+sa spécification, puis nous illustrons la détection de non-conformités dans
+différents scénarios.
+La partie~\ref{sec:ncd-ex} présente l'exemple que nous utiliserons tout au long
+de ce chapitre.
+La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
+Les parties~\ref{sec:ncd-early} et~\ref{sec:ncd-incr} illustrent la détection
+de non-conformités dans deux scénarios basés sur l'exemple présenté en
+partie~\ref{sec:ncd-ex}.
+
+
+\section{Exemple}
+\label{sec:ncd-ex}
+
+
+\section{Définition}
+\label{sec:ncd-def}
+
+
+\section{Détection des erreurs en amont}
+\label{sec:ncd-early}
+
+
+\section{Validation incrémentale}
+\label{sec:ncd-incr}
 
 
 Let $P$ be a C program annotated in \eacsl, 
@@ -315,4 +339,9 @@ fully proved, Alice reasonably suspects that the \lstinline{found} behavior of
 
 \section*{Conclusion du chapitre}
 
-\commentGP{TODO}
+Dans ce chapitre, nous avons défini la notion de non-conformité entre le code
+et sa spécification et montré l'intérêt de leur détection dans le cadre de la
+preuve de programmes.
+Le chapitre~\ref{sec:swd} présentera la détection de faiblesses de sous-contrats
+et le chapitre~\ref{sec:method} montrera que la combinaison de ces deux méthodes
+peut aider la vérification déductive de programmes.
