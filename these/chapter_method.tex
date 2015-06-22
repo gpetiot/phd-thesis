@@ -148,6 +148,21 @@ and does not waste time looking for a bug or a too week subcontract.
 
 
 
+
+\textbf{Prover incapacity.}
+When neither a non-compliance nor a global subcontract weakness
+exist, we cannot demonstrate that it is impossible to prove the property.
+
+\begin{definition}[Prover incapacity] 
+\label{def:prov-incap}
+We say that a proof failure in $P$ is due to a \emph{prover incapacity} 
+if for any test datum $V$ for $f$ respecting its precondition,
+neither $P^{NC}$ nor $P^{\GSW}$ report any annotation failure on $V$.
+In other words, there is no \NCCE and no \GSWCE for $P$.
+\end{definition}
+
+
+
 \textbf{Suggestions of actions.}
 From the possible outcomes of the method illustrated in
 Fig.~\ref{fig:method-short} we are able to suggest to the verification engineer 
