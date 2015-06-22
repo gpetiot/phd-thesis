@@ -4,7 +4,17 @@
 
 \chapterintro
 
-Dans ce chapitre, ...
+Dans ce chapitre, nous présentons la notion de faiblesse de contrat globale et
+de faiblesse de contrat unique, pour les contrats de boucles et le contrats de
+fonctions appelées.
+Nous présentons également les spécificités de la traduction des annotations par
+rapport à la traduction pour la détection de non-conformités présentée au
+chapitre~\ref{sec:traduction}.
+La partie~\ref{sec:swd-ex} présente l'exemple que nous utiliserons tout au long
+de ce chapitre.
+La partie~\ref{sec:swd-global} présente la notion de faiblesse de contrat
+globale et la partie~\ref{sec:swd-single} présente la notion de faiblesse de
+contrat unique.
 
 
 \section{Exemple}
@@ -106,8 +116,8 @@ distinguish the three reasons and suggest suitable actions.
 This work proposes a complete methodology to provide such assistance.
 
 
-\section{Définitions}
-\label{sec:swd-def}
+\section{Détection de faiblesse de contrat globale}
+\label{sec:swd-global}
 
 
 To introduce the new categories of proof failures, we follow
@@ -132,10 +142,6 @@ the annotations included in the contracts $\C\cup\{c_f\}$ as well as non-imbrica
 We also assume that any subcontract of $f$ contains a (loop) assigns clause.
 This assumption is not restrictive since such a clause is anyway necessary 
 for the proof of any nontrivial code.
-
-
-\section{Détection de faiblesse de contrat globale}
-\label{sec:swd-glob}
 
 
 \begin{figure}[tb]
@@ -482,4 +488,14 @@ avant la boucle, et vérifie l'invariant à la fin de chaque itération.
 
 \section*{Conclusion du chapitre}
 
-\commentGP{TODO}
+
+Dans ce chapitre, nous avons définit les notions de faiblesse de
+contrat globale et faiblesse de contrat unique.
+Nous avons également présenté les spécificités de la traduction des annotations
+par rapport à la traduction pour la détection de non-conformités présentée au
+chapitre~\ref{sec:traduction}.
+
+Le chapitre~\ref{sec:method} montrera que l'utilisation combinée de la détection
+des non-conformités présentée au chapitre~\ref{sec:ncd} et la détection des
+faiblesses de sous-contrats présentée dans ce chapitre peut aider au diagnostic
+des échecs de preuve.
