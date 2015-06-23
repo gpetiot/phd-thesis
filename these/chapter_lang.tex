@@ -72,6 +72,9 @@ suivant est nécessaire, mais n'est pas inclus dans cet exemple simplifié :
 
 \input{figures/fig_grammar}
 
+La figure~\ref{fig:gram-c} définit la grammaire des instructions et fonctions C.
+Les symboles terminaux sont \underline{soulignés}.
+Les symboles non-terminaux sont en \textit{italique}.
 Nous supposons que les fonctions respectent la forme normale définie par
 l'entité syntaxique \textit{function} de la grammaire définie dans la
 figure~\ref{fig:gram-c}.
@@ -90,11 +93,10 @@ labels uniques au début et à la fin du corps de la fonction.
 Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
 de chaque fonction, qu'elle retourne une variable appelée \lstinline'res'$_f$ et
 que cette variable n'entre pas en conflit avec une autre variable du programme.
-Les accès aux pointeurs et aux tableaux sont notés \lstinline|*(p+i)|.
-Les symboles terminaux sont \underline{soulignés}.
-Les symboles non-terminaux sont en \textit{italique}.
 \textit{left-value} est toute expression pouvant se trouver en
 partie gauche d'une affectation (variable simple ou déréférencée).
+Les accès aux pointeurs et aux tableaux sont notés \lstinline't[i]' (ou
+\lstinline'*(p+i)').
 Pour simplifier, \textit{basic-type} se limite aux types C \lstinline'int',
 \lstinline'char' et \lstinline'long', et \textit{type} se limite aux types
 simples (non pointeur) et aux pointeurs sur types simples.
