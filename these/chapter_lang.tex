@@ -415,13 +415,16 @@ La règle \eqlabel{E-lval} traite le cas où une left-value est un identificateu
 de variable $x$.
 $\env(x)$ est l'adresse de $x$, la valeur à cette adresse est $\store(\env(x))$.
 La règle \eqlabel{E-deref} traite le cas où une left-value est un identificateur
-de variable $x$, accédé à l'offset $e$.
+de variable $x$, accédé à l'offset de valeur $e$.
 Rappelons que \lstinline'x[e]' $=$ \lstinline'*(x+e)'.
 L'unique différence avec la règle \eqlabel{E-lval} est l'évaluation de $e$, qui
 doit retourner une constante entière.
 Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ correspond à la mémoire au
 début de l'exécution de la fonction courante \lstinline'f', nous supposons
 qu'une telle mémoire est conservée à chaque appel.
+Notons que nous n'avons pas formalisé la mémorisation des états mémoires au
+début de la fonction en cours d'évaluation car cela alourdirait considérablement
+la définition de la sémantique.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
 La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
