@@ -13,10 +13,10 @@
   La tâche de spécification et de vérification déductive des programmes est
   longue et difficile et nécessite une connaissance des outils de preuve de
   programmes.
-  En effet, un échec de preuve de programme peut être dû \textsf{a)} à une
-  non-conformité du code par rapport à sa spécification, \textsf{b)} à un
+  En effet, un échec de preuve de programme peut être dû à une
+  non-conformité du code par rapport à sa spécification, à un
   contrat de boucle ou de fonction appelée trop faible pour prouver une autre
-  propriété, ou \textsf{c)} à une incapacité du prouveur.
+  propriété, ou à une incapacité du prouveur.
   Il est souvent difficile pour l'utilisateur de décider laquelle de ces trois
   raisons est la cause de l'échec de la preuve car cette information n'est pas
   (ou rarement) donnée par le prouveur et requiert donc une revue approfondie
@@ -31,7 +31,7 @@
   La méthode que nous proposons consiste à diagnostiquer les échecs de preuve en
   utilisant la génération de tests structurels sur une version instrumentée du
   programme d'origine.
-  Cette méthode consiste en deux étapes.
+  Cette méthode comporte deux étapes.
   Premièrement, nous essayons de détecter les non-conformités du code par
   rapport à la spécification.
   Cette phase nécessite une traduction en C des annotations ACSL afin
@@ -50,7 +50,7 @@
   Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
   et si la génération de tests a couvert tous les chemins d'exécution faisables
   du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
-  sinon le problème reste indécidable.
+  sinon le problème reste non résolu.
 
   Nous présentons les règles de traduction des deux étapes de notre méthode
   ainsi qu'une justification rigoureuse de leur correction.
