@@ -311,7 +311,8 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 Le domaine des valeurs $VAL$ est défini comme l'union des types que
 peuvent prendre les termes et prédicats \eacsl et les expressions C :
 $VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
-$\bot$ dénote une valeur non initialisée.
+$\bot$ dénote une valeur indéfinie qui peut être soit une adresse indéfinie soit
+une valeur indéfinie.
 $LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
 est une adresse.
 Un store est une fonction partielle $\store \in LOC \rightarrow VAL$ qui
