@@ -44,7 +44,8 @@
     & \eqlabel{E-tif} \\
     & & \eval{$t_3$}{$\mem$} sinon & \\
 
-    \eval{\lstinline'\\old('$t$\lstinline')'}{$\mem$}&=& \eval{$t$}{$\mem_{old}$}
+    \eval{\lstinline'\\old('$t$\lstinline')'}{$\mem$}
+    &=& \eval{$t$}{$\mem_{Beg_{\mathtt{f}}}$}
     & \eqlabel{E-old} \\
 
     \eval{\lstinline'\\null'}{$\mem$} &=& \lstinline'NULL'
