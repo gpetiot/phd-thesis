@@ -394,10 +394,11 @@ L'évaluation des instructions s'arrête dès qu'un état d'erreur est produit.
 La sémantique dénotationnelle des expressions C, des termes et des prédicats
 \eacsl est exprimée avec la fonction
 $\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow (ENV \times STORE) \rightarrow VAL$.
-Le domaines $EXP$, $TERM$ et $PRED$ correspondent respectivement aux entités
+Les domaines de syntaxe abstraite $EXP$, $TERM$ et $PRED$ correspondent
+respectivement aux entités
 syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
 figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
-Cette fonction associe une valeur à une expression C (ou un terme ou prédicat
+Cette fonction associe une valeur à une expression C (et un terme et un prédicat
 \eacsl) en fonction d'une mémoire $\mem = (\env, \store)$, à condition que cette
 expression ne génère pas d'effet de bord, hypothèse satisfaite par le langage
 considéré après normalisation du code par \framac.
