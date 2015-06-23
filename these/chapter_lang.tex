@@ -329,7 +329,8 @@ $\store(\loc)$ et est défini par :
   ($\store$[$\loc_1 \mapsto v$])($\loc_2$) & =
   & $\store$($\loc_2$) si $\loc_1 \neq \loc_2$
   & \eqlabel{store-get-2}\\
-  $\store$($\loc$) & = & $\bot$ sinon & \eqlabel{store-get-3} \\
+  $\store$($\loc$) & = & $\bot$ si $\store$ est le store vide
+  & \eqlabel{store-get-3} \\
 \end{tabular}
 \end{center}
 
