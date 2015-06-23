@@ -443,11 +443,11 @@ exemple) est valide tant qu'il n'est pas libéré (par la fonction
 Le pointeur égal à l'adresse d'une variable globale est toujours valide, et le
 pointeur égal à l'adresse d'une variable locale est valide dans la portée de
 cette variable.
-Ainsi, le prédicat \lstinline'\valid(t)' est vrai si \lstinline't'
+Ainsi, le prédicat \lstinline'\valid(x)' est vrai si \lstinline'x'
 peut être déréférencé et est accessible en écriture, c'est-à-dire n'est pas une
 constante.
-De la même manière, \lstinline'\valid(t+(t1..t2))' est valide si les pointeurs
-\lstinline'(t+t1)', ..., \lstinline'(t+t2)' peuvent être déréférencés et sont
+De la même manière, \lstinline'\valid(x+(t1..t2))' est valide si les pointeurs
+\lstinline'(x+t1)', ..., \lstinline'(x+t2)' peuvent être déréférencés et sont
 accessibles en écriture.
 
 \input{figures/fig_semantics_pred}
