@@ -268,7 +268,8 @@ est noté $\env(\mathit{lv})$ et est défini par :
   ($\env$[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & $\env$($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
-  $\env$($\mathit{lv}$) & = & $\bot$ sinon & \eqlabel{env-get-3} \\
+  $\env$($\mathit{lv}$) & = & $\bot$ si $\env$ est l'environnement vide
+  & \eqlabel{env-get-3} \\
 \end{tabular}
 \end{center}
 
