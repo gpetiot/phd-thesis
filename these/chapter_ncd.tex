@@ -11,7 +11,7 @@ La partie~\ref{sec:ncd-ex} présente l'exemple que nous utiliserons tout au long
 de ce chapitre.
 La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
 La partie~\ref{sec:ncd-scenarios} illustre la détection
-de non-conformités dans deux scénarios basés sur l'exemple présenté en
+de non-conformités dans deux scénarios construits sur l'exemple présenté en
 partie~\ref{sec:ncd-ex}.
 
 
@@ -22,8 +22,8 @@ partie~\ref{sec:ncd-ex}.
 \begin{figure}[t]
   \lstinputlisting{listings/deleteSubstrTrous.c}
   \vspace{-3mm}
-  \caption{Unspecified function \lstinline{delete_substr} calling the function
-    of Fig.\,\ref{fig:findSubstr}}
+  \caption{Fonction \lstinline{delete_substr} non spécifiée, appelant la
+    fonction de la figure~\,\ref{fig:findSubstr}}
   \vspace{-3mm}
   \label{fig:deleteSubstrTrous}
 \end{figure}
@@ -31,32 +31,38 @@ partie~\ref{sec:ncd-ex}.
 \begin{figure}[t]
   \lstinputlisting{listings/findSubstr.c}
   \vspace{-3mm}
-  \caption{Verified function \lstinline{find_substr} with a ``pretty-printed''
-    \eacsl contract}
+  \caption{Contrat \eacsl de la fonction vérifiée \lstinline{find_substr}}
   \vspace{-3mm}
   \label{fig:findSubstr}
 \end{figure}
 
-Suppose Alice is a skilled validation engineer in charge of specification 
-and deductive verification of the function \lstinline{delete_substr} 
-(Fig.~\ref{fig:deleteSubstrTrous}).
-We follow Alice throughout her validation process.
-The \lstinline{delete_substr}  function is supposed to delete one occurrence of
-a substring \lstinline{substr} of length \lstinline{sublen} from another string
-\lstinline{str} of length \lstinline{strlen}
-and to put the result into \lstinline{dest} (pre-allocated 
-for \lstinline{strlen} characters), while \lstinline{str} and \lstinline{substr}
-should not be modified.
-For simplicity, we use arrays rather than 
-usual zero-terminated strings.
-The \lstinline{delete_substr}  function returns $1$ if an occurrence of
-the substring was found and deleted, and $0$ otherwise.
-We assume Alice has already successfully proved the correctness of 
-\lstinline{find_substr}  (Fig.~\ref{fig:findSubstr})
-supposed to  return the index of an occurrence of \lstinline{substr}
-in \lstinline{str} if this substring is present, and $-1$ otherwise. 
+Supposons qu'Alice est une ingénieure validation en charge de la spécification
+et de la vérification déductive de la fonction \lstinline{delete_substr} de la
+figure~\ref{fig:deleteSubstrTrous}.
+Dans ce chapitre, nous suivons Alice pendant le processus de validation afin
+d'illustrer les problèmes et les différents choix possibles que rencontre un
+ingénieur validation en charge d'une preuve de programme.
+Le comportement attendu de la fonction \lstinline{delete_substr} est de
+supprimer une occurrence de la sous-chaîne \lstinline{substr} de longueur
+\lstinline{sublen} au sein d'une chaîne \lstinline{str} de longueur
+\lstinline{strlen}.
+Le résultat de cette opération est affecté à la chaîne \lstinline{dest} de
+longueur \lstinline'strlen', allouée au préalable.
+Les chaînes \lstinline{str} et \lstinline{substr} ne doivent pas être modifiées.
+Pour des raisons de simplicité, nous utilisons des tableaux plutôt que des
+chaînes de caractères ``à la C'', terminées par un 0.
+La fonction \lstinline{delete_substr} retourne $1$ si une occurrence de la
+sous-chaîne a été trouvée et supprimée, et $0$ sinon.
+La figure~\ref{fig:findSubstr} présente le contrat de la fonction
+\lstinline{find_substr}, appelée par la fonction \lstinline{delete_substr}, qui
+retourne l'index d'une occurrence de \lstinline{substr} dans \lstinline{str} si
+la sous-chaîne est présente, et $-1$ sinon.
+Nous supposons qu'Alice a déjà prouvé avec succès la correction de la fonction
+\lstinline{find_substr} vis-à-vis de son contrat.
 
-Alice first writes the following precondition (added before line 1 of Fig.~\ref{fig:deleteSubstrTrous}):
+Alice écrit d'abord la précondition suivante (ajoutée avant la ligne 1 de la
+figure~\ref{fig:deleteSubstrTrous}) :
+
 \begin{pretty-codeACSL}
 requires 0 < sublen <= strlen;
 requires \valid(str+(0..strlen-1));
@@ -66,154 +72,150 @@ requires \separated(dest+(0..strlen-1), substr+(0..sublen-1));
 requires \separated(dest+(0..strlen-1), str+(0..strlen-1));
 typically strlen <= 5;
 \end{pretty-codeACSL}
-We propose here the new clause \lstinline{typically C;} that extends \eacsl
-and defines the  precondition \lstinline{C} only for test generation.
-It allows Alice to strengthen the precondition if she desires to 
-restrict the (potentially too big) number of paths
-to be explored by test generation to user-controlled partial coverage. 
-Here the clause 
-\lstinline{typically strlen <= 5} asks to cover all feasible
-paths where \lstinline{str} is of length \lstinline{5} or less.
-Ignored by deductive verification, this clause does not impact the proof.
-The extension of \acsl with the \lstinline'typically' keyword is an
-experimental feature, not available in the distributed version of \framac.
+
+Nous rappelons que la clause \lstinline{typically C;} étend \eacsl et définit la
+précondition \lstinline{C} qui n'est prise en compte que par la génération de
+tests.
+Cette clause permet à Alice de renforcer la précondition si elle souhaite
+restreindre l'exploration des chemins du programme, en diminuant leur nombre.
+La couverture des chemins du programme est alors partielle et contrôlée par
+l'utilisateur.
+Ici, la clause \lstinline{typically strlen <= 5} contraint la génération de
+tests à ne considérer que les chemins faisables pour lesquels la chaîne
+\lstinline{str} est contient au plus cinq caractères.
+Étant ignorée par la vérification déductive, cette clause n'impacte par la
+preuve du programme.
 
 
 \section{Définition}
 \label{sec:ncd-def}
 
 
-Let $P$ be a C program annotated in \eacsl, 
-and $f$ the function under verification in $P$.
-Function $f$ is assumed to be recursion-free.
-It may call other functions, let $g$ denote any of them.
-A \emph{test datum} $V$ for $f$ is a vector of values for all input variables of $f$.
-The \emph{program path} activated by a test datum $V$, denoted $\pi_V$,  is the sequence of program statements
-executed by the program on the test datum $V$.
-We use the general term of a \emph{contract} 
-to designate the set of \eacsl annotations describing a loop or a function.
-A function contract is composed of pre- and postconditions including \eacsl clauses
-\lstinline{requires}, \lstinline{assigns} and
-\lstinline{ensures}  (cf. lines 22--30 in Fig.~\ref{fig:rgf1}).
-A loop contract is composed of \lstinline{loop invariant},
-\lstinline{loop variant} and \lstinline{loop assigns} clauses
-(cf. lines 15--18 in Fig.~\ref{fig:rgf1}).
+Soit $P$ un programme C annoté avec \eacsl, et $f$ la fonction sous vérification
+de $P$.
+La fonction $f$ est supposée non-récursive.
+Elle peut appeler d'autres fonctions, notons $g$ l'une d'entre elles.
+Un \emph{cas de test} $V$ pour $f$ est un vecteur de valeurs pour chaque
+variable d'entrée de $f$.
+Le \emph{chemin de programme} activé par un cas de test $V$, noté $\pi_V$, est
+la séquence d'instructions du programme exécutées oar le programme sur le cas
+de test $V$.
+Nous utilisons le terme générique de \emph{contrat} pour désigner l'ensemble des
+annotations \eacsl décrivant une boucle ou une fonction. 
+Un contrat de fonction est composé de pré- et postconditions incluant les
+clauses \lstinline{requires}, \lstinline{assigns} et \lstinline{ensures}.
+Un contrat de boucle est composé des clauses \lstinline{loop invariant},
+\lstinline{loop variant} et \lstinline{loop assigns}.
 
 %\subsection{Non-Compliance}
 %\label{subsec:NC}
 
-A previous work~\cite{Petiot/SCAM14} formally described 
-how to transform a C program $P$ annotated in \eacsl
-into an instrumented program, denoted  $P^\NC$ in this paper,
-on which we can apply test generation to produce test data
-violating some annotations at runtime.
-$P^\NC$ checks all annotations of $P$
-in the corresponding program locations
-and reports any failure.
-For instance, the postcondition $\textit{Post}_f$ of $f$
-is evaluated by the following code inserted at the end of the function $f$ in $P^\NC$:
+Le chapitre~\ref{sec:traduction} a présenté la transformation d'un programme
+$P$ annoté avec \eacsl en un programme instrumenté (dénoté $P^\NC$ dans la
+suite) sur lequel nous pouvons appliquer la génération de tests pour produire
+des données de test violant des annotations à l'exécution.
+$P^\NC$ vérifie toutes les annotations de $P$ aux endroits correspondants dans
+le programme et reporte toute violation d'annotation éventuelle.
+Par exemple, la postcondition $\textit{Post}_f$ de $f$ est évaluée par le code
+suivant, inséré à la fin de la fonction $f$ dans $P^\NC$ :
+
 \begin{equation}\tag{$\dagger$}
 \mbox{\lstinline[mathescape]'int post_f;  $\ Spec2Code$($\textit{Post}_f$, post_f); fassert(post_f);'}
 \end{equation}
-For an \eacsl predicate \lstinline[mathescape]'$\textit{P}$',
-we denote by \lstinline[mathescape]'$Spec2Code$($\textit{P}$, b)'
-the generated C code  evaluating the predicate
-\lstinline[mathescape]'$\textit{P}$'
-and assigning its validity status to the Boolean 
-variable \lstinline[mathescape]'b' (see~\cite{Petiot/SCAM14} for details).
-The function call \lstinline[mathescape]'fassert(b)'
-is expanded into a conditional
-statement \lstinline[mathescape]'if(b)' that reports the failure and exits 
-whenever \lstinline[mathescape]'b' is false.
-Similarly, preconditions and postconditions of a callee $g$
-are evaluated respectively before and after executing the function $g$.
-A loop invariant is checked before the loop (for being initially true) 
-and after each loop iteration (for being preserved by the previous
-loop iteration). 
-An assertion is checked at its location.
-To generate only test data  that respect
-the precondition $\textit{Pre}_f$ of $f$,
-it is checked  in the beginning of $f$ 
-similarly to ($\dagger$)
-except that \fassert
-is replaced by \fassume
-to assume the given condition.
 
-\vspace{-2mm}
-\begin{definition}[Non-compliance] 
-\label{def:NC}
-We say that there is a \emph{non-compliance} between code and specification in $P$
-if there exists  a test datum $V$ for $f$ respecting its precondition,
-such that $P^{\NC}$ reports an annotation failure on $V$.
-In this case, we say that $V$ is a \emph{non-compliance counter-example} (\NCCE).
+Pour un prédicat \eacsl \lstinline[mathescape]'$\textit{P}$',
+nous notons par \lstinline[mathescape]'$Spec2Code$($\textit{P}$, b)'
+le code C généré qui évalue le prédicat \lstinline[mathescape]'$\textit{P}$'
+et assigne sa valeur à la variable booléenne \lstinline[mathescape]'b'.
+De manière similaire, les préconditions et postconditions d'une fonction appelée
+$g$ sont évaluées respectivement avant et après l'exécution de la fonction $g$.
+Un invariant de boucle est vérifié avant la boucle (on dit qu'il est établi) et
+après chaque itération de la boucle (on dit qu'il est préservé par l'itération).
+Une assertion est vérifiée à sa position courante.
+Afin de produire uniquement des données de test qui respectent la précondition
+$\textit{Pre}_f$ de $f$, cette précondition est testée au début de $f$ de
+manière similaire à ($\dagger$) excepté le fait que l'appel à \fassert est
+remplacé par un appel à \fassume, ce qui permet d'admettre la précondition.
+
+\begin{definition}[Non-conformité] 
+  \label{def:NC}
+  Il y a une \emph{non-conformité} entre le code et sa spécification dans le
+  programme $P$ s'il existe un cas de test $V$ pour $f$ respectant sa
+  précondition, tel que $P^{\NC}$ produit une violation d'annotation sur $V$.
+  On dit que $V$ est un \emph{contre-exemple de non-conformité} (ou \NCCE pour
+  \textit{non-compliance counter-example}).
 \end{definition}
-\vspace{-2mm}
 
-Test generation on the translated program $P^{\NC}$ 
-can be used to generate \NCCE{}s (cf.~\cite{Petiot/SCAM14}).
-We call this technique \emph{Non-Compliance Detection} (\NCD).
-In this work we use the \pathcrawler test generator that
-will try to cover all program paths.
-Since the translation step has added a branch for the false
-value of each annotation, \pathcrawler will try to cover at
-least one path where the annotation does not hold.
-(An optimization in \pathcrawler avoids covering the 
-same \fassert failure several times.)
-The \NCD step may have three outcomes.
-It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found
-indicating the failing annotation $a$ and recording
-the program path $\pi_V$ activated by $V$ on $P^{\NC}$.
-Second, if it has managed to perform a complete exploration 
-of all program paths without finding an \NCCE, it returns \no
-(cf. the discussion of completeness in the end of Sec. \ref{sec:framac}).
-Otherwise, if only a partial exploration of program paths
-has been performed (due to a timeout,
-partial coverage criterion or any other limitation), it returns 
-\textsf{?} (unknown).
+La génération de tests sur le programme instrumenté $P^{\NC}$ peut être utilisée
+pour générer des \NCCE{}s.
+Nous appelons cette technique \emph{Détection de Non-Conformité} (ou \NCD pour
+\textit{Non-Compliance Detection}).
+Dans nos travaux, nous utilisons le générateur de tests \pathcrawler qui essaie
+de couvrir tous les chemins d'exécution faisables du programme.
+Étant donné que l'étape de traduction a ajouté des branches dans le programme
+afin d'expliciter la violation des annotations, \pathcrawler essaie de couvrir
+au moins un chemin d'exécution où l'annotation n'est pas vérifiée.
+
+L'étape \NCD peut produire trois résultats.
+Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé, indiquant que le
+chemin de programme $\pi_V$ activé par $V$ sur $P^{\NC}$ provoque une violation
+de l'annotation $a$.
+Si \NCD a exploré tous les chemins du programme sans trouver de \NCCE, elle
+retourne \no.
+Sinon, si la couverture des chemins du programme par \NCD est partielle (si
+un {\em timeout} a été atteint par exemple), elle retourne \textsf{?}, ce qui
+signifie qu'elle n'a pas été en mesure de conclure.
 
 
 \section{Détection de non-conformités en pratique}
-\label{sec:scenarios}
+\label{sec:ncd-scenarios}
 
 
-During specification and deductive
-verification, test generation  can automatically provide the
-validation engineer with a fast and helpful feedback facilitating the
-verification task. While specifying a program, test generation
-may find a counter-example showing that the current specification does not hold
-for the current code. It can be used at early stages of specification,
-even when formal verification has no chances to succeed yet (e.g. when loop
-annotations, assertions or callees' contracts are not yet written).
-In case of a proof failure for a specified program
-property during program proof, when the validation engineer has no other
-alternative than manually analyzing the reasons of the failure, test generation 
-can be particularly useful. The absence of counter-examples after a rigorous
-partial (or, when possible, complete) exploration of program paths provides
-additional confidence in (resp., guarantee of) correctness of the
-program with respect to its current specification. This feedback may encourage
-the engineer to think that the failure is due to a missing or insufficiently
-strong annotation (loop invariant, assertion, called function contract etc.) 
-rather than to an error,
-and to write such additional annotations. On the contrary, a counter-example
-immediately shows that the program does not meet its current specification, and
-prevents the waste of time of writing additional annotations. Moreover, the
-concrete test inputs and activated program path reported by the testing
-tool precisely indicate the erroneous situation.
-Notice that the objective is certainly not \emph{to fit the specification to
-(potentially erroneous) code}, but \emph{to help the validation engineer
-to identify the problem (in the specification or in the code)}
-with a counter-example. 
-Let us illustrate these points on concrete verification scenarios.
+Pendant le processus de spécification et de vérification déductive, la
+génération de tests peut fournir automatiquement à l'ingénieur validation un
+retour rapide et pertinent afin de l'aider dans son travail.
+En effet, la génération de tests peut trouver un contre-exemple mettant en
+évidence le non respect de la spécification par le code.
+Ceci est applicable au début de processus de spécification, lorsque la
+vérification déductive ne peut pas aboutir car le programme à vérifier n'est
+pas entièrement spécifié (par exemple contrats de boucle et de fonctions
+appelées manquants).
+La génération de tests peut également être utile dans le cas d'un échec de
+preuve concernant une propriété de programme, lorsque l'ingénieur validation
+n'a d'autre alternative que d'analyser manuellement le programme afin de
+découvrir la raison de cet échec.
+
+L'absence de \NCCE après une exploration partielle (ou, si possible, complète)
+des chemins du programme donne à l'ingénieur validation une confiance accrue
+(respectivement une guarantie) quant à la conformité du code vis-à-vis de la
+spécification.
+Cette information pousse l'ingénieur à penser que l'échec de la preuve est dû à
+un manque dans la spécification, soit une annotation trop faible, plutôt qu'à
+une erreur, ce qui l'incite à annoter davantage le programme.
+
+Dans le cas contraire, un contre-exemple met immédiatement en évidence le
+non-respect de la spécification par le programme, signifiant pour l'ingénieur
+validation que cette non-conformité doit être corrigée avant de spécifier
+davantage le programme.
+Remarquons que l'objectif n'est certainement pas de faire correspondre à tout
+prix la spécification à un code (potentiellement erroné), mais d'aider
+l'ingénieur validation à identifier le problème (dans la spécification ou dans
+le code).
+
+Nous illustrons maintenant nos propos sur des scénarios de vérification
+concrets qu'Alice l'ingénieure validation pourrait rencontrer.
 
 
 \subsection{Détection des erreurs en amont}
 \label{sec:ncd-early}
 
 
-Now Alice specifies that the function can assign only the array
-\lstinline{dest}, and defines the postcondition for the case when the
-substring does not occur in the string. She adds the following (erroneous)
-clauses into the contract after the precondition defined above:
+Alice spécifie que la fonction peut uniquement modifier le contenu du tableau
+\lstinline{dest}, et définit la postcondition dans le cas où la sous-chaîne
+n'est pas présente dans la chaîne \lstinline'str'.
+Elle ajoute les clauses (erronées) suivantes au contrat de la fonction, après
+la précondition plus tôt :
+
 \begin{pretty-codeACSL}
 assigns dest[0..strlen-1];
 behavior not_present:
@@ -222,30 +224,35 @@ behavior not_present:
  ensures \forall integer k; 0 <= k < strlen ==> \old(str[k]) == dest[k];
  ensures \result == 0;
 \end{pretty-codeACSL}
-To validate it before going further, Alice applies \stady.
-It runs test generation and reports that
-both \lstinline{ensures} clauses are invalidated by the counter-example
+
+Afin de valider cette postcondition avant d'aller plus loin, Alice applique
+la méthode \NCD.
+La génération de tests reporte que les deux clauses \lstinline{ensures} sont
+invalidées par le contre exemple
 \lstinline{strlen = 2}, \lstinline{sublen = 1}, \lstinline{str[0] = 'A'},
 \lstinline{str[1] = 'B'}, \lstinline{substr[0] = 'A'}, 
 \lstinline{dest[0] = 'B'} and \lstinline{\result = 0}.
-Alice sees that in
-this case the string \lstinline{substr} has to be found in the
-string \lstinline{str} and the behavior \lstinline{not_present} should not
-apply, so its \lstinline{assumes} clause must be erroneous.
-This helps Alice to correct the assumption by replacing \lstinline{!=} with
-\lstinline{==}, to get:
+Alice remarque que dans ce cas, la chaîne \lstinline{substr} doit être présente
+dans la chaîne \lstinline{str} et le comportement \lstinline{not_present} ne
+doit pas s'appliquer, ce qui indique que l'erreur vient de la clause
+\lstinline{assumes}.
+Ceci aide Alice à corriger cette clause en remplaçant \lstinline{!=} par
+\lstinline{==}, pour obtenir :
+
 \begin{pretty-codeACSL}
   assumes !(\exists integer i; 0 <= i < strlen-sublen && 
    (\forall integer j; 0 <= j < sublen ==> str[i+j] == substr[j]));
 \end{pretty-codeACSL}
-Running \stady again reports that all feasible paths with
-\lstinline{strlen <= 5} have been covered (within 3.4 sec.) and 9442 test cases
-have been
-successfully generated and executed. Alice is now pretty confident that this
-behavior is correctly defined.
 
-For the complementary case Alice copy-pastes the \lstinline{not_present}
-behavior and (wrongly) modifies it into the following behavior:
+Exécuter \NCD une seconde fois rapporte que tous les chemins faisables pour
+lesquels \lstinline{strlen <= 5} ont été couverts (en 3.4 secondes) et 9442 cas
+de tests ont été générés et aucune violation d'annotation n'a été observée.
+Alice est maintenant confiante que le comportement est correctement défini.
+
+Concernant le comportement complémentaire, \lstinline{present}, Alice copie le
+comportement \lstinline{not_present} et le modifie (avec erreur) afin
+d'obtenir :
+
 \begin{pretty-codeACSL}
 behavior present:
  assumes \exists integer i; 0 <= i < strlen-sublen && 
@@ -256,64 +263,85 @@ behavior present:
   (\forall integer l; i <= l < strlen ==> \old(str[l+sublen]) == dest[l]);
  ensures \result == 1;
 \end{pretty-codeACSL}
-Again, Alice runs \stady.
-The tool reports an out-of-bounds error in accessing the element 
-of \lstinline{str} at index \lstinline{l+sublen}
-in the last \lstinline{ensures}. This helps Alice to understand that the upper
-bound of index \lstinline'l' should be \lstinline{strlen-sublen} instead of \lstinline{strlen}.
-She fixes this error and re-runs \stady. Test generation reports that 13448
-test cases cover without errors the feasible paths for
-\lstinline{strlen <= 5}. Alice is now satisfied with the defined behaviors.
-Notice that these cases exhibit errors in the specification. In other
-cases errors could be in the program (cf Sec.\,\ref{subsec:experiments}).
+
+La détection de non-conformité rapporte une erreur à l'exécution lors de l'accès
+à l'élément de la chaîne \lstinline{str} à l'indice \lstinline{l+sublen} dans
+la dernière clause \lstinline{ensures}.
+Cette information permet à Alice de comprendre que la borne supérieure de
+l'indice \lstinline'l' devrait être \lstinline{strlen-sublen} au lieu de
+\lstinline{strlen}.
+Elle corrige cette erreur et ré-applique la \NCD.
+La génération de tests rapporte que 13448 cas de tests couvrent sans erreur les
+chemins faisables pour lesquels \lstinline{strlen <= 5}.
+Alice est maintenant satisfaite avec les comportements du programme ainsi
+définis.
 
 
 \subsection{Validation incrémentale}
 \label{sec:ncd-incr}
 
 
-Alice now specifies as follows the first for-loop at line 4 in
-Fig.~\ref{fig:deleteSubstrTrous}:
+Alice spécifie maintenant la première boucle \lstinline'for' de la ligne 4 de la
+figure~\ref{fig:deleteSubstrTrous} :
+
 \begin{pretty-codeACSL}
 loop invariant \forall integer m; 0 <= m < k ==> dest[m] == \at(str[m],Pre);
 loop assigns k, dest[0..strlen-1];
 loop variant strlen-k;
 \end{pretty-codeACSL}
-Then Alice runs \Wp.
-The deductive verification tool cannot 
-validate the postcondition of \lstinline{delete_substr}, in particular
-because the other two loops are not yet specified. 
-However, \Wp could validate the
-annotations of the first loop. Here it fails,
-and Alice does not know whether it is because the loop
-specification is already incorrect, or because it is not complete enough to be
-verified.
-She runs \stady, which does not find any error in the loop specification
-and the postcondition, after 15635 test cases. Alice now believes that  loop
-specification is valid but incomplete. This confidence helps her 
-to add an additional invariant 
+
+La vérification déductive du programme échoue à prouver la postcondition de la
+fonction \lstinline{delete_substr}, notamment parce que les deux autres boucles
+du programme aux lignes 7 et 8 ne sont pas spécifiées.
+En revanche, Alice s'attend à ce que la vérification déductive de ce premier
+contrat de boucle réussisse.
+Ce n'est malheureusement pas le cas et Alice n'arrive pas à déterminer si cet
+échec de la preuve est dû à une non-conformité du code de la boucle vis-à-vis de
+son contrat, ou parce que le contrat de boucle n'est pas assez précis pour être
+vérifié automatiquement.
+
+\NCD ne détecte aucune erreur dans le contrat de boucle et la postcondition,
+couvrant le programme avec 15635 cas de tests.
+Ces résultats poussent Alice à penser que la spécification de la boucle est
+valide mais incomplète, ce qui la conduit à ajouter un invariant de boucle
+supplémentaire, définissant les bornes de $k$ : 
+
 \begin{pretty-codeACSL} 
 loop invariant 0 <= k < strlen;
 \end{pretty-codeACSL} 
-defining the bounds for $k$. Alice tries again to prove the loop, and \Wp fails
-again. She runs \stady and this time the new loop invariant is invalidated.
-After analyzing the failure on a simple counter-example,
-Alice understands that the loop invariant \lstinline{k < strlen}
-is not correct. Indeed, \lstinline{k} is equal to \lstinline{strlen} after 
-the last iteration, so the loop invariant should say \lstinline{k <= strlen}.
-After fixing this error, \Wp succeeds to prove the loop annotations.
-Similarly, Alice iteratively specifies and verifies the other two loops.
 
+Alice réessaie à présent de pouver la boucle, et la vérification déductive de
+\Wp échoue une fois encore.
+Elle ré-applique \NCD et cette fois le nouvel invariant de boucle est invalidé.
+Après analyse de cet échec sur le contre-exemple produit, Alice comprend que
+l'invariant de boucle \lstinline{k < strlen} n'est pas correct.
+En effet, \lstinline{k} est égal à \lstinline{strlen} après la dernière
+itération de la boucle.
+L'invariant de boucle devrait alors être \lstinline{k <= strlen}.
+Après correction de l'erreur, le contrat de boucle est prouvé avec succès par
+\Wp.
+De manière similaire, Alice spécifie et vérifie de manière itérative les deux
+autres boucles du programme.
 
-The now completely specified function \lstinline{delete_substr}
-can be fully proved by \Wp. 
-However its default timeout (10 seconds per property) 
-has to be significantly extended (e.g. to 50 seconds per property).
-The fact that test generation achieves (within only 4 sec.!) a significant partial coverage 
-(restricted by the \lstinline'typically' clause for testing) and finds
-no error convinces Alice to increase the timeout,
-that could be a waste of time when a counter-example can show why the program
-does not respect the specification.
+La fonction \lstinline{delete_substr} étant maintenant entièrement spécifiée,
+elle peut être complètement prouvée par \Wp.
+Cependant le {\em timeout} par défaut du prouveur (10 secondes par propriété)
+doit être étendu de manière significative (par exemple 50 secondes par
+propriété).
+Lorsque la preuve du programme n'aboutit pas car un {\em timeout} a été atteint,
+l'ingénieur validation doit décider s'il souhaite retenter la preuve avec
+un {\em timeout} plus élevé ou s'il analyse manuellement le programme afin de
+trouver une non-conformité ou une faiblesse de contrat.
+Le premier choix peut causer une perte de temps importante à l'ingénieur qui
+peut être évitée si \NCD parvient à produire un contre-exemple exhibant une
+non-conformité.
+Dans ce cas, \NCD peut aider l'ingénieur validation à se décider.
+Le fait que la génération de tests parvienne (en 4 secondes) à couvrir une
+portion significative des chemins du programme (restreinte par la clause
+\lstinline'typically') sans qu'aucune non-conformité ne soit rapportée convainc
+Alice d'augmenter le {\em timeout}.
+Attention toutefois, car le risque que le contrat soit trop faible pour la
+vérification déductive du programme n'a pas été écarté par \NCD.
 
 
 \section*{Conclusion du chapitre}
@@ -322,22 +350,12 @@ does not respect the specification.
 Dans ce chapitre, nous avons défini la notion de non-conformité entre le code
 et sa spécification et montré l'intérêt de leur détection dans le cadre de la
 preuve de programmes.
-
-
-It often happens that the contract of a called function is
-fully proved, but is too weak to prove the caller.
-For instance assume that the clause at line 7 of Fig.~\ref{fig:findSubstr} is
-missing. Running \Wp on the whole program, Alice sees that
-\lstinline{find_substr} is totally proved, but the postcondition and loop
-annotations of \lstinline{delete_substr} are not proved. Since test generation
-does not find any counter-example, Alice believes that some necessary clause is
-too weak or missing.
-Moreover, all properties depending on the behavior \lstinline{not_found} being
-fully proved, Alice reasonably suspects that the \lstinline{found} behavior of
-\lstinline{find_substr} is not strong enough.
-
-
-Le chapitre~\ref{sec:swd} présentera la détection de faiblesses de sous-contrats
-et le chapitre~\ref{sec:method} montrera que la combinaison de ces deux méthodes
+En revanche, ce chapitre n'aborde pas le cas où un contrat d'une boucle ou
+d'une fonction appelée (que nous appelerons sous-contrat) est trop faible pour
+prouver entièrement le programme.
+Cette difficulté du processus de spécification et de vérification est traité au
+chapitre~\ref{sec:swd}, qui présente la détection de faiblesses de
+sous-contrats.
+Le chapitre~\ref{sec:method} montrera que la combinaison de ces deux méthodes
 peut aider au diagnostic des échecs de preuve lors de la vérification déductive
 de programmes.
