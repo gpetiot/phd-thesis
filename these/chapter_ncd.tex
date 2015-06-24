@@ -4,15 +4,46 @@
 
 \chapterintro
 
-Dans ce chapitre, nous présentons la notion de non-conformité entre le code et
-sa spécification, puis nous illustrons la détection de non-conformités dans
-différents scénarios.
+% Alain : je propose les trois paragraphes suivants pour remplacer ceci :
+% \textit{``Dans ce chapitre, nous présentons la notion de non-conformité entre le
+% code et sa spécification, puis nous illustrons la détection de non-conformités
+% dans différents scénarios.''}
+
+
+La vérification déductive d'un programme C annoté en ACSL peut échouer pour
+diverses raisons. Dans ce chapitre et le suivant, on suppose que l'échec de
+vérification ne vient pas des limitations du prouveur. L'échec vient donc de
+problèmes dans le code et/ou dans sa spécification. On distingue deux sortes de
+problèmes, de nature très différente : la non-conformité entre un code et sa
+spécification, approfondie dans ce chapitre, et la faiblesse de spécification,
+étudiée dans le chapitre suivant. La non-conformité entre un code et sa
+spécification est une notion de correction relative entre code et spécification.
+Ce n'est que lorsqu'une spécification est correcte en ce sens -- vis-à-vis du
+code qu'elle spécifie -- qu'il est pertinent d'étudier le second problème, celui
+de la précision suffisante de certaines annotations pour permettre d'en
+démontrer d'autres. C'est pourquoi cette seconde question -- de complétude de la
+spécification -- est étudiée après la question de non-conformité étudiée ici.
+
+Il n'est pas assez précis de parler d'erreur dans le code et/ou dans sa
+spécification. En effet, on ne s'intéresse pas ici directement à la détection
+dans le code d'erreurs dites ``à l'exécution'' (\textit{runtime error}), telles
+que les divisions par zéro ou les accès à un tableau hors de ses bornes. On ne
+s'y intéresse qu'indirectement, par vérification déductive d'assertions
+précédant immédiatement un code susceptible de générer une telle erreur.
+Une telle assertion doit être fausse lorsque les conditions de déclenchement de
+l'erreur sont réunies. On ne considère donc que des erreurs concernant le code
+\textbf{et} sa spécification. De plus, parmi ces erreurs, on ne considère que
+celles que nous pouvons détecter par analyse dynamique d'une instrumentation du
+programme annoté. Ce sont ces erreurs que nous appelons ``non-conformités''.
+
+Nous proposons plusieurs scénarios de détection de non-conformités entre un code
+et sa spécification, par instrumentation du programme annoté et génération de
+tests structurels pour cette instrumentation.
+La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
 La partie~\ref{sec:ncd-ex} présente l'exemple que nous utiliserons tout au long
 de ce chapitre.
-La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
-La partie~\ref{sec:ncd-scenarios} illustre la détection
-de non-conformités dans deux scénarios construits sur l'exemple présenté en
-partie~\ref{sec:ncd-ex}.
+La partie~\ref{sec:ncd-scenarios} illustre la détection de non-conformités dans
+deux scénarios construits sur l'exemple présenté en partie~\ref{sec:ncd-ex}.
 
 
 \section{Exemple}
