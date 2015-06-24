@@ -15,6 +15,107 @@ La partie~\ref{sec:method-presentation} présente la méthode de diagnostic des
 à effectuer après qu'un échec de preuve ait été diagnostiqué.
 
 
+\section{Exemple}
+\label{sec:method-ex}
+
+
+Nous illustrons les problèmes qui se posent lors de la vérification déductive
+d'un programme et les solutions que nous proposons sur le programme C donné en
+figure~\ref{fig:rgf1}.
+Cet exemple provient d'un travail de spécification formelle et de vérification
+déductive en cours~\cite{Genestier/TAP15} et implémente un algorithme proposé
+dans \cite[page 235]{Arndt/10}.
+L'exemple de la figure~\ref{fig:rgf1} concerne la génération de fonctions à
+croissance restreinte (ou RGF pour \textit{Restricted Growth Functions}),
+définies par la propriété exprimée par le prédicat \acsl \lstinline{is_rgf} aux
+lignes 1--4 de la figure~\ref{fig:rgf1}, où la RGF $a$ est représentée par les
+valeurs d'un tableau C.
+Pour des raisons de lisibilité, certaines notations \acsl sont remplacées par
+des symboles mathématiques (par exemple, les mots-clés
+\lstinline[style=c]{\exists}, \lstinline[style=c]{\forall} et
+\lstinline[style=c]{integer} sont notés respectivement $\exists$, $\forall$ et
+$\mathbb{Z}$).
+
+
+\begin{figure}[tb]
+  \centering
+  \lstinputlisting[multicols=2]{listings/rgf_0.c}
+  \caption{Fonction ``successeur'' d'une RGF \label{fig:rgf1}}
+\end{figure}
+
+
+La figure~\ref{fig:rgf1} présente une fonction principale \lstinline{f} et une
+fonction auxiliaire \lstinline{g}.
+La précondition de \lstinline{f} affirme que \lstinline{a} est un tableau
+valide de taille \lstinline{n>0} (lignes 27--28) et doit être une RGF
+(ligne 29).
+La postcondition affirme que la fonction \lstinline'f' ne peut modifier que le
+contenu du tableau \lstinline{a}, à l'exception du premier élément
+\lstinline{a[0]} (ligne 30), et que le tableau \lstinline{a} en sortie de la
+fonction est toujours une RGF (ligne 31).
+De plus, si la fonction retourne 1, alors la RGF générée \lstinline{a} doit
+respecter une propriété supplémentaire (lignes 32--36).
+Ici \lstinline{\at(a[j],Pre)} dénote la valeur de \lstinline{a[j]} dans l'état 
+\lstinline{Pre} de la fonction, c'est-à-dire avant l'exécution de la fonction.
+
+Observons maintenant le corps de la fonction \lstinline{f} de la
+figure~\ref{fig:rgf1}. 
+La boucle aux lignes 42--43 parcourt le tableau de droite à gauche afin de
+trouver l'élément non-croissant le plus à droite, c'est-à-dire l'indice maximum
+\lstinline{i} du tableau tel que \lstinline{a[i] <= a[i-1]}.
+Si un tel indice est trouvé, la fonction incrémente \lstinline{a[i]} (ligne 46)
+et remplit le reste du tableau avec \lstinline{0} (appel à la fonction
+\lstinline{g}, line 47).
+Le contrat de boucle (lignes 39--41) spécifie l'intervalle de valeurs de la
+variable \lstinline'i', les variables que la boucle peut modifier, ainsi que
+le variant de boucle qui permet d'assurer la terminaison de la boucle.
+L'expression du variant de boucle doit être positive ou nulle au début de chaque
+itération et doit décroître strictement entre deux itérations.
+
+La fonction \lstinline{g} est utilisée pour remplir le tableau avec des zeros
+à droite de l'indice \lstinline{i}.
+En plus des contraintes de taille et de validité du tableau (lignes 12--13),
+sa précondition demande que les éléments de \lstinline{a} jusqu'à l'indice
+\lstinline{i} forment une RGF (lignes 14--15).
+La fonction ne peut modifier que les éléments de \lstinline{a} à partir de
+l'indice \lstinline{i+1} (ligne 16) et produit une RGF (line 17).
+Les invariants de boucle précisent intervalle de valeur de la variable de
+boucle \lstinline{k} (ligne 20), et énoncent que la propriété \lstinline{is_rgf}
+est satisfaite jusqu'à \lstinline{k} (ligne 21).
+Cet invariant permet à un outil de vérification déductive de prouver la
+postcondition.
+L'annotation \lstinline{loop assigns} (ligne 22) énonce que la boucle peut
+uniquement modifier les valeurs de \lstinline{k} et des éléments de
+\lstinline{a} à partir de l'indice \lstinline{i+1}.
+Le terme \lstinline{n-k} est le variant de la boucle (ligne 23).
+
+Le \acsl lemme \lstinline'max_rgf' aux lignes 6--10 affirme que si un tableau
+encode une RGF, alors chacun de ses éléments est au plus égal à son indice.
+Ce lemme n'est pas prouvé automatiquement par \Wp mais peut néanmoins être
+utilisé pour assurer l'absence de débordement d'entier signé à la ligne 46.
+
+Les fonctions de la figure~\ref{fig:rgf1} peuvent être prouvées à l'aide de \Wp.
+
+
+Supposons maintenant que cet exemple contient une des quatre erreurs suivantes :
+\emph{soit} l'ingénieur validation oublie la précondition de la ligne 29,
+\emph{soit} il se trompe dans l'affectation \lstinline[style=c]'a[i]=a[i]+2;'
+ligne 46, \emph{soit} il écrit une clause
+\lstinline[style=c]'loop assigns i,a[1..n-1];' trop imprécise ligne 40,
+\emph{soit} il oublie de fournir le lemme des lignes 6--10.
+Dans chacun de ces scénarios, la preuve du programme échoue (sur la précondition
+de \lstinline{g} lors de son appel ligne 47 et/ou sur l'assertion ligne 45)
+pour différentes raisons.
+
+
+In fact, only in the first two cases the code and specification are not compliant, while
+the third failure is due to a too weak subcontract, and the last one comes from a prover incapacity.
+To the best of our knowledge, 
+none of the existing  techniques allows to automatically
+distinguish the three reasons and suggest suitable actions.
+This work proposes a complete methodology to provide such assistance.
+
+
 \section{Échecs de preuve}
 \label{sec:method-proof-failures}
 
