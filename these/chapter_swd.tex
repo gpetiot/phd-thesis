@@ -4,43 +4,54 @@
 
 \chapterintro
 
-Dans ce chapitre, nous présentons la notion de faiblesse de contrat globale et
-de faiblesse de contrat unique, pour les contrats de boucles et le contrats de
-fonctions appelées.
-Nous présentons également les spécificités de la traduction des annotations par
-rapport à la traduction pour la détection de non-conformités présentée au
-chapitre~\ref{sec:traduction}.
-La partie~\ref{sec:swd-global} présente la notion de faiblesse de contrat
-globale et la partie~\ref{sec:swd-single} présente la notion de faiblesse de
-contrat unique.
+Dans ce chapitre, nous présentons la notion de faiblesse de l'ensemble des
+sous-contrats et de faiblesse d'un sous-contrat, pour les sous-contrats du
+programme sous vérification que sont les contrats de boucles et les contrats
+de fonctions appelées.
+Nous présentons également les spécificités de la traduction des annotations pour
+la détection des faiblesses de sous-contrats par rapport à la traduction pour la
+détection de non-conformités présentée au chapitre~\ref{sec:traduction}.
+La partie~\ref{sec:swd-global} présente la notion de faiblesse de l'ensemble des
+sous-contrats et la partie~\ref{sec:swd-single} présente la notion de faiblesse
+d'un sous-contrat.
+La partie ?? illustre la détection de faiblesses de sous-contrats sur l'exemple
+du chapitre~\ref{sec:ncd}.
 
 
-\section{Détection de faiblesse de contrat globale}
+\section{Détection de faiblesse de l'ensemble des sous-contrats}
 \label{sec:swd-global}
 
 
-To introduce the new categories of proof failures, we follow
-the modular verification approach and need a few definitions.
-A \emph{non-imbricated} loop (resp. function, assertion) in $f$ is a loop
- (resp. function called, assertion) in $f$ outside any loop in
-$f$. A \emph{subcontract for $f$} is the contract of some non-imbricated loop or function
- in $f$. A \emph{non-imbricated annotation} in $f$ is either a
-non-imbricated assertion or an annotation in a subcontract for $f$.
-For instance, the function $f$ of Fig.~\ref{fig:rgf1} has two subcontracts:
-the contract of the called function $g$ and the contract of the loop on lines 33--37.
-The contract of the loop in $g$ on lines 15--19 is not a subcontract for $f$, but is a subcontract for $g$.
+Avant de présenter nos définitions de faiblesses de sous-contrat, nous avons
+besoin de définir des concepts supplémentaires.
+Une boucle (respectivement une fonction, une assertion) \emph{non-imbriquée} de
+$f$ est une boucle (respectivement une fonction appelée, une assertion) de $f$
+en dehors de toute boucle de $f$.
+Un \emph{sous-contrat pour $f$} est le contrat d'une boucle ou d'une fonction
+non-imbriquée de $f$.
+Une \emph{annotation non-imbriquée} de $f$ est soit une assertion non-imbriquée
+soit une annotation d'un sous-contrat pour $f$.
+Par exemple, la fonction \lstinline'delete_substr' de la
+figure~\ref{??} (\commentGP{code complet}) du chapitre~\ref{sec:ncd} a quatre
+sous-contrats : le contrat de la fonction appelée \lstinline'find_substr' et le
+contrat de chacune des trois boucles de la fonction \lstinline'delete_substr'.
+Les contrats éventuels des boucles de \lstinline'find_substr' sont des
+sous-contrats de \lstinline'find_substr' mais pas des sous-contrats de
+\lstinline'delete_substr'.
 
-We focus on non-imbricated annotations in $f$ and assume  that all subcontracts for $f$ are respected:
-the called functions in $f$ respect their contracts, and the loops in $f$  preserve their loop invariants
-and respect all imbricated annotations.
-Let $c_f$ denote the contract of $f$,
-$\C$ the set of non-imbricated subcontracts for $f$,
-and $\A$ the set of all non-imbricated annotations in $f$ and the annotations of $c_f$.
-In other words, $\A$ contains  
-the annotations included in the contracts $\C\cup\{c_f\}$ as well as non-imbricated  assertions in $f$.
-We also assume that any subcontract of $f$ contains a (loop) assigns clause.
-This assumption is not restrictive since such a clause is anyway necessary 
-for the proof of any nontrivial code.
+Nous nous concentrons sur les annotations non-imbriquées de $f$ et supposons que
+tous les sous-contrats pour $f$ sont respectés : les fonctions appelées par $f$
+respectent leur contrat et les boucles de $f$ préservent leurs invariants et
+respectent les annotations imbriquées.
+Soit $c_f$ le contrat de $f$, $\C$ l'ensemble des sous-contrats non-imbriqués
+pour $f$, et $\A$ l'ensemble des annotations non-imbriquées de $f$ et des
+annotations de $c_f$.
+En d'autres termes, $\A$ contient les annotations des contrats $\C\cup\{c_f\}$,
+ainsi que les assertions non-imbriquées de $f$.
+Nous supposons également que chaque sous-contrat de $f$ contient une clause
+\lstinline'assigns' ou \lstinline'loop assigns'.
+Cette hypothèse n'est pas limitative puisqu'une telle clause est de toute
+manière nécessaire à la preuve de toute fonction ou boucle non triviale.
 
 
 \begin{figure}[tb]
@@ -76,9 +87,9 @@ $Type_f$ f(...){ code2;
 \end{lstlisting}
 \end{minipage}
 \vspace{-3mm}
-\caption{(a) A contract $c\in\C$ of callee $g$ in $f$, vs.
-(b) its translation %in $P_\all^{\CW}$ 
-for \CWD}
+\caption{(a) Un contrat $c\in\C$ d'une fonction $g$ appelée par $f$, et
+(b) sa traduction %in $P_\all^{\CW}$ 
+pour \CWD}
 \vspace{-3mm}
 \label{fig:CW-transf-functions}
 \end{center}
@@ -109,62 +120,59 @@ $Type_f$ f(...){ code1;
 \end{lstlisting}
 \end{minipage}
 \vspace{-3mm}
-\caption{(a) A contract $c\in\C$ of a loop in $f$, vs. 
-(b) its translation %in $P_\all^{\CW}$ 
-for \CWD}
+\caption{(a) Un contrat $c\in\C$ d'une boucle de $f$, et
+(b) sa traduction %in $P_\all^{\CW}$ 
+pour \CWD}
 \vspace{-3mm}
 \label{fig:CW-transf-loops}
 \end{center}
 \end{figure*}
 
+Afin d'appliquer la génération de tests aux contrats des fonctions appelées et
+des boucles de $\C$ au lieu de leur code, nous utilisons une transformation de
+programme qui produit un nouveau programme $P^{\GSW}$ à partir de $P$.
+Le code de chaque appel de fonction et de chaque boucle de $f$ est remplacé
+par un nouveau code que nous définissons maintenant.
 
-To apply testing for  the contracts of called functions and loops in $\C$
-instead of their code,
-we use a program transformation of $P$ producing a new program $P^{\GSW}$.
-The code of all non-imbricated function calls and loops in $f$
-is replaced by a new one as follows.
+Pour un contrat $c\in\C$ d'une fonction $g$ appelée par $f$, la transformation
+de programme (illustrée par la figure~\ref{fig:CW-transf-functions}) génère une
+nouvelle fonction \lstinline{g_swd} ayant la même signature et dont le code
+simule tous les comportements possibles respectant la postcondition du
+contrat $c$, et remplace chaque appel à $g$ par un appel à \lstinline{g_swd}.
+Tout d'abord, \lstinline{g_swd} permet aux variables (et plus généralement aux
+left-values) présentes dans la clause \lstinline'assigns' de $c$ de changer de
+valeur (ligne 2 de la figure~\ref{fig:CW-transf-functions}(b)).
+Ceci est possible en affectant une valeur non-déterministe du type adéquat,
+dont la génération est ici notée par \lstinline{Nondet()} (ou simplement en
+utilisant un tableau contenant les variables d'entrée fraîches, dans lequel on
+va lire de nouvelles valeurs pour chaque appel de la fonction $g$).
+Si le type de retour de $g$ n'est pas \lstinline{void}, une valeur
+non-déterministe supplémentaire est générée pour la valeur de retour
+\lstinline{ret} (ligne 3 de la figure~\ref{fig:CW-transf-functions}(b)).
+Enfin, la validité de la postcondition est évaluée (en prenant en compte ces
+nouvelles valeurs non-déterministes) et admise afin de ne considérer que les
+exécutions de la fonction qui respectent cette postcondition, puis la fonction
+termine son exécution (lignes 4--5 de la
+figure~\ref{fig:CW-transf-functions}(b)).
 
-For the contract $c\in\C$ of a called function $g$ in $f$, 
-the program transformation  (illustrated by Fig.~\ref{fig:CW-transf-functions})
-generates a new function \lstinline{g_swd} with the same signature 
-whose code simulates any possible behavior respecting the postcondition in $c$, 
-and replaces all calls to $g$ by  a call to \lstinline{g_swd}.
-First, \lstinline{g_swd} allows any of the variables
-(or, more generally, left-values) present in
-the \lstinline{assigns} clause of $c$ to change its value 
-(line 2 in Fig.\ref{fig:CW-transf-functions}(b)).
-It can be realized by assigning a non-deterministic 
-value of the appropriate type
-using a dedicated function, denoted here by \lstinline{Nondet()}
-(or simply by adding an array of fresh input variables and reading
-a different value for each use and each function invocation).
-If the return type of $g$ is not \lstinline{void},
-another non-deterministic value is read for the returned value
-\lstinline{ret} (line 3 in Fig.\ref{fig:CW-transf-functions}(b)).
-Finally, the validity of the postcondition is evaluated (taking into
-account these new non-deterministic values) 
-and assumed
-in order to consider only executions that respect 
-the postcondition, and
-the function returns (lines 4--5 in Fig.\ref{fig:CW-transf-functions}(b)).
+De manière similaire, pour un contrat $c\in\C$ d'une boucle de $f$, la
+transformation de programme remplace le code de la boucle par un autre code qui
+simule tous les comportements possibles respectant $c$, c'est-à-dire, s'assurant
+de la validité de la ``postcondition de boucle'' $I\wedge \neg b$ après la
+boucle, comme illustré sur la figure~\ref{fig:CW-transf-loops}.
+La transformation de programme traite toute autre annotation de $\A$ de la
+même manière que $P^{\NC}$ : préconditions des fonctions appelées, vérifications
+initiales des invariants de boucle et pré- et postcondition de $f$ (qui
+n'apparaissent pas sur les figures~\ref{fig:CW-transf-functions}(b)
+et~\ref{fig:CW-transf-loops}(b)).
 
-Similarly, for the contract $c\in\C$ of a loop in $f$, 
-the program transformation  
-replaces the code of the loop by 
-another code that simulates any possible behavior respecting $c$, that is, 
-ensuring the ``loop postcondition'' $I\wedge \neg b$ after the loop as shown in Fig.~\ref{fig:CW-transf-loops}.
-In addition, the transformation treats in the same way as in $P^{\NC}$
-all other annotations in $\A$:
-preconditions of called functions, initial loop invariant verifications 
-and the  pre- and postcondition of $f$
-(they are not shown 
-in Fig. \ref{fig:CW-transf-functions}(b) and \ref{fig:CW-transf-loops}(b)).
 
 %\begin{tabular}{cc}
 \begin{figure}[tb]
   \begin{minipage}{0.5\columnwidth}
   %\begin{figure}
-    \lstinputlisting[label=fig:contracts-ex1,caption={Faiblesse globale%Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s
+    \lstinputlisting[label=fig:contracts-ex1,caption={Faiblesse de l'ensemble
+        des sous-contrats%Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s
     }]{listings/ex1.c}
     %\vspace{-2mm}
     %\caption{Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}
@@ -175,7 +183,8 @@ in Fig. \ref{fig:CW-transf-functions}(b) and \ref{fig:CW-transf-loops}(b)).
   \begin{minipage}{0.5\columnwidth}
   %\begin{figure}
 %&
-    \lstinputlisting[label=fig:contracts-ex2,caption={Faiblesse unique%Global \CWCE{}s do not help to find precisely a too weak subcontract
+    \lstinputlisting[label=fig:contracts-ex2,caption={Faiblesse d'un
+        sous-contrat%Global \CWCE{}s do not help to find precisely a too weak subcontract
     }]{listings/ex2.c}
     %\vspace{-2mm}
     %\caption{Global \CWCE{}s do not help to find precisely a too weak subcontract}
@@ -189,102 +198,107 @@ in Fig. \ref{fig:CW-transf-functions}(b) and \ref{fig:CW-transf-loops}(b)).
 \end{figure}
 %\end{tabular}
 
-\begin{definition}[Global subcontract weakness] 
-\label{def:GSW}
-We say that $P$ has a \emph{global subcontract weakness} for $f$ 
-if there exists a test datum $V$ for $f$ respecting its precondition,
-such that $P^{\NC}$ does not report any annotation failure on $V$,
-while $P^{\GSW}$ reports an annotation failure on $V$.
-In this case, we say that $V$ is a 
-\emph{global subcontract weakness counter-example} (\GSWCE)
-for the set  of subcontracts $\C$.
+\begin{definition}[Faiblesse de l'ensemble des sous-contrats] 
+  \label{def:GSW}
+  $P$ a une \emph{faiblesse de l'ensemble des sous-contrats} pour $f$  si il
+  existe un cas de test $V$ pour $f$ respectant sa précondition, tel que
+  $P^{\NC}$ ne rapporte aucune violation d'annotation sur $V$, alors que
+  $P^{\GSW}$ rapport une violation d'annotation sur $V$.
+  Dans ce cas, on dit que $V$ est un
+  \emph{contre-exemple de faiblesse de l'ensemble des sous-contrats} (ou \GSWCE
+  pour {\em global subcontract weakness counter-example}) pour l'ensemble des
+  sous-contrats $\C$.
 \end{definition}
 
-Notice that we do not consider the same counter-example as an \NCCE  and 
-an \SWCE. Indeed, even if some counter-examples may illustrate both a
-subcontract weakness and a non-compliance, we consider that
-non-compliances usually come
-from a direct conflict between the code and the specification
-and should be addressed first, while 
-contract weaknesses are often more subtle and will be
-easier to address when non-compliances are eliminated.
+Nous ne considérons pas qu'un même contre-exemple puisse être à la fois un
+contre-exemple de non-conformité et un contre exemple de faiblesse de
+sous-contrat.
+En effet, même si certains contre-exemples peuvent illustrer à la fois une
+non-conformité et une faiblesse de sous-contrat, une non-conformité provient
+généralement d'un conflit direct entre le code et sa spécification et doit être
+corrigée en priorité, tandis qu'une faiblesse de contrat est souvent plus
+subtile et ne doit être corrigée qu'une fois les non-conformités éliminées.
 
-Again, test generation can be applied on  $P^{\GSW}$ to generate
-\GSWCE candidates. When it finds a test datum $V$ such that 
-$P^{\GSW}$ fails on $V$, we use runtime assertion checking:
-if $P^{\NC}$ fails on $V$, then
-$V$ is classified as an \NCCE, otherwise  $V$ is a \GSWCE.
-We call this technique \emph{Global Subcontract Weakness Detection} for the set of 
-all subcontracts, denoted $\GSWD$. 
-The $\GSWD$ step may have four outcomes.
-It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found for the failing
-annotation $a$,
-and  (\cw,\,$V$,\,$a$,\,$C$) if $V$ has been finally classified as an \SWCE
-indicating the failing annotation $a$ and the set of subcontracts $C$.
-The program path $\pi_V$ activated by $V$ and leading to the failure 
-(on $P^{\NC}$ or $P^{\GSW}$) is recorded as well.
-If the $\GSWD$ has managed to perform a complete exploration 
-of all program paths without finding an \GSWCE, it returns \no.
-Otherwise, if only a partial exploration of program paths
-has been performed it returns \textsf{?} (unknown).
+Encore une fois, la génération de tests peut être appliquée sur $P^{\GSW}$ pour
+générer des \GSWCE potentiels.
+Lorsqu'un cas de test $V$ tel que $P^{\GSW}$ échoue sur $V$ a été trouvé, nous
+appliquons la validation à l'exécution :
+si $P^{\NC}$ échoue sur $V$, alors $V$ est un \NCCE, sinon $V$ est un \GSWCE.
+Nous appelons cette technique
+\emph{Détection de faiblesse de l'ensemble des sous-contrats}, notée $\GSWD$
+pour \textit{Global Subcontract Weakness Detection}.
+$\GSWD$ peut produire quatre résultats.
+Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé pour l'annotation
+$a$, et (\cw,\,$V$,\,$a$,\,$C$) si $V$ a été classifié en tant que \SWCE
+indiquant l'annotation $a$ et l'ensemble des sous-contrats $C$.
+Le chemin de programme $\pi_V$ activé par le cas de test $V$ et menant à
+l'erreur (sur $P^{\NC}$ ou $P^{\GSW}$) est également récupéré.
+If $\GSWD$ a réussi à explorer l'intégralité des chemins du programme sans
+trouver de \GSWCE, elle retourne \no.
+Sinon, si l'exploration des chemins du programme est seulement partielle, elle
+retourne \textsf{?} ({\em unknown}).
 
-
-
-
-A \GSWCE indicates a global subcontract weakness but
-does not explicitly identify which single subcontract $c\in\C$ is too 
-weak.
-To do that, we propose another program transformation of $P$ into
-an instrumented program  $P_c^{\SSW}$.
-It is realized by replacing only one non-imbricated function call or loop 
-by the code respecting the postcondition of corresponding subcontract $c$ 
-(as indicated in Fig. \ref{fig:CW-transf-functions} and \ref{fig:CW-transf-loops})
-and transforming other annotations in $\A$ as in $P^{\NC}$.
+Un \GSWCE indique une faiblesse de l'ensemble des sous-contrats d'une fonction
+mais n'identifie pas précisément quel contrat $c\in\C$ est trop faible si
+c'est le cas.
+Nous proposons pour cela une autre transformation de programme de $P$ en un
+programme instrumenté $P_c^{\SSW}$.
+Elle réalise le remplacement d'un seul appel de fonction non imbriqué ou de
+boucle par le code respectant la postcondition du sous-contrat $c$ correspondant
+(comme le montrent les figures~\ref{fig:CW-transf-functions}
+et~\ref{fig:CW-transf-loops}) et traduit les autres annotations de $\A$ de la
+même manière que pour $P^{\NC}$.
 
 
-\section{Détection de faiblesse de contrat unique}
+\section{Détection de faiblesse d'un sous-contrat}
 \label{sec:swd-single}
 
 
-\begin{definition}[Single subcontract weakness] 
-\label{def:SSW}
-Let $c$ be a subcontract for $f$.
-We say that $c$ is a \emph{too weak subcontract}
-(or has a \emph{single subcontract weakness}) for $f$ 
-if there exists a test datum $V$ for $f$ respecting its precondition,
-such that $P^{\NC}$ does not report any annotation failure on $V$,
-while $P_c^{\SSW}$ reports an annotation failure on $V$.
-In this case, we say that $V$ is a \emph{single subcontract weakness counter-example} (\SSWCE)
-for the subcontract  $c$ in $f$.
+\begin{definition}[Faiblesse d'un sous-contrat] 
+  \label{def:SSW}
+  Soit $c$ un sous-contrat pour $f$.
+  $c$ est un \emph{sous-contrat trop faible} (ou a une
+  \emph{faiblesse de sous-contrat}) pour $f$ s'il existe un cas de test $V$ pour
+   $f$ respectant sa précondition, tel que $P^{\NC}$ ne rapporte aucune violation
+  d'annotation sur $V$, alors que $P_c^{\SSW}$ rapporte une violation
+  d'annotation sur $V$.
+  Dans ce cas, on dit que $V$ est un
+  \emph{contre-exemple de faiblesse d'un sous-contrat} (ou \SSWCE pour
+  \textit{single subcontract weakness counter-example}) pour le sous-contrat
+  $c$ de $f$.
 \end{definition}
 
-For any subcontract $c\in\C$, test generation can be separately applied on  $P_{c}^{\SSW}$ to generate
-\SSWCE candidates. If such a test datum $V$ is generated, it is checked on $P^{\NC}$ to 
-classify it as an \NCCE or an \SSWCE.
-We call this technique,
-applied for all subcontracts one after another until a first counter-example  $V$ is found,  
-\emph{Single Contract Weakness Detection,}
-denoted $\SSWD$. 
-The $\SSWD$ step may have three outcomes.
-It returns (\nc,\,$V$,\,$a$) if an \NCCE $V$ has been found for a failing annotation $a$,
-and  (\cw,\,$V$,\,$a$,\,$\{c\}$) if $V$ has been finally classified as an \SSWCE
-indicating the failing annotation $a$ and the single too weak subcontract $c$.
-The program path $\pi_V$ activated by $V$ and leading to the failure 
-(on $P^{\NC}$ or $P_c^{\SSW}$) is recorded as well.
-Otherwise, it returns \textsf{?} (unknown), since even after an exhaustive path testing
-the absence of \SSWCE for any individual subcontract $c$ does not imply
-the absence of a \GSWCE.
+Pour chaque sous-contrat $c\in\C$, la génération de tests peut être appliquée
+de manière séparée sur $P_{c}^{\SSW}$ pour générer des \SSWCE potentiels.
+Si un tel cas de test $V$ est généré, il est confirmé sur $P^{\NC}$ afin de
+déterminer si c'est un \NCCE ou un \SSWCE.
+Nous appelons cette technique, appliquée pour tous les sous-contrats l'un après
+l'autre jusqu'à ce qu'un contre-exemple $V$ soit trouvé,
+\emph{Détection de faiblesse d'un sous-contrat}, notée $\SSWD$ pour
+\textit{Single Contract Weakness Detection}.
+$\SSWD$ peut produire trois résultats.
+Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé pour une annotation
+$a$, et (\cw,\,$V$,\,$a$,\,$\{c\}$) si $V$ a été classé comme étant un \SSWCE
+indiquant que le sous-contrat $c$ est trop faible pour l'annotation $a$.
+Le chemin de programme $\pi_V$ activé par $V$ et menant à l'erreur (sur $P^{\NC}$
+ou $P_c^{\SSW}$) est également récupéré.
+Sinon, elle retourne \textsf{?} ({\em unknown}), puisque même en cas
+d'exploration complète des chemins du programme l'absence de \SSWCE pour un
+unique sous-contrat $c$ n'implique pas l'absence de \GSWCE.
 
-Indeed, sometimes $\SSWD$ cannot exhibit a subcontract weakness for a single subcontract
-while there is a global subcontract weakness for all of them at once.
-For example in Fig.~\ref{fig:contracts-ex1},
-if we apply $\SSWD$ to any of the subcontracts, we always have
-\lstinline'x >=  \old(x)+5' at the end of $f$
-(we add $1$ to $x$ by executing the translated subcontract,
-and add $2$ twice by executing the other two functions' code),
-so the postcondition of \lstinline'f' holds and no weakness is detected.
-If we run  $\GSWD$  to consider all subcontracts at once, we only get
-\lstinline'x>= \old(x)+3' after executing the three subcontracts, and can exhibit a counter-example.
+En effet, il arrive que $\SSWD$ ne puisse pas détecter de faiblesse pour un
+sous-contrat en particulier alors qu'il y a une faiblesse pour un ensemble de
+sous-contrats.
+Dans l'exemple de la figure~\ref{fig:contracts-ex1}, si on applique $\SSWD$ à
+un sous-contrat quelconque, on obtient toujours \lstinline'x >=  \old(x)+5' à la
+fin de la fonction $f$ (on ajoute $1$ à $x$ en exécutant le sous-contrat traduit
+et on ajoute $2$ par deux fois en exécurant le code des deux autres fonctions),
+donc la postcondition de \lstinline'f' est vérifiée et aucune faiblesse de
+sous-contrat n'est détectée.
+Si on applique $\GSWD$ pour considérer tous les sous-contrats en une seule fois,
+on obtient uniquement \lstinline'x>= \old(x)+3' après exécution des trois
+sous-contrats, ce qui permet d'exhiber un contre-exemple pour cette faiblesse
+des sous-contrats.
 
 On the other hand, running  $\GSWD$
 produces a \GSWCE that does not indicate which one of the subcontracts is too weak,
@@ -388,8 +402,8 @@ avant la boucle, et vérifie l'invariant à la fin de chaque itération.
 \section*{Conclusion du chapitre}
 
 
-Dans ce chapitre, nous avons définit les notions de faiblesse de
-contrat globale et faiblesse de contrat unique.
+Dans ce chapitre, nous avons définit les notions de faiblesse de l'ensemble des
+sous-contrats et faiblesse d'un sous-contrat.
 Nous avons également présenté les spécificités de la traduction des annotations
 par rapport à la traduction pour la détection de non-conformités présentée au
 chapitre~\ref{sec:traduction}.
