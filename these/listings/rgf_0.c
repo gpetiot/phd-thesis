@@ -1,10 +1,13 @@
 /*@ predicate is_rgf(int *a, integer n) =
-     a[0] == 0 && \forall integer i; 1 <= i < n ==>
-      (0 <= a[i] <= a[i-1]+1); */
+      a[0] == 0 &&
+        \forall integer i; 1 <= i < n ==>
+          (0 <= a[i] <= a[i-1]+1); */
 
-/*@ lemma max_rgf: \forall int* a; \forall integer n;
-  is_rgf(a, n) ==>
-  (\forall integer i; 0 <= i < n ==> a[i] <= i); */
+/*@ lemma max_rgf:
+  \forall int* a; \forall integer n;
+    is_rgf(a, n) ==>
+      (\forall integer i; 0 <= i < n ==>
+        a[i] <= i); */
 
 /*@ requires n > 0;
     requires \valid(a+(0..n-1));
@@ -42,7 +45,8 @@ int f(int a[], int n) {
  //@ assert a[i]+1 <= 2147483647;
  a[i] = a[i] + 1;
  g(a,n,i);
- /*@ assert \forall integer l; 0 <= l < i ==>
-      \at(a[l],Pre) == a[l]; */
+ /*@ assert \forall integer l;
+       0 <= l < i ==>
+         \at(a[l],Pre) == a[l]; */
  return 1;
 }
