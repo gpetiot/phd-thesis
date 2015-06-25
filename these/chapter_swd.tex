@@ -14,8 +14,9 @@ détection de non-conformités présentée au chapitre~\ref{sec:traduction}.
 La partie~\ref{sec:swd-global} présente la notion de faiblesse de l'ensemble des
 sous-contrats et la partie~\ref{sec:swd-single} présente la notion de faiblesse
 d'un sous-contrat.
-La partie ?? illustre la détection de faiblesses de sous-contrats sur l'exemple
-du chapitre~\ref{sec:ncd}.
+La partie~\ref{sec:swd-scenarios} continue le cas pratique du
+chapitre~\ref{sec:ncd} pour montrer l'intérêt de la détection des faiblesses
+des sous-contrats.
 
 
 \section{Détection de faiblesse de l'ensemble des sous-contrats}
@@ -391,6 +392,92 @@ un \GSWCE même lorsqu'il n'y a pas de faiblesse de sous-contrat provenant d'un
 unique sous-contrat).
 
 
+\section{Détection de faiblesse de sous-contrats en pratique}
+\label{sec:swd-scenarios}
+
+
+Retrouvons Alice là où nous l'avons laissée au chapitre~\ref{sec:ncd}.
+Alice spécifie la deuxième boucle de la fonction
+\lstinline'delete_substr', qui copie les éléments de la
+chaîne \lstinline'str' dans la chaîne \lstinline'dest' jusqu'à l'indice
+\lstinline'start', avec ce contrat de boucle :
+
+\begin{pretty-codeACSL}
+loop invariant \forall integer m; 0 <= m < j ==> dest[m] == \at(str[m],Pre);
+loop invariant 0 <= j <= start;
+loop assigns j, dest[0..start-1];
+loop variant start-j;
+\end{pretty-codeACSL}
+
+Supposons maintenant qu'elle ait oublié de préciser dans le contrat de la
+fonction \lstinline'find_substr' la valeur du résultat dans chacun des cas, par
+exemple elle oublie d'écrire :
+
+\begin{pretty-codeACSL}
+ensures 0 <= \result < strlen-sublen;
+\end{pretty-codeACSL}
+
+ou
+
+\begin{pretty-codeACSL}
+ensures \result == -1;
+\end{pretty-codeACSL}
+
+respectivement aux lignes 7 et 12 de la figure~\ref{fig:findSubstr}.
+
+Cet oubli a un impact direct sur le contrat de la boucle qu'elle vient de
+spécifier, dont la preuve par \Wp échoue.
+Alice pense d'abord que cet échec de la preuve est causé par une non-conformité
+de la boucle par rapport à son contrat.
+Elle applique donc la méthode \NCD dans l'espoir d'obtenir un \NCCE.
+Bien qu'ayant couvert les chemins du programme avec 12170 cas de tests, aucun
+\NCCE n'est produit.
+Alice a maintenant le choix entre analyser manuellement le programme pour afin
+de localiser le problème et relancer la preuve en augmentant le {\em timeout},
+ce qui peut lui prendre beaucoup de temps.
+Elle décide d'analyser le programme car elle suspecte une faiblesse de
+spécification d'un des sous-contrats.
+
+Elle applique alors \SWD, plus précisément \SSWD, qui détecte que le contrat de
+la fonction \lstinline'find_substr' est trop faible pour l'invariant de boucle
+\lstinline'loop invariant 0 <= j <= start' de la deuxième boucle de la fonction
+\lstinline'delete_substr'.
+En effet, ayant enlevé les contraintes sur le résultat de la fonction
+\lstinline'\result', l'exécution du contrat de \lstinline'find_substr' produit
+une valeur de retour qui ne permet pas de valider l'invariant.
+À partir du contre exemple produit par \SSWD et la nature de l'invariant non
+satisfait, Alice peut facilement localiser le problème dans le contrat de la
+fonction \lstinline'find_substr'.
+
+Alice poursuit son travail de spécification de la fonction
+\lstinline'delete_substr' et annote la dernière boucle avec le contrat de boucle
+suivant :
+
+\begin{pretty-codeACSL}
+loop invariant start <= j <= strlen-sublen;
+loop assigns dest[start .. strlen-sublen-1], j;
+loop variant strlen-sublen-j;
+\end{pretty-codeACSL}
+
+La vérification déductive de la fonction échoue, et \NCD ne parvient pas à
+exhiber de contre-exemple car le programme ne comporte pas de non-conformité.
+En revanche, l'application de \SWD met en évidence la faiblesse de ce dernier
+contrat de boucle, qui est insuffisant pour la preuve de la fonction.
+En effet, le contrat indique (par sa clause \lstinline'loop assigns') que la
+boucle peut modifier \lstinline'dest[start .. strlen-sublen-1]' et
+\lstinline'j'.
+Des cas de tests sont donc générés dans lesquels l'exécution du
+contrat modifie la valeur de \lstinline'j' en respectant la contrainte de
+l'invariant \lstinline'start <= j <= strlen-sublen' et modifie les valeurs du
+tableau, sans contrainte particulière, ce qui ne permet pas de vérifier la
+postcondition de la fonction \lstinline'delete_substr'.
+
+Ici aussi, le résultat de \SWD indique à Alice précisément quel(s)
+sous-contrat(s) sont trop faibles pour la propriété non prouvée par \Wp, lui
+facilitant son travail de revue du code et lui permettant de progresser
+rapidement vers une spécification correcte et complète de son programme.
+
+
 \section*{Conclusion du chapitre}
 
 
@@ -399,6 +486,8 @@ sous-contrats et faiblesse d'un sous-contrat.
 Nous avons également présenté les spécificités de la traduction des annotations
 par rapport à la traduction pour la détection de non-conformités présentée au
 chapitre~\ref{sec:traduction}.
+Enfin, nous avons continué le cas pratique du chapitre~\ref{sec:ncd} pour
+montrer l'intérêt de la détection des faiblesses des sous-contrats.
 
 Le chapitre~\ref{sec:method} montrera que l'utilisation combinée de la détection
 des non-conformités présentée au chapitre~\ref{sec:ncd} et la détection des
