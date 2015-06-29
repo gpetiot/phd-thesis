@@ -1,8 +1,10 @@
 
 \documentclass{standalone}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{amsfonts,listings,courier,pgfplotstable,times,xspace,tikz,amssymb,
   amsmath,comment,stmaryrd,subcaption,multirow,wrapfig,pifont,bigdelim}
-
+\pgfplotsset{compat=1.10}
 \newcommand*\circled[1]{\tikz[baseline=(char.base)]{
     \node[shape=circle,draw,inner sep=.5mm,font=\bfseries] (char) {#1};}}
 
@@ -35,7 +37,7 @@
 \newcommand{\nc}{\textsf{nc}\xspace}
 \newcommand{\cw}{\textsf{sw}\xspace}  % for compatibility
 \newcommand{\sw}{\textsf{sw}\xspace}  % new version
-\newcommand{\no}{\textsf{no}\xspace}
+\newcommand{\myno}{\textsf{no}\xspace}
 \newcommand{\yes}{\textsf{yes}\xspace}
 
 
@@ -131,21 +133,21 @@
 \begin{document}
 
 \begin{tabular}{c|c|l|c|c|c|c}
-    \multirow{2}{*}{\#} & \multicolumn{2}{c|}{Impacted lines}
-    & \multicolumn{3}{c|}{Intermediate outcome}
-    & \multirow{2}{*}{Final outcome} \\ \cline{2-6}
-    & Line & Changes & Proof (failing annot.) & \NCD & \CWD & \\ \hline
+    \multirow{2}{*}{\#} & \multicolumn{2}{c|}{Lignes modifiées}
+    & \multicolumn{3}{c|}{Résultats intermédiaires}
+    & \multirow{2}{*}{Résultat final} \\ \cline{2-6}
+    & Ligne & Modifications & Preuve (annot. non prouvée) & \NCD & \CWD & \\ \hline
     % example/rgf_0.c
-    0 & -- & -- & \ok & -- & -- & Proved \\ \hline
+    0 & -- & -- & \ok & -- & -- & Preuve \\ \hline
     % example/rgf_1.c
-    1 & 24 & (deleted) & \textsf{?} (l.39, 41, 26) & \nc & --
+    1 & 24 & (supprimée) & \textsf{?} (l.39, 41, 26) & \nc & --
     & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$}
-    is \NCCE \\ \hline
+    est un \NCCE \\ \hline
 
     % example/rgf_2.c
     2 & 34 & \lstinline[style=c]'loop assigns i,a[1..n-1];'
     & \multirow{3}{*}{\textsf{?} (l.39, 41, 42, 26--30)}
-    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} for l.33--34}
+    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} pour l.33--34}
     & $V$ = {\scriptsize{$\langle$}}
     $\mbox{\lstinline'n=2;'} \textbf{\mbox{\lstinline'a[0]=0'}}
     \mbox{\lstinline';a[1]=0;'}$ \\
@@ -153,16 +155,16 @@
     &&&&& &$\mathbf{nondet}_{\textbf{\mbox{\lstinline'a[1]'}}}
     \textbf{\mbox{\lstinline'=97157'}}\mbox{\lstinline';'}$ \\
     &&&&& &$\mathrm{nondet}_{\mbox{\lstinline'i'}}\mbox{\lstinline'=0'}$
-    {\scriptsize{$\rangle$}} is \SWCE \\ \hline
+    {\scriptsize{$\rangle$}} est un \SWCE \\ \hline
 
     % example/rgf_3.c
-    3 & 4--5 & (deleted) & \multirow{2}{*}{\textsf{?} (l.39)}
-    & \multirow{2}{*}{\no} & \multirow{2}{*}{\no}
-    & \multirow{2}{*}{Prover incapacity} \\
+    3 & 4--5 & (supprimée) & \multirow{2}{*}{\textsf{?} (l.39)}
+    & \multirow{2}{*}{\myno} & \multirow{2}{*}{\myno}
+    & \multirow{2}{*}{Incapacité de prouveur} \\
     & 22 & \lstinline[style=c]'requires n>0 && n<21;' &&&& \\ \hline
     % example/rgf_4.c
-    4 & 4--5 & (deleted) & \textsf{?} (l.39) & \textsf{?} & \textsf{?}
-    & Unknown \\
+    4 & 4--5 & (supprimée) & \textsf{?} (l.39) & \textsf{?} & \textsf{?}
+    & Non classifié \\
   \end{tabular}
 
 \end{document}
