@@ -99,6 +99,7 @@ main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 		table_eacsl_experiments.tex \
 		commands.tex \
 		$(CHAPTERS_TEX) \
+		table_rgf.pdf \
 		header.tex
 	pdflatex $<
 	bibtex main
