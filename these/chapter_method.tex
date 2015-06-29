@@ -1,5 +1,5 @@
 
-\chapter{Méthode d'Aide à la Preuve combinant NCD et SWD}
+\chapter{Aide à la Preuve combinant NCD et SWD}
 \label{sec:method}
 
 \chapterintro
@@ -8,9 +8,10 @@
 Dans ce chapitre nous présentons notre méthode de diagnostic des échecs de
 preuve utilisant les techniques de détection présentées dans les
 chapitres~\ref{sec:ncd} et~\ref{sec:swd}.
-La partie~\ref{sec:method-proof-failures} rappelle les différentes causes
-possibles d'un échec de preuve.
-La partie~\ref{sec:method-presentation} présente la méthode de diagnostic des
+La partie~\ref{sec:method-ex} présente l'exemple sur lequel nous nous
+appuierons dans ce chapitre, la partie~\ref{sec:method-proof-failures} rappelle
+les différentes causes possibles d'un échec de preuve, la
+partie~\ref{sec:method-presentation} présente notre méthode de diagnostic des
 échecs de preuve et la partie~\ref{sec:method-suggestions} suggère les actions
 à effectuer après qu'un échec de preuve ait été diagnostiqué.
 
@@ -96,7 +97,6 @@ utilisé pour assurer l'absence de débordement d'entier signé à la ligne 46.
 
 Les fonctions de la figure~\ref{fig:rgf1} peuvent être prouvées à l'aide de \Wp.
 
-
 Supposons maintenant que cet exemple contient une des quatre erreurs suivantes :
 \emph{soit} l'ingénieur validation oublie la précondition de la ligne 29,
 \emph{soit} il se trompe dans l'affectation \lstinline[style=c]'a[i]=a[i]+2;'
@@ -104,37 +104,56 @@ ligne 46, \emph{soit} il écrit une clause
 \lstinline[style=c]'loop assigns i,a[1..n-1];' trop imprécise ligne 40,
 \emph{soit} il oublie de fournir le lemme des lignes 6--10.
 Dans chacun de ces scénarios, la preuve du programme échoue (sur la précondition
-de \lstinline{g} lors de son appel ligne 47 et/ou sur l'assertion ligne 45)
-pour différentes raisons.
+de \lstinline{g} lors de son appel ligne 47 et/ou sur l'assertion ligne 45).
 
-
-In fact, only in the first two cases the code and specification are not compliant, while
-the third failure is due to a too weak subcontract, and the last one comes from a prover incapacity.
-To the best of our knowledge, 
-none of the existing  techniques allows to automatically
-distinguish the three reasons and suggest suitable actions.
-This work proposes a complete methodology to provide such assistance.
+Les deux premiers cas présentent une non-conformité du code vis-à-vis de
+la spécification, dans le troisième cas l'échec de la preuve est dû à une
+faiblesse de sous-contrat, et le dernier cas est dû à une limitation ou une
+faiblesse du prouveur utilisé.
 
 
 \section{Échecs de preuve}
 \label{sec:method-proof-failures}
 
 
-\commentGP{rappeler NC}
+Rappelons les différentes causes possibles d'un échec de la vérification
+déductive d'un programme.
 
-\commentGP{rappeler SW}
+\textbf{Non-conformité.}
+Un échec de preuve peut être dû à une non-conformité du code d'un programme par
+rapport à sa spécification formelle.
+Le chapitre~\ref{sec:ncd} a défini la notion de non-conformité, de
+contre-exemple de non-conformité (\NCCE) et a présenté une méthode de détection
+des non-conformités (\NCD).
 
-\textbf{Prover incapacity.}
-When neither a non-compliance nor a global subcontract weakness
-exist, we cannot demonstrate that it is impossible to prove the property.
+\textbf{Faiblesse de sous-contrat.}
+Un échec de preuve peut également être dû par une faiblesse d'un
+sous-contrat, ce qui cause un manque d'hypothèses et ne permet de prouver une
+autre propriété.
+Le chapitre~\ref{sec:swd} a défini la notion de sous-contrats, de faiblesse de
+sous-contrats, de contre-exemple pour la faiblesse de sous-contrats (\SWCE) et
+a présenté une méthode de détection de ces faiblesses (\SWD).
 
-\begin{definition}[Prover incapacity] 
+\textbf{Incapacité de prouveur.}
+Quand il n'existe pas de non-conformité, ni de faiblesse de sous-contrats, nous
+ne pouvons pas démontrer pour autant l'impossibilité de prouver le programme.
+Nous introduisons la notion d'incapacité d'un prouveur.
+
+\begin{definition}[Incapacité de prouveur]
 \label{def:prov-incap}
-We say that a proof failure in $P$ is due to a \emph{prover incapacity} 
-if for any test datum $V$ for $f$ respecting its precondition,
-neither $P^{NC}$ nor $P^{\GSW}$ report any annotation failure on $V$.
-In other words, there is no \NCCE and no \GSWCE for $P$.
+On dit qu'un échec de preuve du programme $P$ est lié à une
+\emph{incapacité de prouveur} si pour tout cas de test $V$ pour la fonction $f$
+respectant sa précondition, $P^{NC}$ et $P^{\GSW}$ ne rapportent aucune violation
+d'annotation sur $V$.
+En d'autres termes, il n'y a ni \NCCE, ni \GSWCE pour $P$.
 \end{definition}
+
+Cette catégorie contient entre autres les limitations techniques des prouveurs
+comme par exemple la difficulté que peuvent rencontrer les prouveurs à
+instancer les variables quantifiées dans un prédicat \lstinline'\exists'.
+La nécessité d'écrire des lemmes pour aider le prouveur, voire d'avoir recours
+à un assistant de preuve comme \coq définit également une incapacité de
+prouveur.
 
 
 \section{Présentation de la méthode}
@@ -145,7 +164,7 @@ In other words, there is no \NCCE and no \GSWCE for $P$.
 \begin{tikzpicture}
   \node(p) [data] {$P$};
   \node(ncd) [right of=p,test,node distance=1.7cm] {$\NCD(P)$};
-  \node(ncce1) [below of=ncd,node distance=1.2cm] {\circled{1} $V$ is \NCCE};
+  \node(ncce1) [below of=ncd,node distance=1.2cm] {\circled{1} $V$ est un \NCCE};
   \path[darrow] (ncd) -- node[left] {(\nc, $V$, $a$)} (ncce1);
   \path[arrow] (p) -- (ncd);
   \node(cwd) [right of=ncd,test,node distance=4cm] {$\CWD(P)$};
@@ -153,117 +172,119 @@ In other words, there is no \NCCE and no \GSWCE for $P$.
   %\path[darrow] (ncd.east)+(0,.2) -- node[above] {\no} (cwd);
   %\path[darrow] (ncd.east)+(-.1,-.2) -- node[below] {?} (cwd);
 
+  % CWD found a CE
+  \node(cwce-ncce) [below of=cwd,node distance=1.2cm]{\circled{2} $V$ est un \CWCE};
+  \path[darrow] (cwd) -- node[right] {(\cw, $V$, $a$, $S$)} (cwce-ncce);
+  \path[darrow] (cwd) -- node[above,sloped,xshift=-3mm] {~~~(\nc, $V$, $a$)} (ncce1);
+
   % CWD did not found any CE
   \node(cov-2) [right of=cwd,test,node distance=4cm]{
     $\NCD(P)=~$\no$\land$\\ $\CWD(P)=~$\no};
   \path[darrow] (cwd.east) -- node[above] {\no{} / \textsf{?}} (cov-2);
   %\path[darrow] (cwd.east)+(0,.2) -- node[above] {\no} (cov-2);
   %\path[darrow] (cwd.east)+(-.1,-.2) -- node[below] {?} (cov-2);
-  \node(pw) [below of=cov-2,node distance=1.2cm]{\circled{3} Prover incapacity};
+  \node(pw) [below of=cov-2,node distance=1.45cm,align=center]{\circled{3} Incapacité\\ de prouveur};
   \path[darrow] (cov-2) -- node[right] {true} (pw);
-  \node(qm) [right of=pw,node distance=4cm] {\circled{4} Unknown};
+  \node(qm) [right of=cwce-ncce,node distance=8cm] {\circled{4} Non classifié};
   \path[darrow] (cov-2) -| node[below left] {false} (qm);
-
-  % CWD found a CE
-  \node(cwce-ncce) [below of=cwd,node distance=1.2cm]{\circled{2} $V$ is \CWCE};
-  \path[darrow] (cwd) -- node[right] {(\cw, $V$, $a$, $S$)} (cwce-ncce);
-  \path[darrow] (cwd) -- node[above,sloped,xshift=-3mm] {~~~(\nc, $V$, $a$)} (ncce1);
 \end{tikzpicture}
 \vspace{-2mm}
-\caption{Combined verification methodology in case of a proof failure on $P$}
-\vspace{-5mm}
+\caption{Méthode de vérification combinant \NCD et \SWD en cas d'échec de
+  preuve du programme $P$}
 \label{fig:method-short}
 \end{figure*}
 
-
-The proposed method is illustrated by Fig.~\ref{fig:method-short}.
-Suppose that the proof of the annotated program $P$ fails for some non-imbricated annotation $a\in\A$.
-The first step tries to find a non-compliance using \NCD. 
-If such a non-compliance is found, it generates an \NCCE (marked by \circled{1}
-in Fig.~\ref{fig:method-short})
-and classifies the proof failure as a non-compliance.
-If the first step cannot generate a counter-example,
-the \SWD step combines $\SSWD$ and $\GSWD$ 
-and tries to generate single \SWCE{}s, then global \SWCE{}s, 
-until the first counter-example is generated and classified 
-(either as an \NCCE \circled{1} or an \SWCE \circled{2}).
-If no counter-example has been found, the last step checks the outcomes.
-If both \NCD and \SWD have returned \textsf{no}, that is, 
-both  $\NCD$  and $\GSWD$ have performed a complete path exploration 
-without finding a counter-example,
-the proof failure is classified as a prover incapacity \circled{3} (cf. Def. \ref{def:prov-incap}).
-Otherwise, it  remains unclassified \circled{4}.
-Fig.~\ref{tab:versions-rgf} associates a variant of the illustrating example to
-each case.
-For each case, we detail the lines we modified in the program of
-Fig.~\ref{fig:rgf1} to obtain a new program, the intermediate results of
-deductive verification, \NCD and \SWD and the final verdict (including the
-generated counter-example if any).
+La méthode que nous proposons est illustrée par la
+figure~\ref{fig:method-short}.
+Supposons que la preuve du programme annoté $P$ échoue pour une annotation
+non-imbriquée $a\in\A$ quelconque.
+La première étape est d'essayer de trouver une non-conformité entre le code et
+la spécification en utilisant \NCD.
+Si une telle non-conformité a été trouvée, un \NCCE est généré (cas \circled{1}
+sur la figure~\ref{fig:method-short}) et l'échec de la preuve est classifié
+comme une non-conformité.
+Si cette première étape n'a pas pu générer de contre-exemple, l'étape \SWD
+combine \SSWD et \GSWD et essaie de générer des \SWCE{}s pour les sous-contrats
+pris un-à-un, sinon des \SWCE{}s pour l'ensemble des sous-contrats, jusqu'à ce
+que le premier contre-exemple soit généré et classifié (soit comme un \NCCE
+\circled{1}, soit comme un \SWCE \circled{2})
+Si aucun contre-exemple n'a été trouvé, nous analysons le résultat de \NCD et
+\SWD.
+Si \NCD et \SWD ont retourné \textsf{no}, c'est-à-dire que \NCD et \GSWD ont
+couvert tous les chemins du programme sans produire de contre-exemple, l'échec
+de preuve est dû à une incapacité de prouveur \circled{3} (voir la
+définition~\ref{def:prov-incap}).
+Sinon, l'échec de preuve reste non classifié \circled{4}.
+La figure~\ref{tab:versions-rgf} associe à chacun des quatre cas une version
+modifiée de l'exemple illustratif de la figure~\ref{fig:rgf1}.
+Dans chaque cas, nous détaillons les lignes modifiées dans le programme de la
+figure~\ref{fig:rgf1} pour obtenir le nouveau programme, les résultats
+intermédiaires de la vérification déductive, de \NCD et \SWD, et le verdict
+final de la méthode (ainsi que le contre-exemple éventuellement généré).
 
 
 \begin{figure*}[bt]\centering
   \includegraphics[scale=.85]{table_rgf.pdf}
-  \caption{Method results for different versions of the illustrating example.}
+  \caption{Résultats de la méthode sur différentes versions de l'exemple de la
+    figure~\ref{fig:rgf1}.}
   \label{tab:versions-rgf}
 \end{figure*}
 
 
-The proof failure category and the counter-example $V$, along with  
-the recorded path $\pi_V$,
-the reported failing annotation $a$ and set of too weak subcontracts $S$,
-can be extremely helpful for the verification engineer.
-Suppose we try to prove in \Wp a modified version of the function $f$ of
-Fig.~\ref{fig:rgf1}
-where the precondition at line 24 is missing.
-The proof of the precondition of $g$ on line 10 for the call on line 41
-fails without indicating a precise reason.
-The \NCD step of \stady  generates an \NCCE (case \circled{1},
-\#1 in Fig.~\ref{tab:versions-rgf}) where \lstinline'is_rgf(a,n)'
-is clearly false due to \lstinline'a[0]' being non-zero, and indicates the
-failing annotation (coming from line 10).  
-That helps the verification engineer to understand and fix the issue. 
+La classification de l'échec de preuve, le contre-exemple $V$, le chemin
+d'exécution $\pi_V$ activé par $V$, ainsi que l'annotation invalidée $a$ et
+l'ensemble des sous-contrats trop faibles $S$ peuvent s'avérer très utiles à
+l'ingénieur validation.
+Supposons que l'on essaie de prouver avec \Wp une version modifiée de la
+fonction $f$ de la figure~\ref{fig:rgf1} où la précondition de la ligne 29 est
+manquante.
+La preuve de la précondition de $g$ (ligne 15) lors de l'appel de la fonction
+ligne 47 échoue sans indiquer de raison précise. 
+L'étape \NCD génère un \NCCE (cas \circled{1}, \#1 sur la
+figure~\ref{tab:versions-rgf}) où la propriété \lstinline'is_rgf(a,n)' est
+clairement fausse puisque \lstinline'a[0]' est différent de zéro, et indique
+l'annotation non respectée (ligne 15).
+Ceci permet à l'ingénieur validation de comprendre et corriger le problème.
 
+Supposons maintenant que la clause de la ligne 40 a été écrite de manière
+erronée de la manière suivante : \lstinline'loop assigns i, a[1..n-1];'.
+La boucle aux lignes 42--43 préserve néanmoins son invariant.
+L'étape \NCD ne trouve aucun \NCCE, puisque cette modification n'a introduit
+aucune non-conformité entre le code et sa spécification.
+Grâce à la transformation de code montré en figure~\ref{fig:CW-transf-loops},
+$\SSWD$ pour le contrat de cette boucle détectera une faiblesse de sous-contrat
+pour ce même contrat (cas \circled{2}, \#2 sur la
+figure~\ref{tab:versions-rgf}), et rapporte le non-établissement de la
+précondition de $g$ (ligne 15) lors de l'appel de la fonction ligne 47.
+Avec l'information de la faiblesse du sous-contrat de la boucle, l'ingénieur
+validation essaiera de trouver la cause de la faiblesse et renforcera le contrat
+de boucle en conséquence.
 
-Let us suppose now that the clause on line 34 has been erroneously
-written as follows: \lstinline'loop assigns i, a[1..n-1];'.
-The loop on lines 36--37 still preserves its invariant.
-The \NCD step does not find any \NCCE, as this modification did not introduce
-any non-compliance between the code and its specification.
-Thanks to the replacement shown in Fig.~\ref{fig:CW-transf-loops},
-$\SSWD$ for the contract of this loop will detect a single
-subcontract weakness for the loop contract (case \circled{2},
-\#2 in Fig.~\ref{tab:versions-rgf}),
-and report a fail to establish the 
-precondition of $g$ (on line 10) for the call on line 41.
-With the indication of the single subcontract weakness for the loop, 
-the verification engineer will try to strengthen the loop contract
-and find the issue. 
-
-
-Suppose now we want to prove the absence of overflow at line 40
-of Fig.~\ref{fig:rgf1}, but the lemma on lines 4--5 
-(that allows the prover to deduce this property) is missing.
-The proof fails  without giving a precise reason since
-the prover does not perform the induction needed to deduce the right bounds on
-\lstinline'a[i]'.
-Neither \NCD nor \CWD can produce a counter-example, and
-as the initial program has too many paths, their outcomes are \textsf{?}
-(unknown) (case \circled{4}, \#4 in Fig.~\ref{tab:versions-rgf}).
-For such situations, \stady offers the possibility to reduce the input domain.
-The verification engineer can add the \acsl clause 
-\lstinline'typically n<5;' to reduce the array size 
-for testing (this clause is ignored by the proof). 
-Running \stady now allows the tool to complete the exploration of all
-program paths (for \lstinline'n<5') both for \NCD and \CWD without finding a counter-example.
-\stady classifies the proof failure for the program with 
-the reduced domain as a prover incapacity (case \circled{3},
-\#3 in Fig.~\ref{tab:versions-rgf}).
-That gives the verification engineer more confidence that the proof failure
-has the same reason on the initial program for bigger sizes \lstinline{n}.
-
-The verification engineer prefers to  try interactive proof or adding additional
-lemmas or assertions,
-and does not waste time looking for a bug or a too week subcontract.
+Supposons maintenant que nous voulons prouver l'absence de débordement
+arithmétique à la ligne 46 de la figure~\ref{fig:rgf1}, mais le lemme aux lignes
+6--10 est manquant.
+La preuve échoue sans donner de raison précise puisque le prouveur n'effectue
+pas l'induction nécessaire afin de déduire les bornes de \lstinline'a[i]'.
+Ni \NCD ni \SWD n'ont réussi à produire de contre-exemple, et puisque le
+programme initial comporte trop de chemins d'exécution faisables pour pouvoir
+tous les couvrir dans le temps imparti, leur résultat est \textsf{?}
+(non classifié) (cas \circled{4}, \#4 sur la figure~\ref{tab:versions-rgf}).
+Dans une telle situation, l'ingénieur validation peut décider de réduire le
+domaine des entrées du programme, supposons dans ce cas qu'il choisisse de
+restreindre le domaine de \lstinline'n' à l'aide de la précondition pour $f$
+suivante : \lstinline'requires n>0 && n<21;'.
+Avec cette nouvelle contrainte sur les entrées, l'application de la méthode
+permet de couvrir tous les chemins du programme (respectant la nouvelle
+précondition) avec \NCD et \SWD sans trouver de contre-exemple.
+La méthode classifie l'échec de preuve du programme avec le domaine restraint
+sur les variables comme une incapacité de prouveur (cas \circled{3},
+\#3 sur la figure~\ref{tab:versions-rgf}).
+Ces résultats poussent l'ingénieur validation à penser que l'échec de la preuve
+sur la variante \#4 du programme, pour un \lstinline'n' plus grand, est causé
+par les mêmes raisons.
+Ainsi, l'ingénieur validation préfèrera essayer une preuve interactive, ou
+écrire des lemmes ou assertions supplémentaires, et ne perdra pas son temps à
+chercher une non-conformité ou une faiblesse de contrat.
 
 
 \section{Suggestions d'actions}
@@ -272,73 +293,84 @@ and does not waste time looking for a bug or a too week subcontract.
 
 \begin{figure*}[bt]\centering
   \begin{tabular}{p{.7cm}|>{\centering\arraybackslash}p{5.8cm}|>{\centering\arraybackslash}p{8cm}}
-    \textbf{Case} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
+    \textbf{Cas} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
     \hline
-    \circled{1} & Non-compliance w.r.t. the annotation $a$:
+    \circled{1} & Non-conformité du code vis-à-vis de l'annotation $a$:
     (\nc, $V$, $a$)
     &
-    check the violated annotation $a$
-    or the code leading to $a$ in the path $\pi_V$,
-    or strengthen the precondition of the function under verification
+    corriger l'annotation $a$
+    ou le code menant à $a$ par le chemin d'exécution $\pi_V$,
+    ou renforcer la précondition de la fonction sous vérification
     \\
     \hline
-    \circled{2} & Weakness of subcontracts in $S$ w.r.t. the annotation $a$:
+    \circled{2} & Faiblesse de sous-contrats de $S$ vis-à-vis de l'annotation
+    $a$ :
     \ (\cw,~$V$,~$a$,~$S$)
-    & strengthen one or several subcontracts in $S$ to exclude the subcontract weakness\\
+    & renforcer un ou plusieurs sous-contrats de $S$ \\
     \hline
-    \circled{3} & Prover incapacity
-    & add lemmas or assertions to help the theorem prover,
-    or use another prover,
-    or an interactive  proof assistant \\
+    \circled{3} & Incapacité de prouveur
+    & ajouter des lemmes ou des assertions pour aider le prouveur,
+    ou utiliser un autre prouveur plus approprié,
+    ou utiliser un prouveur interactif (comme \coq) \\
     \hline
-    \circled{4} & Unknown
-    & strengthen the $\mbox{\lstinline'typically'}$ clause or coverage criterion (e.g. $k$-path),
-    or increase the timeout limit for testing \\
+    \circled{4} & Non-classifié
+    & renforcer la clause $\mbox{\lstinline'typically'}$
+    ou le critère de couverture (par exemple $k$-path),
+    ou augmenter le temps alloué à la génération de tests ({\em timeout}) \\
   \end{tabular}
-  \caption{Suggestions of actions for different categories of proof failures}
+  \caption{Suggestions d'actions pour chaque catégorie d'échec de preuve}
   \label{fig:suggestions}
 \end{figure*}
 
 
-From the possible outcomes of the method illustrated in
-Fig.~\ref{fig:method-short} we are able to suggest to the verification engineer 
-the most suitable actions (displayed in Fig.~\ref{fig:suggestions})
-to help her with the verification task.
-A \emph{non-compliance} of the code w.r.t. annotation $a$  means that 
-there is an inconsistency between the precondition, the annotation $a$ and the code 
-of the path $\pi_V$  leading to $a$.
-Thanks to the counter-example, 
-the values of variables at different program points along $\pi_V$ 
-can be either traced or explored in a debugger \cite{Muller/FM11}. 
-In \framac, the execution on $V$ can be 
-conveniently explored using \Value or \pathcrawler.
-This helps the verification engineer to understand the issue.
-Indeed, if an \NCCE is generated, there is no need to
-try automatic proof or look for a too weak subcontract --- it will not help.
-The reason of the proof failure is necessarily related 
-to a non-compliance between 
-the code and annotations
-traversed by the path $\pi_V$.
+À partir des différents résultats possibles de la méthode présentée en
+figure~\ref{fig:method-short}, nous pouvons suggérer à l'ingénieur validation
+quelles sont les actions à effectuer une fois que l'échec de preuve a été
+diagnostiqué, afin de l'aider dans son processus de spécification et de
+vérification déductive.
+Nos suggestions sont résumées en figure~\ref{fig:suggestions}.
 
-A \emph{weakness} of a set of subcontracts $S$ means that at least one of the contracts of $C$
-has to be strengthened. By Definitions \ref{def:GSW} and \ref{def:SSW}, the non-compliance is excluded here, 
-that is, the execution of $P^{\NC}$ on  $V$  respects the annotation $a$, thus
-the suggested action is to strengthen the subcontract(s).
-In the case of single subcontract weakness, $S$ is a singleton so the suggestion
-is very precise and helpful to the user.
-Again, trying interactive proof or additional assertions or lemmas 
-will be useless here since the property can obviously not be proved 
-because of the counter-example.
-For a \emph{prover incapacity,} the verification engineer
-may write lemmas or assertions, add hypotheses that may help the theorem prover to
-succeed or try another theorem prover.
-She also may want to use a proof assistant like \textsc{Coq}, so that she does
-not suffer from the limitations of the theorem provers, but 
-this task can be more complex and time-consuming.
-Finally, when the verdict is \emph{unknown,} test generation for \NCD and/or \SWD times out, 
-so the verification engineer may strengthen the
-precondition for testing to reduce the input domain, or extend the timeout to
-give \stady more time to conclude.
+Une \emph{non-conformité} du code vis-à-vis d'une annotation $a$ signifie qu'il
+y a une inconsistance entre la précondition, l'annotation $a$ et le code du
+chemin de programme $\pi_V$ menant à $a$.
+Grâce au contre-exemple $V$, les valeurs des variabes à différents points du
+programme suivant le chemin $\pi_V$ peuvent être tracées ou observées à l'aide
+d'un débugger \cite{Muller/FM11}.
+Dans \framac, l'exécution de $V$ peut être observée à l'aide de \Value ou
+\pathcrawler.
+Ceci aide l'ingénieur validation dans sa compréhension de l'erreur.
+En effet, si un \NCCE est généré, l'ingénieur n'a pas besoin de tenter une
+preuve déductive ou de chercher une faiblesse de contrat dans la spécification,
+puisque la raison de l'échec de la preuve est nécessairement liée à une
+non-conformité entre le code et les annotations traversées par le chemin
+d'exécution $\pi_V$.
+
+Une \emph{faiblesse} d'un ensemble de sous-contrats $S$ signifie qu'au moins un
+des sous-contrats de $C$ doit être renforcé.
+Par les définitions~\ref{def:GSW} et~\ref{def:SSW}, la non-conformité est
+exclue, ce qui veut dire que l'exécution de $P^{\NC}$ sur $V$ respecte
+l'annotation $a$, notre suggestion pour l'ingénieur validation est donc de
+renforcer les sous-contrats de $S$.
+Dans le cas d'une faiblesse d'un seul sous-contrat, $S$ est un singleton donc
+la suggestion est précise et aide l'utilisateur.
+Ici encore, essayer une preuve interactive ou ajouter des assertions ou des
+lemmes supplémentaires sera inutile puisque le contre-exemple témoigne de
+l'impossibilité de prouver la propriété.
+
+Pour une \emph{incapacité de prouveur}, l'ingénieur validation peut écrire des
+lemmes ou des assertions, ou ajouter des hypothèses qui peuvent aider le
+prouveur.
+Il peut aussi essayer un autre prouveur automatique plus approprié au programme
+à vérifier, ou encore, utiliser un assistant de preuve comme \coq afin de ne
+pas souffrir des limitations des prouveurs automatiques, mais cette tâche peut
+s'avérer plus longue et complexe.
+
+Enfin, lorsque le verdict de la méthode est \emph{non classifié}, la génération
+de tests pour \NCD et/ou \SWD ne parvient pas à conclure dans le temps imparti
+(le {\em timeout} a été atteint), nous suggérons donc à l'ingénieur validation
+de renforcer la précondition du programme pour le test afin de réduire le
+domaine des entrées, ou de repousser le {\em timeout} afin de donner à la
+méthode plus de temps pour conclure.
 
 
 \section*{Conclusion du chapitre}
@@ -349,5 +381,7 @@ de preuve.
 Nous avons présenté notre méthode de diagnostic des échecs de
 preuve utilisant les techniques de détection présentées dans les
 chapitres~\ref{sec:ncd} et~\ref{sec:swd}.
-Enfin, nous avons suggéré des actions à effectuer dans chaque situation après
-qu'un échec de preuve ait été diagnostiqué.
+Enfin, nous avons suggéré les actions qu'un ingénieur validation peut effectuer
+après qu'un échec de preuve ait été diagnostiqué, dans chaque situation, afin
+d'asister l'ingénieur validation dans son processus de spécification et de
+vérification déductive d'un programme.

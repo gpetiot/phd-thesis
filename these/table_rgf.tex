@@ -140,14 +140,14 @@
     % example/rgf_0.c
     0 & -- & -- & \ok & -- & -- & Preuve \\ \hline
     % example/rgf_1.c
-    1 & 24 & (supprimée) & \textsf{?} (l.39, 41, 26) & \nc & --
+    1 & 29 & (supprimée) & \textsf{?} (l.45, 47, 31) & \nc & --
     & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$}
     est un \NCCE \\ \hline
 
     % example/rgf_2.c
-    2 & 34 & \lstinline[style=c]'loop assigns i,a[1..n-1];'
-    & \multirow{3}{*}{\textsf{?} (l.39, 41, 42, 26--30)}
-    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} pour l.33--34}
+    2 & 40 & \lstinline[style=c]'loop assigns i,a[1..n-1];'
+    & \multirow{3}{*}{\textsf{?} (l.45, 47, 48--50, 31, 32--36)}
+    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} pour l.39--40}
     & $V$ = {\scriptsize{$\langle$}}
     $\mbox{\lstinline'n=2;'} \textbf{\mbox{\lstinline'a[0]=0'}}
     \mbox{\lstinline';a[1]=0;'}$ \\
@@ -158,12 +158,12 @@
     {\scriptsize{$\rangle$}} est un \SWCE \\ \hline
 
     % example/rgf_3.c
-    3 & 4--5 & (supprimée) & \multirow{2}{*}{\textsf{?} (l.39)}
+    3 & 6--10 & (supprimée) & \multirow{2}{*}{\textsf{?} (l.45)}
     & \multirow{2}{*}{\myno} & \multirow{2}{*}{\myno}
     & \multirow{2}{*}{Incapacité de prouveur} \\
-    & 22 & \lstinline[style=c]'requires n>0 && n<21;' &&&& \\ \hline
+    & 27 & \lstinline[style=c]'requires n>0 && n<21;' &&&& \\ \hline
     % example/rgf_4.c
-    4 & 4--5 & (supprimée) & \textsf{?} (l.39) & \textsf{?} & \textsf{?}
+    4 & 6--10 & (supprimée) & \textsf{?} (l.45) & \textsf{?} & \textsf{?}
     & Non classifié \\
   \end{tabular}
 
