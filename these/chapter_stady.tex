@@ -2,12 +2,161 @@
 \chapter{Greffon Statique-Dynamique (StaDy)}
 \label{sec:stady}
 
-%\chapterintro
-
-\section{Implémentation}
+\chapterintro
 
 TODO
 
+
+\section{Implémentation}
+
+
+TODO
+
+
 \section{Expérimentations}
+
+
+\begin{figure}[tb]\scriptsize
+  %\vspace{-2mm}
+  \begin{center}
+    \begin{tabular}{lrr}
+      \hline
+      example & time (s.) & \# paths \\ \hline
+      array-unsafe & 1.299 & 9 \\ \hline
+      count-up-down-unsafe & 1.285 & 3 \\ \hline
+      eureka-01-unsafe & 1.355 & 48 \\ \hline
+      for-bounded-loop1-unsafe & 1.320 & 11 \\ \hline
+      insertion-sort-unsafe & 16.530 & 730 \\ \hline
+      invert-string-unsafe & 1.359 & 48 \\ \hline
+      linear-search-unsafe & 3.624 & 2766 \\ \hline
+      matrix-unsafe & 1.367 & 22 \\ \hline
+      nec20-unsafe & 1.463 & 1035 \\ \hline
+      string-unsafe & 1.362 & 48 \\ \hline
+      sum01-bug02-base-unsafe & 1.335 & 26 \\ \hline
+      sum01-bug02-unsafe & 1.327 & 36 \\ \hline
+      sum01-unsafe & 1.312 & 56 \\ \hline
+      sum03-unsafe & 1.291 & 46 \\ \hline
+      sum04-unsafe & 1.310 & 22 \\ \hline
+      sum-array-unsafe & 1.358 & 14 \\ \hline
+      %% trex01-unsafe & 1.561 \\ \hline
+      trex03-unsafe & 1.358 & 21 \\ \hline
+      sendmail-unsafe & 1.396 & 77 \\ \hline
+      vogal-unsafe & 1.349 & 341 \\ \hline
+    \end{tabular}
+  \end{center}
+  \vspace{-3mm}
+  \caption{Experiments with \textsc{StaDy}: Bug detection}    
+  \label{fig:scam-experiments1}
+  \vspace{-3mm}
+\end{figure}
+
+\begin{figure}[tb]\scriptsize
+  %\vspace{-2mm}
+  \begin{center}
+    \begin{tabular}{lrrrr}
+      \hline
+      example & mutants & $\lnot$ equiv. & killed & success rate \\ \hline
+      merge-sort & 96  & 92 & 88 & 95.65\% \\ \hline
+      merge-arrays & 68 & 63 & 59 & 93.65\% \\ \hline
+      quick-sort & 130 & 130 & 130 & 100\% \\ \hline
+      binary-search & 40 & 40 & 39 & 97.5\% \\ \hline
+      bubble-sort & 52 & 49 & 42 & 85.71\% \\ \hline
+      insertion-sort & 39 & 37 & 36 & 97.3\% \\ \hline
+      array-safe & 18 & 16 & 15 & 93.75\% \\ \hline
+      bubble-sort-safe & 64 & 58 & 55 & 94.83\% \\ \hline
+      count-up-down-safe & 14 & 13 & 13 & 100\% \\ \hline
+      eureka-01-safe & 60 & 60 & 60 & 100\% \\ \hline
+      eureka-05-safe & 36 & 36 & 36 & 100\% \\ \hline
+      insertion-sort-safe & 43 & 41 & 40 & 97.56\% \\ \hline
+      invert-string-safe & 47 & 47 & 47 & 100\% \\ \hline
+      linear-search-safe & 19 & 17 & 16 & 94.12\% \\ \hline
+      matrix-safe & 30 & 27 & 25 & 92.59\% \\ \hline
+      nc40-safe & 20 & 20 & 20 & 100\% \\ \hline
+      nec40-safe & 20 & 20 & 20 & 100\% \\ \hline
+      string-safe & 65 & 65 & 65 & 100\% \\ \hline
+      sum01-safe & 14 & 14 & 13 & 92.86\% \\ \hline
+      sum02-safe & 14 & 14 & 11 & 78.57\% \\ \hline
+      sum03-safe & 10 & 10 & 10 & 100\% \\ \hline
+      sum04-safe & 14 & 14 & 10 & 71.43\% \\ \hline
+      sum-array-safe & 17 & 17 & 15 & 88.24\% \\ \hline
+      trex03-safe & 56 & 56 & 56 & 100\% \\ \hline
+      sendmail-safe & 31 & 31 & 31 & 100\% \\ \hline
+      vogal-safe & 71 & 68 & 67 & 98.53\% \\ \hline
+      \textbf{Total} & 1088 & 1054 & 1019 & \textbf{96.68\%} \\ \hline
+    \end{tabular}
+  \end{center}
+  \vspace{-3mm}
+  \caption{Experiments with \textsc{StaDy}: Mutation testing}
+  \label{fig:scam-experiments2}
+  \vspace{-3mm}
+\end{figure}
+
+The current implementation of  
+\textsc{StaDy} supports a significant subset of \eacsl including
+assertions, pre- and postconditions, loop invaliants and variants,
+quantifications, logic functions, integral and pointer types, and
+basic pointer operations. Pointer validity is currenty supported
+only for input arrays and pointers.
+\textsc{StaDy} currently  does not support 
+\lstinline{assigns} clauses, \lstinline{\at} terms, 
+real numbers, as well as advanced memory-related constructs
+(e.g. \lstinline{\offset}), complex pointer
+arithmetics such as \lstinline'p1-p2' or \lstinline'*(p-i)' and dynamic memory allocation  
+due to the limitations of the underlying test generator. 
+%Annotations involving reals
+%($\mathbb{R}$) are not supported either.
+
+To evaluate the efficiency of \textsc{StaDy} 
+%to find counter-examples 
+in a combined verification approach
+(cf Sec. \ref{sec:motivations}),
+we applied it on safe and unsafe programs from the TACAS 2014
+Software Verification Competition%
+\footnote{\url{https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/loops}}
+%(selected from the subdirectory {\em loops})
+%to evaluate its efficiency. 
+First, we 
+%tracked down bugs in faulty programs.
+%We 
+executed \textsc{StaDy} on 20 faulty programs that  handle arrays
+with loops. The properties to invalidate originally 
+expressed as C assertions, were manually rewritten in \textsc{E-ACSL}.
+Adequate \textsc{E-ACSL} preconditions were also added. The programs
+containing infinite loops and reachability properties to invalidate are not
+handled by  \textsc{StaDy} due to the necessity to execute the program in
+\textsc{Path\-Crawler}.
+\textsc{Sta\-Dy}
+ detected failures of all faulty properties in each considered program. 
+Fig.~\ref{fig:scam-experiments1} illustrates the time taken to
+invalidate the properties including all the steps of \textsc{Sta\-Dy}:
+instrumentation from the \textsc{E-ACSL} specifications and test generation in
+\textsc{PathCrawler}, and the number of explored paths.
+
+Secondly, we used  mutation testing to evaluate the ability of \textsc{StaDy} to
+find bugs in unsafe programs. % automatically generated from safe programs.
+We selected 20 safe programs of the same benchmark, and 6
+additional safe programs from our own benchmarks. All of them were annotated in
+\textsc{E-ACSL}. They contain preconditions, postconditions, assertions,
+memory-related properties, loop variants and invariants. We used mutation testing
+on these safe programs to generate modified programs (\emph{mutants}) and see if
+\textsc{StaDy} is able to \emph{kill} 
+(i.e. to find errors in) these mutants. The
+mutations performed on the source code mimic usual programming errors. They
+include modifications of numerical and/or pointer arithmetic operators,
+comparison operators, condition negation and logical operators ({\em and} and
+{\em or}). Fig.~\ref{fig:scam-experiments2} gives the 
+numbers of all and erroneous mutants, as well as 
+the number and proportion of erroneous mutants killed by \textsc{StaDy}. 
+\textsc{StaDy} showed 
+an average success rate of 96.68\%, going up to 100\% on many examples.
+The missing percents are mostly due to 
+%the incompleteness of the specifications
+%in some programs, explained by 
+a currently incomplete support of \textsc{E-ACSL} features
+by the underlying test generation tool.
+
+
+\section*{Conclusion du chapitre}
+
 
 TODO
