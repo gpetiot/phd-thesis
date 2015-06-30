@@ -1,5 +1,5 @@
 
-\chapter{Modèle mémoire E-ACSL}
+\chapter{Bibliothèque de monitoring de la mémoire d'E-ACSL2C}
 \label{sec:eacsl}
 
 \chapterintro
@@ -17,56 +17,54 @@ Si aucune annotation n'est violée, le comportement
 du nouveau programme est exactement le même que celui du programme d'origine.
 Ce greffon utilise notre bibliothèque afin de vérifier à l'exécution les
 annotations \eacsl portant sur le modèle mémoire.
+Le greffon \eacsltoc n'étant lui-même pas le fruit de nos travaux, il ne sera
+pas présenté dans ce chapitre.
 
 Nous présentons la bibliothèque en partie~\ref{sec:eacsl-impl} et les résultats
 de nos expérimentations en partie~\ref{sec:eacsl-exp}.
 
 
-\section{Implémentation}
+\section{Architecture de la bibliothèque de monitoring de la mémoire}
 \label{sec:eacsl-impl}
 
-Dans cette partie nous présentons l'architecture générale de la bibliothèque
-ainsi que l'implémentation de quelques fonctions.
-
-
-\subsection{Architecture de la bibliothèque}
-
-
-\begin{landscape}
-  \begin{figure}[tb]
-    \includegraphics{figures/mmodel_architecture.pdf}
-    \label{fig:mmodel-architecture}
-    \caption{Architecture de la bibliothèque de modèle mémoire d'\eacsl}
-  \end{figure}
-\end{landscape}
 
 La figure~\ref{fig:mmodel-architecture} présente l'architecture générale de la
-bibliothèque au moyen du graphe de dépendances des fonctions C.
+bibliothèque au moyen du graphe de dépendances des fonctions C les plus
+importantes.
 Une flèche $A \rightarrow B$ signifie que la fonction $A$ appelle la fonction
 $B$.
-Les fonctions \lstinline'valid', \lstinline'base_addr', \lstinline'valid_read',
-\lstinline'initialized', \lstinline'block_length', \lstinline'out_of_bound',
-\lstinline'initialize' et \lstinline'offset' ont été regroupées afin de ne pas
-surcharger le graphe.
-Chacune de ces huit fonctions ne dépend que de la fonction \lstinline'get_cont'.
-Les fonctions dont le cadre est bleu doivent être appeler en lieu et place des
-fonctions de la bibliothèque standard associées (\lstinline'malloc', etc.).
-Les fonctions dont le cadre est rouge correspondent à des annotations \eacsl et
-retournent la valeur du terme ou du prédicat \eacsl correspondant.
-Ces fonctions ne modifient pas le contenu du modèle mémoire.
-Les fonctions dont le cadre est vert servent à modifier le contenu du modèle
-mémoire (ajout ou suppression d'élément, initialisation, etc.).
-Les fonctions dont le cadre est jaune correspondent à l'implémentation de la
-structure de données gardant les informations à propos des blocs alloués.
+
+Les fonctions du niveau \circled{1} correspondent à l'implémentation de la
+structure de données {\em store} (présentée au chapitre~\ref{sec:runtime})
+gardant les informations à propos des blocs alloués.
 Plusieurs implémentations sont fournies pour ces fonctions, correspondant à
 différentes structures de données génériques : listes chaînées, arbres binaires
 de recherche, Splay trees et Patricia tries.
-Les fonctions dont le cadre est bleu, vert ou rouge sont implémentées de manière
-indépendante à la structure de données de la couche jaune.
+Les fonctions du niveau \circled{2} servent à modifier le contenu du {\em store}
+(ajout ou suppression d'élément, initialisation des éléments, etc.).
+Les fonctions du niveau \circled{3} doivent être appelées en lieu et place des
+fonctions de la bibliothèque standard associées (\lstinline'malloc', etc.).
+Les fonctions du niveau \circled{4} permettent de calculer la valeur des
+annotations \eacsl, elles retournent la valeur du terme ou du prédicat \eacsl
+correspondant.
+Ces fonctions ne modifient pas le contenu du {\em store}.
 
+Les fonctions des niveaux \circled{2}, \circled{3} et \circled{4} sont
+implémentées de manière indépendante à l'implémentation du {\em store} (niveau
+\circled{1}).
 Cette architecture facilite la conception des algorithmes, ainsi que la
-comparaison d'efficacité des différentes implémentations de la structure de
-données, effectuée en partie~\ref{sec:eacsl-exp}.
+comparaison d'efficacité des différentes implémentations du {\em store},
+effectuée en partie~\ref{sec:eacsl-exp}.
+
+
+\begin{landscape}
+  \begin{figure}
+    \includegraphics[scale=.55]{figures/mmodel_architecture.pdf}
+    \vspace{-2.5cm}
+    \caption{Architecture de la bibliothèque de monitoring de la mémoire
+      \label{fig:mmodel-architecture}}
+  \end{figure}
+\end{landscape}
 
 
 \section{Expérimentations}
