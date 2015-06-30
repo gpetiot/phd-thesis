@@ -56,7 +56,7 @@ chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
 		listings/findSubstr.c
 chapter_method_DEPS=table_rgf.pdf
 chapter_eacsl_DEPS=figures/mmodel_architecture.pdf
-chapter_stady_DEPS=
+chapter_stady_DEPS=full_exp_latex_IEEE.csv
 chapter_existant_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/mem_annots.c \
@@ -100,6 +100,7 @@ main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 		commands.tex \
 		$(CHAPTERS_TEX) \
 		table_rgf.pdf \
+		full_exp_latex_IEEE.csv \
 		header.tex
 	pdflatex $<
 	bibtex main

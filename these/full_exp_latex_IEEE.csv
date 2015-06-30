@@ -1,0 +1,65 @@
+Case study&\#mut&\#\ok&$t^\text{\ok}$&$t^\text{?}$&\#\ko&\%&$t^\text{\ko}$&$t^\text{?}$&\#\ko&\%&$t^\text{\ko}$&$t^\text{?}$&\%&$t$&\#?
+
+\\ \hline \multirow{2}{*}{binary\_search}&\multirow{2}{*}{99}&\multirow{2}{*}{5}&$\leqslant 3.4$&$\leqslant 50.1$&\multirow{2}{*}{86}&\multirow{2}{*}{91.5}&$\leqslant 9.4$&$\leqslant 2.7$&\multirow{2}{*}{8}&\multirow{2}{*}{100.0}&$\leqslant 5.9$&---&\multirow{2}{*}{100.0}&$\leqslant 9.4$&\multirow{2}{*}{0}
+\\ &&&$\approx 3.3$&$\approx 19.9$&&&$\approx 2.6$&$\approx 2.6$&&&$\approx 3.7$&---&&$\approx 2.9$&
+
+\\ \hline \multirow{2}{*}{binary\_search2}&\multirow{2}{*}{99}&\multirow{2}{*}{5}&$\leqslant 3.3$&$\leqslant 50.4$&\multirow{2}{*}{86}&\multirow{2}{*}{91.5}&$\leqslant 5.4$&$\leqslant 2.6$&\multirow{2}{*}{8}&\multirow{2}{*}{100.0}&$\leqslant 6.4$&---&\multirow{2}{*}{100.0}&$\leqslant 9.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 3.3$&$\approx 19.9$&&&$\approx 2.5$&$\approx 2.5$&&&$\approx 3.9$&---&&$\approx 2.8$&
+
+\\ \hline \multirow{2}{*}{lower\_bound}&\multirow{2}{*}{52}&\multirow{2}{*}{1}&$\leqslant 2.5$&$\leqslant 49.4$&\multirow{2}{*}{46}&\multirow{2}{*}{90.2}&$\leqslant 5.1$&$\leqslant 2.4$&\multirow{2}{*}{5}&\multirow{2}{*}{100.0}&$\leqslant 2.3$&---&\multirow{2}{*}{100.0}&$\leqslant 5.1$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.4$&$\approx 26.2$&&&$\approx 2.3$&$\approx 2.3$&&&$\approx 2.2$&---&&$\approx 2.5$&
+
+\\ \hline \multirow{2}{*}{upper\_bound}&\multirow{2}{*}{52}&\multirow{2}{*}{1}&$\leqslant 2.6$&$\leqslant 49.8$&\multirow{2}{*}{46}&\multirow{2}{*}{90.2}&$\leqslant 5.2$&$\leqslant 2.4$&\multirow{2}{*}{5}&\multirow{2}{*}{100.0}&$\leqslant 2.3$&---&\multirow{2}{*}{100.0}&$\leqslant 5.2$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.5$&$\approx 26.7$&&&$\approx 2.2$&$\approx 2.3$&&&$\approx 2.2$&---&&$\approx 2.5$&
+
+\\ \hline \multirow{2}{*}{max\_element}&\multirow{2}{*}{52}&\multirow{2}{*}{5}&$\leqslant 3.6$&$\leqslant 20.5$&\multirow{2}{*}{41}&\multirow{2}{*}{87.2}&$\leqslant 5.3$&$\leqslant 2.5$&\multirow{2}{*}{3}&\multirow{2}{*}{50.0}&$\leqslant 2.6$&$\leqslant 4.8$&\multirow{2}{*}{93.6}&$\leqslant 7.3$&\multirow{2}{*}{3}
+\\ &&&$\approx 2.9$&$\approx 9.1$&&&$\approx 2.8$&$\approx 2.4$&&&$\approx 2.4$&$\approx 4.7$&&$\approx 3.2$&
+
+\\ \hline \multirow{2}{*}{max\_element2}&\multirow{2}{*}{52}&\multirow{2}{*}{3}&$\leqslant 3.4$&$\leqslant 20.1$&\multirow{2}{*}{43}&\multirow{2}{*}{87.8}&$\leqslant 5.7$&$\leqslant 2.6$&\multirow{2}{*}{3}&\multirow{2}{*}{50.0}&$\leqslant 2.5$&$\leqslant 5.3$&\multirow{2}{*}{93.9}&$\leqslant 7.8$&\multirow{2}{*}{3}
+\\ &&&$\approx 2.9$&$\approx 8.9$&&&$\approx 2.5$&$\approx 2.5$&&&$\approx 2.4$&$\approx 5.0$&&$\approx 3.0$&
+
+\\ \hline \multirow{2}{*}{max\_seq}&\multirow{2}{*}{125}&\multirow{2}{*}{26}&$\leqslant 4.4$&$\leqslant 22.1$&\multirow{2}{*}{87}&\multirow{2}{*}{87.9}&$\leqslant 6.3$&$\leqslant 3.7$&\multirow{2}{*}{0}&\multirow{2}{*}{0.0}&---&$\leqslant 6.4$&\multirow{2}{*}{87.9}&$\leqslant 9.5$&\multirow{2}{*}{12}
+\\ &&&$\approx 3.9$&$\approx 9.4$&&&$\approx 3.0$&$\approx 3.1$&&&---&$\approx 6.1$&&$\approx 3.8$&
+
+\\ \hline \multirow{2}{*}{min\_element}&\multirow{2}{*}{52}&\multirow{2}{*}{3}&$\leqslant 3.4$&$\leqslant 16.3$&\multirow{2}{*}{43}&\multirow{2}{*}{87.8}&$\leqslant 5.3$&$\leqslant 2.9$&\multirow{2}{*}{3}&\multirow{2}{*}{50.0}&$\leqslant 2.8$&$\leqslant 5.8$&\multirow{2}{*}{93.9}&$\leqslant 8.4$&\multirow{2}{*}{3}
+\\ &&&$\approx 3.0$&$\approx 8.5$&&&$\approx 2.6$&$\approx 2.6$&&&$\approx 2.5$&$\approx 5.3$&&$\approx 3.1$&
+
+\\ \hline \multirow{2}{*}{copy}&\multirow{2}{*}{23}&\multirow{2}{*}{2}&$\leqslant 2.5$&$\leqslant 40.9$&\multirow{2}{*}{20}&\multirow{2}{*}{95.2}&$\leqslant 2.5$&$\leqslant 2.0$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 2.0$&---&\multirow{2}{*}{100.0}&$\leqslant 4.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.3$&$\approx 12.6$&&&$\approx 2.1$&$\approx 2.0$&&&$\approx 2.0$&---&&$\approx 2.2$&
+
+\\ \hline \multirow{2}{*}{fill}&\multirow{2}{*}{23}&\multirow{2}{*}{2}&$\leqslant 1.9$&$\leqslant 8.5$&\multirow{2}{*}{20}&\multirow{2}{*}{95.2}&$\leqslant 1.9$&$\leqslant 2.5$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 1.9$&---&\multirow{2}{*}{100.0}&$\leqslant 4.4$&\multirow{2}{*}{0}
+\\ &&&$\approx 1.9$&$\approx 4.3$&&&$\approx 1.9$&$\approx 2.5$&&&$\approx 1.9$&---&&$\approx 2.0$&
+
+\\ \hline \multirow{2}{*}{iota}&\multirow{2}{*}{29}&\multirow{2}{*}{2}&$\leqslant 2.2$&$\leqslant 12.9$&\multirow{2}{*}{25}&\multirow{2}{*}{92.6}&$\leqslant 5.0$&$\leqslant 2.1$&\multirow{2}{*}{2}&\multirow{2}{*}{100.0}&$\leqslant 2.1$&---&\multirow{2}{*}{100.0}&$\leqslant 5.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.1$&$\approx 7.8$&&&$\approx 2.4$&$\approx 2.0$&&&$\approx 2.0$&---&&$\approx 2.5$&
+
+\\ \hline \multirow{2}{*}{replace\_copy}&\multirow{2}{*}{25}&\multirow{2}{*}{2}&$\leqslant 3.2$&$\leqslant 61.3$&\multirow{2}{*}{21}&\multirow{2}{*}{91.3}&$\leqslant 5.5$&$\leqslant 2.8$&\multirow{2}{*}{2}&\multirow{2}{*}{100.0}&$\leqslant 2.5$&---&\multirow{2}{*}{100.0}&$\leqslant 5.5$&\multirow{2}{*}{0}
+\\ &&&$\approx 3.2$&$\approx 16.4$&&&$\approx 3.2$&$\approx 2.8$&&&$\approx 2.4$&---&&$\approx 3.4$&
+
+\\ \hline \multirow{2}{*}{reverse\_copy}&\multirow{2}{*}{27}&\multirow{2}{*}{2}&$\leqslant 2.0$&$\leqslant 41.2$&\multirow{2}{*}{24}&\multirow{2}{*}{96.0}&$\leqslant 2.1$&$\leqslant 2.0$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 1.9$&---&\multirow{2}{*}{100.0}&$\leqslant 4.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 1.9$&$\approx 14.5$&&&$\approx 2.1$&$\approx 2.0$&&&$\approx 1.9$&---&&$\approx 2.1$&
+
+\\ \hline \multirow{2}{*}{adjacent\_find}&\multirow{2}{*}{32}&\multirow{2}{*}{4}&$\leqslant 2.8$&$\leqslant 57.4$&\multirow{2}{*}{26}&\multirow{2}{*}{92.9}&$\leqslant 5.3$&$\leqslant 8.3$&\multirow{2}{*}{1}&\multirow{2}{*}{50.0}&$\leqslant 2.4$&$\leqslant 11.6$&\multirow{2}{*}{96.4}&$\leqslant 19.9$&\multirow{2}{*}{1}
+\\ &&&$\approx 2.5$&$\approx 21.8$&&&$\approx 2.4$&$\approx 5.2$&&&$\approx 2.4$&$\approx 11.6$&&$\approx 3.1$&
+
+\\ \hline \multirow{2}{*}{equal}&\multirow{2}{*}{25}&\multirow{2}{*}{2}&$\leqslant 2.7$&$\leqslant 15.6$&\multirow{2}{*}{22}&\multirow{2}{*}{95.7}&$\leqslant 5.1$&$\leqslant 2.1$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 2.1$&---&\multirow{2}{*}{100.0}&$\leqslant 5.1$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.3$&$\approx 9.9$&&&$\approx 2.4$&$\approx 2.1$&&&$\approx 2.1$&---&&$\approx 2.5$&
+
+\\ \hline \multirow{2}{*}{equal2}&\multirow{2}{*}{25}&\multirow{2}{*}{2}&$\leqslant 1.5$&$\leqslant 15.3$&\multirow{2}{*}{22}&\multirow{2}{*}{95.7}&$\leqslant 5.0$&$\leqslant 2.4$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 1.9$&---&\multirow{2}{*}{100.0}&$\leqslant 5.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 1.4$&$\approx 9.3$&&&$\approx 2.2$&$\approx 2.4$&&&$\approx 1.9$&---&&$\approx 2.3$&
+
+\\ \hline \multirow{2}{*}{equal3}&\multirow{2}{*}{60}&\multirow{2}{*}{7}&$\leqslant 2.7$&$\leqslant 15.3$&\multirow{2}{*}{51}&\multirow{2}{*}{96.2}&$\leqslant 3.4$&$\leqslant 2.8$&\multirow{2}{*}{0}&\multirow{2}{*}{0.0}&---&$\leqslant 5.5$&\multirow{2}{*}{96.2}&$\leqslant 8.3$&\multirow{2}{*}{2}
+\\ &&&$\approx 2.6$&$\approx 9.3$&&&$\approx 2.5$&$\approx 2.6$&&&---&$\approx 5.3$&&$\approx 2.7$&
+
+\\ \hline \multirow{2}{*}{find}&\multirow{2}{*}{25}&\multirow{2}{*}{2}&$\leqslant 2.4$&$\leqslant 20.6$&\multirow{2}{*}{22}&\multirow{2}{*}{95.7}&$\leqslant 5.0$&$\leqslant 2.0$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 2.1$&---&\multirow{2}{*}{100.0}&$\leqslant 5.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.4$&$\approx 8.8$&&&$\approx 2.3$&$\approx 2.0$&&&$\approx 2.1$&---&&$\approx 2.3$&
+
+\\ \hline \multirow{2}{*}{find2}&\multirow{2}{*}{26}&\multirow{2}{*}{2}&$\leqslant 2.9$&$\leqslant 15.6$&\multirow{2}{*}{23}&\multirow{2}{*}{95.8}&$\leqslant 5.0$&$\leqslant 2.4$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 2.1$&---&\multirow{2}{*}{100.0}&$\leqslant 5.0$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.4$&$\approx 8.2$&&&$\approx 2.2$&$\approx 2.4$&&&$\approx 2.1$&---&&$\approx 2.3$&
+
+\\ \hline \multirow{2}{*}{mismatch}&\multirow{2}{*}{25}&\multirow{2}{*}{2}&$\leqslant 2.2$&$\leqslant 15.0$&\multirow{2}{*}{22}&\multirow{2}{*}{95.7}&$\leqslant 5.2$&$\leqslant 2.3$&\multirow{2}{*}{1}&\multirow{2}{*}{100.0}&$\leqslant 2.2$&---&\multirow{2}{*}{100.0}&$\leqslant 5.2$&\multirow{2}{*}{0}
+\\ &&&$\approx 2.1$&$\approx 9.3$&&&$\approx 2.4$&$\approx 2.3$&&&$\approx 2.2$&---&&$\approx 2.5$&
+
+\\ \hline \textbf{Total}&928&80&&&776&91.5&&&48&66.7&&&97.2&&24
+\\ \hline \textbf{Max}&&&$\leqslant 4.4$&$\leqslant 61.3$&&&$\leqslant 9.4$&$\leqslant 8.3$&&&$\leqslant 6.4$&$\leqslant 11.6$&&$\leqslant 19.9$&
+\\ \hline \textbf{Mean}&&&$\approx 2.6$&$\approx 13.0$&&&$\approx 2.4$&$\approx 2.5$&&&$\approx 2.4$&$\approx 6.3$&&$\approx 2.7$&
