@@ -71,145 +71,49 @@ effectuée en partie~\ref{sec:eacsl-exp}.
 \label{sec:eacsl-exp}
 
 
-Pour évaluer notre solution, nous avons effectué plus de 300 exécutions sur
-plus de 30 programmes, obtenus à partir d'une dizaine d'exemples. Nous avons
-volontairement gardés des exemples plutôt courts (moins de 200 lignes de code)
-car ils ont dû être annotés en \acsl manuellement.
+Pour évaluer notre implémentation de la bibliothèque, nous avons effectué plus
+de 300 exécutions sur plus de 30 programmes, obtenus à partir d'une dizaine
+d'exemples.
+Nous avons volontairement gardés des exemples plutôt courts (moins de 200 lignes
+de code) car ils ont dû être annotés en \eacsl manuellement.
 
 Nous avons mesuré le temps d'exécution du programme d'origine et du code
 instrumenté par \eacsltoc avec différentes options, afin d'évaluer les
-performances des différentes implémentations et optimisations. Des indicateurs
-comme le nombre de variables, d'allocations mémoires, d'enregistrements et de
-requêtes a également été enregistré.
+performances des différentes implémentations du {\em store} et des différentes
+optimisations.
+Des indicateurs comme le nombre de variables, d'allocations mémoires,
+d'enregistrements et de requêtes a également été enregistré.
 
 
-
-\textbf{Implémentation du store :}\\
-Pour déterminer quelle implémentation du $store$ est la plus appropriée, nous
-avons comparé des implémentations utilisant : des Patricia tries, des listes
-chaînées, des arbres binaires de recherche non équilibrés et des Splay trees.
+\textbf{Implémentation du {\em store} :}\\
+Pour déterminer quelle implémentation du {\em store} est la plus appropriée,
+nous avons comparé des implémentations utilisant : des Patricia tries, des
+listes chaînées, des arbres binaires de recherche non équilibrés et des Splay
+trees.
 
 Notre implémentation utilisant les Patricia tries est en moyenne 2500 fois plus
 rapide que l'implémentation à base de listes chaînées, 200 fois plus rapide que
 celle utilisant les arbres binaires de recherche, et 27 fois plus rapide que
 celle se basant sur les Splay trees.
 
-La version utilisant les Splay trees offre
-des performances comparables (ou légèrement meilleures, jusqu'à 3 fois) sur les
-exemples contenant de fréquents accès mémoire consécutifs au même bloc dans le
-$store$. En revanche, sur des examples où les accès méoire consécutifs ne se
-font pas sur le même bloc (une multiplication de matrices dans notre exemple),
-les performances sont beaucoup moins bonnes (jusqu'à 500 fois). Ceci est dû à
-la nature des Splay treees : le dernier élément accédé est remonté à la racine
-de l'arbre.
+La version utilisant les Splay trees offre des performances comparables (ou
+légèrement meilleures, jusqu'à 3 fois) sur les exemples contenant de fréquents
+accès mémoire consécutifs au même bloc dans le {\em store}.
+En revanche, sur des exemples où les accès méoire consécutifs ne se font pas sur
+le même bloc (une multiplication de matrices dans notre exemple), les
+performances sont beaucoup moins bonnes (jusqu'à 500 fois).
+Ceci est dû à la nature des Splay treees : le dernier élément accédé est remonté
+à la racine de l'arbre.
 
 \textbf{Calcul du plus grand préfixe commun :} \\
-Nous avons comparé deux implémentations de ce calcul. La première utilise un
-parcours linéaire de l'adresse (bit-à-bit, de gauche à droite). La seconde
-est une recherche dichotomique du meilleur préfixe dans un tableau dont le
-contenu et les indices (indiquant le prochain élément à tester) sont
-pré-calculés. Cette seconde implémentation s'est révélée en moyenne 2.7 fois
-plus rapide que la première sur nos exemples.
-
-\textbf{Capacité de détection d'erreurs :} \\
-Nous avons utilisé le ``test mutationnel'' pour évaluer la capacité de détection
-d'erreurs en utilisant la vérification d'assertion à l'exécution avec
-\framac. Nous avons considéré 5 exemples annotés et généré leurs
-{\em mutants} (en appliquant une {\em mutation} sur leur code source) et leur
-avons appliqué la vérification à l'exécution. Les mutations incluent :
-modifications d'opérateur arithmétique numérique, modifications d'opérateur
-arithmétique sur les pointeurs, modifications d'opérateur de comparaison et
-modifications d'opérateur logique ($land$ et $lor$).
-L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
-utilisé pour produire les cas de test. Chaque mutant a été instrumenté par
-\eacsltoc et exécuté sur chaque cas de test pour vérifier que la
-spécification était satisfaite à l'exécution. Les programmes d'origine passent
-toutes les vérifications à l'exécution. Lorsqu'une violation d'une annotation a
-été reportée pour au moins un cas de testn le mutant est considéré comme étant
-{\em tué}. La Table~\ref{tab:mutation-exp} illustre les résultats. Exception
-faite des mutants équivalents (lorsque la mutation produit un programme
-équivalent au programme d'origine), tous les mutants erronés ont été tués.
-
-
-La Table~\ref{tab:mmodel-exp} contient les résultats des expérimentations
-comparant les différentes implémentations du $store$ et du calcul du plus grand
-préfixe commun, la Fig.~\ref{fig:mmodel-exp} représente graphiquement ces
-données. bS$_{10000}$ est une recherche binaire dans un tableaux de 10000
-éléments. iS$_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
-mM$_{n^2}$ est une multiplication de matrices $n \times n$. mI$_{n^2}$ contient
-des calculs matriciels (dont inversion et multiplication) sur des  matrices
-$n \times n$. qS$_n$ est un tri rapide sur un tableau de $n$ éléments.
-bbS$_{10000}$ est un tri à bulles sur un tableau à 10000 éléments. m$_{30000}$ est
-une fusion de deux listes chaînées de 10000 et 20000 éléments. Rbt$_{10000}$ est
-une insertion/suppression de 10000 éléments dans un arbre rouge et noir. mS$_n$
-est un tri fusion d'une liste chaînée de $n$ éléments. La ligne supplémentaire
-``+ RTE'' de chaque exemple correspond à une application préalable du greffon
-\rte qui génère des assertions qui sont vraies si le programme ne
-contient pas d'erreur à l'exécution.
-
-Les colonnes ont la signification suivante : $\danger$ contient le nombre
-d'alarmes du programme,  $\emptyset$ contient le temps d'exécution du programme
-original, bst correspond à l'implémentation par arbres binaires de recherche,
-mask est le nombre de fois qu'est effectué le calcul du plus grand préfixe
-commun, sb est le nombre d'insertion dans le $store$, Pt correspond à
-l'implémentation par Patricia tries, St correspond à l'implémentation par Splay
-trees. L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations
-sans (resp. avec) application d'une analyse statique $Dataflow$ permettant de
-n'instrumenter que ce qui est nécessaire (section 6 de \cite{\citeeacsltoc}).
-L'indice $_1$ (resp. $_2$)
-correspond à l'implémentation non optimisée (resp. optimisée) du calcul du
-plus grand préfixe commun pour l'implémentation utilisant les Patricia tries.
-Le temps d'analyse du programme avec \valgrind \cite{\citevalgrind} est
-indiqué dans la dernière colonne.
-
-Nous remarquons que le temps d'exécution de \valgrind n'est pas
-comparable avec celui de notre solution, cela s'explique simplement par le fait
-que celui-ci ne prend pas en compte la spécification \acsl, et se
-contente de vérifier des propriétés comme l'absence d'erreur de segmentation ou
-l'absence de fuite de mémoire. En revanche, notre démarche vise à supporter au
-maximum les annotations \acsl, ce qui nécessite un monitoring plus
-lourd.
-
-Nos expérimentations, présentées dans la Fig.~\ref{fig:mmodel-exp}, confirment
-nos hypothèses, à savoir :
-\begin{itemize}
-\item le Patricia trie est la structure de données la plus appropriée pour
-  l'implémentation du $store$;
-\item notre optimisation du calcul du plus grand préfixe commun par recherche
-  dichotomique et utilisation d'indices pré-calculés entraîne un vrai gain de
-  performance;
-\item l'utilisation d'une analyse statique visant à réduire l'instrumentation
-  du programme permet de réduire le temps d'exécution de manière efficace.
-\end{itemize}
-
-
-\begin{landscape}
-  \begin{table}[h]
-    \centering
-    \begin{footnotesize}
-    \input{table_eacsl_experiments.tex}
-    \end{footnotesize}
-    \label{tab:mmodel-exp}
-    \caption{Comparaison des différentes implémentations du $store$}
-  \end{table}
-\end{landscape}
-
-
-\begin{figure}[bt]
-  \begin{tikzpicture}
-    \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log]
-      \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
-      \loadedtable;
-      \foreach \i in {
-        list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
-        \addplot table [x=N, y=\i] {\loadedtable};
-      }
-      \legend{list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA}
-    \end{axis}
-  \end{tikzpicture}
-  \label{fig:mmodel-exp}
-  \caption{Comparaison des différentes implémentations du $store$}
-\end{figure}
+Nous avons comparé deux implémentations de ce calcul.
+La première utilise un parcours linéaire de l'adresse (bit-à-bit, de gauche à
+droite).
+La seconde est une recherche dichotomique du meilleur préfixe dans un tableau
+dont le contenu et les indices (indiquant le prochain élément à tester) sont
+pré-calculés.
+Cette seconde implémentation s'est révélée en moyenne 2.7 fois plus rapide que
+la première sur nos exemples.
 
 
 \begin{table}[tb]
@@ -227,11 +131,191 @@ nos hypothèses, à savoir :
     \hline
     merge & 5 & 92 & 5 & 87 & 100\% \\
   \end{tabular}
-  \label{tab:mutation-exp}
-  \caption{Capacité de détection d'erreurs}
+  \caption{Capacité de détection d'erreurs
+    \label{tab:mutation-exp}}
 \end{table}
+
+
+\textbf{Capacité de détection d'erreurs :} \\
+Nous avons utilisé le test mutationnel pour évaluer la capacité de détection
+d'erreurs en utilisant la vérification d'assertion à l'exécution avec
+\framac.
+Nous avons considéré 5 exemples annotés et généré leurs {\em mutants} (en
+appliquant une {\em mutation} sur leur code source) et leur avons appliqué la
+vérification à l'exécution.
+Les mutations incluent : modifications d'opérateur arithmétique numérique,
+modifications d'opérateur arithmétique sur les pointeurs, modifications
+d'opérateur de comparaison et modifications d'opérateur logique ($land$ et
+$lor$).
+L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
+utilisé pour produire les cas de test.
+Chaque mutant a été instrumenté par \eacsltoc et exécuté sur chaque cas de test
+pour vérifier que la spécification était satisfaite à l'exécution.
+Les programmes d'origine passent toutes les vérifications à l'exécution.
+Lorsqu'une violation d'une annotation a été reportée pour au moins un cas de
+testn le mutant est considéré comme étant {\em tué}.
+Le tableau~\ref{tab:mutation-exp} présente les résultats.
+Exception faite des mutants équivalents (lorsque la mutation produit un
+programme équivalent au programme d'origine), tous les mutants erronés ont été
+tués.
+
+
+\begin{figure}[bt]
+  \begin{tikzpicture}
+    \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log,
+        legend columns=2,xlabel={$N$},ylabel={temps (s.)}]
+      \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
+      \loadedtable;
+      \addplot [color=red,ultra thick] table[x=N,y=list] {\loadedtable}
+      node[above,pos=1] {$list^1$};
+
+      \addplot [color=red,dashed,ultra thick]
+      table[x=N,y=list-DFA] {\loadedtable}
+      node[below,left,pos=1,yshift=-.5cm] {$list^2$};
+
+      \addplot [color=blue,ultra thick] table[x=N,y=bst] {\loadedtable}
+      node[above,right,pos=1] {$bst^1$};
+
+      \addplot [color=blue,dashed,ultra thick]
+      table[x=N,y=bst-DFA] {\loadedtable}
+      node[above,right,pos=1] {$bst^2$};
+
+      \addplot [color=greenv,ultra thick] table[x=N,y=Pt] {\loadedtable}
+      node[above,left,pos=1,xshift=-1.4cm] {$Pt_1^1$};
+
+      \addplot [color=greenv,dashed,ultra thick]
+      table[x=N,y=Pt-DFA] {\loadedtable}
+      node[above,left,pos=1] {$Pt_2^1$};
+
+      \addplot [color=orange,ultra thick] table[x=N,y=Pt-opti] {\loadedtable}
+      node[below,right,pos=1,yshift=-.5cm,xshift=-1.2cm] {$Pt_1^2$};
+
+      \addplot [color=orange,dashed,ultra thick]
+      table[x=N,y=Pt-opti-DFA] {\loadedtable}
+      node[above,left,pos=1] {$Pt_2^2$};
+
+      \addplot [color=violet,ultra thick] table[x=N,y=St] {\loadedtable}
+      node[below,right,pos=1] {$St^1$};
+
+      \addplot [color=violet,dashed,ultra thick]
+      table[x=N,y=St-DFA] {\loadedtable}
+      node[below,right,pos=1,yshift=-.7cm] {$St^2$};
+
+      %% \foreach \i in {
+      %%   list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
+      %%   \addplot table [x=N, y=\i] {\loadedtable};
+      %% }
+
+      \legend{list$^1$,list$^2$,bst$^1$,bst$^2$,Pt$_1^1$,Pt$_2^1$,Pt$_1^2$,
+        Pt$_2^2$,St$^1$,St$^2$}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Comparaison du temps d'exécution des différentes implémentations du
+    {\em store} sur un tri fusion
+    \label{fig:mmodel-exp}}
+\end{figure}
+
+
+%% \begin{figure}[bt]
+%%   \begin{tikzpicture}
+%%     \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log]
+%%       \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
+%%       \loadedtable;
+%%       \foreach \i in {
+%%         list,bst,Pt,Pt-opti,St} {
+%%         \addplot table [x=N, y=\i] {\loadedtable};
+%%       }
+%%       \legend{list,bst,Pt$_1$,Pt$_2$,St}
+%%     \end{axis}
+%%   \end{tikzpicture}
+%%   \caption{Comparaison des différentes implémentations du {\em store}
+%%     \label{fig:mmodel-exp-2}}
+%% \end{figure}
+
+
+Le tableau~\ref{tab:mmodel-exp} présente les résultats des expérimentations
+comparant les différentes implémentations du {\em store} et du calcul du plus
+grand préfixe commun.
+$bS_{10000}$ est une recherche binaire dans un tableaux de 10000 éléments.
+$iS_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
+$mM_{n^2}$ est une multiplication de matrices $n \times n$. mI$_{n^2}$ contient
+des calculs matriciels (dont inversion et multiplication) sur des  matrices
+$n \times n$.
+$qS_n$ est un tri rapide sur un tableau de $n$ éléments.
+$bbS_{10000}$ est un tri à bulles sur un tableau à 10000 éléments.
+$m_{30000}$ est une fusion de deux listes chaînées de 10000 et 20000 éléments.
+$Rbt_{10000}$ est une insertion/suppression de 10000 éléments dans un arbre rouge
+et noir.
+$mS_n$ est un tri fusion d'une liste chaînée de $n$ éléments.
+La ligne supplémentaire ``+ RTE'' de chaque exemple correspond à une application
+préalable du greffon \rte qui génère des assertions qui sont vraies si le
+programme ne contient pas d'erreur à l'exécution.
+
+Les colonnes ont la signification suivante : $\danger$ contient le nombre
+d'alarmes du programme,  $\emptyset$ contient le temps d'exécution du programme
+original, $bst$ correspond à l'implémentation par arbres binaires de recherche,
+$mask$ est le nombre de fois où est calculé le plus grand préfixe commun, $sb$
+est le nombre d'insertion dans le {\em store}, $Pt$ correspond à
+l'implémentation par Patricia tries, $St$ correspond à l'implémentation par
+Splay trees.
+L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations sans
+(respectivement avec) application d'une analyse statique permettant de
+n'instrumenter que ce qui est nécessaire (section 6 de \cite{\citeeacsltoc}).
+Cette analyse n'étant pas le fruit de nos travaux, nous ne la présentons pas
+ici.
+L'indice $_1$ (resp. $_2$) correspond à l'implémentation non optimisée
+(respectivement optimisée) du calcul du plus grand préfixe commun pour
+l'implémentation utilisant les Patricia tries.
+Le temps d'analyse du programme avec le debugger \valgrind \cite{\citevalgrind}
+est indiqué dans la dernière colonne.
+Le temps d'exécution des colonnes $\emptyset$, $list^1$, $list^2$, $bst^1$,
+$bst^2$, $Pt_1^1$, $Pt_2^1$, $Pt_1^2$, $Pt_2^2$, $St^1$, $St^2$ et valgrind est en
+secondes, ce temps est noté $\infty$ quand il dépasse 24 heures.
+
+Nous remarquons que le temps d'exécution de \valgrind n'est pas comparable avec
+celui de notre bibliothèque, cela s'explique simplement par le fait que celui-ci
+ne prend pas en compte la spécification \eacsl, et se contente de vérifier des
+propriétés comme l'absence d'erreur de segmentation ou l'absence de fuite de
+mémoire.
+En effet, notre démarche vise à supporter au maximum les annotations \eacsl,
+ce qui nécessite un monitoring plus lourd.
+
+La figure~\ref{fig:mmodel-exp} représente graphiquement le temps (en secondes)
+passé par chaque implémentation du {\em store} sur un tri fusion de 1000, 5000,
+10000, 50000 et 100000 éléments (les données chiffrées sont dans les cinq
+dernières lignes du tableau~\ref{tab:mmodel-exp}).
+
+Les résultats de nos expérimentations confirment nos hypothèses, à savoir :
+\begin{itemize}
+\item le Patricia trie est la structure de données la plus appropriée pour
+  l'implémentation du {\em store};
+\item notre optimisation du calcul du plus grand préfixe commun par recherche
+  dichotomique et utilisation d'indices pré-calculés entraîne un vrai gain de
+  performance;
+\item l'utilisation d'une analyse statique visant à réduire l'instrumentation
+  du programme permet de réduire le temps d'exécution de manière efficace.
+\end{itemize}
 
 
 \section*{Conclusion du chapitre}
 
-TODO
+Dans ce chapitre nous avons présenté l'architecture de l'implémentation de la
+bibliothèque de monitoring de la mémoire, dont les algorithmes et les principes
+théoriques ont été traités dans le chapitre~\ref{sec:runtime}.
+Nous avons également présenté les résultats de nos expérimentations visant à
+mesurer la capacité de détection d'erreurs et les performances à l'exécution de
+notre implémentation.
+Ces expérimentations ont en particulier confirmé l'efficacité d'une
+implémentation du {\em store} à base de Patricia trie.
+
+
+\begin{landscape}
+  \begin{table}[h]
+    \centering
+    \begin{footnotesize}
+      \input{table_eacsl_experiments.tex}
+    \end{footnotesize}
+    \caption{Comparaison des différentes implémentations du {\em store}
+      \label{tab:mmodel-exp}}
+  \end{table}
+\end{landscape}
