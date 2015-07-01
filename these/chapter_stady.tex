@@ -39,7 +39,7 @@ de \stady.
   \begin{center}
     \begin{tabular}{lrr}
       \hline
-      example & time (s.) & \# paths \\ \hline
+      Exemple & Temps (s.) & Chemins explorés \\ \hline
       array-unsafe & 1.299 & 9 \\ \hline
       count-up-down-unsafe & 1.285 & 3 \\ \hline
       eureka-01-unsafe & 1.355 & 48 \\ \hline
@@ -63,7 +63,7 @@ de \stady.
     \end{tabular}
   \end{center}
   \vspace{-3mm}
-  \caption{Experiments with \textsc{StaDy}: Bug detection}    
+  \caption{Détection de non-conformités : temps d'exécution}    
   \label{fig:scam-experiments1}
   \vspace{-3mm}
 \end{figure}
@@ -73,7 +73,8 @@ de \stady.
   \begin{center}
     \begin{tabular}{lrrrr}
       \hline
-      example & mutants & $\lnot$ equiv. & killed & success rate \\ \hline
+      Exemple & Mutants & Mutants non équivalents & Mutants tués & Succès \\
+      \hline
       merge-sort & 96  & 92 & 88 & 95.65\% \\ \hline
       merge-arrays & 68 & 63 & 59 & 93.65\% \\ \hline
       quick-sort & 130 & 130 & 130 & 100\% \\ \hline
@@ -104,125 +105,105 @@ de \stady.
     \end{tabular}
   \end{center}
   \vspace{-3mm}
-  \caption{Experiments with \textsc{StaDy}: Mutation testing}
+  \caption{Détection de non-conformités : test mutationnel}
   \label{fig:scam-experiments2}
   \vspace{-3mm}
 \end{figure}
 
-The current implementation of  
-\textsc{StaDy} supports a significant subset of \eacsl including
-assertions, pre- and postconditions, loop invaliants and variants,
-quantifications, logic functions, integral and pointer types, and
-basic pointer operations. Pointer validity is currenty supported
-only for input arrays and pointers.
-\textsc{StaDy} currently  does not support 
-\lstinline{assigns} clauses, \lstinline{\at} terms, 
-real numbers, as well as advanced memory-related constructs
-(e.g. \lstinline{\offset}), complex pointer
-arithmetics such as \lstinline'p1-p2' or \lstinline'*(p-i)' and dynamic memory allocation  
-due to the limitations of the underlying test generator. 
-%Annotations involving reals
-%($\mathbb{R}$) are not supported either.
 
-To evaluate the efficiency of \textsc{StaDy} 
-%to find counter-examples 
-in a combined verification approach
-(cf Sec. \ref{sec:motivations}),
-we applied it on safe and unsafe programs from the TACAS 2014
-Software Verification Competition%
-\footnote{\url{https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/loops}}
-%(selected from the subdirectory {\em loops})
-%to evaluate its efficiency. 
-First, we 
-%tracked down bugs in faulty programs.
-%We 
-executed \textsc{StaDy} on 20 faulty programs that  handle arrays
-with loops. The properties to invalidate originally 
-expressed as C assertions, were manually rewritten in \textsc{E-ACSL}.
-Adequate \textsc{E-ACSL} preconditions were also added. The programs
-containing infinite loops and reachability properties to invalidate are not
-handled by  \textsc{StaDy} due to the necessity to execute the program in
-\textsc{Path\-Crawler}.
-\textsc{Sta\-Dy}
- detected failures of all faulty properties in each considered program. 
-Fig.~\ref{fig:scam-experiments1} illustrates the time taken to
-invalidate the properties including all the steps of \textsc{Sta\-Dy}:
-instrumentation from the \textsc{E-ACSL} specifications and test generation in
-\textsc{PathCrawler}, and the number of explored paths.
+L'implémentation actuelle de \stady supporte une partie significative d'\eacsl
+comprenant les assertions, les pré- et postconditions, les invariants et les
+variants de boucle, les prédicats quantifiés \lstinline[style=c]'\exists' et
+\lstinline[style=c]'\forall', les fonctions logiques, les pointeurs, et une
+partie de l'arithmétique des pointeurs.
+Notre support du prédicat \lstinline'\valid' ne prend en compte que les tableaux
+et pointeurs globaux ou en entrée du programme.
+Les clauses \lstinline'assigns' sont uniquement traitées lors de la phase de
+\SWD : nous n'avons pas pour but de trouver les éléments manquants d'une clause
+\lstinline'assigns' (\NCD) puisque les prouveurs donnent en général
+suffisamment d'indications dans ce cas, mais nous voulons trouver les éléments
+pouvant être enlevés d'une clause \lstinline'assigns' (\SWD).
+\stady traite partiellement les termes \lstinline'\at' et ne traite pas les
+fonctions récursives, l'arithmétique réelle et les annotations liées au modèle
+mémoire (elles sont en revanche implémentées dans la bibliothèque de monitoring
+présentée au chapitre~\ref{sec:eacsl}).
+Notre support de l'arithmétique des pointeurs ne comprend pas la différence de
+pointeurs (\lstinline'p1-p2') et les offsets négatifs (\lstinline'*(p-i)'), ce
+qui est dû aux limitations du générateur de tests \pathcrawler.
 
-Secondly, we used  mutation testing to evaluate the ability of \textsc{StaDy} to
-find bugs in unsafe programs. % automatically generated from safe programs.
-We selected 20 safe programs of the same benchmark, and 6
-additional safe programs from our own benchmarks. All of them were annotated in
-\textsc{E-ACSL}. They contain preconditions, postconditions, assertions,
-memory-related properties, loop variants and invariants. We used mutation testing
-on these safe programs to generate modified programs (\emph{mutants}) and see if
-\textsc{StaDy} is able to \emph{kill} 
-(i.e. to find errors in) these mutants. The
-mutations performed on the source code mimic usual programming errors. They
-include modifications of numerical and/or pointer arithmetic operators,
-comparison operators, condition negation and logical operators ({\em and} and
-{\em or}). Fig.~\ref{fig:scam-experiments2} gives the 
-numbers of all and erroneous mutants, as well as 
-the number and proportion of erroneous mutants killed by \textsc{StaDy}. 
-\textsc{StaDy} showed 
-an average success rate of 96.68\%, going up to 100\% on many examples.
-The missing percents are mostly due to 
-%the incompleteness of the specifications
-%in some programs, explained by 
-a currently incomplete support of \textsc{E-ACSL} features
-by the underlying test generation tool.
+Nous évaluons d'abord la capacité de \stady à détecter les non-conformités dans
+les programmes, puis nous évaluons sa capacité à détecter les faiblesses de
+sous-contrats.
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Détection de non-conformités}
+
+
+Afin d'évaluer la capacité de détection de non-conformités de \stady, nous
+l'avons appliqué sur des programmes corrects et incorrects de la compétition
+de vérification logicielle de TACAS 2014 \footnote{
+  \url{https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/loops}
+}.
+
+Premièrement, nous avons exécuté \stady sur 20 programmes erronés manipulant des
+tableaux et des boucles.
+Les propriétés à invalider étaient à l'origine exprimées sous la forme
+d'assertions C, que nous avons manuellement remplacées par des assertions \eacsl
+équivalentes.
+Les préconditions \eacsl appropriées ont également été ajoutées.
+Les programmes contenant des boucles infinies et des propriétés d'atteignabilité
+à invalider ne sont pas traités car il n'est pas possible de les exécuter avec
+\pathcrawler.
+Pour chacun des programmes considérés, \stady a détecté la non-conformité des
+annotations.
+La figure~\ref{fig:scam-experiments1} présente le temps qui a été nécessaire
+pour invalider les propriétés et le nombre de chemins d'exécution explorés par
+la génération de tests. 
+
+Deuxièmement, nous avons utilisé le test mutationnel afin d'évaluer la capacité
+de \stady à détecter les non-conformités dans des programmes incorrects.
+Nous avons considérés 20 programmes corrects du même benchmark et 6 programmes
+corrects supplémentaires classiques (fusion de tableaux, recherche par
+dichotomie et différents tris de tableaux).
+Nous avons annotés ces programmes avec \eacsl afin d'exprimer les préconditions,
+les postconditions, la validité des pointeurs, les invariants et variants des
+boucles.
+Nous avons utilisé le test mutationnel sur ces programmes corrects afin de
+générer des programmes modifiés (appelés {\em mutants}) et de voir si \stady
+est capable de {\em tuer}, c'est-à-dire trouver une erreur, dans ces mutants.
+Les mutations appliquées simulent des erreurs de programmation classiques, elles
+peuvent être une modification d'opérateur arithmétique (numérique ou sur les
+pointeurs), une modification d'opérateur de comparaison, la négation d'une
+condition ou la négation d'un opérateur logique (de conjonction ou de
+disjonction).
+La figure~\ref{fig:scam-experiments2} indique le nombre total de mutants et le
+nombre de mutants erronés, ainsi que le nombre de mutants tués et la proportion
+de mutants erronés tués par \stady.
+Le taux de détection des non-conformités par \stady est en moyenne de 96.68\%
+et a atteint 100\% sur de nombreux programmes.
+Ce taux n'est pas parfait car le langage \eacsl n'est pas exhaustivement traité
+par \stady et par le générateur de tests \pathcrawler.
+
+
+\subsection{Détection de faiblesses de sous-contrats}
+
 
 \begin{figure*}[bt]
   \tiny
-\mbox{}\hspace{-20mm}
+  \mbox{}\hspace{-20mm}
   \begin{center}
-  \begin{tabular}{r|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
-    &&\multicolumn{3}{c|}{Proof}&\multicolumn{4}{c|}{\NCD}
-    &\multicolumn{4}{c|}{\CWD}&\multicolumn{2}{c|}{$\NCD+\CWD$}&\\
-    \hline
-    \input{full_exp_latex_IEEE.csv}
-  \end{tabular}
-\end{center}
-  \caption{Detailed experiments of proof failure diagnosis for mutants with \stady}
+    \begin{tabular}{r|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+      &&\multicolumn{3}{c|}{Preuve}&\multicolumn{4}{c|}{\NCD}
+      &\multicolumn{4}{c|}{\CWD}&\multicolumn{2}{c|}{$\NCD+\CWD$}&\\
+      \hline
+      \input{full_exp_latex_IEEE.csv}
+    \end{tabular}
+  \end{center}
+  \caption{Diagnostic des échecs de preuve sur des mutants}
   \vspace{-.5cm}
   \label{tab:exp}
 \end{figure*}
 
-
-\textbf{Implementation.}
-The proposed method for diagnosis of proof failures 
-% detecting  non-compliances and contract weaknesses
-%described in Sec.~\ref{sec:global-method} 
-has been implemented as a \framac plugin, named \stady.
-It relies on other plugins: \Wp~\citeframac for deductive
-verification and \pathcrawler~\citepathcrawler for structural test generation.
-\stady currently supports a significant subset of the \eacsl specification
-language, including 
-\lstinline'requires', \lstinline'ensures', 
-\lstinline'behavior', \lstinline'assumes', 
-\lstinline'loop invariant', \lstinline'loop variant' and
-\lstinline'assert' clauses.
-Quantified predicates
-\lstinline[style=c]'\exists' and \lstinline[style=c]'\forall' and builtin terms
-as \lstinline'\sum' or \lstinline'\numof' are translated as loops. 
-Logic functions and named predicates are treated by inlining.
-The \lstinline'\old' constructs are treated by saving the initial
-values of formal parameters and global variables at the beginning of the
-function. 
-Validity checks of pointers are
-partially supported due to the current limitation of the underlying test
-generator: we can only check the validity of input pointers and global arrays.
-The \lstinline'assigns' clauses are only taken into consideration during the
-\CWD phase: we do not aim to find what is missing in the \lstinline'assigns'
-clause (\NCD) because provers usually give sufficiently good feedback about it,
-but we want to find what is unnecessary and could be removed from an
-\lstinline'assigns' clause (\CWD).
-Inductive predicates, recursive functions and floating-point numbers are
-currently not supported and are part of our future work.
 
 \textbf{The research questions} we address in our experiments are the following.
 
