@@ -14,13 +14,13 @@ expérimentations visant à mesurer la capacité de diagnostic des échecs de pr
 et les performances de \stady.
 
 
-\section{Implémentation}
+\section{Implémentation du greffon \stady}
 \label{sec:stady-implem}
 
 
 %\begin{landscape}
 \begin{center}
-  \begin{figure}
+  \begin{figure}[tb]
     \includegraphics[scale=.5]{figures/stady_architecture.pdf}
     \vspace{-11cm}
     \caption{Architecture de \textsc{StaDy}
@@ -30,12 +30,170 @@ et les performances de \stady.
 %\end{landscape}
 
 
+La figure~\ref{fig:stady-architecture} présente l'architecture de \stady, elle
+offre une vue simplifiée des relations entre les différents modules Ocaml (nous
+ferons l'amalgame entre les modules et les fichiers) qui composent l'outil.
+Chaque bloc représente un module et la relation $A \Rightarrow B$ symbolise le
+fait que $A$ fait appel à $B$.
+Les blocs dont le fond est blanc représentent des modules décrivant un ou
+plusieurs types de données et implémentant les opérations sur ce(s) type(s).
+Les blocs dont le fond est coloré représentent des modules implémentant une
+tâche importante de l'outil.
+
+Les modules \textsc{Register} et \textsc{Register\_gui} pilotent les autres
+modules de tâche de \stady, le second implémente les comportements souhaités
+du greffon dans l'interface graphique de \framac (en cas de clic par exemple).
+Les deux tâches centrales de l'outil sont, conformément à ce qui est décrit dans
+le chapitre~\ref{sec:traduction}, la traduction des annotations, effectuée
+par le module \textsc{Translate}, et la génération de tests, pilotée par le
+module \textsc{Test\_generation}.
+Donnons maintenant une vue d'ensemble de ces opérations et des modules qui les
+composent.
+
+
+\subsection{Traduction des annotations}
+
+
+Afin de traduire les annotations \eacsl en C nous avons besoin de définir des
+types de données spécifiques.
+Le module \textsc{Insertion} définit le type des insertions de code telles
+qu'elles sont définies au chapitre~\ref{sec:traduction}.
+Le module \textsc{Symbolic\_label} définit les labels symboliques qui permettent
+d'associer un endroit du programme aux insertions de code (début ou fin d'une
+fonction, début ou fin d'une boucle, avant ou après une instruction).
+Le module \textsc{Function} définit le type de données des fonctions générées
+de toute pièce par la traduction.
+Le module \textsc{Input\_domain} définit des types de données représentant les
+domaines et les différentes contraintes sur les variables en entrées du
+programme (c'est-à-dire les variables en entrée de la fonction sous vérification
+et les variables globales).
+
+Les types définis par \textsc{Function} et \textsc{Insertion} sont des
+extensions des types \textsc{Cil} fournis par \framac, ils nous permettent de
+nous affranchir des contraintes et limitations de \framac en terme de
+transformation de programmes et ont permis de réduire drastiquement le temps de
+développement de \stady.
+
+Le module \textsc{Inline} définit une transformation de programme ``inlinant''
+les prédicats et fonctions logiques dans les annotations.
+En d'autres termes, cette transformation remplace un appel à un prédicat ou une
+fonction par sa définition et remplace les paramètres formels par les paramètres
+effectifs à l'appel.
+Ce module permet de traiter à moindre coût les annotations contenant des appels
+de fonctions logiques ou de prédicats définis par l'utilisteur, en revanche il
+ne permet pas de supporter les fonctions ou prédicats récursifs.
+Un extrait de l'interface du module \textsc{Inline} est :
+
+\begin{ocamlcode}
+type env
+val empty_env : env
+val pred : env -> Cil_types.predicate -> Cil_types.predicate
+\end{ocamlcode}
+
+Le type \ocamlinline{env} permet de conserver les relations entre paramètres
+formels et effectifs qui permettent de faire les substitutions, et
+\ocamlinline{empty_env} est un environnement vide, sans substitution.
+La fonction \ocamlinline{pred} produit la version {\em inlinée} du prédicat
+passé en paramètre en fonction d'un environnement.
+
+Le module \textsc{Translate} définit les transformations de programme à opérer
+lors de la traduction des annotations \eacsl en C.
+La signature du module fournit une fonction :
+
+\begin{ocamlcode}
+val translate:
+  Property.t list ->
+  (* id of stmts, parameterizing the SWD *)
+  int list ->
+  precond_fname:string ->
+  instru_fname:string ->
+  Property.t list
+\end{ocamlcode}
+
+La fonction \ocamlinline{translate} produit le fichier C (étiqueté
+\ocamlinline{instru_fname}) contenant le programme instrumenté et le fichier
+Prolog (étiqueté \ocamlinline{precond_fname}) contenant la précondition de la
+fonction sous vérification dans un format qui est plus efficace à traiter pour
+\pathcrawler.
+Elle retourne la liste de propriétés du programme qui ont été effectivement
+traduites, ce qui évitera de valider des propriétés qui n'ont pas été traduites.
+La traduction implémentée par ce module utilise un ``visiteur en place'' (par
+opposition au ``visiteur de copie'') de \framac, ce choix n'est pas pénalisant
+puisque nous ne modifions pas l'arbre de syntaxe abstraite et nous stockons les
+insertions de code en dehors de l'arbre.
+
+Le module \textsc{Print} est invoqué par le module \textsc{Translate} afin
+d'écrire dans les fichier correspondant le résultat de la traduction qui
+incorpore les insertions de code aux endroits adéquats.
+Ce module fournit la classe :
+
+\begin{ocamlcode}
+(* Extend the default printer to display the generated code insertions
+ * at the corresponding label and the generated functions. *)
+class print_insertions:
+	(* labeled code insertions *)
+	(Symbolic_label.t, Insertion.t Queue.t) Hashtbl.t ->
+	(* new functions *)
+	Function.t list ->
+	(* id of stmts, parameterizing the SWD *)
+	int list ->
+	unit ->
+	Printer.extensible_printer
+\end{ocamlcode}
+
+Cette classe prend en argument les insertions de code étiquetées par les
+labels symboliques, les fonctions générées, les contrats paramétrant \SWD et
+définit un objet de type \ocamlinline{printer} qui fera l'affichage et sera
+utilisé par la fonction \ocamlinline{translate}.
+
+Une fois les fichiers générés, la génération de tests débute.
+
+
+\subsection{Génération de tests}
+
+
+Nous définissons maintenant les types de données qui nous permettent de
+manipuler les résultats de la génération de tests.
+
+Le module \textsc{NCCE} implémente le type de données \NCCE tel qu'il est défini
+au chapitre~\ref{sec:ncd} ainsi que les fonctions d'enregistrement d'un \NCCE
+et de récupération d'un ou plusieurs \NCCE{}s pour une propriété.
+
+Le module \textsc{SWCE} implémente le type de données \SWCE tel qu'il est défini
+au chapitre~\ref{sec:swd} ainsi que les fonctions d'enregistrement et de
+récupération d'un ou plusieurs \SWCE{}s pour une propriété.
+
+Le module \textsc{States} définit l'état interne de \stady : des tables
+de hachage stockent notamment les contre-exemples \NCCE et \SWCE générés par
+\pathcrawler.
+
+Le module \textsc{Test\_generation} définit un protocole de communication pour
+communiquer avec \pathcrawler et ouvre un canal de communication ({\em socket})
+entre \stady et \pathcrawler afin de récupérer les résultats du test.
+Ce module fournit la fonction :
+
+\begin{ocamlcode}
+val run: entry_point:string ->
+	 precondition_filename:string ->
+	 instrumented_filename:string ->
+	 unit
+\end{ocamlcode}
+
+La fonction \ocamlinline{run} construit la ligne de commande qui permettra
+d'invoquer \pathcrawler avec les paramètres adéquats, démarre la communication
+avec \pathcrawler, enregistre les résultats du test dans les états de
+\textsc{States} au fur et à mesure, puis rend la main à \textsc{Register} à la
+fin de la communication.
+
+Enfin, \textsc{Register} met à jour le statut des propriétés du programme en
+fonction des résultats du test.
+
+
 \section{Expérimentations}
 \label{sec:stady-exp}
 
 
 \begin{figure}[tb]\scriptsize
-  %\vspace{-2mm}
   \begin{center}
     \begin{tabular}{lrr}
       \hline
@@ -65,7 +223,6 @@ et les performances de \stady.
   \vspace{-3mm}
   \caption{Détection de non-conformités : temps d'exécution}    
   \label{fig:scam-experiments1}
-  \vspace{-3mm}
 \end{figure}
 
 \begin{figure}[tb]\scriptsize
@@ -107,7 +264,6 @@ et les performances de \stady.
   \vspace{-3mm}
   \caption{Détection de non-conformités : test mutationnel}
   \label{fig:scam-experiments2}
-  \vspace{-3mm}
 \end{figure}
 
 
@@ -200,7 +356,6 @@ par \stady et par le générateur de tests \pathcrawler.
     \end{tabular}
   \end{center}
   \caption{Diagnostic des échecs de preuve sur des mutants}
-  \vspace{-.5cm}
   \label{tab:exp}
 \end{figure*}
 
