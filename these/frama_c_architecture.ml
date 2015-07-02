@@ -11,10 +11,11 @@ let big_delta = Num.bp 10.
 let big_title s = tex ("\\textbf{\\Large{" ^ s ^ "}}")
 let small_title s = tex ("\\textbf{\\emph{\\large{" ^ s ^ "}}}")
 
-let framac_color = Color.lightgreen
+let external_color = Color.rgb8 255 165 0
+let framac_color = Color.rgb8 50 205 50
 let cil_color = Color.lightcyan
-let plugin_color = Color.rgb8 255 200 200
-let libraries_color = Color.lightblue
+let plugin_color = Color.rgb8 250 128 114
+let libraries_color = Color.orange
 
 let std_box ?stroke ?color s = rect ~name:s ?stroke ?fill:color (tex s)
 let mk_services ?(big=false) ?color title b = 
@@ -25,37 +26,43 @@ let mk_services ?(big=false) ?color title b =
     (vbox ~padding:(if big then Num.multn big_delta (Num.pt 1.5) else big_delta)
        [ (if big then big_title else small_title) title; b ])
 
-(* Backend *)
+(* Internals *)
 
-let kernel_backend =
+let kernel_internals =
   mk_services ~big:true ~color:cil_color
-    "Kernel Back-end"
+    "Kernel Internals"
     (hbox ~padding
-       [ std_box "untyped2ast";
-         std_box "c2untyped";
+       [ std_box "src2cabs";
+         std_box "cabs2cil";
          std_box "runtime" ])
 
-(* Frontend *)
+(* Services *)
 
 let kernel_ast =
-  mk_services "ASTs" (vbox ~padding [ std_box "ast"; std_box "untyped\\_ast" ])
+  mk_services "ASTs"
+    (vbox ~padding
+       [ std_box "ast\\_data"; std_box "ast\\_operations"; std_box "cabs" ])
 
 let kernel_ai =
   mk_services "AI"
     (vbox ~padding [ std_box "memory\\_states"; std_box "abstract\\_interp" ])
 
 let kernel_services =
-  mk_services "General Services"
+  mk_services "Plug-in Interactions"
     (vbox ~padding
        [ std_box "cmdline\\_parameters";
          std_box "plugin\\_entry\\_points" ])
 
-let kernel_trip =
-  mk_services "AST Trip"
-    (hbox ~padding [ std_box "visitor"; std_box "analysis" ])
+let kernel_trip_name = "AST Traversal"
 
-let kernel_frontend =
-      mk_services ~big:true "Kernel Front-end" ~color:framac_color
+let kernel_trip =
+  mk_services kernel_trip_name
+    (hbox ~padding
+       [ std_box "visitor";
+         vbox ~padding [ std_box "analysis"; std_box "ast2ast" ] ])
+
+let kernel_services =
+      mk_services ~big:true "Kernel Services" ~color:framac_color
         (hbox ~padding
            [ vbox ~padding [ kernel_trip; kernel_ai ];
              vbox ~padding [ kernel_ast; kernel_services ] ])
@@ -84,8 +91,8 @@ let libraries =
 let figure =
   vbox ~padding:big_padding
     [ plugins;
-      hbox ~padding:big_padding [ kernel_frontend; libraries ];
-      kernel_backend ]
+      hbox ~padding:big_padding [ kernel_services; libraries ];
+      kernel_internals ]
 
 let arrow ?(big=false) ?ind ?style src dst =
   let getf s = get s figure in
@@ -104,8 +111,10 @@ let cmds =
   Command.seq
     [
       draw figure;
+      arrow "ast\\_operations" "ast\\_data";
       arrow "memory\\_states" "abstract\\_interp";
       arrow "analysis" "visitor";
+      arrow "ast2ast" "visitor";
       arrow ~ind:left ~style:(Path.jTension 0.8 0.8) "utils" "stdlib";
       arrow "project" "stdlib";
       arrow "datatype" "stdlib";
@@ -121,17 +130,17 @@ let cmds =
       arrow ~ind:up ~style "plug-in $n$" "\\dots";
       arrow ~ind:up ~style "\\dots" "plug-in 2";
       arrow ~big:true "AI" "ASTs";
-      arrow ~big:true "AI" "General Services";
-      arrow ~big:true "General Services" "ASTs";
-      arrow ~big:true "ASTs" "General Services";
-      arrow ~big:true "AST Trip" "General Services";
-      arrow ~big:true "AST Trip" "ASTs";
+      arrow ~big:true "AI" "Plug-in Interactions";
+      arrow ~big:true "Plug-in Interactions" "ASTs";
+      arrow ~big:true "ASTs" "Plug-in Interactions";
+      arrow ~big:true kernel_trip_name "Plug-in Interactions";
+      arrow ~big:true kernel_trip_name "ASTs";
       (* inter-services arrow *)
-      arrow ~big:true "Plug-ins" "Kernel Front-end";
-      arrow ~big:true "Kernel Back-end" "Kernel Front-end" ;
-      arrow ~big:true "Kernel Front-end" "Kernel Back-end" ;
-      arrow ~ind:(Path.vec Point.up) ~big:true "Kernel Back-end" "Libraries";
-      arrow ~big:true "Kernel Front-end" "Libraries";
+      arrow ~big:true "Plug-ins" "Kernel Services";
+      arrow ~big:true "Kernel Internals" "Kernel Services" ;
+      arrow ~big:true "Kernel Services" "Kernel Internals" ;
+      arrow ~ind:(Path.vec Point.up) ~big:true "Kernel Internals" "Libraries";
+      arrow ~big:true "Kernel Services" "Libraries";
       arrow ~ind:(Path.vec Point.down) ~big:true "Plug-ins" "Libraries";
     ]
 
