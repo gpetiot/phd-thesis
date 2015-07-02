@@ -10,8 +10,8 @@ notre implémentation de la méthode présentée aux chapitres~\ref{sec:ncd},
 \ref{sec:swd} et~\ref{sec:method}, ainsi que certains détails d'implémentation
 en partie~\ref{sec:stady-implem}.
 En partie~\ref{sec:stady-exp} nous présentons les résultats de nos
-expérimentations visant à mesurer la capacité de diagnostic et les performances
-de \stady.
+expérimentations visant à mesurer la capacité de diagnostic des échecs de preuve
+et les performances de \stady.
 
 
 \section{Implémentation}
@@ -205,211 +205,204 @@ par \stady et par le générateur de tests \pathcrawler.
 \end{figure*}
 
 
-\textbf{The research questions} we address in our experiments are the following.
+Évaluons à présent la capacité de \stady à détecter les faiblesses de
+sous-contrats.
+Les hypothèses de recherche que nous souhaitons vérifier par nos
+expérimentations sont les suivantes.
 
-\vspace{-2mm}
 \begin{itemize}
-\item[\textbf{RQ1}]
-Is \stady able to precisely diagnose most proof failures in C programs?
-\item[\textbf{RQ2}]
-What are the benefits of the \CWD extension (in particular, with respect to
-\NCD)?
-\item[\textbf{RQ3}]
-Is \stady able to generate  \NCCE{}s or \CWCE{}s even with a partial testing coverage?
-\item[\textbf{RQ4}]
-Is \stady's execution time comparable to the time of an automatic proof?
+\item[\textbf{H1}]
+  \stady est capable de diagnostiquer la plupart des échecs de preuve dans les
+  programmes C.
+
+\item[\textbf{H2}]
+  \SWD apporte un avantage significatif par rapport à \NCD en terme de capacité
+  de diagnostic des échecs de preuve.
+
+\item[\textbf{H3}]
+  \stady est capable de générer des \NCCE{}s et des \SWCE{}s même avec une
+  couverture partielle des chemins du programme par le test.
+
+\item[\textbf{H4}]
+  Le temps d'exécution de \stady est comparable au temps d'une preuve
+  automatique.
 \end{itemize}
-\vspace{-2mm}
 
 
+\textbf{Protocole expérimental.}
+Nous avons évalué \stady sur 20 programmes annotés de \cite{ACSLbyExample},
+dont la taille varie de 35 à 100 lignes de code annoté.
+Ces programmes manipulent des tableaux, ils sont entièrement annotés avec \eacsl
+et leurs spécifications expriment des propriétés non triviales sur les tableaux.
+Ils sont corrects et prouvés par \Wp.
+Nous appliquons \stady sur des versions modifiées (ou {\em mutants}) des
+programmes C, qui sont générées de manière systématique.
+Chaque programme mutant est obteny par l'application d'une {\em mutation} unique
+sur le programme d'origine.
+Les mutations sont les suivantes : modification d'un opérateur binaire dans le
+code ou dans la spécification, négation d'une condition dans le code,
+modification d'une relation dans la spéficiation, négation d'un prédicat dans la
+spécification, suppression d'une partie d'un invariant de boucle ou d'une
+postcondition dans la spécification.
+Nous n'appliquons pas de mutation à la précondition de la fonction sous
+vérification, et nous limitons les mutations possibles pour chaque opérateur
+binaire afin d'éviter de créer des expressions absurdes, notamment dans le
+cas des opérations arithmétiques sur les pointeurs.
 
-\textbf{Experimental protocol.} 
-The evaluation used 20 annotated programs from \cite{ACSLbyExample},
-whose size varies from 35 to 100 lines of annotated C code.
-%binary\_search, binary\_search2, lower\_bound, upper\_bound, max\_element,
-%max\_element2, max\_seq, min\_element, copy, fill, iota, replace\_copy,
-%reverse\_copy, adjacent\_find, equal, equal2, equal3, find, find2 and mismatch.
-These programs manipulate arrays, they are fully specified in \acsl and their
-specification expresses non-trivial properties of C arrays. 
-To evaluate the method
-presented in Sec.~\ref{sec:global-method} and its implementation, we apply \stady on systematically
-generated altered  versions (or \emph{mutants}) of correct C programs.
-%We apply the method presented in Sec.~\ref{sec:method} and measure the
-%efficiency of the classification performed by \stady.
-%Each utants are generated for each considered program 
-Each mutant program is obtained by performing a single modification (or \emph{mutation}) on the
-initial program.
-The mutations include: a binary operator modification in the code or in the
-specification, a condition negation in the code, a relation modification in the
-specification, a predicate negation in the specification, a partial loop invariant or
-postcondition deletion in the specification.
-In this study, we do not mutate the precondition of the function under verification, 
-and restrict possible mutations on binary operators to avoid creating absurd
-expressions, in particular for pointer arithmetics.
+La première étape consiste à essayer de prouver chaque mutant à l'aide de \Wp.
+Les mutants prouvés respectent leur spécification et sont classifiés comme étant
+corrects.
+Nous appliquons ensuite la méthode \NCD sur les mutants restants.
+Cette étape classifie l'échec de preuve pour certains mutants comme étant due à
+une non-conformité, indiquant l'annotation violée ainsi qu'un \NCCE.
+Une troisième étape est l'application de la méthode \SWD sur les mutants non
+encore classifiés, qui permet de classer certains d'entre eux comme ayant
+une faiblesse de sous-contrats et indiquant l'annotation non prouvée, les
+contrats trop faibles et un \SWCE.
+Si aucun contre-exemple n'a été trouvé par \SWD, le mutant reste non classifié.
+La figure~\ref{tab:exp} présente les résultats de ces expérimentations.
+Les colonnes contiennent le nombre de mutants générés et les résultats de
+chacune des trois étapes du protocole : le nombre (\#) et la proportion (\%) des
+mutants classifiés, le temps d'exécution maximal et moyen (affiché sur deux
+lignes) pour les mutants classifiés ($t^\text{\ok}$ et $t^\text{\ko}$) et pour
+les mutants non classifiés ($t^\text{?}$) à chaque étape.
+Les proportions sont calculées en fonction des mutants restant non classifiés
+après l'étape précédente.
+Les colonnes $\NCD+\SWD$ contiennent les résultats après les deux étapes $\NCD$
+et \SWD : la colonne $t$ contient le temps maximal et le temps moyen pour tous
+les mutants sans distinction du résultat de la classification.
+La mesure du temps d'exécution s'arrête à la fin de la preuve (en cas de succès)
+ou au premier \NCCE ou \SWCE généré.
+Le nombre de mutants restant non classifiés à la fin de l'expérimentation (\#?)
+est donné dans la dernière colonne.
 
-
-The first step tries to prove each mutant using \Wp. 
-%(with a timeout high enough \commentNK{preciser}).
-The proved mutants respect the specification and are classified as correct. 
-% are equivalent to the original program. % NK: Not sure!
-Second, we apply the \NCD method on the remaining mutants.
-It classifies proof failures for some mutants as non-compliances, indicates the failing annotation and an \NCCE.
-The third step applies the \CWD method on remaining mutants,
-classifies some of them as subcontract weaknesses, indicates the weak subcontract and a \CWCE.
-If no counter-example has been found by the \CWD, the mutant remains 
-unclassified. % (the \textsf{?} column).
-%\commentNK{preciser timeouts here}
-The results are displayed in Fig.~\ref{tab:exp}.
-The columns 
-%of  Fig.~\ref{tab:exp}  
-present the number of generated mutants, and the results of each of the three
-steps: the number (\#) and ratio (\%) of classified mutants,
-maximal and average execution time (put on two lines) of the step
-over classified mutants ($t^\text{\ok}$ or $t^\text{\ko}$) and over non-classified
-mutants ($t^\text{?}$) at this step.
-The ratios are computed with respect to unclassified mutants after the previous step.
-The $\NCD+\CWD$ columns sum up selected results after both $\NCD$ and $\CWD$ steps:
-the average and maximal time ($t$) are shown globally over all mutants.
-The time is computed until the proof is finished or until the first counter-example is generated.
-The final number of remaining unclassified mutants (\#?) is given in the last column.
-
-
-\textbf{Experimental results.}
-%\textbf{RQ1.}
-%Regarding RQ1,
-For the 20 considered programs, 928 mutants have been generated. 80 of them 
-%are equivalent and 
-have been proved by \Wp.
-Among the 848 unproven mutants, \NCD has detected a non-compliance
-induced by the mutation in 776 mutants (91.5\%),
-leaving 72 unclassified.
-Among them, \CWD has been able to exhibit a counter-example (either a \NCCE or a
-\CWCE)
-%, the confirmation step is not automatized yet) %NK: to be done for the final version
-%for the contract impacted by
-%the mutation in
-for 48 of them (66.7\%), finally leaving 24 programs unclassified.
-They can be either equivalent mutants that were not proved
-by \Wp due to a prover incapacity, or mutants coming from a mutation 
-in an unsupported annotation being undetectable by the
-current version, or incorrect mutants for which testing was incomplete due to a timeout.
-Regarding \textbf{RQ1}, \stady has found a precise reason
-of the proof failures  and produced a counter-example 
-in 824 of the 848 unproven mutants, 
-i.e. classifying 97.2\%.
-Exploring the benefits of detecting a prover incapacity may often require to manually reduce
-the input domain, to try additional lemmas or interactive proof, so it   
-was not sufficiently investigated in this study 
-(and would probably require another, non mutational approach).
-
-%\textbf{RQ2.}
-Regarding \textbf{RQ2}, 
-\NCD alone diagnosed 776 of 848 unproven mutants (91.5\%).
-\CWD diagnosed 48 of the 72 remaining  mutants (66.7\%)
-bringing a significant complementary contribution 
-to a better understanding of reasons of many proof failures.
-%The combined efforts of \NCD and \CWD classified 824 of 848 non-equivalent mutants
-%(97.2\%), so \CWD permitted to add roughly 6\% to the fault detection efficiency
-%of \NCD.
-
-%\textbf{RQ3.}
-In our experiments,
-each prover can try to prove each verification condition 
-%proof obligation 
-during at most 40 seconds.
-We also set a timeout for any test generation session
-to 5 seconds, i.e. one session for the \NCD step, and 
-several sessions for \CWD steps.
-We also limit the depth of explored program paths with the 
-{\em k-path} criterion (cf. Sec. \ref{sec:framac})
-%With this option, the test generator only considers paths with at most
-%$k$ consecutive iterations of each loop. 
-setting $k = 4$.
-Both the session timeout and the {\em k-path} heavily limit the testing coverage
-but \stady still detects 97.2\% of faults in the generated programs.
-That addresses \textbf{RQ3} and demonstrates that the proposed method can efficiently 
-classify proof failures and generate counter-examples
-even with a partial testing coverage and can therefore 
-be used for programs where the 
-total number of paths cannot be limited
-(e.g. by the \lstinline{typically} clause).
-
-%\textbf{Time of analysis.}
-Concerning \textbf{RQ4},
-on the considered programs \Wp needs on average 2.6 sec. per mutant (at most 4.4 sec.) to
-prove a program, and spends 13.0 sec. on average (at most 61.3 sec.) when the
-proof fails.
-The total execution time of \stady is comparable: it needs on average 2.7 sec.  per unproven mutant 
-(at most 19.9 sec.).
-%More precisely, the \NCD step needed 2.4 sec. on average (at most 9.4 sec.) to
-%detect a non-compliance, and on average 2.5 sec. (at most 8.3 sec.) when it is
-%non conclusive.
-%The \CWD step needed 2.4 sec. on average (at most 6.4 sec.) to
-%detect a contract weakness, and on average 6.3 sec. (at most 11.6 sec.) when it
-%is non conclusive.
-
-\textbf{Summary.}
-The experiments show that the proposed method can automatically classify a significant number
-of proof failures within an analysis time comparable to the time of an automatic proof
-and for programs for which only a partial testing coverage is possible.
-The \CWD technique offers an efficient complement to \NCD for a more 
-complete and more precise diagnosis of proof failures.
-
-\textbf{Threats to validity.}
-As it is often the case in software verification studies, one major threat is
-related to the 
-representativeness of results, i.e. their \textit{external validity}.
-In our case, due to the nature of the problem,
-we are restricted to realistic annotated programs
-that cannot be generated automatically 
-or extracted from existing databases of unspecified code.
-Therefore, to reduce this threat, we used programs from an \textit{independent}
-benchmark \cite{ACSLbyExample} created in order to illustrate
-on different examples the usage of the \acsl specification 
-language for deductive verification with \framac.
+Les experiences ont été menées sur un processeur Intel Core i7-3520M 3.00GHz
+$\times$ 4 sous Linux Ubuntu 14.04.
 
 
-%Though, the primary contribution of this article is to propose 
-%a novel classification of proof failures and techniques
-%for their classification.
+\textbf{Résultats expérimentaux.}
+Pour les 20 programmes considérés, 928 mutants on été générés.
+80 d'entre eux ont été prouvés à l'aide de \Wp.
+Parmi les 848 mutants non prouvés, \NCD a détecté une non-conformité introduite
+par une mutation dans 776 mutants (91.5\%), laissant 72 mutants non classifiés.
+Parmi ces 72 mutants, \SWD a pu générer un contre-exemple (soit un \NCCE soit un
+\SWCE) pour 48 d'entre eux (66.7\%), laissant finalement 24 programmes non
+classifiés.
+Ces 24 mutants peuvent être des mutants équivalents qui n'ont pas été
+prouvés par \Wp pour cause d'une incapacité de prouver, ou des mutants dont la
+mutation s'est produite dans une annotation non traitée par \stady (la mutation
+étant dont actuellement indétectable), ou des mutants non équivalents pour
+lesquels la génération de tests n'a généré aucun contre-exemple mais est
+incomplète (c'est-à-dire qu'elle a été interrompue car elle ne respectait pas la
+limite de temps imposée).
 
-\textit{Scalability} of the results is another threat
-since we do not demonstrate their validity for functions of larger programs. 
-%While this is an important issue we plan to address in the near future, 
-%However,  
-Because of the modular reasoning of deductive verification,
-it can be argued that the proposed technique should only be applied on a unit level,
-separately for each function, since the verification engineer proves a program  in this way.
-Indeed, in the current practice of deductive verification, it does not make sense to analyze
-proof failures for the whole module or application at the same time.
+Concernant \textbf{H1}, \stady a trouvé une raison précise pour les échecs de
+preuve et a produit un contre-exemple pour 824 des 848 mutants non prouvés, et
+a donc classifié 97.2\% d'entre eux.
+Décider pour chaque mutant non classifié si un échec de preuve est causé par une
+incapacité de prouveur nécessite souvent de réduire le domaine des variables
+d'entrée, d'ajouter des lemmes supplémentaires ou d'essayer une preuve
+interactive (avec \coq par exemple).
+Cette dernière étape n'a pas été suffisamment approfondie dans nos travaux.
 
-The main scalability concern is thus related to the usage of structural test generation 
-that can often time out without achieving a full coverage.
-To address this issue, we have specifically investigated the impact of a partial test coverage
-on the effectiveness of the method (cf. \textbf{RQ3} above) and proposed
-a convenient way to reduce the input domain (using \lstinline{typically} clause, 
-an extension of \acsl).
+Concernant \textbf{H2}, \NCD a diagnostiqué 776 des 848 mutants non prouvés
+(91.5\%).
+\SWD a diagnostiqué 48 des 72 mutants restants (66.7\%), ce qui a contribué
+de manière significative (et complémentaire à \NCD) au diagnostic et à
+l'explication de nombreux échecs de preuve.
 
-Other threats can be due to the used measurements, i.e. \textit{construct validity}.
-To reduce this threat, we used a careful measurement of 
-results (including analysis time for each step and 
-each mutant, their mean and maximal values, 
-separately computed for classified and unclassified proof failures).
-One concern is producing realistic situations in which 
-the verification engineer can need help in the analysis of proof failures.
-While the first users of \stady have appreciated its feedback, % \cite{ggp15},
-we have not yet had the opportunity to organize a fair evaluation with a 
-representative group of users. 
-Thus we have performed an extended set of experiments using simulation of 
-errors by mutations as an alternative in the meanwhile. 
-We have chosen a large subset of mutation operators (mutation in the code,
-mutation in an annotation, deletion of an annotation) that model 
-frequent problematic situations 
-(incorrect code or annotations, incomplete specification)
-leading to proof failures.
-This approach looks suitable for non-compliance and subcontract weaknesses, and
-certainly less suitable for the more subtle prover incapacity cases.
-The results should be later confirmed by a representative user study.
+Dans nos expérimentations, nous laissons à chaque prouveur 40 secondes pour
+prouver chaque propriété (aussi appelée ``condition de vérification'' ou
+``objectif de preuve'').
+Nous laissons 5 secondes à chaque session de génération de tests.
+Rappelons qu'il y a au plus une session pour l'étape \NCD par mutant, mais
+qu'il y a autant de sessions que nécessaire pour l'étape \SWD, le nombre
+dépendant du nombre de sous-contrats.
+Nous limitons également la profondeur d'exploration des chemins du programme :
+nous considérons uniquement les chemins qui contiennent au plus quatre
+itérations consécutives de chaque boucle.
+Ceci est un paramètre de la génération de tests de \pathcrawler, nous dirons
+que nous utilisons le critère {\em k-path} du générateur, avec $k = 4$.
+Le {\em timeout} de chaque session de test et le {\em k-path} limitent
+fortement la couverture de test mais \stady détecte néanmoins 97.2\% des
+mutations introduites dans les programmes mutants.
+Ceci confirme l'hypothèse \textbf{H3} et démontre que la méthode proposé peut
+classifier les échecs de preuve et générer des contre-exemples de manière
+efficace même lorsque la couverture de test est partielle.
+De plus, la méthode peut également être utilisée sur des programmes dont le
+nombre de chemins à explorer ne peut pas être limité.
+
+Concernant \textbf{H4}, sur les programmes considérés, \Wp nécessite en moyenne
+2.6 secondes par mutant (au plus 4.4 secondes) lorsqu'il réussit à prouver la
+correction du programme.
+Il passe en moyenne 13.0 secondes (au plus 61.3 secondes) par mutant lorsque la
+preuve du programme échoue.
+Le temps d'exécution total de \stady est comparable : \stady nécessite en
+moyenne 2.7 secondes par mutant non prouvé (au plus 19.9 secondes).
+Plus précisément, l'étape \NCD a besoin de 2.4 secondes en moyenne (au plus 9.4
+secondes) pour détecter une non-conformité, et en moyenne 2.5 secondes (au plus
+8.3 secondes) lorsqu'elle n'aboutit pas.
+L'étape \SWD a besoin de 2.4 secondes en moyenne (au plus 6.4 secondes) pour
+détecter une faiblesse de sous-contrat, et en moyenne 6.3 secondes (au plus 11.6
+secondes) lorsqu'elle n'aboutit pas.
+
+\textbf{Bilan des expérimentations.}
+Nos expérimentations ont montré que la méthode que nous proposons permet de
+classifier automatiquement un proportion importante des échecs de preuve, dans
+un temps comparable au temps d'une preuve automatique, et pour des programmes
+pour lesquels uniquement une couverture de test partielle est possible.
+\SWD complète efficacement \NCD afin d'obtenir un diagnostic plus complet et
+plus précis des échecs de preuve.
+
+\textbf{Validité des expérimentations.}
+Comme c'est souvent le cas dans le domaine de la vérification logicielle, une
+des principales menaces à la validité de nos expérimentations est liée à la
+représentativité des résultats.%, c'est-à-dire leur \textit{validité externe}.
+Dans notre cas, la nature du problème nous restreint aux programmes annotés
+et réalistes qui ne peuvent pas générés automatiquement ou récupérés de bases
+de données de code existant mais non spécifié.
+Afin de réduire cette atteinte à la validité de nos expérimentations, nous
+avons utilisés des programmes provenant d'un benchmark indépendant
+\cite{ACSLbyExample}, créé pour illustrer les différents usages du langage de
+spécification \acsl pour la vérification déductive de programmes avec \framac.
+
+Le passage à l'échelle des résultats est également une autre menace potentielle
+puisque nous n'avons pas démontré leur validité pour des programmes de plus
+grande taille.
+Néanmoins, du fait du raisonnement modulaire de la vérification déductive, nous
+somme persuadés que la technique proposée devrait uniquement être appliquée au
+niveau unitaire, chaque fonction prise séparément, puisque un ingénieur
+validation essaiera de prouver un programme de cette manière.
+
+La préoccupation majeure du passage à l'échelle est liée à l'utilisation du
+test structurel qui peut souvent atteindre le {\em timeout} fixé sans avoir
+couvert tous les chemins d'exécution faisables du programme.
+Afin de résoudre ce problème, nous avons étudié l'impact d'une couverture de
+test partielle sur l'efficacité de la méthode (voir \textbf{H3}) et proposé une
+manière simple de réduire le domaine des variables d'entrée (en utilisant la
+clause \lstinline'typically').
+
+Un autre obstacle à la validité peut être dû aux mesures utilisées.
+% i.e. \textit{construct validity}.
+Afin de réduire cette menace, nous avons mesuré de manière précise nos
+résultats, ce qui inclut le temps d'analyse pour chaque étape et chaque mutant,
+les valeurs moyennes et maximales, en séparant les échecs de preuve classifiés
+et non classifiés.
+Une de nos préoccupations est de produire des situations réalistes dans
+lesquelles un ingénieur validation peut avoir besoin d'aide afin de
+diagnostiquer des échecs de preuve.
+Bien que les premiers utilisateurs de \stady aient apprécié ses résultats, nous
+n'avons pas encore eu l'occasion d'évaluer proprement la pertinence des
+résultats avec un groupe représentatif d'utilisateurs.
+En attendant de conduire une telle expérimentation, nous avons simulé les
+erreurs des utilisateurs par des mutations, ce qui permet de recréer des
+situations fréquentes et problématiques (code incorrect, annotation incorrecte,
+spécification incomplète) aboutissant à des échecs de preuve.
+Cette approche semble appropriée pour les non-conformités et les faiblesses de
+sous-contrats, mais l'est certainement moins pour les cas plus subtiles
+d'incapacités de prouveur.
+Ces résultats devraient être confirmés à l'avenir par une évaluation de \stady
+par un échantillon représentatif d'utilisateurs.
 
 
 \section*{Conclusion du chapitre}
@@ -419,4 +412,4 @@ Dans ce chapitre, nous avons présenté l'architecture du greffon \stady, notre
 implémentation de la méthode présentée aux chapitres~\ref{sec:ncd},
 \ref{sec:swd} et~\ref{sec:method}.
 Nous avons également présenté les résultats de nos expérimentations évaluant
-la capacité de diagnostic et les performances de \stady.
+la capacité de diagnostic des échecs de preuve et les performances de \stady.
