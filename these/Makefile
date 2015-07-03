@@ -58,7 +58,7 @@ chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
 chapter_method_DEPS=table_rgf.pdf
 chapter_eacsl_DEPS=figures/mmodel_architecture.pdf
 chapter_stady_DEPS=full_exp_latex_IEEE.csv figures/stady_architecture.pdf
-chapter_existant_DEPS=listings/swap.c
+chapter_art_DEPS=listings/swap.c
 chapter_runtime_DEPS=figures/fig_mem_annots.tex \
 		listings/mem_annots.c \
 		listings/mem_annots_instru.c \
