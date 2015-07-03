@@ -1,7 +1,7 @@
 MLPOST_EXEC :=$(shell which mlpost)
 MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
-MLFIG=frama_c_architecture.ml
+MLFIG= #frama_c_architecture.ml
 FIG=$(MLFIG:.ml=.mps) \
 	figures/fig_mem_annots.tex \
 	figures/fig_add_patricia_trie.tex \
