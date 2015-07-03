@@ -116,7 +116,7 @@ Cette seconde implémentation s'est révélée en moyenne 2.7 fois plus rapide q
 la première sur nos exemples.
 
 
-\begin{table}[tb]
+\begin{figure}[tb]
   \centering
   \begin{tabular}{c|c|c|c|c|c}
     & alarmes & mutants & équivalents & tués & \% erronés tués \\
@@ -133,7 +133,7 @@ la première sur nos exemples.
   \end{tabular}
   \caption{Capacité de détection d'erreurs
     \label{tab:mutation-exp}}
-\end{table}
+\end{figure}
 
 
 \textbf{Capacité de détection d'erreurs :} \\
@@ -154,7 +154,7 @@ pour vérifier que la spécification était satisfaite à l'exécution.
 Les programmes d'origine passent toutes les vérifications à l'exécution.
 Lorsqu'une violation d'une annotation a été reportée pour au moins un cas de
 testn le mutant est considéré comme étant {\em tué}.
-Le tableau~\ref{tab:mutation-exp} présente les résultats.
+La figure~\ref{tab:mutation-exp} présente les résultats.
 Exception faite des mutants équivalents (lorsque la mutation produit un
 programme équivalent au programme d'origine), tous les mutants erronés ont été
 tués.
@@ -233,7 +233,7 @@ tués.
 %% \end{figure}
 
 
-Le tableau~\ref{tab:mmodel-exp} présente les résultats des expérimentations
+La figure~\ref{tab:mmodel-exp} présente les résultats des expérimentations
 comparant les différentes implémentations du {\em store} et du calcul du plus
 grand préfixe commun.
 $bS_{10000}$ est une recherche binaire dans un tableaux de 10000 éléments.
@@ -283,7 +283,7 @@ ce qui nécessite un monitoring plus lourd.
 La figure~\ref{fig:mmodel-exp} représente graphiquement le temps (en secondes)
 passé par chaque implémentation du {\em store} sur un tri fusion de 1000, 5000,
 10000, 50000 et 100000 éléments (les données chiffrées sont dans les cinq
-dernières lignes du tableau~\ref{tab:mmodel-exp}).
+dernières lignes de la figure~\ref{tab:mmodel-exp}).
 
 Les résultats de nos expérimentations confirment nos hypothèses, à savoir :
 \begin{itemize}
@@ -310,12 +310,12 @@ implémentation du {\em store} à base de Patricia trie.
 
 
 \begin{landscape}
-  \begin{table}[h]
+  \begin{figure}[h]
     \centering
     \begin{footnotesize}
       \input{table_eacsl_experiments.tex}
     \end{footnotesize}
     \caption{Comparaison des différentes implémentations du {\em store}
       \label{tab:mmodel-exp}}
-  \end{table}
+  \end{figure}
 \end{landscape}
