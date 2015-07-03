@@ -129,14 +129,11 @@ diagnostiquées dans le temps imparti.
 Pour corriger ce défaut, l'option {\em smart} est définie.
 Elle consiste à appliquer {\em min} itérativement en
 diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
-supprimées seront des alarmes classifiées ou des alarmes finales.
-
-\begin{definition}[Alarme finale]
-Une alarme finale est une alarme dont aucune autre alarme de dépend mais
-pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
+supprimées seront des alarmes classifiées ou des {\em alarmes finales}.
+Nous appelons \emph{alarme finale} une alarme dont aucune autre alarme de dépend
+mais pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
 Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
 mutuelles).
-\end{definition}
 
 De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
 l'ensemble des alarmes privé des alarmes finales) produira un programme
@@ -253,10 +250,39 @@ déterminer si chacun des pointeurs peut être \lstinline[language=java]{null}.
 Puis une analyse d'alias est opérée afin d'augmenter la précision de l'analyse
 statique.
 
-Contrairement à \sante qui commence par utiliser une
-analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
-une analyse dynamique; cette méthode commence par une analyse dynamique, dont
-le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
+%% Contrairement à \sante qui commence par utiliser une
+%% analyse statique, dont le résultat paramètre le {\em slicing}, puis termine par
+%% une analyse dynamique; cette méthode commence par une analyse dynamique, dont
+%% le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
+
+
+\subsubsection*{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
+
+
+Le raffinement d'abstraction guidé par des contre-exemples \cite{\citecegar}
+associe
+l’abstraction par prédicats et le model-checking : une abstraction du programme
+est générée à partir d’un ensemble de prédicats et invariants. Si le
+model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
+alors le modèle concret est correct (pas d'erreurs de sûreté ou de liveness).
+Si le model-checking a trouvé un contre-exemple pour le modèle abstrait il faut
+déterminer s'il correspond à un contre-exemple réel dans le système concret.
+Pour cela, l'algorithme détermine s'il existe une trace d'exécution concrète
+correspondant à la trace d'exécution abstraite aboutissant au contre-exemple.
+Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
+seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
+absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
+terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
+lesquels \blast \cite{\citeblast}, \magic \cite{\citemagic} et
+\slam \cite{\citeslam}.
+
+Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
+générée peut donc mettre un certain temps avant de converger vers une forme
+acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
+raffinement de l'abstraction : \cegaar \cite{\citecegaar}. Cette technique
+élimine une infinité de contre-exemples (traces infaisables) de la forme
+$\alpha . \lambda^{*} . \beta$ en une seule étape, où $\lambda$ correspond à une
+ou plusieurs exécutions d'une boucle.
 
 
 \subsubsection*{\blast}
@@ -288,6 +314,10 @@ réutilisés si possible afin d'éviter de ré-exécuter la fonction corresponda
 La génération automatique de ces résumés est présentée comme se faisant par
 ``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
 dynamique car utilisant une exécution symbolique (et résolution de contraintes).
+\smart exécute une analyse dynamique compositionnelle, c'est-à-dire que les
+résultats intermédiaires sont mémorisés sous la forme de résumés réutilisables.
+C'est une extension de l'algorithme d'analyse dynamique non compositionnelle de
+\dart, mais n'effectue pas d'analyse statique. 
 
 
 \subsubsection*{\synergy, \dash et \yogi}
@@ -300,7 +330,6 @@ d'erreur). La sous-approximation du test et la sur-approximation de
 l'abstraction sont raffinées de manière itérative. L'abstraction est utilisée
 pour guider la génération de tests. Les tests sont utilisés pour décider
 {\em où} raffiner l'abstraction.
-
 Les états de l'abstraction, les régions, sont des classes d'équivalence des
 états du programme concret. S'il n'existe aucun chemin de la région initiale
 vers une région d'erreur, alors il n'existe aucune suite de transitions
@@ -308,10 +337,14 @@ concrètes menant d'un état initial concret à un état d'erreur concret.
 
 \dash \cite{\citedash} est une évolution de \synergy, prenant en
 compte les appels de procédure et les pointeurs (contrairement à
-\synergy). \dash raffine l'abstraction en utilisant uniquement
+\synergy).
+\dash est inter-procédural mais non compositionnel.
+\dash raffine l'abstraction en utilisant uniquement
 les relations d'alias mises en évidence par les tests. La génération de tests
 guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
 la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
+\synergy combine \slam et \dart (\cegar compositionnel + test non
+compositionnel). L'algorithme est intra-procédural.
 
 
 \subsubsection*{\sage}
@@ -338,35 +371,14 @@ permettant de montrer l'existence d'erreurs, c'est une sous-approximation). Ces
 résumés sont calculés à la demande et seront utilisés aussi bien par l'analyse
 statique que par l'analyse dynamique (les deux analyses s'exécutent
 simultanément).
-
 Ces résumés sont progressivement raffinés pour chaque fonction, afin de prouver
 qu'une propriété n'est jamais violée (si un résumé statique est applicable), ou
 de mettre en évidence une exécution violant une propriété (si un résumé
 dynamique est applicable). Par construction, il n'est pas
 possible que les deux résumés soient applicables.
+\Smash est la version compositionelle de \dash.
 
-\begin{definition}[Analyse compositionnelle]
-Mémoization des résultats intermédiaires sous la forme de résumés réutilisables.
-\end{definition}
-
-
-\subsubsection*{Résumé des outils Microsoft}
-
-
-\slam utilise une abstraction par prédicat et un raffinement
-de partition (implémentation de l'algorithme \cegar) pour
-effectuer une analyse statique compositionnelle mais n'effectue pas d'analyse
-dynamique. \smart exécute une analyse dynamique
-compositionnelle. C'est une extension de l'algorithme d'analyse dynamique non
-compositionnelle de \dart, mais n'effectue pas d'analyse
-statique. \synergy combine \slam et
-\dart (\cegar compositionnel + test non
-compositionnel). L'algorithme est intra-procédural. \dash
-étend l'algorithme \synergy, il est inter-procédural mais non
-compositionnel. \Smash est la version compositionelle de
-\dash.
-
-La figure~\ref{tab:microsoft-summary} résume graphiquement ces outils.
+La figure~\ref{tab:microsoft-summary} résume les caractéristiques de ces outils.
 
 \begin{figure}[bt]
   \centering
@@ -407,35 +419,6 @@ exécution concrète et par exécution symbolique du programme. Ces informations
 permettent de générer des contraintes qui vont permettre au solveur de
 contraintes de simplifier le système de contraintes et de réduire l'espace de
 recherche.
-
-
-\subsubsection*{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
-
-
-Le raffinement d'abstraction guidé par des contre-exemples \cite{\citecegar}
-associe
-l’abstraction par prédicats et le model-checking : une abstraction du programme
-est générée à partir d’un ensemble de prédicats et invariants. Si le
-model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
-alors le modèle concret est correct (pas d'erreurs de sûreté ou de liveness).
-Si le model-checking a trouvé un contre-exemple pour le modèle abstrait il faut
-déterminer s'il correspond à un contre-exemple réel dans le système concret.
-Pour cela, l'algorithme détermine s'il existe une trace d'exécution concrète
-correspondant à la trace d'exécution abstraite aboutissant au contre-exemple.
-Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
-seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
-absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
-terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
-lesquels \blast \cite{\citeblast}, \magic \cite{\citemagic} et
-\slam \cite{\citeslam}.
-
-Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
-générée peut donc mettre un certain temps avant de converger vers une forme
-acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
-raffinement de l'abstraction : \cegaar \cite{\citecegaar}. Cette technique
-élimine une infinité de contre-exemples (traces infaisables) de la forme
-$\alpha . \lambda^{*} . \beta$ en une seule étape, où $\lambda$ correspond à une
-ou plusieurs exécutions d'une boucle.
 
 
 \subsubsection*{\dsdcrasher et \checkncrash}
