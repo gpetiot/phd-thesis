@@ -51,7 +51,7 @@ all_DEPS=chapter.tex header.tex $(BIB) style_listings.tex commands.tex
 chapter_swd_DEPS=listings/ex1.c \
 		listings/ex2.c \
 		listings/rgf_0.c
-chapter_motiv_contrib_DEPS=figures/user_f.png \
+chapter_intro_DEPS=figures/user_f.png \
 			figures/user_m.png
 chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
 		listings/findSubstr.c
