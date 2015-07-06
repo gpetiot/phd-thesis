@@ -184,9 +184,10 @@ assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n
 aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
 également des points de contrôle à l'endroit des instructions signalées par
 l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
-par \pex. Cette étape est semblable à l'instrumentation
-opérée par \sante pour rajouter des points de contrôle afin
-de guider l'exécution concolique du programme par \pathcrawler.
+par \pex.
+%% Cette étape est semblable à l'instrumentation
+%% opérée par \sante pour rajouter des points de contrôle afin
+%% de guider l'exécution concolique du programme par \pathcrawler.
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
 \dyta de calculer les points de contrôle à partir desquels les alarmes
@@ -225,12 +226,12 @@ mettant en évidence des contre-exemples. L'utilisateur peut décider de
 privilégier l'analyse statique ou le test selon qu'il spécifie ou non son
 programme.
 
-Cette combinaison d'analyse statique, d'une instrumentation et du test est
-comparable à \sante, bien qu'il manque l'étape de slicing
-qui permet à \sante d'économiser du temps sur l'analyse dynamique. En
-revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
-statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
-possible avec \sante.
+%% Cette combinaison d'analyse statique, d'une instrumentation et du test est
+%% comparable à \sante, bien qu'il manque l'étape de slicing
+%% qui permet à \sante d'économiser du temps sur l'analyse dynamique. En
+%% revanche, cette méthode présente l'avantage de combiner plusieurs analyseurs
+%% statiques et de vérifier partiellement des propriétés, ce qui n'est pas encore
+%% possible avec \sante.
 
 
 \subsubsection*{Vérification de propriétés décrites par des automates finis}
@@ -248,15 +249,15 @@ l'atteignabilité des états d'erreur de l'automate.
 L'exécution symbolique du programme par \klee \cite{\citeklee} va permettre
 de mettre en évidence des contre-exemples pour ces propriétés.
 
-L'utilisation du {\em slicing} afin de réduire la portion de code analysée
-(et donc le nombre de chemins d'exécution) par l'exécution symbolique est
-similaire à \sante \cite{\citesante}. En revanche, cette méthode ne semble
-pas applicable quel que soit le type d'erreur.
-\cite{Slaby/FMICS12} prend l'exemple de verrous à poser sur des
-variables du programme. L'instrumentation repère des motifs bien précis dans le
-programme et le code généré est spécifique à ce type d'erreur. Contrairement à
-\sante, cette méthode n'applique pas d'analyse statique plus générale
-(pouvant lever différents types d'alarmes) avant l'instrumentation.
+%% L'utilisation du {\em slicing} afin de réduire la portion de code analysée
+%% (et donc le nombre de chemins d'exécution) par l'exécution symbolique est
+%% similaire à \sante \cite{\citesante}. En revanche, cette méthode ne semble
+%% pas applicable quel que soit le type d'erreur.
+%% \cite{Slaby/FMICS12} prend l'exemple de verrous à poser sur des
+%% variables du programme. L'instrumentation repère des motifs bien précis dans le
+%% programme et le code généré est spécifique à ce type d'erreur. Contrairement à
+%% \sante, cette méthode n'applique pas d'analyse statique plus générale
+%% (pouvant lever différents types d'alarmes) avant l'instrumentation.
 
 
 \subsubsection*{Localisation d'erreurs par slicing guidé par la trace d'exécution}
@@ -447,10 +448,10 @@ contraintes et génération de tests (\jcrasher \cite{\citejcrasher}). La
 classification des alarmes et la génération de tests sont très dépendantes de
 la qualité des invariants générés par \daikon.
 
-Cette méthode se distingue de \sante \cite{\citesante} par son analyse
-dynamique préliminaire qui détecte des invariants afin de guider l'analyse
-statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
-d'augmenter le taux de classification des alarmes par l'analyse dynamique.
+%% Cette méthode se distingue de \sante \cite{\citesante} par son analyse
+%% dynamique préliminaire qui détecte des invariants afin de guider l'analyse
+%% statique. En revanche, elle n'utilise pas le {\em slicing} qui permet
+%% d'augmenter le taux de classification des alarmes par l'analyse dynamique.
 
 
 \subsubsection*{Génération de données de test par algorithme génétique}
