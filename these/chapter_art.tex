@@ -21,7 +21,28 @@ combiner pour associer leurs avantages et combattre leurs inconvénients
 domaine de la vérification de programmes.
 
 
+\subsubsection*{Vérification formelle et test avec \spark}
+
+
+L'intégration de la vérification formelle dans un processus de validation à base
+de tests (comme c'est le cas dans l'avionique) est présenté dans
+\cite{Comar/ERTS12} dans le cadre de \spark \cite{\citespark}.
+\spark est un sous-ensemble du langage Ada orienté pour la conception
+d'applications critiques sûres et sécurisées.
+C'est aussi un écosystème d'outils contenant entre autres l'outil de preuve
+\textsc{SPARKprove} et l'outil de test \textsc{SPARKtest}.
+\cite{Comar/ERTS12} présente la vérification des contrats \spark implicites et
+des contrats définis par l'utilisateur, ainsi que la définition de cas de tests
+formels dans les contrats \spark.
+La vérification des hypothèses utilisées par la preuve ou le test d'une partie
+d'un programme \spark est présentée dans \cite{Kanig/TAP14}.
+La méthodologie utilisée permet uniquement d'utiliser le test ou la preuve sur
+une fonction, contrairement à \framac où il est possible d'utiliser différentes
+techniques de vérification sur différentes propriétés d'une même fonction.
+
+
 \subsubsection*{\textsc{Static ANalysis and TEst}}
+
 
 La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
 \framac, combine l'interprétation abstraite, le {\em slicing} et la
