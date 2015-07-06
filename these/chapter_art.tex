@@ -473,6 +473,20 @@ optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
 efficace que la programmation par contraintes (en terme de temps d'exécution).
 
 
+\subsubsection*{Preuve et validation à l'exécution}
+
+
+La plateforme \textsc{staRVOOrS} \cite{Ahrendt/FM15} propose une vérification en
+deux étapes : vérification déductive du programme avec \textsc{KeY} afin de
+prouver les propriétés portant sur les données, puis une validation à
+l'exécution avec \textsc{Larva} afin de vérifier les propriétés portant sur le
+flot de contrôle.
+Cette méthode repose sur \textsc{ppDATE}, un langage de spécification encodant
+les propriétés du flot de contrôle à base d'automates, où les états de
+l'automate sont augmentés par des pré- et postconditions (à la \jml) afin
+d'encoder les propriétés portant sur les données du programme.
+
+
 \section{Aide à la preuve de programmes}
 
 
