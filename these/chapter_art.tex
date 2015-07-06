@@ -347,18 +347,6 @@ la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
 compositionnel). L'algorithme est intra-procédural.
 
 
-\subsubsection*{\sage}
-
-
-\sage \cite{\citesage} utilise une analyse dynamique uniquement afin de générer
-des tests pour des programmes au format binaire x86. Il combine une exécution
-symbolique à du {\em fuzz testing}. Une première exécution avec des entrées
-valides permet de récupérer une trace d'exécution du programme. L'exécution
-symbolique de cette trace permet de collecter les contraintes du chemin
-d'exécution. De nouveaux chemins sont générés par négation des contraintes,
-à la manière de \pathcrawler et autres outils similaires.
-
-
 \subsubsection*{\Smash}
 
 

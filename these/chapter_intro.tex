@@ -259,6 +259,13 @@ sous test, dont \smart \cite{\citesmart}, \pex \cite{\citepex},
 utilisent des solveurs de contraintes pour générer des cas de test permettant
 d'aboutir à une couverture souhaitée des exécutions du programme par les tests.
 
+\sage \cite{\citesage} utilise une analyse dynamique afin de générer
+des tests pour des programmes au format binaire x86. Il combine une exécution
+symbolique à du {\em fuzz testing}. Une première exécution avec des entrées
+valides permet de récupérer une trace d'exécution du programme. L'exécution
+symbolique de cette trace permet de collecter les contraintes du chemin
+d'exécution. De nouveaux chemins sont générés par négation des contraintes.
+
 \pathcrawler \cite{\citepathcrawler} est un outil de génération de tests
 structurels pour les programmes C, accessible sous la forme d'un service web :
 \textsc{PathCrawler Online} \cite{\citepconline}.
