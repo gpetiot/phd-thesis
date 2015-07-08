@@ -5,12 +5,19 @@
 
 \chapterintro
 
-.
-\commentGP{TODO}
+
+Dans ce chapitre nous passons en revue les travaux existants combinant analyses
+statiques et analyses dynamiques, ou ayant pour objectif d'aider la vérification
+déductive.
+Nous présentons leurs forces et leurs faiblesses puis concluons en mettant en
+avant ce que nous souhaitons apporter à ces travaux.
+La partie~\ref{sec:art-comb} présente les travaux combinant analyses statiques
+et dynamiques et la partie~\ref{sec:art-proof} recense les travaux visant à
+aider la vérification déductive de programmes.
 
 
 \section{Combinaisons d'analyses statiques et d'analyses dynamiques}
-\label{sec:combinaison}
+\label{sec:art-comb}
 
 
 Les méthodes statiques et les méthodes dynamiques ont des avantages et des
@@ -404,13 +411,13 @@ La figure~\ref{tab:microsoft-summary} résume les caractéristiques de ces outil
       \hline
       \dart & & & & & \ok & \\
       \hline
-    \smart & & & & & & \ok \\
-    \hline
-    \synergy & \ok & & & \ok & & \\
-    \hline
-    \dash & & \ok & & & \ok & \\
-    \hline
-    \Smash & & & \ok & & & \ok \\
+      \smart & & & & & & \ok \\
+      \hline
+      \synergy & \ok & & & \ok & & \\
+      \hline
+      \dash & & \ok & & & \ok & \\
+      \hline
+      \Smash & & & \ok & & & \ok \\
     \end{tabular}
   \end{scriptsize}
   \caption{Type d'analyse et caractéristiques des outils de Microsoft}
@@ -488,29 +495,121 @@ d'encoder les propriétés portant sur les données du programme.
 
 
 \section{Aide à la preuve de programmes}
+\label{sec:art-proof}
 
 
-\subsubsection*{Génération de tests unitaires à partir de preuves formelles}
+\subsubsection*{Analyse des arbres de preuve}
 
 
-\cite{Engel/TAP07} présente une méthode de
-génération automatique de tests unitaires pour \textsc{Java Card} à partir d'une
-tentative de preuve formelle du système, qui doit être au préalable annoté en
-utilisant le langage de spécification \jml \cite{\citejml}.
+Une précision plus grande peut être obtenue en analysant statiquement les
+branches d'un arbre de preuve.
+La méthode proposée par \cite{Gladisch/TAP09} dans le contexte du prouveur
+\textsc{KeY} applique des règles de déduction à une formule mêlant le programme
+et sa spécification.
+Cette méthode propose une vérification de la préservation de falsifiabilité
+({\em falsifiability preservation checking}) qui permet de décider si l'échec
+de preuve d'une branche provient d'une erreur ou d'une faiblesse de contrat.
+Cependant, cette technique ne peut détecter les erreurs que si les contrats sont
+suffisamment forts et elle n'est automatique que si le proveur peut décider la
+(non-)satisfiabilité d'une formule logique de premier ordre exprimant la
+condition de la préservation de falsifiabilité.
 
+\cite{Engel/TAP07} présente une méthode de génération automatique de tests
+unitaires pour \textsc{Java Card} à partir d'une tentative de preuve par le
+prouveur \textsc{KeY}.
+Ici aussi, les arbres de preuve générés par \textsc{KeY} sont exploités.
 L'information contenue dans la preuve (même partielle) est utilisée
-pour extraire des données de test à partir des conditions de chemins. Les
-oracles sont générés à partir des postconditions. En revanche, il n'y a aucune
-garantie sur le critère de couverture des chemins par les tests générés,
-celle-ci dépend de la qualité de la spécification du code (présence des
-invariants de boucle, etc.).
+pour extraire des données de test à partir des conditions de chemins et les
+oracles sont générés à partir des postconditions.
+En revanche, la pertinence des tests générés dépend de la qualité de la
+spécification écrite par l'utilisateur, et ne permet pas de distinguer les
+échecs de preuve dus à une non-conformité des échecs de preuve dus à une
+faiblesse de spécification.
 
 
-\commentGP{TODO}
-état de l'art ISSRE'15
+\subsubsection*{Compréhension des échecs}
+
+
+\cite{Tschannen/14} propose une vérification en deux étapes qui compare les
+échecs de preuve d'un programme \eiffel avec et sans déroulage des boucles et
+{\em inlining} des fonctions.
+Cette méthode suggère des modification à apporter au code et à la spécification 
+après comparaison des échecs de preuve.
+L'{\em inlining} des fonctions et le déroulage des boucles sont limités
+respectivement à un nombre donné d'appels imbriqués et à un nombre donné
+d'itérations.
+Si ce nombre est insuffisant, la sémantique du programme initial est perdue et
+la fiabilité des résultats en est affectée.
+
+\cite{Claessen/TAP08} propose une méthode de génération de contre-exemples
+montrant que les invariants inductifs d'un système de transitions sont trop
+forts ou trop faibles.
+Leur méthode utilise le test aléatoire (avec \textsc{QuickCheck}) et est
+orientée vers les invariants inductifs des systèmes de transitions et aux
+protocoles, ce qui la rend difficilement applicable à la vérification de
+programmes.
+
+
+\subsubsection*{Vérification des hypothèses}
+
+
+Les axiomes sont des propriétés logiques utilisées comme hypothèses par les
+prouveurs et sont donc rarement vérifiées.
+Néanmoins, les vérifier permet de s'assurer de la consistance d'une
+axiomatisation.
+\cite{Ahn/TAP10} propose d'appliquer du test à base de modèles
+({\em model-based testing}) sur un modèle défini à partir d'un axiome afin de
+détecter les erreurs éventuelles dans les axiomes.
+Ce travail s'intéresse au cas où la vérification déductive réussit à cause
+d'une axiomatisation invalide (inconsistante), ce qui est complémentaire à nos
+motivations qui visent à traiter le cas où la vérification déductive échoue.
+
+\cite{Christakis/FM12} propose de compléter les résultats des analyses statiques
+avec une exécution symbolique dynamique utilisant \pex.
+Les hypothèses explicites utilisées par la preuve (absence de
+débordement arithmétique, absence d'{\em aliasing}, etc.) créent de nouvelles
+branches dans le graphe de flot de contrôle du programme, que \pex essaiera
+ensuite d'explorer.
+Cette approche permet de détecter des erreurs hors de portée des analyseurs
+statiques considérés, mais ne génère pas de contre-exemples en cas de
+spécification trop faible.
+
+
+\subsubsection*{Exécution des contre-exemples}
+
+
+\cite{Muller/FM11} propose d'étendre un validateur d'assertions à l'exécution
+({\em runtime assertion checker}) afin de l'utiliser comme débogueur
+({\em debugger}) afin de comprendre les contre-exemples d'échecs de preuve
+complexes.
+
+L'environnement de développement \dafny \cite{Leino/FIDE14} fournit un retour à
+l'utilisateur pendant la phase de développement.
+\dafny intègre le \boogie {\em Verification Debugger} \cite{LeGoues/SEFM11}
+qui aide l'utilisateur à comprendre les contre-exemples produits par des
+outils de vérification tels \boogie.
+Actuellement, \dafny ne supporte que les contre-exemples fournis par le solveur
+et ne produit pas d'informations supplémentaires quand la vérification échoue
+ou atteint un {\em timeout}.
 
 
 \section*{Conclusion du chapitre}
 
 
-\commentGP{TODO}
+Nous avons présenté dans ce chapitre les différents travaux de vérification
+existants qui combinent analyses statiques et analyses dynamiques ou qui visent
+à aider la vérification déductive.
+Nous poursuivons les travaux précédents afin d'aider la vérification déductive
+par la génération de contre-exemples.
+La technique originale de diagnostic des échecs de preuve que nous présentons
+dans les chapitres suivants donne un résultat plus précis que les travaux
+présentés dans ce chapitre.
+En particulier, nous affirmons que les contre-exemples générés par notre méthode
+permettent de mieux identifier la raison des échecs de preuve qu'un
+contre-exemple extrait à partir d'un prouveur.
+Nous affirmons par la même occasion l'indépendance de notre méthode vis-à-vis
+des prouveurs sous-jacents utilisés.
+À notre connaissance, une telle méthode combinant le test et la preuve,
+fournissant automatiquement un retour précis à l'utilisateur quant à la raison
+des échecs de preuve, n'a pas été étudiée, implémentée et expérimentée
+auparavant.
