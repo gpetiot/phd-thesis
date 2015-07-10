@@ -19,7 +19,48 @@
 \addjury{Firstname}{Lastname}{Role}{Job}
 
 \thesisabstract[english]{
-  Abstract
+  Software verification often relies on a formal specification encoding
+  the program properties to check.
+  Formally specifying and deductively verifying programs is difficult and time
+  consuming and requires some knowledge about theorem provers.
+  Indeed, a proof failure for a program can be due to a non-compliance between
+  the code and its specification, a loop or callee contrat being insufficient to
+  prove another property, or a prover incapacity.
+  It is often difficult for the user to decide which one of these three reasons
+  causes a given proof failure.
+  Indeed, this feedback is not (or rarely) provided by the theorem prover thus
+  requires a thorough review of the code and the specification.
+  This thesis develops a method to automatically diagnose proof failures and
+  facilitate the specification and verification task.
+  This work takes place within the analysis framework for C programs Frama-C,
+  that provides the specification language ACSL, the deductive verification
+  plugin WP, and the structural test generator PathCrawler.
+
+  The proposed method consists in diagnosing proof failures using structural
+  test generation on an instrumented version of the program under verification.
+  This method is composed of two steps.
+  First, we try to detect non-compliances between the code and its
+  specification.
+  This requires to translate ACSL annotations into C in order to explicit
+  potential annotation violations, by creating new execution branches in the
+  program.
+  Preserving the program semantics with the translation ensures structural test
+  generation to detect errors in the code and specification on the assumption
+  that all feasible program paths are covered.
+  Second, if the program code complies to its specification, we try to detect
+  subcontract weaknesses (i.e. weakness of loop or callee contracts).
+  This requires a different translation of ACSL annotations into C, in order to
+  ``execute'' some contracts instead of the corresponding specified code.
+  If neither of these two steps are able to provide a reason concerning the
+  proof failure and if all feasible execution paths are covered by test
+  generation, then the proof failure is due to a prover incapacity, otherwise
+  we cannot conclude.
+
+  We present the translation rules for each step of our method and rigorously
+  justify their soundness.
+  We also present our implementation of the method as a Frama-C plugin, StaDy,
+  and our experimental results witnessing its capability and efficiency at
+  diagnosing proof failures.
 }
 \thesiskeywords[english]{
   static analysis,
