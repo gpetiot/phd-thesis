@@ -492,4 +492,48 @@ Liste des contributions :
 \label{sec:plan}
 
 
-\commentGP{TODO}
+Nous avons présenté le contexte de nos travaux ainsi que la problématique, nos
+motivations et nos contributions.
+Nous annonçons maintenant le plan de la thèse.
+
+Un état de l'art détaillé du domaine, centré sur les combinaisons d'analyses
+statiques et d'analyses dynamiques ainsi que sur l'aide à la preuve est
+donné dans le chapitre~\ref{sec:state-art}.
+Le chapitre~\ref{sec:lang} définit la grammaire des langages de programmation et
+de spécification considérés dans nos travaux : respectivement un sous-ensemble
+du langage C et un sous-ensemble du langage \acsl.
+Ce chapitre définit également la sémantique associée à ces langages.
+
+Les chapitre suivants détaillent nos contributions.
+Le chapitre~\ref{sec:traduction} présente une traduction des annotations \acsl
+en C appropriée pour une détection par génération de tests des non-conformités
+entre le code et la spécification.
+Ce chapitre reprend les contributions de l'article~\cite{Petiot/SCAM14}.
+Le chapitre~\ref{sec:runtime} aborde la validation d'annotations \acsl liées au
+modèle mémoire.
+Ce sont des annotations particulières que nous ne validons à l'exécution et non
+par génération automatique de tests structurels.
+Ce chapitre reprend les contributions de l'article~\cite{Kosmatov/RV13}.
+
+Nous présentons notre méthode de détection des non-conformités entre le code et
+la spécification au chapitre~\ref{sec:ncd}, notre méthode de détection des
+faiblesses de contrats au chapitre~\ref{sec:swd}.
+Le chapitre~\ref{sec:method} présente une méthode plus générale combinant ces
+deux méthodes de détection afin de diagnostiquer les échecs de preuve de
+programmes.
+Le chapitre~\ref{sec:ncd} reprend les contributions de
+l'article~\cite{Petiot/TAP14}.
+\commentGP{
+Les chapitres~\ref{sec:swd} et~\ref{sec:method} reprennent les contributions de
+l'article~\cite{Petiot/ISSRE15}.
+}
+
+Le chapitre~\ref{sec:eacsl} présente notre implémentation d'une bibliothèque C
+permettant de valider à l'exécution les annotations \acsl liées au modèle
+mémoire, ainsi que les résultats de nos expérimentations.
+Notre implémentation de notre méthode de diagnostic des échecs de preuve ainsi
+que les résultats de nos expérimentations sont présentés au
+chapitre~\ref{sec:stady}.
+
+Enfin, le chapitre~\ref{sec:end} présente le bilan de nos travaux et les
+différentes perspectives envisagées.
