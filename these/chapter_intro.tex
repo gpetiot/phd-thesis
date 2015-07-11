@@ -446,27 +446,54 @@ greffons.
   \begin{center}
     \begin{tikzpicture}[>=latex,font=\scriptsize]
       \node[] at (0,0) (Bob) {\includegraphics[scale=0.15]{figures/user_m.png}};
-      \node[below right of=Bob] {\textbf{Bob}, dev. engineer};
+      \node[below right of=Bob] {\textbf{Bob}, ingénieur développement};
       \node[draw=greenv,thick,minimum width=6.7cm,rounded corners,
-        align=center] (spec) at (2,1.9) {Requirements/Informal Specification};
+        align=center] (spec) at (2,1.9) {Spécification informelle};
       \node[above of=Bob,draw,node distance=1cm,thick,
         rounded corners,minimum width=2.65cm] (code) {Code};
       \node[right of=Bob,node distance=4cm] (Alice) {
         \includegraphics[scale=0.15]{figures/user_f.png}};
-      \node[below right of=Alice] {\textbf{Alice}, validation engineer};
+      \node[below right of=Alice] {\textbf{Alice}, ingénieur validation};
       \node[above of=Alice,draw,node distance=1cm,thick,
         rounded corners,minimum width=2.65cm] (annot) {
-        Formal Specification};
+        Spécification formelle};
       \node[draw,dotted,thick,fit=(code) (annot)] (code-annot) {};
       \node[right of=code-annot,draw,node distance=6.5cm,thick,
         rounded corners,minimum width=2.65cm,align=center] (wp) {
-        Deductive Verification};
+        Vérification déductive};
       \draw[->,thick] (code-annot.east) to[out=0,in=90] (wp);
       \draw[->,thick,color=orange] (wp.south) to[out=-90,in=0]
-      node[above=.2cm]{unknown}(Alice.east);
+      node[below right=.2cm]{échec de la preuve}(Alice.east);
     \end{tikzpicture}
   \end{center}
+  \caption{Processus de vérification par la preuve\label{fig:motiv}}
 \end{figure}
+
+
+La vérification de logiciels repose le plus souvent sur une spécification
+formelle encodant les propriétés du programme à vérifier.
+La tâche de spécification et de vérification déductive des programmes est
+longue et difficile et nécessite une connaissance des outils de preuve de
+programmes.
+En effet, un échec de preuve de programme peut être dû à une
+non-conformité du code par rapport à sa spécification, à un
+contrat de boucle ou de fonction appelée trop faible pour prouver une autre
+propriété, ou à une incapacité du prouveur.
+Il est souvent difficile pour l'utilisateur de décider laquelle de ces trois
+raisons est la cause de l'échec de la preuve car cette information n'est pas
+(ou rarement) donnée par le prouveur et requiert donc une revue approfondie
+du code et de la spécification.
+Cette situation problématique pour un ingénieur validation essayant de vérifier
+(prouver) un programme est illustrée par la figure~\ref{fig:motiv}.
+
+L'objectif de cette thèse est de fournir une méthode de diagnostic automatique
+des échecs de preuve afin de décider si la cause d'un échec de preuve est une
+non-conformité entre le code et la spécification, ou la faiblesse d'un ou
+plusieurs sous-contrats de la spécification, ou enfin une incapacité de l'outil
+de vérification déductive.
+Nos travaux ont donc pour but d'améliorer et de faciliter le processus de
+spécification et de preuve des programmes.
+
 
 
 \section{Contributions}
