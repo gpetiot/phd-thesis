@@ -500,19 +500,54 @@ spécification et de preuve des programmes.
 \label{sec:contrib}
 
 
-\commentGP{TODO}
+Nous proposons une méthode originale d'aide à la vérification déductive par
+génération de tests structurels sur une version instrumentée du programme
+d'origine.
+Cette méthode consiste en deux étapes.
 
+Premièrement, nous essayons de détecter les non-conformités du code par
+rapport à la spécification.
+Cette phase nécessite une traduction en C des annotations \acsl afin
+d'expliciter les violations potentielles d'annotations par la création de
+nouvelles branches dans le programme.
+La préservation de la sémantique par cette traduction nous assure de trouver
+les erreurs dans le code et dans la spécification par génération de tests
+structurels à condition de couvrir tous les chemins d'exécution faisables du
+programme.
+L'aspect méthodologique de cette première étape est détaillé
+dans~\cite{Petiot/TAP14} et la traduction des annotations est présentée
+dans~\cite{Petiot/SCAM14}.
 
-Liste des contributions :
-\begin{itemize}
-\item extension d'une méthode de génération de tests structurels de programmes C
-  à des programmes C annotés par le sous-ensemble du langage ACSL appelé E-ACSL
-\item développement d'une méthode de combinaison Test et Preuve
-\item proposition de scénarios types d'utilisation de cette méthode
-\item implémentation de la combinaison Test et preuve dans STADY
-\item expérimentations évaluant l'impact de la méthode
-\item stage E-ACSL
-\end{itemize}
+Deuxièmement, si le programme ne contient pas de non-conformité, nous essayons
+de détecter les faiblesses de sous-contrats (contrats de boucle ou de fonction
+appelée).
+Cette seconde phase nécessite une traduction en C des annotations \acsl
+différente de la première, car nous voulons pouvoir ``exécuter'' certains
+contrats au lieu du code qu'ils spécifient.
+Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
+et si la génération de tests a couvert tous les chemins d'exécution faisables
+du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
+sinon le problème reste non résolu.
+\commentGP{
+La combinaison de ces deux phases de détection est présentée
+dans~\cite{Petiot/ISSRE15}.
+}
+
+Cette méthode de diagnostic des échecs de preuve par génération de tests
+structurels est notre principale contribution, elle inclut la traduction en C
+des annotations \acsl pour la détection de non-conformités, la traduction en C
+des annotations \acsl pour la détection de faiblesses de sous-contrats, la
+justification de correction de ces traductions, l'implémentation de notre
+méthode de diagnostic des échecs de preuve par le test sous la forme d'un
+greffon \framac et des expérimentations évaluation l'impact de la méthode sur le
+diagnostic des échecs de preuve.
+L'outil a notamment permis de facilier la vérification déductive de
+certains programmes de~\cite{Genestier/TAP15}.
+
+Une autre contribution est la validation à l'exécution des annotations \acsl
+liées au modèle mémoire, ainsi que l'implémentation d'une bibliothèque
+permettant de valider ces annotations à l'exécution.
+Cette contribution est détaillée dans~\cite{Kosmatov/RV13}. 
 
 
 \section{Plan de la thèse}
