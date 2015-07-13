@@ -366,13 +366,22 @@ l'exécution.
 \label{sec:speclang}
 
 
+Les propriétés d'un programme à vérifier sont le plus souvent exprimées dans un
+langage de spécification formel \cite{Hatcliff/12}.
+Le langage \eiffel \cite{\citeeiffel} embarque son propre langage de
+spécification.
+\spark \cite{\citespark} est un langage de spécification pour le langage Ada.
+\jml (Java Modeling Language) \cite{\citejml} est un langage de spécification
+pour le langage Java et \acsl (ANSI/ISO C Specification Language)
+\cite{\citeacsl} est un langage de spécification pour le langage C fourni par
+la plateforme \framac \cite{\citeframac}.
 
-\commentGP{TODO}
-Java Modeling Language (\jml) \cite{\citejml}
-+
-ANSI/ISO C Specification Language (\acsl) \cite{\citeacsl}
+La plupart de ces langages conviennent aussi bien aux analyses statiques comme
+la preuve qu'aux analyses dynamiques comme le {\em runtime checking}
+\cite{Leavens/FMCO03, Leavens/AADEBUG05, Delahaye/SAC13, Ahrendt/FM15}.
 
-\spark \cite{\citespark}
+Nous présentons plus en détail le langage \acsl et son intégration dans \framac
+en partie~\ref{sec:framac}.
 
 
 \subsection{\framac}
