@@ -80,16 +80,6 @@ prédicats (section~\ref{sec:abstraction-predicats}) et la preuve de programmes
 (section~\ref{sec:preuve}).
 
 
-\subsubsection*{Langages de spécification}
-\label{sec:speclang}
-
-
-\commentGP{TODO}
-Java Modeling Language (\jml)
-+
-ANSI/ISO C Specification Language (\acsl)
-
-
 \subsubsection*{Interprétation abstraite}
 \label{sec:interpretation-abstraite}
 
@@ -213,23 +203,6 @@ aléatoire, le test structurel (section~\ref{sec:test-structurel}) et le test
 fonctionnel (section~\ref{sec:test-fonctionnel}). Comme son nom l'indique, le
 test aléatoire consiste à générer des valeurs d'entrée du programme au hasard et
 ne sera pas détaillé dans cette thèse.
-
-
-\subsubsection*{Langages de spécification exécutables}
-\label{sec:execspeclang}
-
-
-\eacsl est un sous-ensemble ``exécutable'' du langage \acsl
-implémenté dans \framac. Contrairement à \acsl, chaque
-spécification \eacsl est exécutable : elle peut être évaluée à
-l'exécution.
-
-
-\subsubsection*{Exécution symbolique pour le test structurel}
-\label{sec:exec-sym}
-
-
-\commentGP{TODO}
 
 
 \subsubsection*{Test structurel}
@@ -367,12 +340,39 @@ de test sont exprimés dans le langage \lustre \cite{\citelustre}. Cet outil
 offre la possibilité de réaliser des partitions de domaines.
 
 
-\subsubsection*{Monitoring}
+\subsubsection*{Validation à l'exécution}
 \label{sec:monitoring}
 
 
+La validation à l'exécution ou {\em runtime checking} \cite{Clarke/06} est
+l'évaluation de la spécification formelle d'un programme lors de son exécution.
+Cette méthode opère généralement sur une version modifiée (on dira
+{\em insturmentée}) du programme.
+Ainsi, si une annotation du programme initial est invalide, l'exécution du
+programme instrumenté provoque une erreur, sinon l'exécution est identique à
+celle du programme initial.
+
+Contrairement au test structurel ou au test fonctionnel, la validation à
+l'exécution opère sur un programme dont les entrées sont données.
+
+\textsc{jmlc} \cite{\citejml}, \textsc{Jahob} \cite{Kuncak/RV07},
+\textsc{SLICK} \cite{Nguyen/VMCAI08}, \textsc{APP} \cite{Rosenblum/ICSE92},
+\eiffel \cite{\citeeiffel}, \spark \cite{\citespark} et le greffon \eacsltoc
+\cite{\citeeacsltoc} de \framac sont des outils de validation des assertions à
+l'exécution.
+
+
+\subsection{Langages de spécification}
+\label{sec:speclang}
+
+
+
 \commentGP{TODO}
-RAC
+Java Modeling Language (\jml) \cite{\citejml}
++
+ANSI/ISO C Specification Language (\acsl) \cite{\citeacsl}
+
+\spark \cite{\citespark}
 
 
 \subsection{\framac}
@@ -493,7 +493,6 @@ plusieurs sous-contrats de la spécification, ou enfin une incapacité de l'outi
 de vérification déductive.
 Nos travaux ont donc pour but d'améliorer et de faciliter le processus de
 spécification et de preuve des programmes.
-
 
 
 \section{Contributions}
