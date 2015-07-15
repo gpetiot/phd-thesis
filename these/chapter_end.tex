@@ -3,18 +3,155 @@
 \label{sec:end}
 
 
-TODO
+Dans ce chapitre, nous rappelons les objectifs de la thèse en
+partie~\ref{sec:obj} puis présentons le bilan des travaux réalisés en
+partie~\ref{sec:bilan} ainsi que les perspectives envisagées en
+partie~\ref{sec:after}.
+
+
+\section{Rappel des objectifs}
+\label{sec:obj}
+
+
+Notre objectif principal était de fournir une méthode de diagnostic automatique
+des échecs de preuve afin de décider si la cause d'un échec de preuve est une
+non-conformité entre le code et la spécification, ou la faiblesse d'un ou
+plusieurs sous-contrats de la spécification, ou enfin une incapacité de l'outil
+de vérification déductive.
+Nos travaux ont donc pour but d'améliorer et de faciliter le processus de
+spécification et de preuve des programmes qui est long et difficile et nécessite
+une connaissance des outils de preuve de programmes.
+En effet, il est souvent difficile pour l'utilisateur de décider laquelle de ces
+trois raisons est la cause de l'échec de la preuve car cette information n'est
+pas (ou rarement) donnée par le prouveur et requiert donc une revue approfondie
+du code et de la spécification.
+
+Notre objectif était également de fournir une implémentation efficace de cette
+méthode de diagnostic des échecs de preuve, et d'évaluer les capacités de cet
+outil sur différents programmes.
 
 
 \section{Bilan}
 \label{sec:bilan}
 
 
-TODO
+Nous proposons une méthode originale d'aide à la vérification déductive par
+génération de tests structurels sur une version instrumentée du programme
+d'origine.
+Cette méthode consiste en deux étapes.
+
+Premièrement, nous essayons de détecter les non-conformités du code par
+rapport à la spécification.
+Cette phase nécessite une traduction en C des annotations \acsl afin
+d'expliciter les violations potentielles d'annotations par la création de
+nouvelles branches dans le programme.
+La préservation de la sémantique par cette traduction nous assure de trouver
+les erreurs dans le code et dans la spécification par génération de tests
+structurels à condition de couvrir tous les chemins d'exécution faisables du
+programme.
+
+Deuxièmement, si le programme ne contient pas de non-conformité, nous essayons
+de détecter les faiblesses de sous-contrats (contrats de boucle ou de fonction
+appelée).
+Cette seconde phase nécessite une traduction en C des annotations \acsl
+différente de la première, car nous voulons pouvoir ``exécuter'' certains
+contrats au lieu du code qu'ils spécifient.
+Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
+et si la génération de tests a couvert tous les chemins d'exécution faisables
+du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
+sinon le problème reste non résolu.
+
+Cette méthode de diagnostic des échecs de preuve par génération de tests
+structurels est notre principale contribution, elle inclut la traduction en C
+des annotations \acsl pour la détection de non-conformités, la traduction en C
+des annotations \acsl pour la détection de faiblesses de sous-contrats, la
+justification de correction de ces traductions, l'implémentation de notre
+méthode de diagnostic des échecs de preuve par le test sous la forme d'un
+greffon \framac (\stady) et des expérimentations évaluation l'impact de la
+méthode sur le diagnostic des échecs de preuve.
+
+Une autre contribution est la validation à l'exécution des annotations \acsl
+liées au modèle mémoire, ainsi que l'implémentation d'une bibliothèque
+permettant de valider ces annotations à l'exécution.
+
+
+\subsection{Publications associées à la thèse}
+
+
+Dans le cadre de nos travaux, nous avons publié quatre \commentGP{ou cinq}
+articles de recherche lors de conférences internationales :
+
+L'article~\cite{Kosmatov/RV13} présente notre méthode de validation à
+l'exécution des annotations \acsl liées au modèle mémoire et l'implémentation
+d'une bibliothèque permettant de valider ces annotations à l'exécution.
+
+L'article~\cite{Petiot/TAP14} détaille l'aspect méthodologique de notre méthode
+de détection des non-conformités entre le code et sa spécification.
+
+L'article~\cite{Petiot/SCAM14} présente la traduction des annotations \acsl en
+C pour la détection de non-conformités entre le code et la spécification.
+
+L'article~\cite{Genestier/TAP15} recense plusieurs programmes C dont la
+vérification déductive a été facilitée par \stady.
+
+\commentGP{si accepté :}
+L'article~\cite{Petiot/ISSRE15} présente une méthode globale de diagnostic des
+échecs de preuve combinant la détection des non-conformités entre le code et la
+spécification et la détection des faiblesses de sous-contrats.
 
 
 \section{Perspectives}
 \label{sec:after}
 
 
-TODO
+Nous suggérons maintenant quelques perspectives faisant suite à nos travaux dans
+le cadre des combinaisons d'analyses statiques et dynamiques et de l'aide à la
+vérification déductive.
+
+
+\subsection{Formalisation de la méthode}
+
+
+Compte tenu de l'importance de la traduction des annotations \acsl en C dans
+notre approche, aussi bien pour la détection des non-conformités que pour la
+détection des faiblesses de sous-contrats, la correction de cette traduction
+doit être assurée.
+Nous avons donné une première justification de cette correction dans le
+chapitre~\ref{sec:traduction}, mais il est possible d'aller plus loin dans cette
+direction et de formaliser cette traduction à l'aide d'un outil comme \coq
+\cite{\citecoq} ou \whythree \cite{\citewhythree}, d'une manière similaire à
+\cite{Herms/VSTTE12}.
+
+Il serait également utile d'appliquer ce principe au générateur de tests.
+Ceci peut se traduire par la formalisation en \coq de certaines parties de
+\pathcrawler et/ou par l'utilisation d'un solveur de contraintes certifié comme
+celui formalisé dans~\cite{Carlier/FM12}.
+
+Ces deux pistes permettraient de s'assurer formellement de la correction
+des résultats produits par nos outils.
+
+
+\subsection{Extension de la prise en charge d'acsl}
+
+
+Dans nos travaux nous avons pris en charge la majorité des constructions du
+langage \eacsl (sous-ensemble ``exécutable'' d'\acsl).
+Il serait peut-être possible de traiter des constructions du langage \acsl qui
+sont en dehors du langage \eacsl, comme les prédicats inductifs.
+\cite{Tollitte/CPP12} propose une méthode d'extraction de code fonctionnel
+(pour \coq) à partir de spécifications inductives.
+Peut-être que ces travaux peuvent servir de base à une méthode de traduction
+des spécifications inductives en code impératif (en C notamment) ce qui
+permettrait de prendre en charge les prédicats inductifs dans \stady.
+
+
+\subsection{Expérimentations}
+
+
+Au cours de cette thèse nous avons expérimenté l'efficacité de notre outil en
+terme de capacité de diagnostic et de temps d'exécution.
+Néanmoins, nous n'avons pas pu mesurer l'impact réel de l'outil du point de vue
+d'un utilisateur qui a pour tâche de spécifier et vérifier un programme.
+Une telle expérimentation permettrait de quantifier et qualifier l'aide au
+diagnostic des échecs de preuve fourni par \stady et donc l'apport d'un tel
+outil.
