@@ -65,7 +65,7 @@ La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
 et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
 Notons que pour prouver formellement la postcondition, l'invariant de boucle
 suivant est nécessaire, mais n'est pas inclus dans cet exemple simplifié :
-\lstinline'\forall integer k; 0<=k<=i-1 ==> \old(*(t+k))!=v;'.
+\lstinline'\forall integer k; 0<=k<=i-1 ==> \old(t[k])!=v;'.
 
 
 \subsection{Syntaxe des instructions et fonctions}
@@ -96,7 +96,7 @@ que cette variable n'entre pas en conflit avec une autre variable du programme.
 \textit{left-value} est toute expression pouvant se trouver en
 partie gauche d'une affectation (variable simple ou déréférencée).
 Les accès aux pointeurs et aux tableaux sont notés \lstinline't[i]' (ou
-\lstinline'*(p+i)').
+\lstinline'*(t+i)').
 Pour simplifier, \textit{basic-type} se limite aux types C \lstinline'int',
 \lstinline'char' et \lstinline'long', et \textit{type} se limite aux types
 simples (non pointeur) et aux pointeurs sur types simples.
@@ -219,25 +219,26 @@ Le symbole \lstinline'==>' encode l'implication logique et le symbole
 \label{sec:lang-semantics}
 
 
-Nous définissons en sections~\ref{sec:env} et~\ref{sec:store} les notions
-d'environnement et $store$, qui nous permettent de définir la notion de mémoire
-en section~\ref{sec:mem}.
+Nous définissons dans les parties~\ref{sec:env} et~\ref{sec:store} les notions
+d'environnement et de $store$, qui nous permettent de définir la notion de
+mémoire en partie~\ref{sec:mem}.
 Cette notion de mémoire nous permet de définir la sémantique dénotationnelle des
 instructions et fonctions d'un programme annoté par rapport à une mémoire.
 Dans la suite du document, nous utilisons les notations suivantes :
 \begin{itemize}
 \item $\mathit{lv}$, $\mathit{lv_1}$ et $\mathit{lv_2}$ sont des left-values;
-\item $\mathit{id}$, $\mathit{id_1}$ et $\mathit{id_N}$ sont des identificateurs
-  de variable;
+\item $x$, $x_1$ et $x_N$ sont des identificateurs de variable;
 \item $f$ est un identificateur de fonction;
-\item $v$ est une valeur;
+\item $v$ et $v_i$ sont des valeurs;
 \item $\mathit{cst}$ est une constante;
 \item $G$ et $X$ sont des listes de termes \eacsl;
 \item $i$, $i_1$, $i_2$ sont des instructions C;
 \item $A$ et $B$ sont des blocs d'instructions C;
-\item $e$, $e_1$, $e_2$, $e_N$ sont des expressions C;
+\item $e$, $e_1$, $e_2$, $e_3$, $e_N$ sont des expressions C;
 \item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl;
+\item $h$, $h_1$, $h_2$, $h_3$ sont des expressions C ou des termes \eacsl;
 \item $p$, $p_1$, $p_2$ sont des prédicats \eacsl;
+\item $\loc$, $\loc_1$, $\loc_2$, $\loc_N$ sont des adresses en mémoire;
 \item $T$ est un type C;
 \item $\mathit{unop}$ est un opérateur unaire;
 \item $\mathit{binop}$ est un opérateur binaire;
@@ -249,19 +250,18 @@ Dans la suite du document, nous utilisons les notations suivantes :
 \label{sec:env}
 
 Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
-$LOC$ est le domaine des adresses (locations) en mémoire, incluant l'adresse
+$LOC$ est le domaine des adresses (positions) en mémoire, incluant l'adresse
 nulle, notée \lstinline'NULL' $\in LOC$.
 $\bot$ dénote une adresse indéfinie et donc invalide.
-Un environnement $\env$ est une fonction partielle
+Un environnement $\env$ est une fonction
 $\env \in LV \rightarrow LOC \cup \{\bot\}$
-qui associe une adresse à chaque left-value.
-Nous notons $ENV \subseteq LV \rightarrow LOC \cup \{\bot\}$ le domaine des
+qui associe une adresse ou $\bot$ (indéfini) à chaque left-value.
+Nous notons $ENV = LV \rightarrow LOC \cup \{\bot\}$ le domaine des
 environnements.
 La notation $\env$[$\mathit{lv} \mapsto \loc$] désigne un nouvel environnement,
 correspondant à l'environnement $\env$ dans lequel l'adresse $\loc$ est associée
 à la left-value $\mathit{lv}$.
-L'accès à l'adresse d'une left-value $\mathit{lv}$ dans un environnement $\env$
-est noté $\env(\mathit{lv})$ et est défini par :
+L'environnement $\env$[$\mathit{lv} \mapsto \loc$] est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -270,8 +270,6 @@ est noté $\env(\mathit{lv})$ et est défini par :
   ($\env$[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & $\env$($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
-  $\env$($\mathit{lv}$) & = & $\bot$ si $\env$ est l'environnement vide
-  & \eqlabel{env-get-3} \\
 \end{tabular}
 \end{center}
 
@@ -285,19 +283,16 @@ $\mathit{lv}$ et l'adresse associée sont enlevées de l'environnement $\env$ :
 
 \begin{center}
 \begin{tabular}{rclr}
-  ($\env$[$\mathit{lv} \mapsto \loc$])$-~\{lv\}$ &=& $\env$
-  & \eqlabel{env-del-1} \\
-  ($\env$[$\mathit{lv_1} \mapsto \loc$])$-~\{\mathit{lv_2}\}$
-  &=& ($\env - \{\mathit{lv_2}\}$)[$\mathit{lv_1} \mapsto \loc$] si
-  $\mathit{lv_1} \neq \mathit{lv_2}$ & \eqlabel{env-del-2} \\
-  $\env - \{\mathit{lv}\}$ &=& $\env$  si $\env(\mathit{lv})$ = $\bot$
-  & \eqlabel{env-del-3} \\
+  $(\env - \{\mathit{lv}\})(\mathit{lv})$ &=& $\bot$ & \eqlabel{env-del-1} \\
+  $(\env - \{\mathit{lv_1}\})(\mathit{lv_2})$ &=&
+  $\env(\mathit{lv_2})$ si $\mathit{lv_1} \neq \mathit{lv_2}$ &
+  \eqlabel{env-del-2} \\
 \end{tabular}
 \end{center}
 
-Nous définissons également une relation d'inclusion sur les environnements,
-c'est-à-dire $\env_1$ est inclus dans $\env_2$ si et seulement si pour chaque
-paire $(\mathit{lv}, \loc)$ telle que : si $\loc$ est l'adresse de $\mathit{lv}$
+Nous définissons également une relation d'inclusion sur les environnements :
+$\env_1$ est inclus dans $\env_2$ si et seulement si, pour chaque paire
+$(\mathit{lv}, \loc)$, si $\loc$ est l'adresse de $\mathit{lv}$
 dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 
 \[
@@ -312,18 +307,17 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 
 Le domaine des valeurs $VAL$ est défini comme l'union des types que
 peuvent prendre les termes et prédicats \eacsl et les expressions C :
-$VAL = \mathbb{B}~\cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
+$VAL = \cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
 $\bot$ dénote une valeur indéfinie qui peut être soit une adresse indéfinie soit
 une valeur indéfinie.
-$LOC \subset VAL$ car nous formalisons les pointeurs et la valeur d'un pointeur
-est une adresse.
-Un store est une fonction partielle $\store \in LOC \rightarrow VAL$ qui
+$LOC$ est inclus dans $VAL$ car nous formalisons les pointeurs et la valeur
+d'un pointeur est une adresse.
+Un store est une fonction $\store \in LOC \rightarrow VAL$ qui
 associe une valeur à chaque adresse.
-Nous notons $STORE \subseteq LOC \rightarrow VAL$ le domaine des stores.
+Nous notons $STORE = LOC \rightarrow VAL$ le domaine des stores.
 La notation $\store$[$\loc \mapsto v$] désigne un nouveau store, correspondant
 au store $\store$ dans lequel la valeur $v$ est stockée à l'adresse $\loc$.
-L'accès à la valeur d'une adresse $\loc$ dans un store $\store$ est noté
-$\store(\loc)$ et est défini par :
+Le store $\store$[$\loc \mapsto v$] est défini par :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -331,8 +325,6 @@ $\store(\loc)$ et est défini par :
   ($\store$[$\loc_1 \mapsto v$])($\loc_2$) & =
   & $\store$($\loc_2$) si $\loc_1 \neq \loc_2$
   & \eqlabel{store-get-2}\\
-  $\store$($\loc$) & = & $\bot$ si $\store$ est le store vide
-  & \eqlabel{store-get-3} \\
 \end{tabular}
 \end{center}
 
@@ -346,20 +338,17 @@ $\loc$ et la valeur associée sont enlevées du store $\store$ :
 
 \begin{center}
 \begin{tabular}{rclr}
-  ($\store$[$\loc \mapsto v$])$-~\{\loc\}$ &=& $\store$
-  & \eqlabel{store-del-1} \\
-  ($\store$[$\loc_1 \mapsto v$])$-~\{\loc_2\}$
-  &=& ($\store - \{\loc_2\}$)[$\loc_1 \mapsto v$] si
-  $\loc_1 \neq \loc_2$ & \eqlabel{store-del-2} \\
-  $\store - \{\loc\}$ &=& $\store$  si $\store(\loc)$ = $\bot$
-  & \eqlabel{store-del-3} \\
+  $(\store - \{\loc\})(\loc)$ &=& $\bot$ &
+  \eqlabel{store-del-1} \\
+  $(\store - \{\loc_1\})(\loc_2)$ &=& $\store(\loc_2)$ si $\loc_1 \neq \loc_2$ &
+  \eqlabel{store-del-2} \\
 \end{tabular}
 \end{center}
 
-Nous définissons également une relation d'inclusion sur les stores, c'est-à-dire
-$\store_1$ est inclus dans $\store_2$ si et seulement si pour chaque
-paire $(\loc, v)$ telle que : si $v$ est la valeur à l'adresse $\loc$
-dans $\store_1$, alors $v$ est également à l'adresse $\loc$ dans $\store_2$.
+Nous définissons également une relation d'inclusion sur les stores :
+$\store_1$ est inclus dans $\store_2$ si et seulement si, pour chaque paire
+$(\loc, v)$, si $v$ est la valeur à l'adresse $\loc$ dans $\store_1$, alors
+$v$ est également à l'adresse $\loc$ dans $\store_2$.
 
 \[
 \store_1~\subenv~\store_2~\equiv~
@@ -372,30 +361,58 @@ dans $\store_1$, alors $v$ est également à l'adresse $\loc$ dans $\store_2$.
 \label{sec:mem}
 
 Nous définissons la notion de mémoire, correspondant à un couple environnement,
-store : $\mem \in ENV \times STORE$.
-Une mémoire $\mem$ est un paramètre et un résultat des fonctions
+store : $MEM = ENV \times STORE$.
+Une mémoire $\mem \in MEM$ est un paramètre et un résultat des fonctions
 sémantiques définies dans la suite du chapitre.
-$\mem = (\env, \store)$ sera noté :
+Cette mémoire sera notée :
 \begin{itemize}
 \item $(\env, \store)$ si nous devons accéder à l'environnement $\env$ ou au
   store $\store$;
 \item $\mem$ sinon.
 \end{itemize}
 
-Nous définissons une mémoire spécifique d'erreur, notée $\errormem$.
-Une telle mémoire est le résultat de l'évaluation d'une instruction
-provoquant une erreur ou d'une annotation invalide (par exemple,
+Nous définissons une mémoire spécifique d'erreur, notée $\errormem \in MEM$.
+Une telle mémoire est le résultat de l'évaluation soit d'une instruction
+provoquant une erreur soit d'une annotation invalide (par exemple,
 \lstinline'assert' ou \lstinline'loop invariant' faux).
 L'évaluation des instructions s'arrête dès qu'un état d'erreur est produit.
+
+Une variable simple $x$ de type C scalaire (\lstinline'int', ...) est
+représentée dans une mémoire $\mem = (\env, \store)$ par :
+
+\begin{itemize}
+\item une association d'une adresse $\loc$ à $x$ dans l'environnement $\env$
+  notée $x \mapsto \loc$
+\item une association de sa valeur $v$ à l'adresse mémoire $\loc$ dans le
+  {\em store} $\store$ notée $\loc \mapsto v$.
+\end{itemize}
+
+Donc la sémantique d'une variable simple $x$ est sa valeur définie par
+$\store(\env(x))$.
+
+Un tableau $x$ de taille $n$ est représenté dans une mémoire $(\env, \store)$
+par $n$ adresses auxquelles sont associées respectivement ses $n$ valeurs
+désignées syntaxiquement par $x\mbox{\lstinline'[0]'}$,
+$x\mbox{\lstinline'[1]'}$, ..., $x\mbox{\lstinline'['}n\mbox{\lstinline'-1]'}$.
+À une notation syntaxique $x\mbox{\lstinline'['}i\mbox{\lstinline']'}$ est
+associée une {\em left-value} ($\in LV$) également dénotée
+$x\mbox{\lstinline'['}i\mbox{\lstinline']'}$.
+À cette {\em left-value} est associée une adresse mémoire $\loc_i$ dans
+l'environnement $\env$.
+À cette adresse mémoire est associée une valeur $v_i$ dans le {\em store}.
+Donc la sémantique d'un accès à un élément d'un tableau
+$x\mbox{\lstinline'['}i\mbox{\lstinline']'}$ est sa valeur définie par
+$\store(\env(\mathit{x}$
+\lstinline'['\eval{$\mathit{i}$}{$(\env, \store)$}\lstinline']'$))$.
 
 
 \subsection{Sémantique Dénotationnelle des Termes, Prédicats et Expressions}
 
 \input{figures/fig_semantics_exp_term}
 
-La sémantique dénotationnelle des expressions C, des termes et des prédicats
+La sémantique dénotationnelle des expressions C et des termes et prédicats
 \eacsl est exprimée avec la fonction
-$\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow (ENV \times STORE) \rightarrow VAL$.
+$\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow MEM \rightarrow VAL$.
 Les domaines de syntaxe abstraite $EXP$, $TERM$ et $PRED$ correspondent
 respectivement aux entités
 syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
@@ -417,24 +434,34 @@ La règle \eqlabel{E-lval} traite le cas où une left-value est un identificateu
 de variable $x$.
 $\env(x)$ est l'adresse de $x$, la valeur à cette adresse est $\store(\env(x))$.
 La règle \eqlabel{E-deref} traite le cas où une left-value est un identificateur
-de variable $x$, accédé à l'offset de valeur $e$.
-Rappelons que \lstinline'x[e]' $=$ \lstinline'*(x+e)'.
-L'unique différence avec la règle \eqlabel{E-lval} est l'évaluation de $e$, qui
-doit retourner une constante entière.
+de variable $x$, accédé à l'offset de valeur $h$.
+L'unique différence avec la règle \eqlabel{E-lval} est l'évaluation de $h$.
+Dans les règles \eqlabel{E-unop} et \eqlabel{E-binop}, $\mathit{unop}$ et
+$\mathit{binop}$ correspondent à l'application de l'opérateur unaire ou binaire
+correspondant, parmi ceux autorisés par la grammaire de la
+figure~\ref{fig:gram-exp-term}.
+Dans la règle \eqlabel{E-abs}, $\lvert . \rvert : VAL \rightarrow VAL$ est la
+fonction valeur absolue.
 Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ correspond à la mémoire au
-début de l'exécution de la fonction courante \lstinline'f', nous supposons
+début de l'exécution de la fonction courante, nous supposons
 qu'une telle mémoire est conservée à chaque appel.
 Notons que nous n'avons pas formalisé la mémorisation des états mémoires au
 début de la fonction en cours d'évaluation car cela alourdirait considérablement
 la définition de la sémantique.
 
 La figure~\ref{fig:sem-pred} donne la sémantique des prédicats.
-La sémantique des prédicats est encodée par les entiers 0 et 1 comme en C.
-La règle \eqlabel{P-valid} énonce qu'une left-value $\mathit{lv}$ est valide,
-si après évaluation, la valeur associée dans le store est de type $LOC$.
-$\mathit{lv}$ doit être de type pointeur, donc son évaluation est de type
-$LOC$, et la valeur associée dans le store est soit de type $LOC$ (car c'est
-un pointeur) soit $\bot$.
+Les valeurs de vérité des prédicats sont encodées par les entiers 0 et 1 comme
+en C.
+La règle \eqlabel{P-valid} énonce qu'un identificateur $x$ est valide,
+si l'adresse associée à $x$ dans l'environnement est définie (différente de
+$\bot$) et différente de \lstinline'NULL'.
+$\lnot p$ renvoie 1 si la valeur du prédicat $p$ est nulle, 0 sinon.
+$p \land q$ renvoie 1 les valeurs des deux prédicats sont non-nulles, 0 sinon.
+$p \lor q$ renvoie 1 si la valeur d'un des deux prédicats est non-nulle, 0
+sinon.
+$p \Rightarrow q$ renvoie 1 si la valeur de $p$ est nulle ou si la valeur de $q$
+est non-nulle, 0 sinon.
+$p \Leftrightarrow q$ renvoie 1 si $p$ et $q$ ont la même valeur, 0 sinon.
 
 Un pointeur est valide en mémoire si on peut le déréférencer afin de pouvoir
 accéder ou modifier l'emplacement mémoire qu'il référence (c'est-à-dire vers
@@ -458,21 +485,23 @@ accessibles en écriture.
 \subsection{Sémantique Dénotationnelle des Instructions}
 
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
-$\mathcal{C} : INSTR \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$.
+$\mathcal{C} : INSTR \rightarrow MEM \rightarrow MEM$.
 Cette fonction associe à une instruction $i$, dans un contexte mémoire $\mem$,
 une nouvelle mémoire $\mem'$ qui tient compte des effets de bord effectués par
 $i$ dans $\mem$.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
-$\mathcal{C}^{*} : INSTR^{*} \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$.
+$\mathcal{C}^{*} : INSTR^{*} \rightarrow MEM \rightarrow MEM$.
 Cette fonction définie en figure~\ref{fig:c*} revient à appeler successivement
 $\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 
 \begin{figure}
 \begin{center}
-\begin{tabular}{rcl}
-  \comps{\lstinline'i;' $A$}{$\mem$}
-  &=& \comps{$A$}{(\comp{\lstinline'i'}{$\mem$})} \\
-  \comps{$\semicolon$}{$\mem$} &=& $\mem$ \\
+\begin{tabular}{rclr}
+  \comps{$A_1~A_2$}{$\mem$}
+  &=& \comps{$A_2$}{(\comps{$A_1$}{$\mem$})} & \eqlabel{C-seq-1} \\
+  \comps{$i~A$}{$\mem$}
+  &=& \comps{$A$}{(\comp{$i$}{$\mem$})} & \eqlabel{C-seq-2} \\
+  \comps{}{$\mem$} &=& $\mem$ & \eqlabel{C-seq-3} \\
 \end{tabular}
 \caption{Sémantique dénotationnelle des séquences d'instructions\label{fig:c*}}
 \end{center}
@@ -482,59 +511,47 @@ $\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 \input{figures/fig_semantics}
 
 La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
-La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $\mathit{id}$
+La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $x$
 dans l'environnement $\env$, où $\loc$ est fraîche (non utilisée).
 Les règles \eqlabel{C-set} et \eqlabel{C-set-2} associent la valeur de $e$
 à l'adresse de la left-value correspondante dans le store.
 Dans la règle \eqlabel{C-Z-set}, la variable entière (non bornée) $x$ est
 allouée et on lui affecte la valeur de $e$ dans $\store$.
 Dans la règle \eqlabel{C-Z-unset}, la variable entière (non bornée) $x$
-est désallouée et enlevée de la mémoire.
-Une instruction soulignée manipule des entiers non bornés.
+est désallouée.
+%Une instruction soulignée manipule des entiers non bornés.
 Les règles \eqlabel{C-Z-set} et \eqlabel{C-Z-unset} traitent uniquement le cas
 où une left-value est un identificateur et pas un accès à un tableau car le
 langage \eacsl ne supporte pas les tableaux d'entiers non bornés.
 
-%% Nous définissons une fonction \lstinline'fassert' permettant de tester la valeur
-%% d'une expression.
-%% Cette fonction correspond à un \lstinline'if' dont la branche
-%% \lstinline'else' génère une erreur et la rapporte.
-%% Nous définissons également une fonction \lstinline'fassume' permettant de poser
-%% une hypothèse de validité sur la valeur d'une expression.
-%% Cette fonction correspond à un \lstinline'if' dont
-%% la branche \textit{true} est toujours vraie, les exécutions pour lesquelles
-%% la branche \textit{false} est activée sont ignorées.
-%% Nous supposons enfin disposer d'une fonction \lstinline'fvalid' permettant
-%% d'évaluer la validité d'un pointeur et d'une fonction \lstinline'fvalidr'
-%% permettant d'évaluer la validité d'un pointeur sur un intervalle d'offsets.
-
 La sémantique de la fonction \lstinline'fassert' donnée par la règle
 \eqlabel{C-fassert} énonce que si l'expression $e$ s'évalue en une expression
-non nulle, alors la mémoire $\mem$ est inchangée, sinon on obtient
+vraie (non nulle), alors la mémoire $\mem$ est inchangée, sinon on obtient
 la mémoire d'erreur $\errormem$.
 La sémantique de la fonction \lstinline'fassume' donnée par la règle
 \eqlabel{C-fassume} énonce que l'expression $e$ est supposée vraie et
 doit donc s'évaluer en une expression non nulle.
 La mémoire est inchangée après cet appel de fonction.
-$e$ ne peut pas s'évaluer en $0$ par définition de la fonction, si c'est
-le cas on aboutit à une contradiction.
+$e$ ne peut pas s'évaluer en faux ($0$) par définition de la fonction
+\lstinline'fassume', si c'est le cas on aboutit à une contradiction.
 
 La sémantique des fonctions \lstinline'fvalid' et \lstinline'fvalidr' est donnée
 par les règles \eqlabel{C-fvalid} et \eqlabel{C-fvalidr}.
 Elles énoncent que dans la nouvelle mémoire, la left-value $\mathit{lv}$ a
-la valeur $1$ si les pointeurs en argument de la fonction sont valides, et $0$
-sinon.
+la valeur vrai ($1$) si les pointeurs en argument de la fonction sont valides,
+et faux ($0$) sinon.
 
 La sémantique de la fonction \lstinline'malloc' donnée par la règle
 \eqlabel{C-malloc} énonce que de nouvelles adresses (fraîches) sont associées
-aux left-values allouées pour la variable $\textit{id}$, et que la valeur
-associée à l'adresse de $\textit{id}$ dans le store est l'adresse du premier
-élémént alloué ($\env(\mathit{id}$\lstinline'[0]'$)$).
+aux left-values allouées pour le tableau $x$, et que la valeur
+associée à l'adresse de $x$ dans le store est l'adresse du premier
+élémént alloué ($\env(x$\lstinline'[0]'$)$), comme c'est le cas dans le langage
+C.
 La sémantique de la fonction \lstinline'free' donnée par la règle
 \eqlabel{C-free} est l'inverse de la sémantique de \lstinline'malloc' : la
 valeur indéfinie $\bot$ est associée aux left-values désallouées et à l'adresse
-de la variable $\textit{id}$.
-Dans ces deux règles, $\textit{id}$ est une variable de type pointeur, la
+de la variable $x$.
+Dans ces deux règles, $x$ est une variable de type pointeur, la
 valeur associée à son adresse dans la règle \eqlabel{C-malloc} est donc une
 adresse.
 
@@ -542,18 +559,18 @@ La sémantique des appels de fonction est donnée par les règles \eqlabel{C-fct
 et \eqlabel{C-fct2}.
 Dans ces règles, la sémantique de la fonction $f$ est calculée à
 l'aide de la fonction $\mathcal{F}$ donnée en figure~\ref{fig:sem-fct}.
-$(\env[\mathit{id_1} \mapsto \loc_1$, ...,
-  $\mathit{id_N} \mapsto \loc_N], \store[\loc_1 \mapsto$
+$(\env[x_1 \mapsto \loc_1$, ...,
+  $x_N \mapsto \loc_N], \store[\loc_1 \mapsto$
   \eval{$e_1$}{$(\env, \store)$}, ...,
   $\loc_N \mapsto$ \eval{$e_N$}{$(\env, \store)$} $])$
 est la mémoire dans laquelle les paramètres effectifs (les expressions
 $e_1$, ..., $e_N$) sont affectés aux paramètres formels (les identificateurs
-$\mathit{id_1}$, ..., $\mathit{id_N}$).
+$x_1$, ..., $x_N$).
 
 Les règles \eqlabel{C-fassert}, \eqlabel{C-fassume} et \eqlabel{C-free} sont
-des instances particulières de la règle \eqlabel{C-fct1}.
+des cas particuliers de la règle \eqlabel{C-fct1}.
 Les règles \eqlabel{C-fvalid}, \eqlabel{C-fvalidr} et \eqlabel{C-malloc} sont
-des instances particulières de la règle \eqlabel{C-fct2}.
+des cas particuliers de la règle \eqlabel{C-fct2}.
 
 La règle \eqlabel{C-return} énonce qu'une instruction \lstinline'return' ne
 modifie pas la mémoire.
@@ -566,21 +583,25 @@ Cette variable est lue après l'appel de la fonction comme l'énonce la règle
 La sémantique des assertions \eacsl donnée par la règle \eqlabel{C-assert} est
 similaire à la sémantique de la fonction \lstinline'fassert'.
 Si le prédicat $p$ s'évalue en une expression non nulle,
-la mémoire $\mem$ est inchangée, sinon la mémoire d'ereur $\errormem$ est
+la mémoire $\mem$ est inchangée, sinon la mémoire d'erreur $\errormem$ est
 obtenue.
 
 La sémantique des boucles annotées par un contrat contenant un invariant
 $p$, une liste de termes $X$ et un variant $t$ est
 donnée par la règle \eqlabel{C-while}.
+Nous appelons $G$ l'ensemble des left-values dans la portée courante, $G$
+contient donc les left-values des variables globales, des paramètres formels de
+la fonction courante, et des variables locales définies avant la boucle.
 Les différents cas possibles sont notés \eqlabel{C-while-1} à
-\eqlabel{C-while-7} et sont ordonnés.
+\eqlabel{C-while-7} et sont ordonnés de telle sorte que la sémantique est
+définie par le premier cas qui s'applique dans l'ordre 1 à 7.
 Tout d'abord, si l'invariant de boucle n'est pas établi avant l'exécution du
 corps de la boucle, alors la mémoire d'erreur $\errormem$ est obtenue
 (\eqlabel{C-while-1}).
 Si la condition de boucle $e$ s'évalue à $0$ (la boucle n'est pas exécutée),
 alors la mémoire reste inchangée (\eqlabel{C-while-2}).
-Si le variant de boucle n'est pas positif avant l'exécution de la boucle, alors
-$\errormem$ est obtenue (\eqlabel{C-while-3}).
+Si le variant de boucle n'est pas positif ou nul avant l'exécution de la boucle,
+alors $\errormem$ est obtenue (\eqlabel{C-while-3}).
 Si l'invariant de boucle n'est pas maintenu après l'exécution du corps de
 boucle, alors $\errormem$ est obtenue (\eqlabel{C-while-4}).
 Si le variant de boucle ne décroît pas strictement entre le début et la fin de
@@ -593,14 +614,17 @@ $\errormem$ est obtenue (\eqlabel{C-while-6}).
 Si aucun des six cas précédents ne s'applique, alors il faut ré-évaluer la
 sémantique de la boucle dans la mémoire obtenue après exécution du corps de la
 boucle dans $\mem$ (\eqlabel{C-while-7}).
+Nous supposons pour simplifier que la non-terminaison éventuelle d'une boucle
+est toujours évitée grâce au \lstinline'variant'.
 
 
 \input{figures/fig_semantics_fct}
 
 
 La sémantique dénotationnelle des fonctions est exprimée avec la fonction
-$\mathcal{F} : FCT \rightarrow (ENV \times STORE) \rightarrow (ENV \times STORE)$ où $FCT$ correspond à
+$\mathcal{F} : FCT \rightarrow MEM \rightarrow MEM$ où $FCT$ correspond à
 l'entité syntaxique \textit{function} définie par la figure~\ref{fig:gram-c}.
+$FCT$ est l'ensemble des déclarations de fonctions du programme.
 Cette fonction calcule une nouvelle mémoire à partir d'une fonction annotée et
 d'une mémoire $\mem$, ce qui permet de traiter les appels de fonction (règles
 \eqlabel{C-fct1} et \eqlabel{C-fct2} de la figure~\ref{fig:sem-instr}) et la
@@ -609,11 +633,11 @@ fonction sous vérification (qui n'est pas appelée).
 La sémantique des fonctions est donnée en figure~\ref{fig:sem-fct} par la règle
 \eqlabel{F}.
 Les différents cas possibles sont notés \eqlabel{F-1} à \eqlabel{F-4} et sont
-ordonnés.
+ordonnés comme pour le \eqlabel{while}.
 Si $f$ est la fonction sous vérification, alors sa précondition $p_1$ est
 supposée vraie par définition.
 Si la fonction considérée n'est pas la fonction sous vérification, alors la
-la mémoire d'erreur $\errormem$ est obtenue si le prédicat $p_1$ s'évalue en
+mémoire d'erreur $\errormem$ est obtenue si le prédicat $p_1$ s'évalue à
 faux (\eqlabel{F-1}).
 Si l'évaluation d'un élément appartenant à $G-X$ (ensemble des left-values
 n'appartenant pas à la clause \lstinline'assigns' de la fonction) est différente

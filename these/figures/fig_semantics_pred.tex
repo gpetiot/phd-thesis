@@ -2,29 +2,38 @@
   \begin{tabular}{rclr}
     \eval{\lstinline'\\true'}{$\mem$} &=& $1$ & \eqlabel{P-true} \\
     \eval{\lstinline'\\false'}{$\mem$} &=& $0$ & \eqlabel{P-false} \\
-    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline')'}{$(\env, \store)$}
-    &=& $1$ si $\store($\eval{$\mathit{lv}$}{$(\env, \store)$}$) \in LOC$,
-    $0$ sinon & \eqlabel{P-valid} \\
-    \eval{\lstinline'\\valid('$\mathit{lv}$\lstinline'+('$\mathit{t_1}$
+    \eval{\lstinline'\\valid('$x$\lstinline')'}{$(\env, \store)$}
+    &=& $0$ si $\env(x) = \bot$ ou \lstinline'NULL',
+    $1$ sinon & \eqlabel{P-valid} \\
+    \eval{\lstinline'\\valid('$x$\lstinline'+('$\mathit{t_1}$
       \lstinline'..'$\mathit{t_2}$\lstinline'))'}{$\mem$} &=&
     \eval{
-      \lstinline'\\valid('$\mathit{lv}$\lstinline'+'$\mathit{t_1}$\lstinline')'
+      \lstinline'\\valid('$x$\lstinline'+'$\mathit{t_1}$\lstinline')'
       \lstinline'\&\&' $\ldots$ \lstinline'\&\&'
-      \lstinline'\\valid('$\mathit{lv}$\lstinline'+'$\mathit{t_2}$\lstinline')'
+      \lstinline'\\valid('$x$\lstinline'+'$\mathit{t_2}$\lstinline')'
     }{$\mem$}
     & \eqlabel{P-validr} \\
+
+    \multicolumn{4}{l}{
     \eval{\lstinline'\\forall integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'==>' $p$}{$\mem$} &=&
+      \lstinline'<=' $t_2$ \lstinline'==>' $p$}{$\mem$}
+    }\\
+    &=&
     $\forall k$.
     (\eval{$t_1$}{$\mem$} $\le k \le$
     \eval{$t_2$}{$\mem$} $\Rightarrow$ \eval{$p$}{$\mem$})
     & \eqlabel{P-forall} \\
+
+    \multicolumn{4}{l}{
     \eval{\lstinline'\\exists integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{$\mem$} &=&
+      \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{$\mem$}
+    }\\
+    &=&
     $\exists k$.
     (\eval{$t_1$}{$\mem$} $\le k \le$
     \eval{$t_2$}{$\mem$} $\land$ \eval{$p$}{$\mem$})
     & \eqlabel{P-exists} \\
+
     \eval{\lstinline'\!'$p$}{$\mem$} &=& $\lnot$ (\eval{$p$}{$\mem$})
     & \eqlabel{P-not} \\
     \eval{$p_1$ \lstinline'\&\&' $p_2$}{$\mem$} &=&
