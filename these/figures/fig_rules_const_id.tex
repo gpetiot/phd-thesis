@@ -1,20 +1,31 @@
 \begin{figure*}[h!]
   \scriptsize{
-    {\myinference{$\tau$-old\hspace{-2mm}{}}
+    {\myinference{$\tau$-lv-simple\hspace{-2mm}{}}
+      {}
+      {(l, \mbox{\lstinline'x'}) \rulearrow(\emptylist, \mbox{\lstinline'x'})}{}
+    }
+    {\myinference{$\tau$-lv-array\hspace{-2mm}{}}
+      {(l, \mbox{\lstinline't'}:\mbox{\lstinline'int'}) \rulearrow
+        (I, \mbox{\lstinline'e'})}
+      {(l, \mbox{\lstinline'x[t]'}:ctype) \rulearrow
+        (I \concat (l, ctype~\mbox{\lstinline'var_n = x[e];'}),
+        \mbox{\lstinline'var_n'})
+      }{}
+    }
+
+    {\myinference{$\tau$-old-simple\hspace{-2mm}{}}
       {}
       {(l, \mbox{\lstinline'\\old(x)'}) \rulearrow
         (\emptylist, \mbox{\lstinline'old_x'})}{}
     }
-    {\myinference{$\tau$-var\hspace{-2mm}{}}
-      {}
-      {(l, \mbox{\lstinline'x'}) \rulearrow
-        (\emptylist, \mbox{\lstinline'x'})}{}
-    }
 
-    {\myinference{$\tau$-old-val\hspace{-2mm}{}}
-      {}
-      {(l, \mbox{\lstinline'\\old(*(x+t))'}) \rulearrow
-        (I,\mbox{\lstinline'*(old_val_x+t)'})}{}
+    {\myinference{$\tau$-old-array\hspace{-2mm}{}}
+      {(l, \mbox{\lstinline't'}:\mbox{\lstinline'int'}) \rulearrow
+        (I, \mbox{\lstinline'e'})}
+      {(l, \mbox{\lstinline'\\old(x[t])'}:ctype) \rulearrow
+        (I \concat (l, ctype~\mbox{\lstinline'var_n = old_val_x[e];'}),
+        \mbox{\lstinline'var_n'})
+      }{}
     }
 
     {\myinference{$\tau$-res\hspace{-2mm}{}}
