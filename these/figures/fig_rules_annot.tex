@@ -1,51 +1,60 @@
 \begin{figure}[h!]
   \scriptsize{
     {\myinference{$\alpha$-assert}
-      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
-      {(l, \mbox{\lstinline'assert p;'})
-        \rulearrow I \concat (l, \mbox{\lstinline'fassert(e);'})}{}
+      {(l, p) \prule (I, e)}
+      {(l, \mbox{\lstinline'assert'}~p\semicolon)
+        \arule I \concat
+        (l, \mbox{\lstinline'fassert('}e\mbox{\lstinline');'})}{}
     }
 
     {\myinference{$\alpha$-check-pre\hspace{-2mm}}
-      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
-      {(Beg_f, \mbox{\lstinline'requires p;'})
-        \rulearrow
-        I \concat (Beg_f, \mbox{\lstinline'fassert(e);'})}{}
+      {(Beg_f, p) \prule (I, e)}
+      {(Beg_f, \mbox{\lstinline'requires'}~p\semicolon)
+        \arule
+        I \concat (Beg_f, \mbox{\lstinline'fassert('}e\mbox{\lstinline');'})}{}
     }
 
     {\myinference{$\alpha$-assume-pre\hspace{-2mm}}
-      {(Beg_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(Beg_f, p) \prule (I, e)}
       {(Beg_f, \left \{\hspace{-2mm}
         \begin{array}{r}
           \mbox{\lstinline'typically'} \\
           \mbox{\lstinline'requires'}
-        \end{array} \mbox{\lstinline'p;'} \right.
+        \end{array} p\semicolon \right.
         )
-        \rulearrow
-        I \concat (Beg_f, \mbox{\lstinline'fassume(e);'})}{}
+        \arule
+        I \concat (Beg_f, \mbox{\lstinline'fassume('}e\mbox{\lstinline');'})}{}
     }
 
     {\myinference{$\alpha$-check-assigns}
-      {}
+      {
+        \forall (x:ctype) \in G-X :
+        (
+        (Beg_f, x) \trule (I_1, e_1) \\
+        (End_f, x) \trule (I_2, e_2)
+        )
+      }
       {
         \splitfrac{
-          (End_f, \mbox{\lstinline'assigns X;'}) \rulearrow
+          (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
         } {
           \splitfrac{
-            \forall (\mbox{\lstinline'x'}:ctype) \in G-X :
+            \forall (x:ctype) \in G-X :
           }{
-            ((Beg_f, \mbox{\lstinline'ctype var_x = x;'})
-            \concat (End_f, \mbox{\lstinline'fassert(x == var_x);'}) )
+            (I_1 \concat I_2 \concat (Beg_f,
+            ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1\semicolon)
+            \concat (End_f,
+            \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
           }
         }
       }{}
     }
 
     {\myinference{$\alpha$-check-post}
-      {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
-      {(End_f, \mbox{\lstinline'ensures p;'})
-        \rulearrow
-        I \concat (End_f, \mbox{\lstinline'fassert(e);'})}{}
+      {(End_f, p) \prule (I, e)}
+      {(End_f, \mbox{\lstinline'ensures'}~p\semicolon)
+        \arule
+        I \concat (End_f, \mbox{\lstinline'fassert('}e\mbox{\lstinline');'})}{}
     }
   }
   \caption{Règles de traduction pour les assertions, pré-/postconditions et

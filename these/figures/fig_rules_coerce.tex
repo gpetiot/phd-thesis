@@ -1,23 +1,22 @@
 \begin{figure*}[h!]
   \scriptsize{
     {\myinference{$\tau$-coerce$_1$}
-      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow
-        (I, \mbox{\lstinline'e'})}
+      {(l, t:\mathbb{Z}) \trule (I, e)}
       {
-        (l, (int)(t : \mathbb{Z})) \rulearrow
+        (l, (\mbox{\lstinline'int'})(t : \mathbb{Z})) \trule
         (I \concat (l,
-        \mbox{\lstinline'int var_n ='}~
-        \underline{\mbox{\lstinline'e'} \Zclear}
+        \mbox{\lstinline'int var_n ='}~\underline{e\Zclear}
         \semicolon
-        ), \mbox{\lstinline'var_n'})
+        ), \mbox{\lstinline'var_'}n)
       }{}
     }
+
     {\myinference{$\tau$-coerce$_2$}
-      {}
-      {(l, (\mathbb{Z})(t:int)) \rulearrow (I \concat (l,
-        \underline{\Zinit \mbox{\lstinline'var_n = t'}}
+      {(l, t:\mbox{\lstinline'int'}) \trule (I, e)}
+      {(l, (\mathbb{Z})(t:\mbox{\lstinline'int'})) \trule (I \concat (l,
+        \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e}
         \semicolon
-        ), \mbox{\lstinline'var_n'})}{}
+        ), \mbox{\lstinline'var_'}n)}{}
     }
   }
   \caption{Règles de traduction pour les conversions}

@@ -1,81 +1,84 @@
 \begin{figure*}[h!]
   \scriptsize{
     {\myinference{$\tau$-sum}
-      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \\
-        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \\
-        (l, \mbox{\lstinline't3'}:\mathbb{Z}) \rulearrow
-        (I_3, \mbox{\lstinline'e3'})}
+      {(l, t_1:\mathbb{Z}) \trule (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \trule (I_2, e_2) \\
+        (l, t_3:\mathbb{Z}) \trule (I_3, e_3)}
       {
-        \splitfrac
-            {(l,
-              (\mbox{\lstinline'\\sum(t1, t2, \\lambda integer j; t3)'}):
-              \mathbb{Z})
-              \rulearrow}
-            {
-              \splitfrac{
-                (I_1 \concat I_2
-                \concat
-                (l, \underline{\Zinit \mbox{\lstinline'var_n = 0'}} \semicolon )
-              }{
-                \concat
-                (l, \mbox{\lstinline' for('}
-                \underline{\Zinit \mbox{\lstinline'j_n = e1'} \Zclear}\semicolon
-                \underline{\mbox{\lstinline'j_n <= e2'} \Zclear}\semicolon
-                \underline{\mbox{\lstinline'j_n++'} \Zclear}
-                \mbox{\lstinline')'} \bopen
-                I_3
-                \concat
-                (l,
-                \underline{\mbox{\lstinline'var_n += e3'} \Zclear}\semicolon )
-                \bclose
-                ),
-                \mbox{\lstinline'var_n'})
-              }
-            }
+        \splitfrac {(l,
+          (\mbox{\lstinline'\\sum('}t_1, t_2,
+          \mbox{\lstinline'\\lambda integer'}~j\semicolon~
+          t_3\mbox{\lstinline')'}):
+          \mathbb{Z})
+          \trule
+        } {
+          \splitfrac{
+            (I_1 \concat I_2
+            \concat
+            (l,
+            \underline{
+              \Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'= 0'}
+            } \semicolon )
+          }{
+            \concat
+            (l, \mbox{\lstinline' for('}
+            \underline{\Zinit j~\mbox{\lstinline'='}~e_1 \Zclear}\semicolon
+            \underline{j~\mbox{\lstinline'<='}~e_2 \Zclear}\semicolon
+            \underline{j\Zclear\mbox{\lstinline'++'}}
+            \mbox{\lstinline')'} \bopen
+            I_3
+            \concat
+            (l,
+            \underline{
+              \mbox{\lstinline'var_'}n~\mbox{\lstinline'+='}~e_3 \Zclear
+            } \semicolon )
+            \bclose
+            ),
+            \mbox{\lstinline'var_'}n)
+          }
+        }
       }{}
     }
 
     {\myinference{$\tau$-numof}
-      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \\
-        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \\
-        (l, \mbox{\lstinline't3'}:int) \rulearrow (I_3, \mbox{\lstinline'e3'})}
+      {(l, t_1:\mathbb{Z}) \trule (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \trule (I_2, e_2) \\
+        (l, t_3:\mbox{\lstinline'int'}) \trule (I_3, e_3)}
       {
-        \splitfrac
-            {(l,
-              (\mbox{\lstinline'\\numof(t1, t2, \\lambda integer j; t3)'}):
-              \mathbb{Z})
-              \rulearrow}
-            {
-              \splitfrac{
-                (I_1 \concat I_2
-                \concat
-                (l,
-                \underline{\Zinit \mbox{\lstinline'var_n = 0'}}
-                \semicolon )
-              }{
-                \concat
-                (l, \mbox{\lstinline' for('}
-                \underline{\Zinit \mbox{\lstinline'j_n = e1'} \Zclear}
-                \semicolon
-                \underline{\mbox{\lstinline'j_n <= e2'} \Zclear}
-                \semicolon
-                \underline{\mbox{\lstinline'j_n++'} \Zclear}
-                \mbox{\lstinline')'} \bopen
-                I_3
-                \concat (l,
-                \mbox{\lstinline'if(e3)'}
-                \bopen
-                (l, \underline{\mbox{\lstinline'var_n++'}} \semicolon)
-                \bclose )
-                \bclose
-                ),
-                \mbox{\lstinline'var_n'})
-              }
-            }
+        \splitfrac {(l,
+          (\mbox{\lstinline'\\numof('}t_1, t_2,
+          \mbox{\lstinline'\\lambda integer'}~j\semicolon~
+          t_3\mbox{\lstinline')'}):
+          \mathbb{Z})
+          \trule
+        } {
+          \splitfrac {
+            (I_1 \concat I_2
+            \concat
+            (l,
+            \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'= 0'}}
+            \semicolon )
+          } {
+            \concat
+            (l, \mbox{\lstinline' for('}
+            \underline{\Zinit j~\mbox{\lstinline'='}~e_1 \Zclear}
+            \semicolon
+            \underline{j~\mbox{\lstinline'<='}~e_2 \Zclear}
+            \semicolon
+            \underline{j\Zclear\mbox{\lstinline'++'}}
+            \mbox{\lstinline')'} \bopen
+            I_3
+            \concat (l,
+            \mbox{\lstinline'if('}e_3\mbox{\lstinline')'}
+            \bopen
+            (l, \underline{\mbox{\lstinline'var_'}n\mbox{\lstinline'++'}}
+            \semicolon)
+            \bclose )
+            \bclose
+            ),
+            \mbox{\lstinline'var_'}n)
+          }
+        }
       }{}
     }
   }

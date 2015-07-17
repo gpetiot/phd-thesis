@@ -1,74 +1,88 @@
 \begin{figure*}[h!]
   \scriptsize{
     {\myinference{$\tau$-unop}
-      {(l, \mbox{\lstinline't'}:\mathbb{Z}) \rulearrow (I, \mbox{\lstinline'e'})
-      } {(l, (\mathit{unop}~\mbox{\lstinline't'}):\mathbb{Z}) \rulearrow
+      {(l, t:\mathbb{Z}) \trule (I, e)}
+      {(l, (\mathit{unop}~t):\mathbb{Z}) \trule
         (I
-        \concat (l, \underline{\Zinit \mbox{\lstinline'var_n ='}
-          ~\mathit{unop}~\mbox{\lstinline'e'} \Zclear}
+        \concat (l,
+        \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~
+          \mathit{unop}~e \Zclear}
         \semicolon),
-        \mbox{\lstinline'var_n'})
+        \mbox{\lstinline'var_'}n)
       }{\mathit{unop} \in \{ -, \sim\}}
     }
 
     {\myinference{$\tau$-binop$_1$}
-      {(l, \mbox{\lstinline't1'}:ptr) \rulearrow (I_1, \mbox{\lstinline'e1'})
+      {(l, t_1:ptr) \trule (I_1, e_1)
         \quad
-        (l, \mbox{\lstinline't2'}:int) \rulearrow (I_2, \mbox{\lstinline'e2'})}
-      {(l, (\mbox{\lstinline't1'}~\mathit{binop}~\mbox{\lstinline't2'}):ptr)
-        \rulearrow
+        (l, t_2:\mbox{\lstinline'int'}) \trule (I_2, e_2)
+      }
+      {(l, (t_1~\mathit{binop}~t_2):ptr) \trule
         (I_1 \concat I_2
-        \concat (l, ptr~\mbox{\lstinline'var_n = e1'}~\mathit{binop}
-        ~\mbox{\lstinline'e2;'}),
-        \mbox{\lstinline'var_n'})
+        \concat (l, ptr~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1
+        ~\mathit{binop}~e_2\semicolon),
+        \mbox{\lstinline'var_'}n)
       }{\mathit{binop} \in \{+, -\}}
     }
 
     {\myinference{$\tau$-binop$_2$}
-      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \quad
-        (l, \mbox{\lstinline't2'}:\mathbb{Z})
-        \rulearrow (I_2, \mbox{\lstinline'e2'})}
-      {(l, (\mbox{\lstinline't1'}~\mathit{binop}~\mbox{\lstinline't2'}):
-        \mathbb{Z}) \rulearrow
+      {(l, t_1:\mathbb{Z}) \trule (I_1, e_1) \quad
+        (l, t_2:\mathbb{Z}) \trule (I_2, e_2)
+      }
+      {(l, (t_1~\mathit{binop}~t_2): \mathbb{Z}) \trule
         (I_1 \concat I_2 \concat (l,
-        \underline{\Zinit \mbox{\lstinline'var_n = e1'} \Zclear
-          ~\mathit{binop}~\mbox{\lstinline'e2'} \Zclear}
+        \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1
+          \Zclear ~\mathit{binop}~e_2 \Zclear}
         \semicolon
-        ), \mbox{\lstinline'var_n'})
+        ), \mbox{\lstinline'var_'}n)
       }{
-        \mathit{binop} \in \{\mathtt{+}, \mathtt{-}, \mathtt{/}, \mathtt{\%},
-        \mathtt{*} \}
+        \mathit{binop} \in \{\mathtt{+}, \mathtt{-}, \mathtt{*}, \mathtt{/},
+        \mathtt{\%} \}
       }
     }
 
+    {\myinference{$\tau$-abs}
+      {(l, t:\mathbb{Z}) \trule (I, \mbox{\lstinline'e'})}
+      {(l, \mbox{\lstinline'\\abs('}t\mbox{\lstinline')'}:\mathbb{Z}) \trule
+        (I
+        \concat (l, \underline{\Zinit \mbox{\lstinline'var_'}n~
+          \mbox{\lstinline'='}~\lvert e \Zclear \rvert}
+        \semicolon),
+        \mbox{\lstinline'var_'}n)
+      }{}
+    }
+
     {\myinference{$\tau$-if}
-      {(l, \mbox{\lstinline't1'}:\mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \\
-        (l, \mbox{\lstinline't2'}:\mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \\
-        (l, \mbox{\lstinline't3'}:\mathbb{Z}) \rulearrow
-        (I_3, \mbox{\lstinline'e3'})}
+      {(l, t_1:\mathbb{Z}) \trule (I_1, e_1) \\
+        (l, t_2:\mathbb{Z}) \trule (I_2, e_2) \\
+        (l, t_3:\mathbb{Z}) \trule (I_3, e_3)
+      }
       {
-        (l, (\mbox{\lstinline't1 ? t2 : t3'}):\mathbb{Z})
-        \rulearrow
+        (l, (t_1~\mbox{\texttt{?}}~t_2~\mbox{\texttt{:}}~t_3):\mathbb{Z})
+        \trule
         (I_1
         \concat (l,
         \mbox{\lstinline'if('}
-        \underline{\mbox{\lstinline'e1'}\Zclear \mbox{\lstinline' \!= 0'}}
-        \mbox{\lstinline')'} \bopen
+        \underline{e_1\Zclear \mbox{\lstinline' \!= 0'}} \mbox{\lstinline')'}
+        \bopen
         I_2
         \concat
-        (l, \underline{\Zinit \mbox{\lstinline'var_n = e2'} \Zclear}
+        (l,
+        \underline{
+          \Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2 \Zclear
+        }
         \semicolon )
         \bclose
         \mbox{\lstinline'else'} \bopen
         I_3
         \concat
-        (l, \underline{\Zinit \mbox{\lstinline'var_n = e3'} \Zclear}
+        (l,
+        \underline{
+          \Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3 \Zclear
+        }
         \semicolon )
         \bclose ),
-        \mbox{\lstinline'var_n'})
+        \mbox{\lstinline'var_'}n)
       }{}
     }
   }

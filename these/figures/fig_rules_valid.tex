@@ -2,18 +2,21 @@
   \scriptsize{
     {\myinference{$\pi$-valid}
       {}
-      {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
-        ((l, \mbox{\lstinline'int var_n = fvalid(t);'}),
-        \mbox{\lstinline'var_n'})
+      {(l, \mbox{\lstinline'\\valid('}t\mbox{\lstinline')'}) \prule
+        ((l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= fvalid('}t
+        \mbox{\lstinline');'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\pi$-valid-range}
       {}
       {
-        (l, \mbox{\lstinline'\\valid(t1+(t2..t3))'}) \rulearrow
-        ((l, \mbox{\lstinline'int var_n = fvalidr(t1,t2,t3);'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'\\valid('}t_1\mbox{\lstinline'+('}t_2
+        \mbox{\lstinline'..'}t_3\mbox{\lstinline'))'}) \prule
+        ((l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= fvalidr('}
+        t_1,t_2,t_3\mbox{\lstinline');'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
   }

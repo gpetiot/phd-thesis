@@ -2,38 +2,35 @@
   \scriptsize{
     {\myinference{$\pi$-forall}
       {
-        (l, \mbox{\lstinline't1'} : \mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \\
-        (l, \mbox{\lstinline't2'} : \mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \\
-        (l, \mbox{\lstinline'p'}) \rulearrow (I_3, \mbox{\lstinline'e3'})
+        (l, t_1 : \mathbb{Z}) \trule (I_1, e_1) \\
+        (l, t_2 : \mathbb{Z}) \trule (I_2, e_2) \\
+        (l, p) \prule (I_3, e_3)
       }
       {
         \splitfrac {
-          (l, \mbox{\lstinline'\\forall integer k; t1 <= k <= t2 ==> p'})
-          \rulearrow
+          (l, \mbox{\lstinline'\\forall integer'}~k\semicolon~t_1~
+          \mbox{\lstinline'<='}~k~\mbox{\lstinline'<='}~t_2~
+          \mbox{\lstinline'==>'}~p) \prule
         } {
           \splitfrac {
             (I_1 \cdot I_2
-            \cdot (l, \mbox{\lstinline'int var_n = 1;'})
-            \cdot
-            (l, \Zinit \underline{\mbox{\lstinline'k = e1;'}} )
+            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 1;'})
+            \cdot (l, \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
           } {
             \cdot
             (l, \mbox{\lstinline'while('}
-            \underline{\mbox{\lstinline'k <= e2'}}~ \mbox{\lstinline'&& var_n)'}
+            \underline{k~\mbox{\lstinline'<='}~e_2}~\mbox{\lstinline'&& var_'}n
+            \mbox{\lstinline')'}
             \bopen
             I_3
-            \cdot (l, \mbox{\lstinline'var_n = e3;'})
-            \cdot (l, \underline{\mbox{\lstinline'k++'}} \semicolon)
+            \cdot (l, \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3
+            \semicolon)
+            \cdot (l, \underline{k\mbox{\lstinline'++'}} \semicolon)
             \bclose )
-            \cdot
-            (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon )
-            \cdot
-            (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon )
-            \cdot
-            (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon ),
-            \mbox{\lstinline'var_n'})
+            \cdot (l, \underline{k} \Zclear \semicolon )
+            \cdot (l, \underline{e_1} \Zclear \semicolon )
+            \cdot (l, \underline{e_2} \Zclear \semicolon ),
+            \mbox{\lstinline'var_'}n)
           }
         }
       }{}
@@ -41,37 +38,35 @@
 
     {\myinference{$\pi$-exists}
       {
-        (l, \mbox{\lstinline't1'} : \mathbb{Z}) \rulearrow
-        (I_1, \mbox{\lstinline'e1'}) \\
-        (l, \mbox{\lstinline't2'} : \mathbb{Z}) \rulearrow
-        (I_2, \mbox{\lstinline'e2'}) \\
-        (l, \mbox{\lstinline'p'}) \rulearrow (I_3, \mbox{\lstinline'e3'})
+        (l, t_1 : \mathbb{Z}) \trule (I_1, e_1) \\
+        (l, t_2 : \mathbb{Z}) \trule (I_2, e_2) \\
+        (l, p) \prule (I_3, e_3)
       }
       {
         \splitfrac {
-          (l, \mbox{\lstinline'\\exists integer k; t1 <= k <= t2 && p'})
-          \rulearrow
+          (l, \mbox{\lstinline'\\exists integer'}~k\semicolon~t_1~
+          \mbox{\lstinline'<='}~k~\mbox{\lstinline'<='}~t_2~
+          \mbox{\lstinline'&&'}~p) \prule
         } {
           \splitfrac {
             (I_1 \cdot I_2
-            \cdot (l, \mbox{\lstinline'int var_n = 0;'})
-            \cdot (l, \Zinit \underline{\mbox{\lstinline'k = e1;'}} )
+            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 0;'})
+            \cdot (l, \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
           } {
             \cdot
             (l, \mbox{\lstinline'while('}
-            \underline{\mbox{\lstinline'k <= e2'}}~\mbox{\lstinline'&& !var_n)'}
+            \underline{k~\mbox{\lstinline'<='}~e_2}~\mbox{\lstinline'&& !var_'}n
+            \mbox{\lstinline')'}
             \bopen
             I_3
-            \cdot (l, \mbox{\lstinline'var_n = e3;'})
-            \cdot (l, \underline{\mbox{\lstinline'k++'}} \semicolon)
+            \cdot (l, \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3
+            \semicolon)
+            \cdot (l, \underline{k\mbox{\lstinline'++'}} \semicolon)
             \bclose )
-            \cdot
-            (l, \underline{\mbox{\lstinline'k'}} \Zclear \semicolon )
-            \cdot
-            (l, \underline{\mbox{\lstinline'e1'}} \Zclear \semicolon )
-            \cdot
-            (l, \underline{\mbox{\lstinline'e2'}} \Zclear \semicolon ),
-            \mbox{\lstinline'var_n'})
+            \cdot (l, \underline{k} \Zclear \semicolon )
+            \cdot (l, \underline{e_1} \Zclear \semicolon )
+            \cdot (l, \underline{e_2} \Zclear \semicolon ),
+            \mbox{\lstinline'var_'}n)
           }
         }
       }{}

@@ -596,8 +596,8 @@ défaut en C).
 \begin{figure*}[bt]
   \scriptsize{
     {\myinference{$\tau$-base-addr}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\base_addr(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\base_addr(t)'}) \trule
         (I \concat
         (l, \mbox{\lstinline'void* var_n = __base_addr(e);'}),
         \mbox{\lstinline'var_n'})
@@ -605,8 +605,8 @@ défaut en C).
     }
 
     {\myinference{$\tau$-block-length}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\block_length(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\block_length(t)'}) \trule
         (I \concat
         (l, \mbox{\lstinline'unsigned long var_n = __block_length(e);'}),
         \mbox{\lstinline'var_n'})
@@ -614,8 +614,8 @@ défaut en C).
     }
 
     {\myinference{$\tau$-offset}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\offset(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\offset(t)'}) \trule
         (I \concat
         (l, \mbox{\lstinline'int var_n = __offset(e);'}),
         \mbox{\lstinline'var_n'})
@@ -623,8 +623,8 @@ défaut en C).
     }
 
     {\myinference{$\pi$-valid}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid(t)'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_n = __valid(e,sizeof(typeof(e)));'}),
         \mbox{\lstinline'var_n'})
@@ -632,8 +632,8 @@ défaut en C).
     }
 
     {\myinference{$\pi$-valid-read}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid_read(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\valid_read(t)'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_n = __valid_read(e,sizeof(typeof(e)));'}),
         \mbox{\lstinline'var_n'})
@@ -641,8 +641,8 @@ défaut en C).
     }
 
     {\myinference{$\pi$-initialized}
-      {(l, \mbox{\lstinline't'}:ptr) \rulearrow (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\initialized(t)'}) \rulearrow
+      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
+      {(l, \mbox{\lstinline'\\initialized(t)'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_n = __initialized(e,sizeof(typeof(e)));'}),
         \mbox{\lstinline'var_n'})

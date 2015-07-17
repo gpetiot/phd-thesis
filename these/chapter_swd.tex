@@ -138,17 +138,30 @@ par un nouveau code que nous définissons maintenant.
 \begin{figure}[tb]
   \scriptsize{
     {\myinference{$\alpha$-assume-assigns}
-      {}
-      {(End_f, \mbox{\lstinline'assigns X;'})
-        \rulearrow
-        \forall (\mbox{\lstinline'x'}:ctype) \in X :
-        (End_f, \mbox{\lstinline'x = nondet();'})}{}
+      {
+        \forall (x:ctype) \in X :
+        (
+        (End_f, x) \trule (I, e)
+        )
+      }
+      {
+        \splitfrac{
+          (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
+        } {
+          \splitfrac{
+            \forall (x:ctype) \in X :
+          }{
+            (I \concat (End_f,
+            e~\mbox{\lstinline'= nondet();'}) )
+          }
+        }
+      }{}
     }
 
     {\myinference{$\alpha$-assume-post}
-      {(End_f, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(End_f, \mbox{\lstinline'p'}) \prule (I, \mbox{\lstinline'e'})}
       {(End_f, \mbox{\lstinline'ensures p;'})
-        \rulearrow
+        \arule
         I \concat (End_f, \mbox{\lstinline'fassume(e);'})}{}
     }
   }
@@ -185,27 +198,40 @@ présente la traduction de la postcondition.
 \begin{figure}[tb]
   \scriptsize{
     {\myinference{$\alpha$-assume-loop-assigns}
-      {}
-      {(l, \mbox{\lstinline'loop assigns X;'})
-        \rulearrow
-        \forall (\mbox{\lstinline'x'}:ctype) \in X :
-        (l, \mbox{\lstinline'x = nondet();'})}{}
+      {
+        \forall (x:ctype) \in X :
+        (
+        (l, x) \trule (I, e)
+        )
+      }
+      {
+        \splitfrac{
+          (l, \mbox{\lstinline'loop assigns'}~X\semicolon) \arule
+        } {
+          \splitfrac{
+            \forall (x:ctype) \in X :
+          }{
+            (I \concat (l,
+            e~\mbox{\lstinline'= nondet();'}) )
+          }
+        }
+      }{}
     }
 
     {\myinference{$\alpha$-assume-invariant}
-      {(l, \mbox{\lstinline'p'}) \rulearrow (I, \mbox{\lstinline'e'})}
+      {(l, \mbox{\lstinline'p'}) \prule (I, \mbox{\lstinline'e'})}
       {
-        (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+        (l, \mbox{\lstinline'loop invariant p;'}) \arule
         I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
       }{}
     }
 
     %% {\myinference{$\alpha$-assume-invariant-2}
-    %%   {(l, \mbox{\lstinline'p'}) \rulearrow (I_1, \mbox{\lstinline'e1'}) \\
-    %%     (EndIter_l, \mbox{\lstinline'p'}) \rulearrow
+    %%   {(l, \mbox{\lstinline'p'}) \prule (I_1, \mbox{\lstinline'e1'}) \\
+    %%     (EndIter_l, \mbox{\lstinline'p'}) \prule
     %%     (I_2, \mbox{\lstinline'e2'})}
     %%   {
-    %%     (l, \mbox{\lstinline'loop invariant p;'}) \rulearrow
+    %%     (l, \mbox{\lstinline'loop invariant p;'}) \arule
     %%     I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})
     %%     \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
     %%   }{}

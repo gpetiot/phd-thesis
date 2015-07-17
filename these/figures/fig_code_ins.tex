@@ -10,7 +10,7 @@
                                 §\tikzinsert{c}{3}{ball,fill=greenv!40}§
 
                                 §\tikzinsert{d}{4}{ball,fill=orange!40}§
-//@ loop invariant x < y;
+/*@ loop invariant x < y; */
 while(c) {
   /* body */
 
@@ -35,7 +35,7 @@ while(c) {
                 {mpz_t v2; __gmpz_init_set_si(v2,y);}};
     \node[left of=l-ins2,node distance=2.5cm] (l2) {$l$,};
     \node[ins,inner sep=0,below of=l-ins2] (l-ins3a) {
-      \lstinline[basicstyle=\tiny\ttfamily]{int v3; __gmpz_cmp(v1, v2)<0;}};
+      \lstinline[basicstyle=\tiny\ttfamily]{int v3 = __gmpz_cmp(v1, v2)<0;}};
     \node[inner sep=0,below of=l-ins3a,node distance=.3cm] (l-ins3b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v1); __gmpz_clear(v2);}};
@@ -50,17 +50,17 @@ while(c) {
                 {mpz_t v5; __gmpz_init_set_si(v5,y);}};
     \node[left of=l-ins5,node distance=2.95cm] (l6) {$\mathit{EndIter_l}$,};
     \node[ins,inner sep=0,below of=l-ins5] (l-ins6a) {
-      \lstinline[basicstyle=\tiny\ttfamily]{int v6; __gmpz_cmp(v4, v5)<0;}};
+      \lstinline[basicstyle=\tiny\ttfamily]{int v6 = __gmpz_cmp(v4, v5)<0;}};
     \node[inner sep=0,below of=l-ins6a,node distance=.3cm] (l-ins6b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v4); __gmpz_clear(v5);}};
     \node[ins,draw=gray,fit=(l-ins6a)(l-ins6b)] (l-ins6) {};
     \node[left of=l-ins6a,node distance=2.95cm] (l7) {$\mathit{EndIter_l}$,};
     \node[ins,draw=orange,below of=l-ins6] (l-ins7) {
-      \lstinline[basicstyle=\tiny\ttfamily]{assert(v3);}};
+      \lstinline[basicstyle=\tiny\ttfamily]{fassert(v3);}};
     \node[left of=l-ins7,node distance=2.5cm] (l4) {$l$,};
     \node[ins,draw=gray,below of=l-ins7] (l-ins8) {
-      \lstinline[basicstyle=\tiny\ttfamily]{assert(v6);}};
+      \lstinline[basicstyle=\tiny\ttfamily]{fassert(v6);}};
     \node[left of=l-ins8,node distance=2.95cm] (l8) {$\mathit{EndIter_l}$,};
     %% arrow for order
     \node[right of=l-ins1,node distance=2.5cm] (inv1) {};
@@ -81,7 +81,7 @@ while(c) {
                 {mpz_t v2; __gmpz_init_set_si(v2,y);}};
     \path (l-ins2.east) edge[arr,color=red] (r-ins2.west);
     \node[ins,inner sep=0,left of=c] (r-ins3a) {
-      \lstinline[basicstyle=\tiny\ttfamily]{int v3; __gmpz_cmp(v1, v2)<0;}};
+      \lstinline[basicstyle=\tiny\ttfamily]{int v3 = __gmpz_cmp(v1, v2)<0;}};
     \node[inner sep=0,below of=r-ins3a,node distance=.3cm] (r-ins3b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v1); __gmpz_clear(v2);}};
@@ -96,17 +96,17 @@ while(c) {
                 {mpz_t v5; __gmpz_init_set_si(v5,y);}};
     \path (l-ins5.east) edge[arr,color=gray] (r-ins5.west);
     \node[ins,inner sep=0,left of=g] (r-ins6a) {
-      \lstinline[basicstyle=\tiny\ttfamily]{int v6; __gmpz_cmp(v4, v5)<0;}};
+      \lstinline[basicstyle=\tiny\ttfamily]{int v6 = __gmpz_cmp(v4, v5)<0;}};
     \node[inner sep=0,below of=r-ins6a,node distance=.3cm] (r-ins6b) {
       \lstinline[basicstyle=\tiny\ttfamily]
                 {__gmpz_clear(v4); __gmpz_clear(v5);}};
     \node[ins,draw=gray,fit=(r-ins6a)(r-ins6b)] (r-ins6) {};
     \path (l-ins6.east) edge[arr,color=gray] (r-ins6.west);
     \node[ins,draw=orange,left of=d] (r-ins7) {
-      \lstinline[basicstyle=\tiny\ttfamily]{assert(v3);}};
+      \lstinline[basicstyle=\tiny\ttfamily]{fassert(v3);}};
     \path (l-ins7.east) edge[arr,color=orange] (r-ins7.west);
     \node[ins,draw=gray,left of=h] (r-ins8) {
-      \lstinline[basicstyle=\tiny\ttfamily]{assert(v6);}};
+      \lstinline[basicstyle=\tiny\ttfamily]{fassert(v6);}};
     \path (l-ins8.east) edge[arr,color=gray] (r-ins8.west);
   \end{tikzpicture}
   \caption{Insertion du code généré pour l'invariant de la

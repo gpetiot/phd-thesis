@@ -55,7 +55,7 @@
       \insertball[fill=red!40]{2}};
     \node[left of=ins2,node distance=3.5cm] (l2) {$l$,};
     \node[ins,inner sep=0,below of=ins2] (ins3a) {
-      \lstinline{int v3; __gmpz_cmp(v1, v2)<0;}};
+      \lstinline{int v3 = __gmpz_cmp(v1, v2)<0;}};
     \node[inner sep=0,below of=ins3a,node distance=.3cm] (ins3b) {
       \lstinline{__gmpz_clear(v1); __gmpz_clear(v2);}
       \insertball[fill=greenv!40]{3}};
@@ -68,7 +68,7 @@
       \lstinline{mpz_t v5; __gmpz_init_set_si(v5,y);}
       \insertball[fill=gray!40]{6}};
     \node[ins,inner sep=0,below of=ins5] (ins6a) {
-      \lstinline{int v6; __gmpz_cmp(v4, v5)<0;}};
+      \lstinline{int v6 = __gmpz_cmp(v4, v5)<0;}};
     \node[inner sep=0,below of=ins6a,node distance=.3cm] (ins6b) {
       \lstinline{__gmpz_clear(v4); __gmpz_clear(v5);}
       \insertball[fill=gray!40]{7}};
@@ -77,9 +77,9 @@
     \node[left of=ins5,node distance=3.95cm] (l6) {$\mathit{EndIter_l}$,};
     \node[left of=ins6a,node distance=3.95cm] (l7) {$\mathit{EndIter_l}$,};
     \node[ins,draw=orange,below of=ins6] (ins7) {
-      \lstinline{assert(v3);}\insertball[fill=orange!40]{4}};
+      \lstinline{fassert(v3);}\insertball[fill=orange!40]{4}};
     \node[ins,draw=gray,below of=ins7] (ins8) {
-      \lstinline{assert(v6);}\insertball[fill=gray!40]{8}};
+      \lstinline{fassert(v6);}\insertball[fill=gray!40]{8}};
     \node[left of=ins7,node distance=3.5cm] (l4) {$l$,};
     \node[left of=ins8,node distance=3.95cm] (l8) {$\mathit{EndIter_l}$,};
     \node[draw,thick,dotted,fit=(l1)(ins1)(ins8)(l8)] (ins) {};

@@ -1,7 +1,7 @@
 int is_present(int* t, int n, int v) {
  §$Beg_{\texttt{is\_present}}:$§
   int *old_t = t; int *old_val_t = malloc(((n-1)+1)*sizeof(int)); int old_n = n;
-  int old_v = v; int res = 0; int i = 0; int iter_t;
+  int old_v = v; int res§$_{\texttt{is\_present}}$§ = 0; int i = 0; int iter_t;
   for(iter_t = 0; iter_t < n; iter_t++) old_val_t[iter_t] = t[iter_t];
   §$\underline{\Zinit \mbox{var\_{38} = 0}}$§; §$\underline{\Zinit \mbox{var\_{39} = n}}$§; int var_40 = §$\underline{ \mbox{var\_38}\Zclear\ \mbox{<= var\_{39}}\Zclear}$§; fassume(var_40);
   fassume(fvalidr(t,0,(n-1)));
@@ -24,12 +24,12 @@ int is_present(int* t, int n, int v) {
     §$\underline{\Zinit \mbox{var\_{26} = n}}$§; §$\underline{\Zinit \mbox{var\_{27} = i}}$§; §$\underline{\Zinit \mbox{var\_{28} = var\_{26}}\Zclear\ \mbox{- var\_{27}}\Zclear}$§;
     int var_29 = §$\underline{ \mbox{var\_{28}}\Zclear\ \mbox{< var\_9}\Zclear}$§; fassert(var_29);
   }
-  if(i < n) { res = 1; }
+  if(i < n) { res§$_{\texttt{is\_present}}$§ = 1; }
  §$End_{\texttt{is\_present}}:$§
-  §$\underline{\Zinit \mbox{var\_{30} = 0}}$§; §$\underline{\Zinit \mbox{var\_{31} = res}}$§; int var_32 = §$\underline{ \mbox{var\_{30}}\Zclear\ \mbox{!= var\_{31}}\Zclear}$§;
+  §$\underline{\Zinit \mbox{var\_{30} = 0}}$§; §$\underline{\Zinit \mbox{var\_{31} = res$_{\texttt{is\_present}}$}}$§; int var_32 = §$\underline{ \mbox{var\_{30}}\Zclear\ \mbox{!= var\_{31}}\Zclear}$§;
   §$\underline{\Zinit \mbox{var\_{33} = 0}}$§; §$\underline{\Zinit \mbox{var\_{34} = old\_n}}$§;
   int var_35 = 0;
   for(§$\underline{\Zinit \mbox{i\_0 = var\_{33}}\Zclear}$§; §$\underline{ \mbox{i\_0 < var\_{34}}\Zclear}$§ && !var_35; §$\underline{ \mbox{i\_0++}\Zclear}$§) {
-    §$\underline{\Zinit \mbox{var\_{36} = i\_0}}$§; int var_37 = §$\underline{\mbox{var\_{36}}\Zclear}$§; var_35 = old_val_t[var_37] == old_value; }
+    §$\underline{\Zinit \mbox{var\_{36} = i\_0}}$§; int var_37 = §$\underline{\mbox{var\_{36}}\Zclear}$§; var_35 = old_val_t[var_37] == old_v; }
   fassert((!var_32 || var_35) && (!var_35 || var_32));
-  free(old_val_t); return res; }
+  free(old_val_t); return res§$_{\texttt{is\_present}}$§; }
