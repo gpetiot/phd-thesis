@@ -101,6 +101,47 @@ nécessaires à l'évaluation d'une annotation, d'un prédicat ou d'un terme
 Ces insertions de code générées à partir des annotations sont placées
 dans une séquence d'insertions de code globale.
 
+\begin{figure}\centering
+  \begin{minipage}{.4\columnwidth}\textbf{a)}
+    \begin{lstlisting}[escapechar=§]
+/*@ requires p;
+    typically q;
+    assigns X;
+    ensures r; */
+T f(T1 i1, ..., Tn in) {
+  §$Beg_{\texttt{f}}:$§ T res§$_{\texttt{f}}$§;
+  §$l:$§
+   /*@ loop invariant i;
+       loop assigns Y;
+       loop variant v; */
+   while(...) { ... }
+  §$m:$§ /*@ assert a; */
+  §$End_{\texttt{f}}:$§ return res§$_{\texttt{f}}$§;
+}
+    \end{lstlisting}
+  \end{minipage}
+  \begin{minipage}{.4\columnwidth}\textbf{b)}
+    \begin{itemize}
+    \item $(Beg_f, \mbox{\lstinline'requires'}~p\semicolon) \arule I_p$
+    \item $(Beg_f, \mbox{\lstinline'typically'}~q\semicolon) \arule I_q$
+    \item $(End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule I_X$
+    \item $(End_f, \mbox{\lstinline'ensures'}~r\semicolon) \arule I_r$
+    \item $(l, \mbox{\lstinline'loop invariant'}~i\semicolon) \arule I_i$
+    \item $(l, \mbox{\lstinline'loop assigns'}~Y\semicolon) \arule I_Y$
+    \item $(l, \mbox{\lstinline'loop variant'}~v\semicolon) \arule I_v$
+    \item $(l, \mbox{\lstinline'assert'}~a\semicolon) \arule I_a$
+    \end{itemize}
+  \end{minipage}
+  \caption{Fonction $f$ de $P$ \textbf{(a)} et insertions de code générées par
+    sa traduction \textbf{(b)}\label{fig:P}}
+\end{figure}
+
+Ainsi, le programme $P$ réduit à la déclaration de la fonction $f$ de la
+figure~\ref{fig:P} \textbf{(a)} est transformé en programme $P'$ obtenu à partir
+de $P$ par les insertions de code $I_p$, $I_q$, $I_X$, $I_r$, $I_i$, $I_Y$,
+$I_v$, $I_a$, définies sur la figure~\ref{fig:P} \textbf{(b)}, où $\arule$ est
+défini dans la partie~\ref{sec:annot}.
+
 \textbf{Sauvegarde des valeurs  au début de la fonction.}
 Indépendamment de la traduction des annotations, un traitement particulier est
 effectué pour chaque fonction, nous permettant d'obtenir la valeur
