@@ -24,19 +24,19 @@
     \eval{\lstinline'\\sum('$t_1$, $t_2$,
       \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
+    $\sum_{k' = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3~(\faktor{k'}{k})$}{$\mem$}}$
     & \eqlabel{E-sum} \\
 
-    \eval{\lstinline'\\product(' $t_1$, $t_2$,
+    \eval{\lstinline'\\product('$t_1$, $t_2$,
       \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\prod_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
+    $\prod_{k' = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3~(\faktor{k'}{k})$}{$\mem$}}$
     & \eqlabel{E-prod} \\
 
-    \eval{\lstinline'\\numof(' $t_1$, $t_2$,
+    \eval{\lstinline'\\numof('$t_1$, $t_2$,
       \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3 ? 1 : 0$}{$\mem$}}$
+    $\sum_{k' = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3~(\faktor{k'}{k}) ? 1 : 0$}{$\mem$}}$
     & \eqlabel{E-num} \\
 
     \eval{$h_1$ \texttt{?} $h_2$ \texttt{:} $h_3$}{$\mem$}
