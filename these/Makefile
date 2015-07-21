@@ -43,6 +43,7 @@ LISTINGS=listings/mem_annots.c \
 	listings/ex2.c \
 	listings/rgf_0.c \
 	listings/deleteSubstrTrous.c \
+	listings/deleteSubstr.c \
 	listings/findSubstr.c
 CHAPTERS_TEX=$(wildcard chapter_*.tex)
 CHAPTERS_PDF=$(CHAPTERS_TEX:.tex=.pdf)
@@ -54,6 +55,7 @@ chapter_swd_DEPS=listings/ex1.c \
 chapter_intro_DEPS=figures/user_f.png \
 			figures/user_m.png
 chapter_ncd_DEPS=listings/deleteSubstrTrous.c \
+		listings/deleteSubstr.c \
 		listings/findSubstr.c
 chapter_method_DEPS=table_rgf.pdf
 chapter_eacsl_DEPS=figures/mmodel_architecture.pdf

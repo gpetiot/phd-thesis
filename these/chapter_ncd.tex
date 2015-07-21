@@ -10,42 +10,129 @@
 % dans différents scénarios.''}
 
 
-La vérification déductive d'un programme C annoté en ACSL peut échouer pour
-diverses raisons. Dans ce chapitre et le suivant, on suppose que l'échec de
-vérification ne vient pas des limitations du prouveur. L'échec vient donc de
-problèmes dans le code et/ou dans sa spécification. On distingue deux sortes de
-problèmes, de nature très différente : la non-conformité entre un code et sa
-spécification, approfondie dans ce chapitre, et la faiblesse de spécification,
-étudiée dans le chapitre suivant. La non-conformité entre un code et sa
-spécification est une notion de correction relative entre code et spécification.
+Il est souvent difficile de déterminer la raison de l'échec de la vérification
+déductive d'un programme C annoté en \eacsl.
+Dans ce chapitre et le suivant, on suppose que l'échec de vérification ne vient
+pas des limitations du prouveur.
+L'échec vient donc de problèmes dans le code et/ou dans sa spécification.
+On distingue deux sortes de problèmes, de nature très différente : la
+non-conformité entre un code et sa spécification, approfondie dans ce chapitre,
+et la faiblesse de spécification, étudiée dans le chapitre suivant.
+La non-conformité entre un code et sa spécification est une notion de correction
+relative entre code et spécification.
 Ce n'est que lorsqu'une spécification est correcte en ce sens -- vis-à-vis du
 code qu'elle spécifie -- qu'il est pertinent d'étudier le second problème, celui
 de la précision suffisante de certaines annotations pour permettre d'en
-démontrer d'autres. C'est pourquoi cette seconde question -- de complétude de la
-spécification -- est étudiée après la question de non-conformité étudiée ici.
+démontrer d'autres.
+C'est pourquoi cette seconde question -- de complétude de la spécification --
+est étudiée après la question de non-conformité étudiée ici.
 
 Il n'est pas assez précis de parler d'erreur dans le code et/ou dans sa
-spécification. En effet, on ne s'intéresse pas ici directement à la détection
-dans le code d'erreurs dites ``à l'exécution'' (\textit{runtime error}), telles
-que les divisions par zéro ou les accès à un tableau hors de ses bornes. On ne
-s'y intéresse qu'indirectement, par vérification déductive d'assertions
+spécification.
+En effet, on ne s'intéresse pas ici directement à la détection dans le code
+d'erreurs dites ``à l'exécution'' (\textit{runtime error}), telles que les
+divisions par zéro ou les accès à un tableau hors de ses bornes.
+On ne s'y intéresse qu'indirectement, par vérification déductive d'assertions
 précédant immédiatement un code susceptible de générer une telle erreur.
 Une telle assertion doit être fausse lorsque les conditions de déclenchement de
 l'erreur sont réunies. On ne considère donc que des erreurs concernant le code
 \textbf{et} sa spécification. De plus, parmi ces erreurs, on ne considère que
 celles que nous pouvons détecter par analyse dynamique d'une instrumentation du
-programme annoté. Ce sont ces erreurs que nous appelons ``non-conformités''.
+programme annoté.
+Ce sont ces erreurs que nous appelons ``non-conformités''.
 
 Nous proposons plusieurs scénarios de détection de non-conformités entre un code
 et sa spécification, par instrumentation du programme annoté et génération de
 tests structurels pour cette instrumentation.
-La partie~\ref{sec:ncd-ex} présente l'exemple que nous utiliserons tout au long
-de ce chapitre. La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
+La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
+La partie~\ref{sec:ncd-ex} présente l'exemple que nous utilisons tout au long
+de ce chapitre.
 La partie~\ref{sec:ncd-scenarios} illustre la détection de non-conformités dans
 deux scénarios construits sur l'exemple présenté en partie~\ref{sec:ncd-ex}.
 
 
-\section{Exemple}
+\section{Définition de la non-conformité}
+\label{sec:ncd-def}
+
+
+Soit $P$ un programme C annoté avec \eacsl, et $f$ la fonction sous vérification
+de $P$.
+La fonction $f$ est supposée non-récursive.
+Elle peut appeler d'autres fonctions, notons $g$ l'une d'entre elles.
+Un \emph{cas de test} $V$ pour $f$ est un vecteur de valeurs pour chaque
+variable d'entrée de $f$.
+Le \emph{chemin de programme} activé par un cas de test $V$, noté $\pi_V$, est
+la séquence d'instructions exécutées par le programme $P$ sur le cas de test
+$V$.
+Nous utilisons le terme générique de \emph{contrat} pour désigner l'ensemble des
+annotations \eacsl décrivant une boucle ou une fonction. 
+Un contrat de fonction est composé de pré- et postconditions incluant les
+clauses \lstinline{requires}, \lstinline{assigns} et \lstinline{ensures}.
+Un contrat de boucle est composé des clauses \lstinline{loop invariant},
+\lstinline{loop variant} et \lstinline{loop assigns}.
+
+Le chapitre~\ref{sec:traduction} a présenté la transformation d'un programme
+$P$ annoté avec \eacsl en un programme instrumenté (dénoté $P^\NC$ dans la
+suite) sur lequel nous pouvons appliquer la génération de tests pour produire
+des données de test violant des annotations à l'exécution.
+$P^\NC$ vérifie toutes les annotations de $P$ aux endroits correspondants dans
+le programme et reporte toute violation d'annotation éventuelle.
+Par exemple, la postcondition $\textit{Post}_f$ de $f$ est évaluée par le code
+suivant, inséré à la fin de la fonction $f$ dans $P^\NC$ :
+
+\begin{equation}
+\mbox{\lstinline[mathescape]'int post_f; $~\mathit{Spec2Code}$($\textit{Post}_f$, post_f); fassert(post_f);'}
+\end{equation}
+
+Pour un prédicat \eacsl \lstinline[mathescape]'$\textit{P}$',
+nous notons par \lstinline[mathescape]'$\mathit{Spec2Code}$($\textit{P}$, b)'
+le code C généré qui évalue le prédicat \lstinline[mathescape]'$\textit{P}$'
+et donne sa valeur de vérité à la variable booléenne \lstinline[mathescape]'b'.
+De manière similaire, les préconditions et postconditions d'une fonction appelée
+$g$ sont évaluées respectivement avant et après l'exécution de la fonction $g$.
+Un invariant de boucle est vérifié avant la boucle (on dit qu'il est établi) et
+après chaque pas de la boucle (on dit qu'il est préservé par l'itération).
+Une assertion est vérifiée à sa position courante.
+Afin de produire uniquement des données de test qui respectent la précondition
+$\textit{Pre}_f$ de $f$, cette précondition est testée au début de $f$ de sorte
+à admettre la précondition :
+
+\begin{equation}
+\mbox{\lstinline[mathescape]'int pre_f; $~\mathit{Spec2Code}$($\textit{Pre}_f$, pre_f); fassume(pre_f);'}
+\end{equation}
+
+\begin{definition}[Non-conformité] 
+  \label{def:NC}
+  Il y a une \emph{non-conformité} entre le code d'une fonction $f$ et sa
+  spécification dans le programme $P$ s'il existe un cas de test $V$ pour $f$
+  respectant sa précondition, tel que $P^{\NC}$ produit une violation
+  d'annotation à partir de $V$.
+  On dit que $V$ est un \emph{contre-exemple de non-conformité} (ou \NCCE pour
+  \textit{non-compliance counter-example}).
+\end{definition}
+
+La génération de tests peut être utilisée sur le programme instrumenté $P^{\NC}$
+pour générer des \NCCE{}s.
+Nous appelons cette technique \emph{Détection de Non-Conformité} (ou \NCD pour
+\textit{Non-Compliance Detection}).
+Dans nos travaux, nous utilisons le générateur de tests \pathcrawler qui essaie
+de couvrir tous les chemins d'exécution faisables du programme.
+Étant donné que l'étape de traduction a ajouté des branches dans le programme
+afin d'expliciter la violation des annotations, \pathcrawler essaie de couvrir
+au moins un chemin d'exécution où l'annotation n'est pas vérifiée.
+
+L'étape \NCD peut produire trois résultats.
+Elle retourne un triplet (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé,
+indiquant que le chemin de programme $\pi_V$ activé par $V$ sur $P^{\NC}$
+provoque une violation de l'annotation $a$.
+Si \NCD a exploré tous les chemins du programme sans trouver de \NCCE, elle
+retourne ``\no''.
+Sinon, si la couverture des chemins du programme par \NCD est partielle (si
+un {\em timeout} a été atteint par exemple), elle retourne ``\textsf{?}'', ce
+qui signifie qu'elle n'a pas été en mesure de conclure.
+
+
+\section{Exemple illustratif}
 \label{sec:ncd-ex}
 
 
@@ -72,6 +159,7 @@ figure~\ref{fig:deleteSubstrTrous}.
 Dans ce chapitre, nous suivons Alice pendant le processus de validation afin
 d'illustrer les problèmes et les différents choix possibles que rencontre un
 ingénieur validation en charge d'une preuve de programme.
+
 Le comportement attendu de la fonction \lstinline{delete_substr} est de
 supprimer une occurrence de la sous-chaîne \lstinline{substr} de longueur
 \lstinline{sublen} au sein d'une chaîne \lstinline{str} de longueur
@@ -90,114 +178,8 @@ la sous-chaîne est présente, et $-1$ sinon.
 Nous supposons qu'Alice a déjà prouvé avec succès la correction de la fonction
 \lstinline{find_substr} vis-à-vis de son contrat.
 
-Alice écrit d'abord la précondition suivante (ajoutée avant la ligne 1 de la
-figure~\ref{fig:deleteSubstrTrous}) :
 
-\begin{pretty-codeACSL}
-requires 0 < sublen <= strlen;
-requires \valid(str+(0..strlen-1));
-requires \valid(dest+(0..strlen-1));
-requires \valid(substr+(0..sublen-1));
-requires \separated(dest+(0..strlen-1), substr+(0..sublen-1));
-requires \separated(dest+(0..strlen-1), str+(0..strlen-1));
-typically strlen <= 5;
-\end{pretty-codeACSL}
-
-Nous rappelons que la clause \lstinline{typically C;} étend \eacsl et définit la
-précondition \lstinline{C} qui n'est prise en compte que par la génération de
-tests.
-Cette clause permet à Alice de renforcer la précondition si elle souhaite
-restreindre l'exploration des chemins du programme, en diminuant leur nombre.
-La couverture des chemins du programme est alors partielle et contrôlée par
-l'utilisateur.
-Ici, la clause \lstinline{typically strlen <= 5} contraint la génération de
-tests à ne considérer que les chemins faisables pour lesquels la chaîne
-\lstinline{str} est contient au plus cinq caractères.
-Étant ignorée par la vérification déductive, cette clause n'impacte par la
-preuve du programme.
-
-
-\section{Définition}
-\label{sec:ncd-def}
-
-
-Soit $P$ un programme C annoté avec \eacsl, et $f$ la fonction sous vérification
-de $P$.
-La fonction $f$ est supposée non-récursive.
-Elle peut appeler d'autres fonctions, notons $g$ l'une d'entre elles.
-Un \emph{cas de test} $V$ pour $f$ est un vecteur de valeurs pour chaque
-variable d'entrée de $f$.
-Le \emph{chemin de programme} activé par un cas de test $V$, noté $\pi_V$, est
-la séquence d'instructions du programme exécutées oar le programme sur le cas
-de test $V$.
-Nous utilisons le terme générique de \emph{contrat} pour désigner l'ensemble des
-annotations \eacsl décrivant une boucle ou une fonction. 
-Un contrat de fonction est composé de pré- et postconditions incluant les
-clauses \lstinline{requires}, \lstinline{assigns} et \lstinline{ensures}.
-Un contrat de boucle est composé des clauses \lstinline{loop invariant},
-\lstinline{loop variant} et \lstinline{loop assigns}.
-
-%\subsection{Non-Compliance}
-%\label{subsec:NC}
-
-Le chapitre~\ref{sec:traduction} a présenté la transformation d'un programme
-$P$ annoté avec \eacsl en un programme instrumenté (dénoté $P^\NC$ dans la
-suite) sur lequel nous pouvons appliquer la génération de tests pour produire
-des données de test violant des annotations à l'exécution.
-$P^\NC$ vérifie toutes les annotations de $P$ aux endroits correspondants dans
-le programme et reporte toute violation d'annotation éventuelle.
-Par exemple, la postcondition $\textit{Post}_f$ de $f$ est évaluée par le code
-suivant, inséré à la fin de la fonction $f$ dans $P^\NC$ :
-
-\begin{equation}\tag{$\dagger$}
-\mbox{\lstinline[mathescape]'int post_f;  $\ Spec2Code$($\textit{Post}_f$, post_f); fassert(post_f);'}
-\end{equation}
-
-Pour un prédicat \eacsl \lstinline[mathescape]'$\textit{P}$',
-nous notons par \lstinline[mathescape]'$Spec2Code$($\textit{P}$, b)'
-le code C généré qui évalue le prédicat \lstinline[mathescape]'$\textit{P}$'
-et assigne sa valeur à la variable booléenne \lstinline[mathescape]'b'.
-De manière similaire, les préconditions et postconditions d'une fonction appelée
-$g$ sont évaluées respectivement avant et après l'exécution de la fonction $g$.
-Un invariant de boucle est vérifié avant la boucle (on dit qu'il est établi) et
-après chaque itération de la boucle (on dit qu'il est préservé par l'itération).
-Une assertion est vérifiée à sa position courante.
-Afin de produire uniquement des données de test qui respectent la précondition
-$\textit{Pre}_f$ de $f$, cette précondition est testée au début de $f$ de
-manière similaire à ($\dagger$) excepté le fait que l'appel à \fassert est
-remplacé par un appel à \fassume, ce qui permet d'admettre la précondition.
-
-\begin{definition}[Non-conformité] 
-  \label{def:NC}
-  Il y a une \emph{non-conformité} entre le code et sa spécification dans le
-  programme $P$ s'il existe un cas de test $V$ pour $f$ respectant sa
-  précondition, tel que $P^{\NC}$ produit une violation d'annotation sur $V$.
-  On dit que $V$ est un \emph{contre-exemple de non-conformité} (ou \NCCE pour
-  \textit{non-compliance counter-example}).
-\end{definition}
-
-La génération de tests sur le programme instrumenté $P^{\NC}$ peut être utilisée
-pour générer des \NCCE{}s.
-Nous appelons cette technique \emph{Détection de Non-Conformité} (ou \NCD pour
-\textit{Non-Compliance Detection}).
-Dans nos travaux, nous utilisons le générateur de tests \pathcrawler qui essaie
-de couvrir tous les chemins d'exécution faisables du programme.
-Étant donné que l'étape de traduction a ajouté des branches dans le programme
-afin d'expliciter la violation des annotations, \pathcrawler essaie de couvrir
-au moins un chemin d'exécution où l'annotation n'est pas vérifiée.
-
-L'étape \NCD peut produire trois résultats.
-Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé, indiquant que le
-chemin de programme $\pi_V$ activé par $V$ sur $P^{\NC}$ provoque une violation
-de l'annotation $a$.
-Si \NCD a exploré tous les chemins du programme sans trouver de \NCCE, elle
-retourne \no.
-Sinon, si la couverture des chemins du programme par \NCD est partielle (si
-un {\em timeout} a été atteint par exemple), elle retourne \textsf{?}, ce qui
-signifie qu'elle n'a pas été en mesure de conclure.
-
-
-\section{Détection de non-conformités en pratique}
+\section{Scénarios de détection de non-conformités}
 \label{sec:ncd-scenarios}
 
 
@@ -206,18 +188,18 @@ génération de tests peut fournir automatiquement à l'ingénieur validation un
 retour rapide et pertinent afin de l'aider dans son travail.
 En effet, la génération de tests peut trouver un contre-exemple mettant en
 évidence le non respect de la spécification par le code.
-Ceci est applicable au début de processus de spécification, lorsque la
+Ceci est applicable dès le début du processus de spécification, lorsque la
 vérification déductive ne peut pas aboutir car le programme à vérifier n'est
-pas entièrement spécifié (par exemple contrats de boucle et de fonctions
-appelées manquants).
+pas entièrement spécifié (il manque par exemple des contrats de boucle et de
+fonctions appelées).
 La génération de tests peut également être utile dans le cas d'un échec de
 preuve concernant une propriété de programme, lorsque l'ingénieur validation
-n'a d'autre alternative que d'analyser manuellement le programme afin de
+n'a pas d'autre alternative que d'analyser manuellement le programme afin de
 découvrir la raison de cet échec.
 
 L'absence de \NCCE après une exploration partielle (ou, si possible, complète)
 des chemins du programme donne à l'ingénieur validation une confiance accrue
-(respectivement une guarantie) quant à la conformité du code vis-à-vis de la
+(respectivement une garantie) quant à la conformité du code vis-à-vis de la
 spécification.
 Cette information pousse l'ingénieur à penser que l'échec de la preuve est dû à
 un manque dans la spécification, soit une annotation trop faible, plutôt qu'à
@@ -233,18 +215,44 @@ l'ingénieur validation à identifier le problème (dans la spécification ou da
 le code).
 
 Nous illustrons maintenant nos propos sur des scénarios de vérification
-concrets qu'Alice l'ingénieure validation pourrait rencontrer.
+concrets que l'ingénieure validation Alice pourrait rencontrer.
 
 
-\subsection{Détection des erreurs en amont}
+\subsection{Validation des contrats de la fonction sous vérification}
 \label{sec:ncd-early}
 
 
-Alice spécifie que la fonction peut uniquement modifier le contenu du tableau
-\lstinline{dest}, et définit la postcondition dans le cas où la sous-chaîne
-n'est pas présente dans la chaîne \lstinline'str'.
+Supposons qu'Alice écrive tout d'abord la précondition suivante (ajoutée avant
+la ligne 1 de la figure~\ref{fig:deleteSubstrTrous}) :
+
+\begin{pretty-codeACSL}
+requires 0 < sublen <= strlen;
+requires \valid(str+(0..strlen-1));
+requires \valid(dest+(0..strlen-1));
+requires \valid(substr+(0..sublen-1));
+requires \separated(dest+(0..strlen-1), substr+(0..sublen-1));
+requires \separated(dest+(0..strlen-1), str+(0..strlen-1));
+typically strlen <= 5;
+\end{pretty-codeACSL}
+
+Nous rappelons que la clause \lstinline{typically c;} étend \eacsl et définit
+une précondition \lstinline'c' qui n'est prise en compte que par la génération
+de tests.
+Cette clause permet à Alice de renforcer la précondition si elle souhaite
+restreindre l'exploration des chemins du programme, en diminuant leur nombre.
+La couverture des chemins du programme est alors partielle et contrôlée par
+l'utilisateur.
+Ici, la clause \lstinline'typically strlen <= 5' contraint la génération de
+tests à ne considérer que les chemins faisables pour lesquels la chaîne
+\lstinline'str' contient au plus cinq caractères.
+Étant ignorée par la vérification déductive, cette clause n'impacte pas la
+preuve du programme.
+
+Puis Alice spécifie que la fonction peut uniquement modifier le contenu du
+tableau \lstinline'dest', et définit la postcondition dans le cas où la
+sous-chaîne n'est pas présente dans la chaîne \lstinline'str'.
 Elle ajoute les clauses (erronées) suivantes au contrat de la fonction, après
-la précondition plus tôt :
+la précondition :
 
 \begin{pretty-codeACSL}
 assigns dest[0..strlen-1];
@@ -258,30 +266,32 @@ behavior not_present:
 Afin de valider cette postcondition avant d'aller plus loin, Alice applique
 la méthode \NCD.
 La génération de tests reporte que les deux clauses \lstinline{ensures} sont
-invalidées par le contre exemple
+invalidées par le contre-exemple suivant :
 \lstinline{strlen = 2}, \lstinline{sublen = 1}, \lstinline{str[0] = 'A'},
 \lstinline{str[1] = 'B'}, \lstinline{substr[0] = 'A'}, 
 \lstinline{dest[0] = 'B'} and \lstinline{\result = 0}.
-Alice remarque que dans ce cas, la chaîne \lstinline{substr} doit être présente
-dans la chaîne \lstinline{str} et le comportement \lstinline{not_present} ne
-doit pas s'appliquer, ce qui indique que l'erreur vient de la clause
-\lstinline{assumes}.
-Ceci aide Alice à corriger cette clause en remplaçant \lstinline{!=} par
-\lstinline{==}, pour obtenir :
+Alice remarque que dans ce cas, la chaîne \lstinline{substr} est présente dans
+la chaîne \lstinline'str'.
+Le comportement \lstinline'not_present' ne devrait donc pas s'appliquer, ce qui
+indique que l'erreur vient de la clause \lstinline'assumes'.
+Ceci aide Alice à corriger sa spécification en corrigeant cette clause en
+remplaçant \lstinline[style=pretty-c]{!=} par \lstinline{==}, pour obtenir :
 
 \begin{pretty-codeACSL}
   assumes !(\exists integer i; 0 <= i < strlen-sublen && 
    (\forall integer j; 0 <= j < sublen ==> str[i+j] == substr[j]));
 \end{pretty-codeACSL}
 
-Exécuter \NCD une seconde fois rapporte que tous les chemins faisables pour
-lesquels \lstinline{strlen <= 5} ont été couverts (en 3.4 secondes) et 9442 cas
-de tests ont été générés et aucune violation d'annotation n'a été observée.
-Alice est maintenant confiante que le comportement est correctement défini.
+Exécuter \NCD une seconde fois informe Alice que tous les chemins faisables pour
+lesquels \lstinline{strlen <= 5} ont été couverts (en 3.4 secondes), que 9442
+cas de tests ont été générés et qu'aucune violation d'annotation n'a été
+observée.
+Alice a maintenant confiance que le comportement \lstinline'not_present' est
+correctement défini.
 
 Concernant le comportement complémentaire, \lstinline{present}, Alice copie le
-comportement \lstinline{not_present} et le modifie (avec erreur) afin
-d'obtenir :
+comportement \lstinline{not_present} et le modifie (avec erreur).
+Elle écrit par exemple ceci :
 
 \begin{pretty-codeACSL}
 behavior present:
@@ -296,7 +306,7 @@ behavior present:
 
 La détection de non-conformité rapporte une erreur à l'exécution lors de l'accès
 à l'élément de la chaîne \lstinline{str} à l'indice \lstinline{l+sublen} dans
-la dernière clause \lstinline{ensures}.
+l'avant-dernière clause \lstinline{ensures}.
 Cette information permet à Alice de comprendre que la borne supérieure de
 l'indice \lstinline'l' devrait être \lstinline{strlen-sublen} au lieu de
 \lstinline{strlen}.
@@ -307,7 +317,7 @@ Alice est maintenant satisfaite avec les comportements du programme ainsi
 définis.
 
 
-\subsection{Validation incrémentale}
+\subsection{Validation des spécifications de boucles}
 \label{sec:ncd-incr}
 
 
@@ -336,11 +346,11 @@ Ces résultats poussent Alice à penser que la spécification de la boucle est
 valide mais incomplète, ce qui la conduit à ajouter un invariant de boucle
 supplémentaire, définissant les bornes de $k$ : 
 
-\begin{pretty-codeACSL} 
+\begin{pretty-codeACSL}
 loop invariant 0 <= k < strlen;
-\end{pretty-codeACSL} 
+\end{pretty-codeACSL}
 
-Alice réessaie à présent de pouver la boucle, et la vérification déductive de
+Alice réessaie à présent de prouver la boucle, et la vérification déductive de
 \Wp échoue une fois encore.
 Elle ré-applique \NCD et cette fois le nouvel invariant de boucle est invalidé.
 Après analyse de cet échec sur le contre-exemple produit, Alice comprend que
@@ -353,8 +363,16 @@ Après correction de l'erreur, le contrat de boucle est prouvé avec succès par
 De manière similaire, Alice spécifie et vérifie de manière itérative les deux
 autres boucles du programme.
 
-La fonction \lstinline{delete_substr} étant maintenant entièrement spécifiée,
-elle peut être complètement prouvée par \Wp.
+\begin{figure}[t]
+  \lstinputlisting{listings/deleteSubstr.c}
+  \vspace{-3mm}
+  \caption{Fonction \lstinline{delete_substr} spécifiée}
+  \vspace{-3mm}
+  \label{lst:delete-substr-full}
+\end{figure}
+
+La fonction \lstinline{delete_substr} étant maintenant entièrement spécifiée
+(figure~\ref{lst:delete-substr-full}), elle peut être prouvée par \Wp.
 Cependant le {\em timeout} par défaut du prouveur (10 secondes par propriété)
 doit être étendu de manière significative (par exemple 50 secondes par
 propriété).
@@ -377,9 +395,18 @@ vérification déductive du programme n'a pas été écarté par \NCD.
 \section*{Conclusion du chapitre}
 
 
-Dans ce chapitre, nous avons défini la notion de non-conformité entre le code
-et sa spécification et montré l'intérêt de leur détection dans le cadre de la
-preuve de programmes.
+Dans ce chapitre, nous avons défini la notion de non-conformité entre un code
+et sa spécification.
+Nous avons montré l'intérêt de la détection de non-conformité pour effectuer
+des preuves de programmes.
+Nous avons montré que la détection de non-conformité par génération de tests
+rendue possible par la traduction des annotations permettait d'aborder la preuve
+de manière incrémentale et itérative.
+En effet, il est possible de spécifier partiellement un programme puis de
+détecter si le code est conforme à cette partie avant de poursuivre le travail
+de spécification.
+La preuve peut être décomposée en une succession d'étapes de ce type.
+
 En revanche, ce chapitre n'aborde pas le cas où un contrat d'une boucle ou
 d'une fonction appelée (que nous appelerons sous-contrat) est trop faible pour
 prouver entièrement le programme.
@@ -387,5 +414,5 @@ Cette difficulté du processus de spécification et de vérification est traité
 chapitre~\ref{sec:swd}, qui présente la détection de faiblesses de
 sous-contrats.
 Le chapitre~\ref{sec:method} montrera que la combinaison de ces deux méthodes
-peut aider au diagnostic des échecs de preuve lors de la vérification déductive
-de programmes.
+peut améliorer l'aide au diagnostic des échecs de preuve lors de la vérification
+déductive de programmes.
