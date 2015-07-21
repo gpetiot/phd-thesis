@@ -13,30 +13,35 @@ appuierons dans ce chapitre, la partie~\ref{sec:method-proof-failures} rappelle
 les différentes causes possibles d'un échec de preuve, la
 partie~\ref{sec:method-presentation} présente notre méthode de diagnostic des
 échecs de preuve et la partie~\ref{sec:method-suggestions} suggère les actions
-à effectuer après qu'un échec de preuve ait été diagnostiqué.
+à effectuer après diagnostic d'un échec de preuve.
 
 
-\section{Exemple}
+\section{Exemple illustratif}
 \label{sec:method-ex}
 
 
-Nous illustrons les problèmes qui se posent lors de la vérification déductive
-d'un programme et les solutions que nous proposons sur le programme C donné en
-figure~\ref{fig:rgf1}.
+Nous illustrons sur le programme C donné en figure~\ref{fig:rgf1} les problèmes
+qui se posent lors de la vérification déductive d'un programme et les solutions
+que nous proposons.
 Cet exemple provient d'un travail de spécification formelle et de vérification
-déductive en cours~\cite{Genestier/TAP15} et implémente un algorithme proposé
+déductive~\cite{Genestier/TAP15} et implémente un algorithme proposé
 dans \cite[page 235]{Arndt/10}.
 L'exemple de la figure~\ref{fig:rgf1} concerne la génération de fonctions à
-croissance restreinte (ou RGF pour \textit{Restricted Growth Functions}),
-définies par la propriété exprimée par le prédicat \acsl \lstinline{is_rgf} aux
-lignes 1--4 de la figure~\ref{fig:rgf1}, où la RGF $a$ est représentée par les
-valeurs d'un tableau C.
-Pour des raisons de lisibilité, certaines notations \acsl sont remplacées par
-des symboles mathématiques (par exemple, les mots-clés
-\lstinline[style=c]{\exists}, \lstinline[style=c]{\forall} et
-\lstinline[style=c]{integer} sont notés respectivement $\exists$, $\forall$ et
-$\mathbb{Z}$).
+croissance limitée (ou RGF pour \textit{Restricted Growth Functions}).
+Une fonction à croissance limitée de taille $n$ est une endofonction $r$ de
+$\{0, ..., n-1\}$ telle que $r(0) = 0$ et $r(k) \le r(k-1)+1$ pour
+$1 \le k \le n-1$.
+Nous représentons une endofonction $r$ de $\{0, ..., n-1\}$ par les valeurs d'un
+tableau C.
+Le prédicat \acsl \lstinline{is_rgf} aux lignes 1--4 de la figure~\ref{fig:rgf1}
+exprime cette propriété sur un tableau \lstinline'a' de taille \lstinline'n'.
 
+%% \begin{definition}{Fonction à croissance limitée}
+%%   \label{def:rgf}
+%%   Une fonction à croissance limitée de taille $n$ est une endofonction $r$ de
+%%   $\{0, ..., n-1\}$ telle que $r(0) = 0$ et $r(k) \le r(k-1)+1$ pour
+%%   $1 \le k \le n-1$.
+%% \end{definition}
 
 \begin{figure}[tb]
   \centering
@@ -48,14 +53,17 @@ $\mathbb{Z}$).
 La figure~\ref{fig:rgf1} présente une fonction principale \lstinline{f} et une
 fonction auxiliaire \lstinline{g}.
 La précondition de \lstinline{f} affirme que \lstinline{a} est un tableau
-valide de taille \lstinline{n>0} (lignes 27--28) et doit être une RGF
+valide de taille \lstinline{n>0} (lignes 27--28) qui représente une RGF
 (ligne 29).
 La postcondition affirme que la fonction \lstinline'f' ne peut modifier que le
 contenu du tableau \lstinline{a}, à l'exception du premier élément
 \lstinline{a[0]} (ligne 30), et que le tableau \lstinline{a} en sortie de la
 fonction est toujours une RGF (ligne 31).
 De plus, si la fonction retourne 1, alors la RGF générée \lstinline{a} doit
-respecter une propriété supplémentaire (lignes 32--36).
+respecter une propriété d'ordre lexicographique selon laquelle
+il existe un indice $i$ ($0 \le i \le n-1$) tel qu'en fin de fonction, $a[i]$
+est supérieur à sa valeur en début de fonction et $a[j]$ est inchangé pour tout
+indice $j$ inférieur à $i$ (lignes 32--36).
 Ici \lstinline{\at(a[j],Pre)} dénote la valeur de \lstinline{a[j]} dans l'état 
 \lstinline{Pre} de la fonction, c'est-à-dire avant l'exécution de la fonction.
 
@@ -73,14 +81,14 @@ le variant de boucle qui permet d'assurer la terminaison de la boucle.
 L'expression du variant de boucle doit être positive ou nulle au début de chaque
 itération et doit décroître strictement entre deux itérations.
 
-La fonction \lstinline{g} est utilisée pour remplir le tableau avec des zeros
+La fonction \lstinline{g} est utilisée pour remplir le tableau avec des zéros
 à droite de l'indice \lstinline{i}.
 En plus des contraintes de taille et de validité du tableau (lignes 12--13),
 sa précondition demande que les éléments de \lstinline{a} jusqu'à l'indice
 \lstinline{i} forment une RGF (lignes 14--15).
 La fonction ne peut modifier que les éléments de \lstinline{a} à partir de
 l'indice \lstinline{i+1} (ligne 16) et produit une RGF (line 17).
-Les invariants de boucle précisent intervalle de valeur de la variable de
+Les invariants de boucle précisent l'intervalle de valeurs de la variable de
 boucle \lstinline{k} (ligne 20), et énoncent que la propriété \lstinline{is_rgf}
 est satisfaite jusqu'à \lstinline{k} (ligne 21).
 Cet invariant permet à un outil de vérification déductive de prouver la
@@ -90,7 +98,7 @@ uniquement modifier les valeurs de \lstinline{k} et des éléments de
 \lstinline{a} à partir de l'indice \lstinline{i+1}.
 Le terme \lstinline{n-k} est le variant de la boucle (ligne 23).
 
-Le \acsl lemme \lstinline'max_rgf' aux lignes 6--10 affirme que si un tableau
+Le lemme \lstinline'max_rgf' aux lignes 6--10 affirme que si un tableau
 encode une RGF, alors chacun de ses éléments est au plus égal à son indice.
 Ce lemme n'est pas prouvé automatiquement par \Wp mais peut néanmoins être
 utilisé pour assurer l'absence de débordement d'entier signé à la ligne 46.
@@ -98,15 +106,18 @@ utilisé pour assurer l'absence de débordement d'entier signé à la ligne 46.
 Les fonctions de la figure~\ref{fig:rgf1} peuvent être prouvées à l'aide de \Wp.
 
 Supposons maintenant que cet exemple contient une des quatre erreurs suivantes :
-\emph{soit} l'ingénieur validation oublie la précondition de la ligne 29,
-\emph{soit} il se trompe dans l'affectation \lstinline[style=c]'a[i]=a[i]+2;'
-ligne 46, \emph{soit} il écrit une clause
-\lstinline[style=c]'loop assigns i,a[1..n-1];' trop imprécise ligne 40,
-\emph{soit} il oublie de fournir le lemme des lignes 6--10.
+\begin{enumerate}
+\item \emph{soit} l'ingénieur validation oublie la précondition de la ligne 29,
+\item \emph{soit} il se trompe dans l'affectation
+  \lstinline[style=c]'a[i]=a[i]+2;' ligne 46,
+\item \emph{soit} il écrit une clause
+  \lstinline[style=c]'loop assigns i,a[1..n-1];' trop imprécise ligne 40,
+\item \emph{soit} il oublie de fournir le lemme des lignes 6--10.
+\end{enumerate}
 Dans chacun de ces scénarios, la preuve du programme échoue (sur la précondition
 de \lstinline{g} lors de son appel ligne 47 et/ou sur l'assertion ligne 45).
 
-Les deux premiers cas présentent une non-conformité du code vis-à-vis de
+Les deux premiers cas présentent une non-conformité entre le code et
 la spécification, dans le troisième cas l'échec de la preuve est dû à une
 faiblesse de sous-contrat, et le dernier cas est dû à une limitation ou une
 faiblesse du prouveur utilisé.
@@ -127,17 +138,17 @@ contre-exemple de non-conformité (\NCCE) et a présenté une méthode de détec
 des non-conformités (\NCD).
 
 \textbf{Faiblesse de sous-contrat.}
-Un échec de preuve peut également être dû par une faiblesse d'un
-sous-contrat, ce qui cause un manque d'hypothèses et ne permet de prouver une
-autre propriété.
-Le chapitre~\ref{sec:swd} a défini la notion de sous-contrats, de faiblesse de
-sous-contrats, de contre-exemple pour la faiblesse de sous-contrats (\SWCE) et
+Un échec de preuve peut également être dû à une faiblesse d'un
+sous-contrat, ce qui cause un manque d'hypothèses et ne permet pas de prouver
+une propriété.
+Le chapitre~\ref{sec:swd} a défini la notion de sous-contrat, de faiblesse de
+sous-contrat, de contre-exemple pour la faiblesse de sous-contrats (\SWCE) et
 a présenté une méthode de détection de ces faiblesses (\SWD).
 
 \textbf{Incapacité de prouveur.}
-Quand il n'existe pas de non-conformité, ni de faiblesse de sous-contrats, nous
-ne pouvons pas démontrer pour autant l'impossibilité de prouver le programme.
-Nous introduisons la notion d'incapacité d'un prouveur.
+Quand il n'existe ni non-conformité, ni faiblesse de sous-contrats, l'échec de
+preuve est dû aux limitations du prouveur.
+Nous introduisons la notion d'incapacité de prouveur.
 
 \begin{definition}[Incapacité de prouveur]
 \label{def:prov-incap}
@@ -197,7 +208,8 @@ prouveur.
 La méthode que nous proposons est illustrée par la
 figure~\ref{fig:method-short}.
 Supposons que la preuve du programme annoté $P$ échoue pour une annotation
-non-imbriquée $a\in\A$ quelconque.
+non-imbriquée $a\in\A$ quelconque, où $\A$ est l'ensemble des annotations
+non-imbriquées de $f$ et des annotations du contrat de $f$.
 La première étape est d'essayer de trouver une non-conformité entre le code et
 la spécification en utilisant \NCD.
 Si une telle non-conformité a été trouvée, un \NCCE est généré (cas \circled{1}
@@ -237,48 +249,47 @@ l'ensemble des sous-contrats trop faibles $S$ peuvent s'avérer très utiles à
 l'ingénieur validation.
 Supposons que l'on essaie de prouver avec \Wp une version modifiée de la
 fonction $f$ de la figure~\ref{fig:rgf1} où la précondition de la ligne 29 est
-manquante.
+manquante (\#1 sur la figure~\ref{tab:versions-rgf}).
 La preuve de la précondition de $g$ (ligne 15) lors de l'appel de la fonction
 ligne 47 échoue sans indiquer de raison précise. 
-L'étape \NCD génère un \NCCE (cas \circled{1}, \#1 sur la
-figure~\ref{tab:versions-rgf}) où la propriété \lstinline'is_rgf(a,n)' est
-clairement fausse puisque \lstinline'a[0]' est différent de zéro, et indique
-l'annotation non respectée (ligne 15).
+L'étape \NCD génère un \NCCE (cas \circled{1}) où la propriété
+\lstinline'is_rgf(a,n)' est clairement fausse puisque \lstinline'a[0]' est
+différent de zéro, et indique l'annotation non respectée (ligne 15).
 Ceci permet à l'ingénieur validation de comprendre et corriger le problème.
 
 Supposons maintenant que la clause de la ligne 40 a été écrite de manière
-erronée de la manière suivante : \lstinline'loop assigns i, a[1..n-1];'.
+erronée de la manière suivante : \lstinline'loop assigns i, a[1..n-1];' (\#2 sur
+la figure~\ref{tab:versions-rgf}).
 La boucle aux lignes 42--43 préserve néanmoins son invariant.
 L'étape \NCD ne trouve aucun \NCCE, puisque cette modification n'a introduit
 aucune non-conformité entre le code et sa spécification.
-Grâce à la transformation de code montré en figure~\ref{fig:CW-transf-loops},
-$\SSWD$ pour le contrat de cette boucle détectera une faiblesse de sous-contrat
-pour ce même contrat (cas \circled{2}, \#2 sur la
-figure~\ref{tab:versions-rgf}), et rapporte le non-établissement de la
-précondition de $g$ (ligne 15) lors de l'appel de la fonction ligne 47.
+L'étape $\SSWD$ pour le contrat de cette boucle détecte une faiblesse de
+sous-contrat pour ce même contrat (cas \circled{2}), et indique que la
+précondition de $g$ (ligne 15) est fausse lors de l'appel de la fonction
+ligne 47.
 Avec l'information de la faiblesse du sous-contrat de la boucle, l'ingénieur
 validation essaiera de trouver la cause de la faiblesse et renforcera le contrat
 de boucle en conséquence.
 
-Supposons maintenant que nous voulons prouver l'absence de débordement
-arithmétique à la ligne 46 de la figure~\ref{fig:rgf1}, mais le lemme aux lignes
-6--10 est manquant.
+Supposons maintenant que nous voulions prouver l'absence de débordement
+arithmétique à la ligne 46 de la figure~\ref{fig:rgf1}, et que le lemme aux
+lignes 6--10 est manquant (\#4 sur la figure~\ref{tab:versions-rgf}).
 La preuve échoue sans donner de raison précise puisque le prouveur n'effectue
 pas l'induction nécessaire afin de déduire les bornes de \lstinline'a[i]'.
 Ni \NCD ni \SWD n'ont réussi à produire de contre-exemple, et puisque le
 programme initial comporte trop de chemins d'exécution faisables pour pouvoir
 tous les couvrir dans le temps imparti, leur résultat est \textsf{?}
-(non classifié) (cas \circled{4}, \#4 sur la figure~\ref{tab:versions-rgf}).
+(non classifié) (cas \circled{4}).
 Dans une telle situation, l'ingénieur validation peut décider de réduire le
-domaine des entrées du programme, supposons dans ce cas qu'il choisisse de
-restreindre le domaine de \lstinline'n' à l'aide de la précondition pour $f$
-suivante : \lstinline'requires n>0 && n<21;'.
+domaine des entrées du programme.
+Supposons dans ce cas qu'il choisisse de restreindre le domaine de
+\lstinline'n' à l'aide de la précondition pour $f$ suivante :
+\lstinline'requires n>0 && n<21;' (\#3 sur la figure~\ref{tab:versions-rgf}).
 Avec cette nouvelle contrainte sur les entrées, l'application de la méthode
 permet de couvrir tous les chemins du programme (respectant la nouvelle
 précondition) avec \NCD et \SWD sans trouver de contre-exemple.
-La méthode classifie l'échec de preuve du programme avec le domaine restraint
-sur les variables comme une incapacité de prouveur (cas \circled{3},
-\#3 sur la figure~\ref{tab:versions-rgf}).
+La méthode classifie l'échec de preuve du programme avec le domaine restreint
+sur les variables comme une incapacité de prouveur (cas \circled{3}).
 Ces résultats poussent l'ingénieur validation à penser que l'échec de la preuve
 sur la variante \#4 du programme, pour un \lstinline'n' plus grand, est causé
 par les mêmes raisons.
@@ -292,7 +303,7 @@ chercher une non-conformité ou une faiblesse de contrat.
 
 
 \begin{figure*}[bt]\centering
-  \begin{tabular}{p{.7cm}|>{\centering\arraybackslash}p{5.8cm}|>{\centering\arraybackslash}p{8cm}}
+  \begin{tabular}{p{.5cm}|>{\centering\arraybackslash}p{5.6cm}|>{\centering\arraybackslash}p{7.8cm}}
     \textbf{Cas} & {\centering\textbf{Verdict}} & \textbf{Suggestions} \\
     \hline
     \circled{1} & Non-conformité du code vis-à-vis de l'annotation $a$:
@@ -323,19 +334,19 @@ chercher une non-conformité ou une faiblesse de contrat.
 \end{figure*}
 
 
-À partir des différents résultats possibles de la méthode présentée en
-figure~\ref{fig:method-short}, nous pouvons suggérer à l'ingénieur validation
-quelles sont les actions à effectuer une fois que l'échec de preuve a été
+À partir des différents résultats possibles de la méthode présentée dans la
+partie~\ref{sec:method-presentation}, nous pouvons suggérer à l'ingénieur
+validation les actions à effectuer une fois que l'échec de preuve a été
 diagnostiqué, afin de l'aider dans son processus de spécification et de
 vérification déductive.
 Nos suggestions sont résumées en figure~\ref{fig:suggestions}.
 
 Une \emph{non-conformité} du code vis-à-vis d'une annotation $a$ signifie qu'il
-y a une inconsistance entre la précondition, l'annotation $a$ et le code du
+y a une incohérence entre la précondition, l'annotation $a$ et le code du
 chemin de programme $\pi_V$ menant à $a$.
-Grâce au contre-exemple $V$, les valeurs des variabes à différents points du
+Grâce au contre-exemple $V$, les valeurs des variables à différents points du
 programme suivant le chemin $\pi_V$ peuvent être tracées ou observées à l'aide
-d'un débugger \cite{Muller/FM11}.
+d'un débogueur \cite{Muller/FM11}.
 Dans \framac, l'exécution de $V$ peut être observée à l'aide de \Value ou
 \pathcrawler.
 Ceci aide l'ingénieur validation dans sa compréhension de l'erreur.
@@ -349,8 +360,9 @@ Une \emph{faiblesse} d'un ensemble de sous-contrats $S$ signifie qu'au moins un
 des sous-contrats de $C$ doit être renforcé.
 Par les définitions~\ref{def:GSW} et~\ref{def:SSW}, la non-conformité est
 exclue, ce qui veut dire que l'exécution de $P^{\NC}$ sur $V$ respecte
-l'annotation $a$, notre suggestion pour l'ingénieur validation est donc de
-renforcer les sous-contrats de $S$.
+l'annotation $a$.
+Notre suggestion pour l'ingénieur validation est donc de renforcer les
+sous-contrats de $S$.
 Dans le cas d'une faiblesse d'un seul sous-contrat, $S$ est un singleton donc
 la suggestion est précise et aide l'utilisateur.
 Ici encore, essayer une preuve interactive ou ajouter des assertions ou des
@@ -363,7 +375,7 @@ prouveur.
 Il peut aussi essayer un autre prouveur automatique plus approprié au programme
 à vérifier, ou encore, utiliser un assistant de preuve comme \coq afin de ne
 pas souffrir des limitations des prouveurs automatiques, mais cette tâche peut
-s'avérer plus longue et complexe.
+s'avérer longue et complexe.
 
 Enfin, lorsque le verdict de la méthode est \emph{non classifié}, la génération
 de tests pour \NCD et/ou \SWD ne parvient pas à conclure dans le temps imparti
@@ -381,7 +393,7 @@ de preuve.
 Nous avons présenté notre méthode de diagnostic des échecs de
 preuve utilisant les techniques de détection présentées dans les
 chapitres~\ref{sec:ncd} et~\ref{sec:swd}.
-Enfin, nous avons suggéré les actions qu'un ingénieur validation peut effectuer
-après qu'un échec de preuve ait été diagnostiqué, dans chaque situation, afin
-d'asister l'ingénieur validation dans son processus de spécification et de
-vérification déductive d'un programme.
+Enfin, nous avons suggéré des actions qu'un ingénieur validation peut effectuer
+après qu'un échec de preuve ait été diagnostiqué et ce pour chaque situation.
+Ces actions sont une assistance à l'ingénieur validation dans son processus de
+spécification et de vérification déductive d'un programme.

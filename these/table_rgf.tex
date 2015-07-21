@@ -139,22 +139,23 @@
     & Ligne & Modifications & Preuve (annot. non prouvée) & \NCD & \CWD & \\ \hline
     % example/rgf_0.c
     0 & -- & -- & \ok & -- & -- & Preuve \\ \hline
+
     % example/rgf_1.c
     1 & 29 & (supprimée) & \textsf{?} (l.45, 47, 31) & \nc & --
-    & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$}
-    est un \NCCE \\ \hline
+    & $V$ = \ce{$\mbox{\lstinline'n=1;' \textbf{\lstinline'a[0]=-214739'}}$} \\
+    &&&&&& est un \NCCE \\ \hline
 
     % example/rgf_2.c
     2 & 40 & \lstinline[style=c]'loop assigns i,a[1..n-1];'
     & \multirow{3}{*}{\textsf{?} (l.45, 47, 48--50, 31, 32--36)}
-    & \multirow{3}{*}{\textsf{?}} & \multirow{3}{*}{\cw{} pour l.39--40}
+    & \multirow{3}{*}{\textsf{?}} & \cw{}
     & $V$ = {\scriptsize{$\langle$}}
     $\mbox{\lstinline'n=2;'} \textbf{\mbox{\lstinline'a[0]=0'}}
     \mbox{\lstinline';a[1]=0;'}$ \\
 
-    &&&&& &$\mathbf{nondet}_{\textbf{\mbox{\lstinline'a[1]'}}}
+    &&&&& pour &$\mathbf{nondet}_{\textbf{\mbox{\lstinline'a[1]'}}}
     \textbf{\mbox{\lstinline'=97157'}}\mbox{\lstinline';'}$ \\
-    &&&&& &$\mathrm{nondet}_{\mbox{\lstinline'i'}}\mbox{\lstinline'=0'}$
+    &&&&& l.39--40 &$\mathrm{nondet}_{\mbox{\lstinline'i'}}\mbox{\lstinline'=0'}$
     {\scriptsize{$\rangle$}} est un \SWCE \\ \hline
 
     % example/rgf_3.c
