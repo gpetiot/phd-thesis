@@ -1,6 +1,7 @@
-
 \newcommand\ppnode[1]{\tikz{\node[pnode,ppcommon]{#1};}}
 \newcommand\ppleaf[1]{\tikz{\node[pleaf,ppcommon]{#1};}}
+
+\newcommand*\Let[2]{\State #1 $\gets$ #2}
 
 \colorlet{greenv}{green!70!black!100}
 
@@ -105,23 +106,19 @@
   \vspace{4pt}
 }
 
-\newcommand{\Band}{\land_0^1}
-\newcommand{\Bor}{\lor_0^1}
+\newcommand{\Band}{~\&~}
+\newcommand{\Bor}{~\|~}
 \newcommand{\Bnot}{\lnot_0^1}
 \newcommand{\Bxor}{\oplus_0^1}
 \newcommand{\mresult}{\mbox{\lstinline'\\result'}}
-\newcommand{\mnull}{\mathit{NULL}}
+\newcommand{\mnull}{\mbox{\lstinline'NULL'}}
 
-\newcommand{\baseaddrt}{
-  \lstinline'\\base_addr(' \textit{t} \lstinline')'\xspace}
-\newcommand{\blocklengtht}{
-  \lstinline'\\block_length(' \textit{t} \lstinline')'\xspace}
-\newcommand{\offsett}{\lstinline'\\offset(' \textit{t} \lstinline')'\xspace}
-\newcommand{\validt}{\lstinline'\\valid(' \textit{t} \lstinline')'\xspace}
-\newcommand{\validreadt}{
-  \lstinline'\\valid_read(' \textit{t} \lstinline')'\xspace}
-\newcommand{\initializedt}{
-  \lstinline'\\initialized(' \textit{t} \lstinline')'\xspace}
+\newcommand{\baseaddrt}{\lstinline'\\base_addr('$t$\lstinline')'\xspace}
+\newcommand{\blocklengtht}{\lstinline'\\block_length('$t$\lstinline')'\xspace}
+\newcommand{\offsett}{\lstinline'\\offset('$t$\lstinline')'\xspace}
+\newcommand{\validt}{\lstinline'\\valid('$t$\lstinline')'\xspace}
+\newcommand{\validreadt}{\lstinline'\\valid_read('$t$\lstinline')'\xspace}
+\newcommand{\initializedt}{\lstinline'\\initialized('$t$\lstinline')'\xspace}
 
 \newcommand{\eval}[2]{$\mathcal{E} \llbracket$ #1 $\rrbracket$ #2}
 \newcommand{\comp}[2]{$\mathcal{C} \llbracket$ #1 $\rrbracket$ #2}

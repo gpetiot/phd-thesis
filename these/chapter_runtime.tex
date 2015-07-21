@@ -1,5 +1,5 @@
 
-\chapter{Vérification à l'exécution des annotations liées au modèle mémoire}
+\chapter[Vérification liée au modèle mémoire]{Vérification à l'exécution des annotations liées au modèle mémoire}
 \label{sec:runtime}
 
 \chapterintro
@@ -31,52 +31,62 @@ vérification de ces annotations (partie~\ref{sec:mem-instru}).
 
 Définissons d'abord quelques notions.
 Les objets de la mémoire sont des blocs.
-Chaque bloc est caractérisé par une adresse de base, une taille (en octets) et
-un contenu (qui peut être initialisé ou non).
+Chaque bloc est caractérisé par une adresse de base, une taille (en nombre
+d'octets) et un contenu (qui peut être initialisé ou non).
 Tout ceci constitue le modèle mémoire.
 
-Soit \textit{t} un terme \eacsl de type pointeur.
-Les annotations \eacsl que nous considérons sont les suivantes :
+Les annotations \eacsl que nous considérons sont décrites dans la
+figure~\ref{fig:gram-ext}.
+Cette figure est une extension de la grammaire des termes et des prédicats
+\eacsl définie au chapitre~\ref{sec:lang}.
 
-\begin{center}
+
+\begin{figure}
+  \centering
   \begin{tabular}{cc}
     \begin{tabular}{lrl}
       \textit{term} ::= & ... \\
       & $\mid$
-      & \underline{\lstinline'\\base_addr('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\base_addr('} \textit{term} \underline{\lstinline')'} \\
       & $\mid$
-      & \underline{\lstinline'\\block_length('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\block_length('} \textit{term} \underline{\lstinline')'} \\
       & $\mid$
-      & \underline{\lstinline'\\offset('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\offset('} \textit{term} \underline{\lstinline')'} \\
     \end{tabular}
     &
     \begin{tabular}{lrl}
       \textit{pred} ::= & ... \\
       & $\mid$
-      & \underline{\lstinline'\\valid('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\valid('} \textit{term} \underline{\lstinline')'} \\
       & $\mid$
-      & \underline{\lstinline'\\valid_read('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\valid_read('} \textit{term} \underline{\lstinline')'} \\
       & $\mid$
-      & \underline{\lstinline'\\initialized('} \textit{t} \underline{\lstinline')'} \\
+      & \underline{\lstinline'\\initialized('} \textit{term} \underline{\lstinline')'} \\
     \end{tabular}
   \end{tabular}
-\end{center}
+  \caption{Extension de la grammaire des termes et des prédicats
+    \label{fig:gram-ext}}
+\end{figure}
 
 
 Donnons la sémantique informelle de chacune de ces annotations.
-\baseaddrt retourne l'adresse de base du bloc alloué qui contient le pointeur
-\textit{t}.
-\blocklengtht retourne la longueur (en octets) du bloc alloué qui contient, le
-pointeur \textit{t}.
-\offsett retourne le décalage (en octets) entre \textit{t} et son adresse de
-base.
-\validt (respectivement \validreadt) est vrai si le déréférencement de
-\textit{t} est autorisé en lecture et en écriture (respectivement au moins en
-lecture).
+\baseaddrt retourne l'adresse de base du bloc alloué dans lequel pointe le
+pointeur $t$.
+\blocklengtht retourne la longueur (en octets) du bloc alloué dans lequel
+pointe le pointeur $t$.
+\offsett retourne le décalage (en octets) entre $t$ et l'adresse de
+base du bloc dans lequel pointe $t$.
+\validt, respectivement \validreadt, est vrai si le déréférencement de
+$t$ est autorisé en lecture et en écriture, respectivement au moins en
+lecture.
 \validt implique \validreadt mais l'inverse n'est pas vrai.
-\initializedt est un prédicat prenant en paramètre un pointeur \textit{t} sur
-une left-value, ce prédicat est vrai si la left-value en question est
-initialisée.
+\initializedt est un prédicat prenant en paramètre un pointeur $t$ sur une
+left-value $lv$, il est vrai si $lv$ est initialisée.
+Soit une mémoire $\mem = (\env, \store)$ en accord avec la formalisation des
+mémoires du chapitre~\ref{sec:lang}.
+\initializedt est vrai si il existe une left-value $lv$ et une adresse $\loc$
+telles que l'association $lv \mapsto \loc \in \env$ et le pointeur $t$ a pour
+valeur $\loc$ et $\store(\loc) \neq \bot$.
 
 
 \input{figures/fig_mem_annots}
@@ -85,15 +95,17 @@ initialisée.
 La figure~\ref{fig:mem-annots} illustre les annotations \lstinline{\base_addr},
 \lstinline{\block_length} et \lstinline{\offset}.
 On y voit un modèle mémoire simplifié contenant 3 blocs.
-Le pointeur \lstinline'p' pointe vers la deuxième case du second block.
+Le deuxième bloc est constitué de trois cases dénotées \lstinline't[0]',
+\lstinline't[1]' et \lstinline't[2]', pouvant contenir chacune un entier.
+Le pointeur \lstinline'p' pointe vers la deuxième case du deuxième bloc.
 L'adresse de base de \lstinline'p' (\lstinline'\base_addr(p)') désigne le
 début du bloc.
 La longueur du bloc de \lstinline'p' (\lstinline'\block_length(p)') est la
-taille du bloc à partir de son adresse de base.
+taille du bloc à partir de son adresse de base (trois fois la taille d'un entier
+sur cet exemple).
 L'offset de \lstinline'p' (\lstinline'\offset(p)') est le décalage de
-\lstinline'p' par rapport à son adresse de base.
-Sur l'exemple de la figure~\ref{fig:mem-annots}, l'offset de \lstinline'p' est
-1.
+\lstinline'p' par rapport à son adresse de base (la taille d'un entier sur cet
+exemple).
 
 
 \lstinputlisting[caption={Annotations mémoire -- Exemple en C},
@@ -111,17 +123,18 @@ Un tableau \lstinline't' de trois entiers est alloué ligné 2.
 Les deux premières cases du tableau sont initialisées à 1 aux lignes 3--4.
 Un pointeur \lstinline'p' est ensuite initialisé à \lstinline't+1' ligne 5,
 c'est-à-dire pointe la deuxième case du tableau.
-Les annotations du programme sont correctes : leur vérification à l'exécution
-ne produit pas d'erreur.
 L'assertion ligne 6 affirme que \lstinline'p' et \lstinline't' ont la même
 adresse de base.
 L'assertion ligne 7 affirme que le bloc contenant \lstinline'p' a une taille de
 trois entiers.
-L'assertion ligne 8 affirme que \lstinline'p' a un offset de 1 dans son bloc.
+L'assertion ligne 8 affirme que \lstinline'p' a un offset de la taille d'un
+entier dans son bloc.
 L'assertion ligne 9 affirme que \lstinline'p' peut être déréférencé sur les
 offsets 0 et 1 (\lstinline'*(p+0)' et \lstinline'*(p+1)').
 L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
 \lstinline'p+1'.
+Les annotations du programme sont correctes : leur vérification à l'exécution
+ne produit pas d'erreur.
 
 Le listing~\ref{lst:mem-annots-instru} présente le programme du
 listing~\ref{lst:mem-annots} instrumenté afin de vérifier les annotations à
@@ -134,52 +147,61 @@ Les lignes 28--37 permettent d'exécuter l'assertion ligne 9.
 Les lignes 39--48 permettent d'exécuter l'assertion ligne 10.
 
 
-
-\section{Modèle mémoire pour la Vérification à l'exécution}
+\section{Modèle mémoire pour la vérification à l'exécution}
 \label{sec:mem-model}
 
 
 Dans cette partie, nous présentons les détails de conception du modèle mémoire
 proposé.
 Nous justifions nos choix d'implémentation puis présentons les algorithmes de
-recherche, d'ajout et de suppression d'un bloc dans le modèle mémoire.
+calcul du plus grand préfixe commun, de recherche, d'ajout et de suppression
+d'un bloc dans le modèle mémoire.
 
 
 \subsection{Structure de données ``store''}
 
+
+Au chapitre~\ref{sec:lang}, nous avons défini un {\em store} comme étant une
+fonction associant une valeur à une adresse.
+Dans ce chapitre, ce terme fait référence à une structure de données contenant
+des adresses et des valeurs associées.
+
 Le code instrumenté pouvant accéder et modifier fréquemment les données du
 \textit{store}, une implémentation efficace requiert une structure de données
 offrant une bonne complexité en temps et en espace.
-Cette structure doit être triée : on peut avoir besoin d'accéder directement à
-un bloc à partir de son adresse de base, mais aussi à partir de n'importe quelle
-adresse contenue dans le bloc (donc accéder au bloc précédent).
+Cette structure de données doit être triée : on peut avoir besoin d'accéder
+directement à un bloc à partir de son adresse de base, mais aussi à partir de
+n'importe quelle adresse contenue dans le bloc (c'est-à-dire entre l'adresse de
+base et la fin du bloc).
 Par exemple, la fonction \lstinline'__base_addr' utilisée pour le traitement
-de la construction \baseaddrt cherche l'adresse de base la
-plus proche et inférieure à \textit{t} (et enfin vérifie les bornes du bloc).
+de la construction \baseaddrt cherche l'adresse de base la plus proche et
+inférieure à $t$.
 Cette contrainte ne nous permet pas d'utiliser une table de hachage.
 Les listes chaînées ne sont pas assez efficaces à cause de la complexité
 linéaire dans le pire cas.
 Les arbres binaires de recherche non équilibrés ont aussi une complexité
 linéaire dans le pire des cas quand les données sont insérées dans un ordre
 strictement croissant ou strictement décroissant.
-Enfin, le coût du rééquilibrage de l'arbre (pour un arbre binaire de recherche
+Certes, le coût du rééquilibrage de l'arbre (pour un arbre binaire de recherche
 équilibré) serait amorti dans le cas où les modifications de la structure de
-l'arbre sont moins nombreuses que les accès simples; ce qui n'est pas
+l'arbre sont moins nombreuses que les accès simples; mais ce n'est pas
 nécessairement vrai sur les exemples de code que nous avons instrumentés comme
 nous le verrons au chapitre~\ref{sec:eacsl}.
 
 Notre choix s'est donc porté sur la structure de {\em Patricia trie}
 \cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
-compact'', cette structure est efficace même si l'arbre n'est pas équilibré.
+compact''.
+Cette structure est efficace même si l'arbre n'est pas équilibré.
 Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
 bits) ou des préfixes d'adresses.
 Chaque feuille contient les données relatives à un bloc en mémoire (voir
-section précédente pour le détail des informations stockées).
+partie~\ref{sec:mem-annots} pour le détail des informations stockées).
 Le routage de la racine jusqu'à une feuille particulière se fait grâce aux
-n\oe{}uds internes, chacun d'eux contient le plus grand préfixe commun de
-l'adresse de base de ses deux fils.
+n\oe{}uds internes.
+Chacun d'eux contient le plus grand préfixe de l'adresse de base commun entre
+ses deux fils.
 
-La figure~\ref{fig:insertion-Patricia-trie} \textbf{a)} illustre un Patricia
+La figure~\ref{fig:insertion-Patricia-trie-0} illustre un Patricia
 trie sur des adresses 8 bits, limite choisie pour des raisons de simplicité.
 Il contient trois blocs représentés par trois feuilles.
 Seules les adresses de base apparaissent sur le schéma.
@@ -188,8 +210,13 @@ feuilles.
 Le symbole ``{\tt *}'' signifie que la valeur du bit à cette position n'a pas
 d'importance.
 
+\begin{figure}[h]
+  \input{figures/fig_add_patricia_trie}
+  \label{fig:insertion-Patricia-trie-0}
+\end{figure}
+
 La complexité théorique dans le pire des cas d'un accès dans un Patricia trie
-dans notre cas est en {\em O(k)} où $k$ est la longueur d'un mot (c'est-à-dire
+dans notre cas est en $O(k)$ où $k$ est la longueur d'un mot (c'est-à-dire
 32 ou 64 bits).
 En pratique, un programme ne pouvant allouer des blocs que dans un
 espace mémoire limité, la profondeur de l'arbre est inférieure à cette borne.
@@ -203,29 +230,71 @@ Le statut d'initialisation de chaque octet est monitoré séparément (les champ
 de bits ne sont pas encore supportés).
 Dans le pire cas (bloc partiellement initialisé), chaque octet utilise un bit
 supplémentaire portant l'information sur son initialisation.
-Dans le cas où tous les octets (ou aucun) sont initialisés (on utilise un
-compteur d'octets initialisés), le tableau censé contenir les bits portant
-l'information d'initialisation est libéré, et cette information est donc portée
-uniquement par le compteur.
+Nous conservons le nombre d'octets initialisés de chaque bloc dans un
+compteur.
+Dans le cas où tous les octets (ou aucun) sont initialisés, le tableau censé
+contenir les bits portant l'information d'initialisation est libéré et nous
+utilisons alors la valeur du compteur pour avoir cette information.
 De plus, nous utilisons une fonction spécifique dans le cas où tous les octets
 d'un bloc sont initialisés d'un coup, au lieu d'invoquer une fonction
 d'initialisation sur chaque octet du bloc.
 
 
-\subsection{Calcul du plus grand préfixe commun (PGPC)}
+\subsection{Calcul du masque du plus grand préfixe commun (MPGPC)}
 
 
 %\lstinputlisting[caption={Calcul du plus grand préfixe commun},
 %  label=lst:prefix]{listings/common_prefix_mask.c}
 
+Définissons les types {\em word} et {\em masque} utilisés dans ce chapitre.
+Un {\em word} de taille $n$ est une suite de $n$ bits ($0$ ou $1$).
+La taille d'un word est généralement un multiple de $2$ et dépend de
+l'architecture matérielle.
+Nous utiliserons la constante \lstinline'NULL' pour dénoter l'adresse
+nulle et nous noterons $Word$ le type des words.
+Nous utilisons une constante $WLEN$ pour faire référence à la taille des words.
+Un {\em masque} est un word dont les $k \le WLEN$ premiers bits sont à $1$ et
+les $WLEN-k$ bits suivants sont à $0$.
+Nous noterons $Mask$ le type des masques.
+Les types de données Word et Mask seront utilisés dans les algorithmes présentés
+dans ce chapitre.
+Nous définissons un ordre lexicographique sur les masques.
+Soient $m$ et $m'$ deux masques, $m <= m'$ si et seulement si $m'$ contient au
+moins autant de $1$ que $m$.
+
+Le {\em masque du plus grand préfixe commun} $m$ de deux adresses $a$ et $b$ est
+le plus grand des masques (suivant l'ordre lexicographique) tel que, si $n$ est
+le nombre de $1$ de $m$, alors les $n$ premiers bits de $a$ et $b$ sont
+identiques.
+On dira aussi que $n$ est la taille du préfixe commun à $a$ et $b$.
+
+Par exemple, le masque du plus grand préfixe commun de $a$ =
+\ppleaf{\texttt{0110\,0111}} et $b$ = \ppleaf{\texttt{0111\,1111}} est
+$m$ = \texttt{1110\,0000}.
+En effet, seuls les trois premiers bits de $a$ sont identiques au trois premiers
+bits de $b$, les words divergent à partir du quatrième bit.
+On notera $p$ = \ppnode{\texttt{011*\,****}} le plus grand préfixe commun à $a$
+et $b$, où le symbole ``{\tt *}'' signifie que la valeur du bit à cette position
+n'a pas d'importance.
+
 
 \begin{algorithm}
-\begin{algorithmic}
-\State $\mathit{masks}[ 0 .. \mathit{WORDBITS} ] \gets$ masques par préfixes croissants
-\State $\mathit{longer}[ 0 .. \mathit{WORDBITS} ] \gets$ indices des masques plus longs à tester
-\State $\mathit{shorter}[ 0 .. \mathit{WORDBITS} ] \gets$ indices des masques plus courts à tester
-\State $\mathit{nxor} \gets \Bnot(A \Bxor B)$
-\State $i \gets \mathit{WORDBITS}/2$
+\begin{algorithmic}[1]
+\Statex $array[ 0 .. \mathit{WLEN} ]$ of Mask $\mathit{masks}$
+\Comment{masques dans l'ordre lexicographique}
+\Statex $array[ 0 .. \mathit{WLEN} ]$ of int $\mathit{longer}$
+\Comment{indices des masques plus longs à tester}
+\Statex $array[ 0 .. \mathit{WLEN} ]$ of int $\mathit{shorter}$
+\Comment{indices des masques plus courts à tester}
+\Statex
+\Ensure $(a \Band \mresult) == (b \Band \mresult)$
+\Ensure $\forall i. (0 \le i \le \mathit{WLEN} \Rightarrow (\mathit{masks}[i] \Band a) == (\mathit{masks}[i] \Band b) \Rightarrow \mresult \ge \mathit{masks}[i])$
+\Ensure $\exists i. (0 \le i \le \mathit{WLEN} \land \mresult == \mathit{masks}[i])$
+\Statex
+\Function{MPGPC}{word $a$, $b$}
+\State int $i$, Word $nxor$
+\Let{$\mathit{nxor}$}{$~\sim(a ~\string^{}~ b)$}
+\State $i \gets \mathit{WLEN}/2$
 \While{$i > 0$}
   \If{$\mathit{nxor} \ge \mathit{masks}[i]$}
     \State $i \gets \mathit{longer}[i]$ 
@@ -234,242 +303,306 @@ d'initialisation sur chaque octet du bloc.
   \EndIf
 \EndWhile\\
 \Return $masks[-i]$
-\Ensure $\forall i. (0 \le i \le \mathit{WORDBITS} \Rightarrow (\mathit{masks}[i] \Band a) == (\mathit{masks}[i] \Band B) \Rightarrow \mresult \ge \mathit{masks}[i])$
-\Ensure $(A \Band \mresult) == (B \Band \mresult)$
-\Ensure $\exists i. (0 \le i \le \mathit{WORDBITS} \land \mresult == \mathit{masks}[i])$
+\EndFunction
 \end{algorithmic}
-\caption{Calcul du plus grand préfixe commun de $A$ et $B$
+\caption{Recherche du masque du plus grand préfixe commun de $a$ et $b$
   \label{algo:prefix}}
 \end{algorithm}
 
 
-Appelons ``masque du plus grand préfixe commun'' M de A et B. M est composé
-d'une suite de $n$ ``1'', suivie d'une suite de ``0'', où $n$ est le nombre de
-bits communs entre A et B.
-Par exemple, le plus grand préfixe commun de A = \ppleaf{\texttt{0110\,0111}} et
-B = \ppleaf{\texttt{0111\,1111}} est P =  \ppnode{\texttt{011*\,****}} et le
-masque du plus grand préfixe commun est M = \texttt{1110\,0000}.
+Nous présentons maintenant un algorithme efficace de recherche du plus grand
+préfixe commun de deux adresses.
+Une version naîve et inefficace de cet algorithme consiste en un parcours
+linéaire des mots mémoire de gauche à droite jusqu'à trouver des bits
+différents, de la même manière qu'on pourrait le faire sur des chaînes de
+caractères.
 
-Les calculs et comparaisons des préfixes ont été optimisés par un usage
-intensif des opérations bit-à-bit.
-Le calcul du plus grand préfixe commun a lui aussi été reconçu pour de
-meilleures performances.
-L'implémentation naïve initiale consistait en un parcours linéaire des mots
-mémoire de gauche à droite jusqu'à trouver des bits différents, de la même
-manière qu'on pourrait le faire sur des chaînes de caractères.
-
-La version optimisée de ce calcul consiste maintenant en une recherche
-dichotomique dans un tableau pré-calculé qui contient tous les préfixes
-possibles.
+La version optimisée de cet algorithme consiste maintenant en une recherche
+dichotomique du masque dans un tableau pré-calculé qui contient tous les masques
+de préfixes possibles.
 Les transitions entre les étapes de la recherche se font en utilisant des
 indices pré-calculés, de manière à obtenir le prochain masque à essayer.
-%Le listing~\ref{lst:prefix} illustre cette implémentation du calcul sur des
-%mots de 8 bits.
-%Les masques sont stockés dans le tableau de la ligne 3.
-%Les indices à utiliser pour tester un masque plus long (respectivement plus
-%court) sont stockés dans le tableau ligne 4 (respectivement ligne 5).
-L'algorithme~\ref{algo:prefix} présente la méthode de calcul du plus grand
-préfixe commun de deux adresses A et B.
-Le tableau $masks$ contient tous les $WORDBITS+1$ masques possibles sur
-$WORDBITS$ bits.
-Les indices à utiliser pour tester un masque plus long (respectivement plus
-court) sont stockés dans le tableau $longer$ (respectivement $shorter$).
-Un indice négatif signifie la fin de la recherche par dichotomie.
-Par exemple, pour A et B définis plus haut, nxor = \texttt{1110\,0111}
-et la fonction essaie \lstinline'i = 4', puis \lstinline'i = shorter[4] = 2',
-puis \lstinline'i = longer[2] = 3', puis \lstinline'i = longer[3] = -3', pour
-finalement retourner \lstinline'mask[3] = 0xE0', qui
-est précisément \texttt{1110\,0000}.
+L'algorithme~\ref{algo:prefix} présente cette méthode de recherche.
+Le tableau $masks$ contient tous les $WLEN+1$ masques possibles sur
+$WLEN$ bits.
+Le tableau $longer$ contient les indices à essayer en cas de recherche d'un
+masque plus long : si $nxor$ est plus grand que le masque courant à l'indice $i$
+($masks[i]$), le prochain masque à essayer sera celui à l'indice $longer[i]$
+($masks[longer[i]]$).
+De manière similaire, $shorter$ contient les indices à essayer en cas de
+recherche d'un masque plus court : si $nxor$ est plus petit que le masque
+courant, le prochain masque à essayer sera à l'indice $shorter[i]$.
+Les tableaux $longer$ et $shorter$ ont été remplis de telle manière que si un
+des éléments $k$ de ces tableaux est négatif, alors $- k$ est l'indice du masque
+du plus grand préfixe commun.
+
+Sur des words de longueur 16 bits, les tableaux $masks$, $longer$ et $shorter$
+sont initialisés de cette manière :
+
+\begin{lstlisting}
+masks = {
+  0x0,0x8000,0xc000,0xe000,0xf000,0xf800,0xfc00,0xfe00,0xff00,0xff80,
+  0xffc0,0xffe0,0xfff0,0xfff8,0xfffc,0xfffe,0xffff };
+longer = { 0,-1,3,-3,6,-5,7,-7,12,-9,11,-11,14,-13,15,16,-16 };
+shorter = { 0,0,1,-2,2,-4,5,-6,4,-8,9,-10,10,-12,13,-14,-15 };
+\end{lstlisting}
+
+Reprenons notre exemple sur des words de 8 bits, avec $a$ =
+\ppleaf{\texttt{0110\,0111}} et $b$ = \ppleaf{\texttt{0111\,1111}}.
+$nxor$ prend la valeur \texttt{1110\,0111}.
+L'algorithme essaie $i = 4$ d'abord, puis $i = shorter[4] = 2$, puis
+$i = longer[2] = 3$, puis $i = longer[3] = -3$, pour finalement retourner
+$masks[3] = 0xE0$, qui est \texttt{1110\,0000}, soit précisément le masque du
+plus grand préfixe commun de $a$ et $b$.
 
 
 \subsection{Recherche}
+
 
 Présentons maintenant les algorithmes de recherche d'un bloc dans le
 \textit{store} à partir d'une adresse $a$.
 Ils sont de deux sortes.
 La recherche exacte cherche un bloc dont l'adresse de base est égale à $a$, elle
-est notamment utilisée dans l'instrumenation des fonctions \lstinline'free' et
+est notamment utilisée dans l'instrumentation des fonctions \lstinline'free' et
 \lstinline'realloc'.
 La recherche du contenant cherche un bloc qui contient $a$, c'est-à-dire que
 $a$ est incluse entre le début (adresse de base) et la fin du bloc.
-Elle est notamment utilisée dans l'instrumenation des annotations
+Elle est notamment utilisée dans l'instrumentation des annotations
 \lstinline'\valid' et \lstinline'\base_addr'.
+
+
+Dans ces algorithmes, nous noterons $Ptree$ le type de données des Patricia
+tries et $Block$ le type des blocs.
+Un objet de type $Block$ est caractérisé par un word et une taille.
+Un objet de type $Ptree$ est quant à lui caractérisé par un booléen indiquant
+si l'arbre est une feuille, un word encodant l'adresse du n\oe{}ud, le masque
+du plus grand préfixe commun à ses deux fils, le sous-arbre gauche, le
+sous-arbre droit, le n\oe{}ud ``père'' et le bloc porté par le n\oe{}ud si c'est
+une feuille.
+Voici une définition simplifiée de ces types :
+
+\begin{lstlisting}
+Block = { Word ptr; int size; };
+Ptree = {
+  bool isLeaf;
+  Word addr;
+  Mask mask;
+  Ptree left, right, father;
+  Block leaf;
+};
+\end{lstlisting}
+Nous utiliserons la constante $emptyPtree$ pour dénoter un Patricia trie vide.
+
+
 
 \subsubsection*{Recherche exacte}
 
+
 \begin{algorithm}
-\begin{algorithmic}
-\Require $\mathit{root} \neq \mnull$
+\begin{algorithmic}[1]
+\Statex Ptree $root$
+\Statex
+\Require $root \neq emptyPtree$
 \Require $a \neq \mnull$
-\State $x \gets \mathit{root}$ de type Patricia trie
-\While{$x$ n'est pas une feuille}
-  \If{$\mathit{addr(x)} \Band \mathit{mask(x)} \neq a \Band \mathit{mask(x)}$}
-    \Return $\mnull$
+\Statex
+\Function{Find-exact}{Word $a$}
+\State Ptree $x$
+\Let{$x$}{$root$}
+\While{$\lnot \mathit{x.isLeaf}$}
+  \If{$\mathit{x.addr} \Band \mathit{x.mask} \neq a \Band \mathit{x.mask}$}
+    \Return $noBlock$
   \EndIf
-  \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} == a \Band \mathit{mask(right(x))}$}
-    \State $x \gets \mathit{right(x)}$
-  \ElsIf{$\mathit{addr(left(x))} \Band \mathit{mask(left(x))} == a \Band \mathit{mask(left(x))}$}
-    \State $x \gets \mathit{left(x)}$
+  \If{$\mathit{x.right.addr} \Band \mathit{x.right.mask} == a \Band \mathit{x.right.mask}$}
+    \State $x \gets \mathit{x.right}$
+  \ElsIf{$\mathit{x.left.addr} \Band \mathit{x.left.mask} == a \Band \mathit{x.left.mask}$}
+    \State $x \gets \mathit{x.left}$
   \Else
-    \Return $\mnull$
+    \Return $noBlock$
   \EndIf
 \EndWhile
-\If{$a \neq \mathit{ptr(leaf(x))}$}
-  \Return $\mnull$
-\Else
-  \Return $\mathit{leaf(x)}$
+\If{$a \neq \mathit{x.leaf.ptr}$}
+  \Return $noBlock$
 \EndIf
+\Return $\mathit{x.leaf}$
+\EndFunction
 \end{algorithmic}
 \caption{Recherche d'une adresse exacte $a$
   \label{algo:get-exact}}
 \end{algorithm}
 
-L'algorithme~\ref{algo:get-exact} retourne le block $B$ tel que l'adresse de
-base de $B$ soit égale au pointeur $a$ passé en paramètre.
-On suppose que l'algorithme n'est utilisé que lorsqu'un tel bloc existe.
 
-Tant que $x$ n'est pas sur une feuille -- on est donc sur un
-n\oe{}ud ayant deux fils -- on se dirige vers le fils ayant le plus grand
-préfixe commun avec $a$ passée en paramètre de l'algorithme.
+L'algorithme~\ref{algo:get-exact} retourne le block $B$ dont l'adresse de base
+est égale à l'adresse $a$ passée en paramètre si un tel bloc est dans le store,
+ou la valeur $noBlock$ sinon.
+Nous notons $root$ le {\em store} global, dans lequel tous les blocs sont
+enregistrés.
+
+L'algorithme procède comme suit : tant que $x$ n'est pas une feuille -- c'est
+donc un n\oe{}ud ayant deux fils -- on se dirige vers le fils ayant le plus
+grand préfixe commun avec l'adresse $a$ passée en paramètre de l'algorithme.
 Quand on arrive sur une feuille, cette dernière contient l'adresse que l'on
 cherchait.
 
-\subsubsection*{Recheche du ``contenant''}
+
+\subsubsection*{Recherche du ``contenant''}
+
 
 \begin{algorithm}[h!]
-\begin{algorithmic}
-\If{$(\mathit{root} == \mnull) \lor (a == \mnull)$}
-  \Return $\mnull$
+\begin{algorithmic}[1]
+\Statex Ptree $root$
+\Statex
+\Function{Find-cont}{Word $a$}
+\Statex Ptree $x$, Stack $stack$
+\If{$(\mathit{root} == emptyPtree) \lor (a == \mnull)$}
+  \Return $noBlock$
 \Else
-  \State $x \gets \mathit{root}$ de type Patricia trie
-  \State $\mathit{stack} \gets$ pile vide
+  \Let{$x$}{$root$}
+  \Let{$stack$}{$\mathit{emptyStack}$}
   \While{$\mathit{true}$}
-    \If{$x$ est une feuille}
-      \If{$\mathit{addr(x)} > a$}
-        \If{$\mathit{stack} =$ pile vide}
-          \Return $\mnull$
+    \If{$x.isLeaf$}
+      \If{$\mathit{x.addr} > a$}
+        \If{$stack = \mathit{emptyStack}$}
+          \Return $noBlock$
         \Else
           \State $x \gets \mathit{pop(stack)}$
           \State $\mathit{continue}$
         \EndIf
-      \ElsIf{$a < \mathit{size(leaf(x))} + \mathit{addr(x)}$}
-        \Return $\mathit{leaf(x)}$
-      \ElsIf{$\mathit{size(leaf(x))} == 0 \land a == \mathit{ptr(leaf(x))}$}
-        \Return $\mathit{leaf(x)}$
-      \ElsIf{$\mathit{stack} =$ pile vide}
-        \Return $\mnull$
+      \ElsIf{$a < \mathit{x.leaf.size} + \mathit{x.addr}$}
+        \Return $\mathit{x.leaf}$
+      \ElsIf{$\mathit{x.leaf.size} == 0 \land a == \mathit{x.leaf.ptr}$}
+        \Return $\mathit{x.leaf}$
+      \ElsIf{$\mathit{stack} = \mathit{emptyStack}$}
+        \Return $noBlock$
       \Else
         \State $x \gets \mathit{pop(stack)}$
         \State $\mathit{continue}$
       \EndIf
     \EndIf
-    \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} \le a \Band \mathit{mask(right(x))}$}
-      \State $\mathit{stack} \gets \mathit{push(left(x))}$
-      \State $x \gets \mathit{right(x)}$
-    \ElsIf{$\mathit{addr(left(x))} \Band \mathit{mask(left(x))} \le a \Band \mathit{mask(left(x))}$}
-      \State $x \gets \mathit{left(x)}$
-    \ElsIf{$\mathit{stack} =$ pile vide}
-      \Return $\mnull$
+    \If{$\mathit{x.right.addr} \Band \mathit{x.right.mask} \le a \Band \mathit{x.right.mask}$}
+      \State $\mathit{stack} \gets \mathit{push(x.left)}$
+      \State $x \gets \mathit{x.right}$
+    \ElsIf{$\mathit{x.left.addr} \Band \mathit{x.left.mask} \le a \Band \mathit{x.left.mask}$}
+      \State $x \gets \mathit{x.left}$
+    \ElsIf{$\mathit{stack} = \mathit{emptyStack}$}
+      \Return $noBlock$
     \Else
       \State $x \gets \mathit{pop(stack)}$
     \EndIf
   \EndWhile
 \EndIf
+\EndFunction
 \end{algorithmic}
 \caption{Recherche du bloc contenant une adresse $a$
   \label{algo:get-cont}}
 \end{algorithm}
 
-L'algorithme~\ref{algo:get-cont} retourne le block $B$ contenant
-l'adresse $a$ passée en paramètre, tel que :
-$beginAddr(B) \le a < beginAddr(B) + size(B)$.
-Si un tel bloc n'existe pas, \lstinline{NULL} est renvoyé.
+L'algorithme~\ref{algo:get-cont} retourne le bloc $B$ contenant
+l'adresse $a$ passée en paramètre, c'est-à-dire que $a$ est plus grande que
+l'adresse de base de $B$ et plus petite que l'adresse de fin de $B$ (adresse
+de base du bloc + taille du bloc).
+Si un tel bloc n'existe pas, la valeur $noBlock$ est renvoyée.
 Cet algorithme est utilisé pour des requêtes du type \lstinline{\valid} ou
 \lstinline{\initialized} où l'adresse passée en paramètre ne correspond pas
 nécessairement à l'adresse de base d'un bloc.
 
 Cet algorithme est similaire à celui de la recherche exacte, au détail près
-qu'il faut vérifier la formule de l'encadrement de $a$ par $B$ quand on arrive
-sur une feuille.
-On utilise une pile contenant les n\oe{}uds à partir desquels il faut reprendre
-le parcours si la recherche n'aboutit pas.
+qu'il faut vérifier que $a$ est comprise entre l'adresse de base et l'adresse
+de fin de $B$ quand on arrive sur une feuille.
+On utilise une pile $stack$ contenant les n\oe{}uds à partir desquels il faut
+reprendre le parcours si la recherche n'aboutit pas.
+Nous notons $Stack$ le type de la pile, $emptyStack$ une pile vide, $push$ la
+fonction d'empilement et $pop$ la fonction de dépilement.
 Quand on explore le fils droit, on empile le fils gauche.
-Quand on arrive sur une feuille, on vérifie l'encadrement, s'il est vérifié on
-a trouvé le bloc qu'on cherchait, sinon on utilise le dernier n\oe{}ud empilé
-(et on le dépile) s'il existe, sinon on retourne \lstinline{NULL}.
+Quand on arrive sur une feuille, on vérifie que $a$ est comprise entre l'adresse
+de base et l'adresse de fin du bloc.
+Si c'est le cas alors a trouvé le bloc que l'on cherchait.
+Sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe,
+sinon on retourne $noBlock$.
+L'instruction $continue$ aux lignes 12 et 18 de l'algorithme~\ref{algo:get-cont}
+indique que l'exécution ignore les instructions suivantes et reprend au début de
+la boucle à la ligne 6.
 
 
 \subsection{Ajout d'un bloc}
 
 
+La figure~\ref{fig:insertion-Patricia-trie} illustre l'insertion de l'adresse
+\ppleaf{\texttt{0010\,0111}} dans un arbre.
+L'algorithme~\ref{algo:add-block} a déterminé que le n\oe{}ud le plus similaire
+est \ppleaf{\texttt{0010\,0110}}, et crée le père correspondant :
+\ppnode{\texttt{0010\,011*}}.
+
+\begin{figure}[h]
+  \input{figures/fig_add_patricia_trie}
+  \label{fig:insertion-Patricia-trie}
+\end{figure}
+
 \begin{algorithm}[h!]
-\begin{algorithmic}
-\Require $b \neq \mnull$
-\State $\mathit{x} \gets$ \lstinline'malloc',
-$\mathit{addr(x)} \gets \mathit{ptr(b)}$,
-$\mathit{mask(x)} \gets \mathit{Tmasks[WORDBITS]}$,
-$\mathit{left(x)} \gets \mnull$
-\State $\mathit{right(x)} \gets \mnull$,
-$\mathit{father(x)} \gets \mnull$,
-$\mathit{leaf(x)} \gets b$
-\If{$\mathit{root} == \mnull$}
-  \State $\mathit{root} \gets x$
+\begin{algorithmic}[1]
+\Statex Ptree $root$
+\Statex
+\Procedure{Add}{Block $a$}
+\Statex Ptree $x$, $b$, $f$
+\Statex Mask $lprefix$, $rprefix$
+\State $x.addr \gets a.ptr$, $x.mask \gets masks[WLEN]$, $x.left \gets emptyPtree$,
+\State $x.right \gets emptyPtree$, $x.father \gets emptyPtree$, $x.leaf \gets a$
+\If{$root == emptyPtree$}
+  \Let{$root$}{$x$}
 \Else
-  \State $\mathit{brother} \gets \mathit{root}$
+  \Let{$b$}{$root$}
   \While{$\mathit{true}$}
-    \If{$\mathit{brother}$ est une feuille}
+    \If{$b.isLeaf$}
       \State $\mathit{break}$
     \EndIf
-    \State $\mathit{lprefix} \gets$ PGPC de $\mathit{addr(left(brother))} \Band \mathit{mask(left(brother))}$ et $\mathit{ptr(b)}$
-    \State $\mathit{rprefix} \gets$ PGPC de $\mathit{addr(right(brother))} \Band \mathit{mask(right(brother))}$ et $\mathit{ptr(b)}$
-    \If{$\mathit{lprefix} > \mathit{rprefix}$}
-      \State $\mathit{brother} \gets \mathit{left(brother)}$
+    \Let{$lprefix$}{$MPGPC(\mathit{b.left.addr} \Band \mathit{b.left.mask},\mathit{a.ptr})$}
+    \Let{$rprefix$}{$MPGPC(\mathit{b.right.addr} \Band \mathit{b.right.mask},\mathit{a.ptr})$}
+    \If{$lprefix > rprefix$}
+      \Let{$b$}{$b.left$}
     \ElsIf{$rprefix > lprefix$}
-      \State $\mathit{brother} \gets \mathit{right(brother)}$
+      \Let{$b$}{$b.right$}
     \Else
       \State $\mathit{break}$
     \EndIf
   \EndWhile
-  \State $\mathit{father} \gets$ \lstinline'malloc'
-  \State $\mathit{addr(father)} \gets \mathit{addr(brother)} \Band \mathit{addr(x)}$
-  \State $\mathit{leaf(father)} \gets \mnull$
-  \If{$\mathit{addr(x)} \le \mathit{addr(brother)}$}
-    \State $\mathit{left(father)} \gets x$
-    \State $\mathit{right(father)} \gets \mathit{brother}$
+  \Let{$f.addr$}{$b.addr \Band x.addr$}
+  \Let{$f.leaf$}{$noBlock$}
+  \If{$\mathit{x.addr} \le \mathit{b.addr}$}
+    \Let{$f.left$}{$x$}
+    \Let{$f.right$}{$b$}
   \Else
-    \State $\mathit{left(father)} \gets \mathit{brother}$
-    \State $\mathit{right(father)} \gets x$
+    \Let{$f.left$}{$b$}
+    \Let{$f.right$}{$x$}
   \EndIf
-  \State $\mathit{father(x)} \gets \mathit{father}$
-  \If{$\mathit{brother} == \mathit{root}$}
-    \State $\mathit{father(father)} \gets \mnull$
-    \State $\mathit{mask(father)} \gets$ PGPC de $\mathit{addr(brother)} \Band \mathit{mask(brother)}$ et $\mathit{ptr(b)}$
-    \State $\mathit{root} \gets \mathit{father}$
+  \Let{$x.father$}{$f$}
+  \If{$b == root$}
+    \Let{$f.father$}{$emptyPtree$}
+    \Let{$f.mask$}{$MPGPC(b.addr \Band b.mask, a.ptr)$}
+    \Let{$root$}{$f$}
   \Else
-    \If{$\mathit{left(father(brother))} == \mathit{brother}$}
-      \State $\mathit{left(father(brother))} \gets \mathit{father}$
+    \If{$b.father.left == b$}
+      \Let{$b.father.left$}{$f$}
     \Else
-      \State $\mathit{right(father(brother))} \gets \mathit{father}$
+      \Let{$b.father.right$}{$f$}
     \EndIf
-    \State $\mathit{father(father)} \gets \mathit{father(brother)}$
-    \State $\mathit{mask(father)} \gets$ PGPC de $\mathit{addr(left(father))} \Band \mathit{mask(left(father))}$ et $\mathit{addr(right(father))} \Band \mathit{mask(right(father))}$
+    \Let{$f.father$}{$b.father$}
+    \Let{$f.mask$}{$MPGPC(f.left.addr \Band f.left.mask, f.right.addr \Band f.right.mask)$}
   \EndIf
-  \State $\mathit{father(brother)} \gets \mathit{father}$
-  \If{$\mathit{brother}$ n'est pas une feuille}
-    \State $\mathit{mask(brother)} \gets$ PGPC de $\mathit{addr(left(brother))} \Band \mathit{mask(left(brother))}$ et $\mathit{addr(right(brother))} \Band \mathit{mask(right(brother))}$
+  \Let{$b.father$}{$f$}
+  \If{$\lnot b.isLeaf$}
+    \Let{$b.mask$}{$MPGPC(b.left.addr \Band b.left.mask, b.right.addr \Band b.right.mask)$}
   \EndIf
 \EndIf
+\EndProcedure
 \end{algorithmic}
-\caption{Ajout d'un bloc $b$
+\caption{Ajout d'un bloc $a$
   \label{algo:add-block}}
 \end{algorithm}
 
-\input{figures/fig_add_patricia_trie}
-
-
-L'algorithme~\ref{algo:add-block} ajoute un nouvel élément à l'arbre.
+L'algorithme~\ref{algo:add-block} présente l'ajout d'un nouvel élément $a$ à
+l'arbre du {\em store}.
 Si l'arbre est vide, l'élément est ajouté à la racine.
-Sinon, on recherche le n\oe{}ud $b$ le plus similaire au n\oe{}ud à insérer.
+Sinon, on recherche le n\oe{}ud $b$ (qui n'est pas nécessairement une feuille)
+le plus similaire au n\oe{}ud à insérer.
 Celui-ci sera son frère dans la nouvelle configuration de l'arbre.
 Nous créons ensuite le n\oe{}ud correspondant au père.
 Le plus grand préfixe commun des deux fils est calculé pour le père, et les fils
@@ -477,73 +610,75 @@ sont ordonnés en fonction de leur adresse (le plus petit à gauche).
 Puis le père est inséré dans l'arbre à l'ancien emplacement de $b$.
 Les champs de $b$ et de l'ancien père de $b$ (s'il existe) sont également mis à
 jour pour maintenir la cohérence de l'arbre.
-La figure~\ref{fig:insertion-Patricia-trie} illustre l'insertion de l'adresse
-\ppleaf{\texttt{0010\,0111}} dans un arbre.
-L'algorithme a déterminé que le n\oe{}ud le plus similaire serait
-\ppleaf{\texttt{0010\,0110}}, et crée le père correspondant :
-\ppnode{\texttt{0010\,011*}}.
 
 
 \subsection{Suppression d'un bloc}
 
-\begin{algorithm}[h!]
-\begin{algorithmic}
-\Require $\mathit{root} \neq \mnull$
-\Require $b \neq \mnull$
-\State $x \gets \mathit{root}$ de type Patricia trie
-\While{$x$ n'est pas une feuille}
-  \If{$\mathit{addr(right(x))} \Band \mathit{mask(right(x))} == \mathit{ptr(b)} \Band \mathit{mask(right(x))}$}
-    \State $x \gets \mathit{right(x)}$
-  \Else
-    \State $x \gets \mathit{left(x)}$
-  \EndIf
-\EndWhile
-\If{$\mathit{father(x)} == \mnull$}
-  \State $\mathit{root} \gets \mnull$
-\Else
-  \State $\mathit{father} \gets \mathit{father(x)}$
-  \State $\mathit{brother} \gets (x == \mathit{left(father))} ~?~ \mathit{right(father)} ~:~ \mathit{left(father)}$
-  \State $\mathit{father} \gets \mathit{brother}$
-  \If{$\mathit{brother}$ n'est pas une feuille}
-    \State $\mathit{father(left(brother))} \gets \mathit{father}$
-    \State $\mathit{father(right(brother))} \gets \mathit{father}$
-  \EndIf
-  \State \lstinline'free('$\mathit{brother}$\lstinline')'
-  \State $\mathit{ff} \gets \mathit{father(father)}$
-  \If{$\mathit{ff} \neq \mnull$}
-    \State $\mathit{mask(ff)} \gets$ PGPC de $\mathit{addr(left(ff))} \Band \mathit{mask(left(ff))}$ et $\mathit{addr(right(ff))} \Band \mathit{mask(right(ff))}$
-  \EndIf
-\EndIf
-\State \lstinline'free('$x$\lstinline')'
-\end{algorithmic}
-\caption{Suppression d'un bloc $b$
-  \label{algo:rem-block}}
-\end{algorithm}
 
-\input{figures/fig_rem_patricia_trie}
-
-
-L'algorithme~\ref{algo:rem-block} supprime une feuille $b$ du Patricia trie.
-Si cet élément est la racine, l'arbre devient vide.
-Sinon, Cette feuille a un frère $\mathit{brother}$ et un père.
-$b$ et son père sont supprimés, et $\mathit{brother}$ remonte d'un niveau (et
-prend donc la place du père).
-Enfin, les champs du nouveau père de $\mathit{brother}$ sont mis à jour pour
-maintenir la cohérence de l'arbre (le plus grand préfixe commun est recalculé).
 La figure~\ref{fig:suppression-Patricia-trie} illustre la suppression de
 l'adresse \ppleaf{\texttt{0010\,0111}} dans un Patricia trie.
 Ce n\oe{}ud ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 \ppleaf{\texttt{0010\,0110}} est remonté d'un niveau.
 
+\input{figures/fig_rem_patricia_trie}
 
-\section{Instrumentation pour la Vérification à l'exécution}
+
+\begin{algorithm}[h!]
+\begin{algorithmic}[1]
+\Require $root \neq emptyPtree$
+\Require $B \neq noBlock$
+\Statex
+\Procedure{Rem}{Block $B$}
+\Statex Ptree $x$, $b$, $f$, $g$
+\Let{$x$}{$root$}
+\While{$\lnot x.isLeaf$}
+  \If{$\mathit{x.right.addr} \Band \mathit{x.right.mask} == \mathit{B.ptr} \Band \mathit{x.right.mask}$}
+    \Let{$x$}{$x.right$}
+  \Else
+    \Let{$x$}{$x.left$}
+  \EndIf
+\EndWhile
+\Let{$f$}{$x.father$}
+\If{$f == emptyPtree$}
+  \Let{$root$}{$emptyPtree$}
+\Else
+  \Let{$b$}{$(x == \mathit{f.left}) ~?~ \mathit{f.right} ~:~ \mathit{f.left}$}
+  \Let{$f$}{$b$}
+  \If{$\lnot b.isLeaf$}
+    \Let{$b.left.father$}{$f$}
+    \Let{$b.right.father$}{$f$}
+  \EndIf
+  \Let{$g$}{$f.father$}
+  \If{$g \neq emptyPtree$}
+    \Let{$g.mask$}{$MPGPC(\mathit{g.left.addr} \Band \mathit{g.left.mask}, \mathit{g.right.addr} \Band \mathit{g.right.mask})$}
+  \EndIf
+\EndIf
+\EndProcedure
+\end{algorithmic}
+\caption{Suppression d'un bloc $B$
+  \label{algo:rem-block}}
+\end{algorithm}
+
+La procédure de suppression d'un bloc $B$ porté par une feuille du Patricia trie
+est présentée par l'algorithme~\ref{algo:rem-block}.
+L'algorithme commence par rechercher la feuille $x$ qui porte le bloc $B$.
+Si cet élément est la racine, l'arbre devient vide.
+Sinon, Cette feuille a un frère $b$ et un père $f$.
+$b$ et son $f$ sont supprimés, et $b$ remonte d'un niveau (et prend donc la
+place de $f$).
+Enfin, les champs du nouveau père de $b$ ($g$) sont mis à jour pour
+maintenir la cohérence de l'arbre (le masque du plus grand préfixe commun est
+recalculé).
+
+
+\section{Instrumentation pour la vérification à l'exécution}
 \label{sec:mem-instru}
 
 
 Nous présentons l'instrumentation d'un programme C annoté dans une optique de
 vérification à l'exécution des annotations liées au modèle mémoire.
-Certaines instructions C doivent être instrumentées afin d'enregistrer
-des informations sur la mémoire à l'exécution, et les annotations sont
+Certaines instructions C doivent être instrumentées afin d'enregistrer à
+l'exécution des informations sur la mémoire, et les annotations sont
 instrumentées afin de pouvoir utiliser ces informations.
 
 
@@ -580,7 +715,7 @@ L'instrumentation va substituer les appels à ces fonctions par un appel à nos
 fonctions : \lstinline'__malloc', \lstinline'__realloc', \lstinline'__calloc'
 et \lstinline'__free'.
 Ces fonctions permettent d'ajouter ou de supprimer automatiquement les blocs
-au \textit{store}, ainsi que de transférer les informations d'initialisations
+au \textit{store}, ainsi que de transférer les informations d'initialisation
 d'un bloc à un autre en cas d'application de la fonction \lstinline'realloc'.
 
 Enfin, nous définissons une fonction \lstinline'__initialize' qui permet de
@@ -593,59 +728,68 @@ défaut en C).
 \subsection{Instrumentation des annotations}
 
 
-\begin{figure*}[bt]
+\begin{figure*}[b!]
   \scriptsize{
     {\myinference{$\tau$-base-addr}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\base_addr(t)'}) \trule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\base_addr('}t\mbox{\lstinline')'}) \trule
         (I \concat
-        (l, \mbox{\lstinline'void* var_n = __base_addr(e);'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'void* var_'}n~
+        \mbox{\lstinline'= __base_addr('}e\mbox{\lstinline');'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\tau$-block-length}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\block_length(t)'}) \trule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\block_length('}t\mbox{\lstinline')'}) \trule
         (I \concat
-        (l, \mbox{\lstinline'unsigned long var_n = __block_length(e);'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'unsigned long var_'}n~
+        \mbox{\lstinline'= __block_length('}e\mbox{\lstinline');'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\tau$-offset}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\offset(t)'}) \trule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\offset('}t\mbox{\lstinline')'}) \trule
         (I \concat
-        (l, \mbox{\lstinline'int var_n = __offset(e);'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'int var_'}n~
+        \mbox{\lstinline'= __offset('}e\mbox{\lstinline');'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\pi$-valid}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid(t)'}) \prule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\valid('}t\mbox{\lstinline')'}) \prule
         (I \concat
-        (l, \mbox{\lstinline'int var_n = __valid(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'int var_'}n~
+        \mbox{\lstinline'= __valid('}e,\mbox{\lstinline'sizeof(typeof('}e
+        \mbox{\lstinline')));'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\pi$-valid-read}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\valid_read(t)'}) \prule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\valid_read('}t\mbox{\lstinline')'}) \prule
         (I \concat
-        (l, \mbox{\lstinline'int var_n = __valid_read(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'int var_'}n~
+        \mbox{\lstinline'= __valid_read('}e,\mbox{\lstinline'sizeof(typeof('}
+        \mbox{\lstinline'e)));'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
 
     {\myinference{$\pi$-initialized}
-      {(l, \mbox{\lstinline't'}:ptr) \trule (I, \mbox{\lstinline'e'}) }
-      {(l, \mbox{\lstinline'\\initialized(t)'}) \prule
+      {(l, t:ptr) \trule (I, e) }
+      {(l, \mbox{\lstinline'\\initialized('}t\mbox{\lstinline')'}) \prule
         (I \concat
-        (l, \mbox{\lstinline'int var_n = __initialized(e,sizeof(typeof(e)));'}),
-        \mbox{\lstinline'var_n'})
+        (l, \mbox{\lstinline'int var_'}n~
+        \mbox{\lstinline'= __initialized('}e,\mbox{\lstinline'sizeof(typeof('}
+        \mbox{\lstinline'e)));'}),
+        \mbox{\lstinline'var_'}n)
       }{}
     }
   }
@@ -658,24 +802,29 @@ Afin de pouvoir exploiter les informations sur les blocs stockés dans le
 \textit{store}, nous définissons les fonctions \lstinline'__base_addr',
 \lstinline'__block_length', \lstinline'__offset', \lstinline'__valid',
 \lstinline'__valid_read' et \lstinline'__initialized'.
-La sémantique de ces fonctions est calquée sur la sémantique des annotations
+La sémantique de ces fonctions est conforme à la sémantique des annotations
 \eacsl donnée en partie~\ref{sec:mem-annots}.
-La fonction \lstinline'__base_addr' retourne l'adresse de début d'un bloc à
-partir du pointeur qu'elle reçoit en argument.
+La fonction \lstinline'__base_addr' retourne l'adresse de début d'un bloc dans
+lequel pointe le pointeur qu'elle reçoit en argument.
 La fonction \lstinline'__block_length' retourne le nombre d'octets occupés par
-le bloc.
+le bloc dans lequel pointe le pointeur qu'elle reçoit en argument.
 La fonction \lstinline'__offset' retourne le décalage d'un pointeur par rapport
-à son adresse de base dans le bloc.
+à son adresse de base dans le bloc dans lequel pointe le pointeur qu'elle reçoit
+en argument.
 Les fonctions \lstinline'__valid' et \lstinline'__valid_read'
 retournent le statut de validité à partir d'un pointeur et d'un nombre d'octets.
 La fonction \lstinline'__initialized' retourne le statut d'initialisation
 d'un nombre d'octets d'un pointeur en argument.
+
 La figure~\ref{fig:mem-annots-rules} présente les règles de traduction des
 annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}.
-Dans les règles \textsc{$\pi$-valid-read} et \textsc{$\pi$-initialized},
-\lstinline'typeof(e)' désigne le type de l'expression \lstinline'e', qui est un
-type C tel \lstinline'int' ou \lstinline'char'.
-\lstinline'sizeof(typeof(e))' correspond au nombre d'octets occupés par un objet
+Nous rappelons que $\tau$ est la fonction de traduction des termes \eacsl et
+$\pi$ est la fonction de traduction des prédicats \eacsl.
+Dans les règles \textsc{$\pi$-valid}, \textsc{$\pi$-valid-read} et
+\textsc{$\pi$-initialized}, \lstinline'typeof(e)' désigne le type de
+l'expression \lstinline'e', qui est un type C tel que \lstinline'int' ou
+\lstinline'char'.
+\lstinline'sizeof(typeof(e))' est le nombre d'octets occupés par un objet
 de ce type en mémoire.
 
 
@@ -687,7 +836,7 @@ annotations \eacsl qui concernent la mémoire : \lstinline'\base_addr',
 \lstinline'\block_length', \lstinline'\offset', \lstinline'\valid',
 \lstinline'\valid_read' et \lstinline'\initialized'.
 Nous avons présenté ces annotations, un modèle mémoire permettant de décider de
-leur validité à l'exécution, ainsi qu'une manière d'instrumenter le programme
-afin de les vérifier à l'exécution.
+leur satisfaction ou non à l'exécution, ainsi qu'une manière d'instrumenter le
+programme afin de les vérifier à l'exécution.
 Le chapitre~\ref{sec:eacsl} donne plus de détails concernant l'implémentation
 du modèle mémoire ainsi qu'une évaluation de ses performances.
