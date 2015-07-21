@@ -1,16 +1,29 @@
 
-\chapter{Découverte de Faiblesses de Sous-contrats}
+\chapter{Découverte de faiblesses de sous-contrats}
 \label{sec:swd}
 
 \chapterintro
 
+Nous avons vu au chapitre précédent que la méthode de détection de
+non-conformités par génération de tests peut n'en trouver aucune alors que la
+preuve échoue.
+Dans ce cas il est possible que la preuve échoue soit parce que le prouveur
+n'est pas assez puissant pour mener la preuve à terme, soit parce qu'il ne
+dispose pas de suffisamment d'hypothèses à partir des sous-contrats (contrats
+de boucles et contrats des fonctions appelées).
+En effet, il se peut par exemple qu'un invariant de boucle est prouvé mais est
+insuffisant pour prouver la postcondition de la fonction sous test.
+Dans ce cas, nous disons qu'il y a une faiblesse du sous-contrat.
+Nous utilisons la génération de tests pour exhiber ces faiblesses.
+
 Dans ce chapitre, nous présentons la notion de faiblesse de l'ensemble des
-sous-contrats et de faiblesse d'un sous-contrat, pour les sous-contrats du
-programme sous vérification que sont les contrats de boucles et les contrats
+sous-contrats et de faiblesse d'un sous-contrat, pour les sous-contrats de la
+fonction sous vérification que sont les contrats de boucles et les contrats
 de fonctions appelées.
 Nous présentons également les spécificités de la traduction des annotations pour
 la détection des faiblesses de sous-contrats par rapport à la traduction pour la
 détection de non-conformités présentée au chapitre~\ref{sec:traduction}.
+
 La partie~\ref{sec:swd-global} présente la notion de faiblesse de l'ensemble des
 sous-contrats et la partie~\ref{sec:swd-single} présente la notion de faiblesse
 d'un sous-contrat.
@@ -28,27 +41,27 @@ besoin de définir des concepts supplémentaires.
 Une boucle (respectivement une fonction, une assertion) \emph{non-imbriquée} de
 $f$ est une boucle (respectivement une fonction appelée, une assertion) de $f$
 en dehors de toute boucle de $f$.
-Un \emph{sous-contrat pour $f$} est le contrat d'une boucle ou d'une fonction
+Un \emph{sous-contrat de $f$} est le contrat d'une boucle ou d'une fonction
 non-imbriquée de $f$.
 Une \emph{annotation non-imbriquée} de $f$ est soit une assertion non-imbriquée
-soit une annotation d'un sous-contrat pour $f$.
-%% Par exemple, la fonction \lstinline'delete_substr' de la
-%% figure~\ref{??} (\commentGP{code complet}) du chapitre~\ref{sec:ncd} a quatre
-%% sous-contrats : le contrat de la fonction appelée \lstinline'find_substr' et le
-%% contrat de chacune des trois boucles de la fonction \lstinline'delete_substr'.
-%% Les contrats éventuels des boucles de \lstinline'find_substr' sont des
-%% sous-contrats de \lstinline'find_substr' mais pas des sous-contrats de
-%% \lstinline'delete_substr'.
+soit une annotation d'un sous-contrat de $f$.
+Par exemple, la fonction \lstinline'delete_substr' de la
+figure~\ref{lst:delete-substr-full} du chapitre~\ref{sec:ncd} a quatre
+sous-contrats : le contrat de la fonction appelée \lstinline'find_substr' et le
+contrat de chacune des trois boucles de la fonction \lstinline'delete_substr'.
+Les contrats éventuels des boucles de \lstinline'find_substr' sont des
+sous-contrats de \lstinline'find_substr' mais pas des sous-contrats de
+\lstinline'delete_substr'.
 
 Nous nous concentrons sur les annotations non-imbriquées de $f$ et supposons que
-tous les sous-contrats pour $f$ sont respectés : les fonctions appelées par $f$
+tous les sous-contrats de $f$ sont respectés : les fonctions appelées par $f$
 respectent leur contrat et les boucles de $f$ préservent leurs invariants et
 respectent les annotations imbriquées.
 Soit $c_f$ le contrat de $f$, $\C$ l'ensemble des sous-contrats non-imbriqués
-pour $f$, et $\A$ l'ensemble des annotations non-imbriquées de $f$ et des
+de $f$, et $\A$ l'ensemble des annotations non-imbriquées de $f$ et des
 annotations de $c_f$.
-En d'autres termes, $\A$ contient les annotations des contrats $\C\cup\{c_f\}$,
-ainsi que les assertions non-imbriquées de $f$.
+En d'autres termes, $\A$ contient les annotations des contrats dans
+$\C\cup\{c_f\}$, ainsi que les assertions non-imbriquées de $f$.
 Nous supposons également que chaque sous-contrat de $f$ contient une clause
 \lstinline'assigns' ou \lstinline'loop assigns'.
 Cette hypothèse n'est pas limitative puisqu'une telle clause est de toute
@@ -89,8 +102,8 @@ $Type_f$ f(...){ code2;
 \end{minipage}
 \vspace{-3mm}
 \caption{(a) Un contrat $c\in\C$ d'une fonction $g$ appelée par $f$, et
-(b) sa traduction %in $P_\all^{\CW}$ 
-pour \CWD}
+(b) sa traduction pour la détection des faiblesses de sous-contrats de fonction
+appelée}
 \vspace{-3mm}
 \label{fig:CW-transf-functions}
 \end{center}
@@ -122,8 +135,7 @@ $Type_f$ f(...){ code1;
 \end{minipage}
 \vspace{-3mm}
 \caption{(a) Un contrat $c\in\C$ d'une boucle de $f$, et
-(b) sa traduction %in $P_\all^{\CW}$ 
-pour \CWD}
+(b) sa traduction pour la détection des faiblesses de sous-contrats} de boucle
 \vspace{-3mm}
 \label{fig:CW-transf-loops}
 \end{center}
@@ -131,9 +143,10 @@ pour \CWD}
 
 Afin d'appliquer la génération de tests aux contrats des fonctions appelées et
 des boucles de $\C$ au lieu de leur code, nous utilisons une transformation de
-programme qui produit un nouveau programme $P^{\GSW}$ à partir de $P$.
+programme qui produit un nouveau programme $P^{\GSW}$ (pour {\em global
+subcontract weakness}) à partir de $P$.
 Le code de chaque appel de fonction et de chaque boucle de $f$ est remplacé
-par un nouveau code que nous définissons maintenant.
+par un nouveau code dérivé de leur contrat de la manière suivante.
 
 \begin{figure}[tb]
   \scriptsize{
@@ -145,24 +158,18 @@ par un nouveau code que nous définissons maintenant.
         )
       }
       {
-        \splitfrac{
-          (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
-        } {
-          \splitfrac{
-            \forall (x:ctype) \in X :
-          }{
-            (I \concat (End_f,
-            e~\mbox{\lstinline'= nondet();'}) )
-          }
-        }
+        (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
+        \forall (x:ctype) \in X :
+        (I \concat (End_f,
+        e~\mbox{\lstinline'= Nondet();'}) )
       }{}
     }
 
     {\myinference{$\alpha$-assume-post}
-      {(End_f, \mbox{\lstinline'p'}) \prule (I, \mbox{\lstinline'e'})}
-      {(End_f, \mbox{\lstinline'ensures p;'})
+      {(End_f, p) \prule (I, e)}
+      {(End_f, \mbox{\lstinline'ensures'}~p\semicolon)
         \arule
-        I \concat (End_f, \mbox{\lstinline'fassume(e);'})}{}
+        I \concat (End_f, \mbox{\lstinline'fassume('}e\mbox{\lstinline');'})}{}
     }
   }
   \caption{Règles de traduction pour la détection des faiblesses de
@@ -170,21 +177,23 @@ par un nouveau code que nous définissons maintenant.
   \label{fig:assume-annot}
 \end{figure}
 
-Pour un contrat $c\in\C$ d'une fonction $g$ appelée par $f$, la transformation
-de programme (illustrée par la figure~\ref{fig:CW-transf-functions}) génère une
-nouvelle fonction \lstinline{g_swd} ayant la même signature et dont le code
-simule tous les comportements possibles respectant la postcondition du
-contrat $c$, et remplace chaque appel à $g$ par un appel à \lstinline{g_swd}.
+Pour un contrat $c\in\C$ d'une fonction \lstinline'g' appelée par \lstinline'f',
+la transformation de programme (illustrée par la
+figure~\ref{fig:CW-transf-functions}) génère une nouvelle fonction
+\lstinline{g_swd} ayant la même signature et dont le code simule tous les
+comportements possibles respectant la postcondition du contrat $c$.
+Chaque appel à \lstinline'g' dans \lstinline'f' est remplacé par un appel à
+\lstinline{g_swd}.
 Tout d'abord, \lstinline{g_swd} permet aux variables (et plus généralement aux
 left-values) présentes dans la clause \lstinline'assigns' de $c$ de changer de
 valeur (ligne 2 de la figure~\ref{fig:CW-transf-functions}(b)).
 Ceci est possible en affectant une valeur non-déterministe du type adéquat,
 dont la génération est ici notée par \lstinline{Nondet()} (ou simplement en
 utilisant un tableau contenant les variables d'entrée fraîches, dans lequel on
-va lire de nouvelles valeurs pour chaque appel de la fonction $g$).
+va lire de nouvelles valeurs pour chaque appel de la fonction \lstinline'g').
 La règle \textsc{$\alpha$-assume-assigns} de la figure~\ref{fig:assume-annot}
-présente la traduction de la clause \lstinline'assigns'.
-Si le type de retour de $g$ n'est pas \lstinline{void}, une valeur
+formalise la traduction de la clause \lstinline'assigns'.
+Si le type de retour de \lstinline'g' n'est pas \lstinline{void}, une valeur
 non-déterministe supplémentaire est générée pour la valeur de retour
 \lstinline{ret} (ligne 3 de la figure~\ref{fig:CW-transf-functions}(b)).
 Enfin, la validité de la postcondition est évaluée (en prenant en compte ces
@@ -193,7 +202,7 @@ exécutions de la fonction qui respectent cette postcondition, puis la fonction
 termine son exécution (lignes 4--5 de la
 figure~\ref{fig:CW-transf-functions}(b)).
 La règle \textsc{$\alpha$-assume-post} de la figure~\ref{fig:assume-annot}
-présente la traduction de la postcondition.
+formalise la traduction de la postcondition.
 
 \begin{figure}[tb]
   \scriptsize{
@@ -205,24 +214,19 @@ présente la traduction de la postcondition.
         )
       }
       {
-        \splitfrac{
-          (l, \mbox{\lstinline'loop assigns'}~X\semicolon) \arule
-        } {
-          \splitfrac{
-            \forall (x:ctype) \in X :
-          }{
-            (I \concat (l,
-            e~\mbox{\lstinline'= nondet();'}) )
-          }
-        }
+        (l, \mbox{\lstinline'loop assigns'}~X\semicolon) \arule
+        \forall (x:ctype) \in X :
+        (I \concat (l,
+        e~\mbox{\lstinline'= Nondet();'}) )
       }{}
     }
 
     {\myinference{$\alpha$-assume-invariant}
-      {(l, \mbox{\lstinline'p'}) \prule (I, \mbox{\lstinline'e'})}
+      {(l, p) \prule (I, e)}
       {
-        (l, \mbox{\lstinline'loop invariant p;'}) \arule
-        I \concat (l, \mbox{\lstinline'fassume(e && !loopcond);'})
+        (l, \mbox{\lstinline'loop invariant'}~p\semicolon) \arule
+        I \concat (l, \mbox{\lstinline'fassume('}e~\mbox{\lstinline'\&\& !'}
+        loopcond\mbox{\lstinline');'})
       }{}
     }
 
@@ -242,20 +246,24 @@ présente la traduction de la postcondition.
   \label{fig:assume-loop-annot}
 \end{figure}
 
-De manière similaire, pour un contrat $c\in\C$ d'une boucle de $f$, la
+De même, pour un contrat $c\in\C$ d'une boucle de \lstinline'f', la
 transformation de programme remplace le code de la boucle par un autre code qui
 simule tous les comportements possibles respectant $c$, c'est-à-dire, s'assurant
-de la validité de la ``postcondition de boucle'' $I\wedge \neg b$ après la
+de la validité de la ``postcondition de boucle'' $I \land \lnot b$ après la
 boucle, comme illustré sur la figure~\ref{fig:CW-transf-loops}.
 Les règles \textsc{$\alpha$-assume-loop-assigns} et
-\textsc{$\alpha$-assume-invariant-1} de la figure~\ref{fig:assume-loop-annot}
-présentent respectivement la traduction des clauses \lstinline'loop assigns' et
+\textsc{$\alpha$-assume-invariant} de la figure~\ref{fig:assume-loop-annot}
+formalisent respectivement la traduction des clauses \lstinline'loop assigns' et
 \lstinline'loop invariant'.
+La règle \textsc{$\alpha$-assume-invariant} génère un code qui calcule la valeur
+de l'invariant $p$ dans la variable $e$ et fait l'hypothèse que la condition
+$I \land \lnot b$ codée par $e~\mbox{\lstinline'\&\& !'}loopcond$ où $loopcond$
+désigne la condition de la boucle sur laquelle porte l'invariant $p$.
 La transformation de programme traite toute autre annotation de $\A$ de la
 même manière que $P^{\NC}$ : préconditions des fonctions appelées, vérifications
-initiales des invariants de boucle et pré- et postcondition de $f$ (qui
-n'apparaissent pas sur les figures~\ref{fig:CW-transf-functions}(b)
-et~\ref{fig:CW-transf-loops}(b)).
+initiales des invariants de boucle et pré- et postcondition de \lstinline'f'
+(qui n'apparaissent pas dans les figures~\ref{fig:CW-transf-functions}
+et~\ref{fig:CW-transf-loops}).
 
 
 %\begin{tabular}{cc}
@@ -291,14 +299,15 @@ et~\ref{fig:CW-transf-loops}(b)).
 
 \begin{definition}[Faiblesse de l'ensemble des sous-contrats] 
   \label{def:GSW}
-  $P$ a une \emph{faiblesse de l'ensemble des sous-contrats} pour $f$  si il
-  existe un cas de test $V$ pour $f$ respectant sa précondition, tel que
+  Soit $P$ un programme et $f$ une fonction de $P$.
+  Le programme $P$ a une \emph{faiblesse de l'ensemble des sous-contrats} de $f$
+  s'il existe un cas de test $V$ de $f$ respectant sa précondition, tel que
   $P^{\NC}$ ne rapporte aucune violation d'annotation sur $V$, alors que
-  $P^{\GSW}$ rapport une violation d'annotation sur $V$.
+  $P^{\GSW}$ rapporte une violation d'annotation sur $V$.
   Dans ce cas, on dit que $V$ est un
   \emph{contre-exemple de faiblesse de l'ensemble des sous-contrats} (ou \GSWCE
   pour {\em global subcontract weakness counter-example}) pour l'ensemble des
-  sous-contrats $\C$.
+  sous-contrats de $f$.
 \end{definition}
 
 Nous ne considérons pas qu'un même contre-exemple puisse être à la fois un
@@ -308,48 +317,49 @@ En effet, même si certains contre-exemples peuvent illustrer à la fois une
 non-conformité et une faiblesse de sous-contrat, une non-conformité provient
 généralement d'un conflit direct entre le code et sa spécification et doit être
 corrigée en priorité, tandis qu'une faiblesse de contrat est souvent plus
-subtile et ne doit être corrigée qu'une fois les non-conformités éliminées.
+subtile et ne doit être corrigée qu'une fois toutes les non-conformités
+éliminées.
 
 Encore une fois, la génération de tests peut être appliquée sur $P^{\GSW}$ pour
 générer des \GSWCE potentiels.
-Lorsqu'un cas de test $V$ tel que $P^{\GSW}$ échoue sur $V$ a été trouvé, nous
+Lorsqu'un cas de test $V$ a été trouvé tel que $P^{\GSW}$ échoue sur $V$, nous
 appliquons la validation à l'exécution :
 si $P^{\NC}$ échoue sur $V$, alors $V$ est un \NCCE, sinon $V$ est un \GSWCE.
 Nous appelons cette technique
 \emph{Détection de faiblesse de l'ensemble des sous-contrats}, notée $\GSWD$
 pour \textit{Global Subcontract Weakness Detection}.
-$\GSWD$ peut produire quatre résultats.
+$\GSWD$ peut produire quatre résultats : (\nc,\,$V$,\,$a$),
+(\cw,\,$V$,\,$a$,\,$C$), ``\no'' ou ``\textsf{?}''.
 Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé pour l'annotation
-$a$, et (\cw,\,$V$,\,$a$,\,$C$) si $V$ a été classifié en tant que \SWCE
+$a$, et (\cw,\,$V$,\,$a$,\,$C$) si $V$ a été classifié en tant que \GSWCE
 indiquant l'annotation $a$ et l'ensemble des sous-contrats $C$.
 Le chemin de programme $\pi_V$ activé par le cas de test $V$ et menant à
-l'erreur (sur $P^{\NC}$ ou $P^{\GSW}$) est également récupéré.
-If $\GSWD$ a réussi à explorer l'intégralité des chemins du programme sans
+l'erreur (sur $P^{\NC}$ ou $P^{\GSW}$) est également enregistré.
+Si $\GSWD$ a réussi à explorer l'intégralité des chemins du programme sans
 trouver de \GSWCE, elle retourne \no.
 Sinon, si l'exploration des chemins du programme est seulement partielle, elle
 retourne \textsf{?} ({\em unknown}).
-
-Un \GSWCE indique une faiblesse de l'ensemble des sous-contrats d'une fonction
-mais n'identifie pas précisément quel contrat $c\in\C$ est trop faible si
-c'est le cas.
-Nous proposons pour cela une autre transformation de programme de $P$ en un
-programme instrumenté $P_c^{\SSW}$.
-Elle réalise le remplacement d'un seul appel de fonction non imbriqué ou de
-boucle par le code respectant la postcondition du sous-contrat $c$ correspondant
-(comme le montrent les figures~\ref{fig:CW-transf-functions}
-et~\ref{fig:CW-transf-loops}) et traduit les autres annotations de $\A$ de la
-même manière que pour $P^{\NC}$.
 
 
 \section{Détection de faiblesse d'un sous-contrat}
 \label{sec:swd-single}
 
 
+Un \GSWCE indique une faiblesse de l'ensemble des sous-contrats d'une fonction
+mais n'identifie pas précisément quel contrat $c\in\C$ est trop faible.
+Nous proposons pour cela une autre transformation du programme $P$ en un
+programme instrumenté $P_c^{\SSW}$ (pour {\em single subcontract weakness}).
+Elle réalise le remplacement d'un seul appel de fonction non imbriquée ou de
+boucle par le code respectant la postcondition du sous-contrat $c$ correspondant
+(comme le montrent les figures~\ref{fig:CW-transf-functions}
+et~\ref{fig:CW-transf-loops}) et traduit les autres annotations de $\A$ de la
+même manière que pour $P^{\NC}$.
+
 \begin{definition}[Faiblesse d'un sous-contrat] 
   \label{def:SSW}
-  Soit $c$ un sous-contrat pour $f$.
+  Soit $c$ un sous-contrat de $f$.
   $c$ est un \emph{sous-contrat trop faible} (ou a une
-  \emph{faiblesse de sous-contrat}) pour $f$ s'il existe un cas de test $V$ pour
+  \emph{faiblesse de sous-contrat}) de $f$ s'il existe un cas de test $V$ de
    $f$ respectant sa précondition, tel que $P^{\NC}$ ne rapporte aucune violation
   d'annotation sur $V$, alors que $P_c^{\SSW}$ rapporte une violation
   d'annotation sur $V$.
@@ -361,7 +371,7 @@ même manière que pour $P^{\NC}$.
 
 Pour chaque sous-contrat $c\in\C$, la génération de tests peut être appliquée
 de manière séparée sur $P_{c}^{\SSW}$ pour générer des \SSWCE potentiels.
-Si un tel cas de test $V$ est généré, il est confirmé sur $P^{\NC}$ afin de
+Si un tel cas de test $V$ est généré, il est exécuté sur $P^{\NC}$ afin de
 déterminer si c'est un \NCCE ou un \SSWCE.
 Nous appelons cette technique, appliquée pour tous les sous-contrats l'un après
 l'autre jusqu'à ce qu'un contre-exemple $V$ soit trouvé,
@@ -372,7 +382,7 @@ Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé pour une annotat
 $a$, et (\cw,\,$V$,\,$a$,\,$\{c\}$) si $V$ a été classé comme étant un \SSWCE
 indiquant que le sous-contrat $c$ est trop faible pour l'annotation $a$.
 Le chemin de programme $\pi_V$ activé par $V$ et menant à l'erreur (sur $P^{\NC}$
-ou $P_c^{\SSW}$) est également récupéré.
+ou $P_c^{\SSW}$) est également enregistré.
 Sinon, elle retourne \textsf{?} ({\em unknown}), puisque même en cas
 d'exploration complète des chemins du programme l'absence de \SSWCE pour un
 unique sous-contrat $c$ n'implique pas l'absence de \GSWCE.
@@ -380,22 +390,22 @@ unique sous-contrat $c$ n'implique pas l'absence de \GSWCE.
 En effet, il arrive que $\SSWD$ ne puisse pas détecter de faiblesse pour un
 sous-contrat en particulier alors qu'il y a une faiblesse pour un ensemble de
 sous-contrats.
-Dans l'exemple de la figure~\ref{fig:contracts-ex1}, si on applique $\SSWD$ à
-un sous-contrat quelconque, on obtient toujours \lstinline'x >=  \old(x)+5' à la
-fin de la fonction $f$ (on ajoute $1$ à $x$ en exécutant le sous-contrat traduit
-et on ajoute $2$ par deux fois en exécurant le code des deux autres fonctions),
-donc la postcondition de \lstinline'f' est vérifiée et aucune faiblesse de
-sous-contrat n'est détectée.
+Dans l'exemple du listing~\ref{fig:contracts-ex1}, si on applique $\SSWD$ à
+un sous-contrat quelconque, on obtient toujours \lstinline'x >= \old(x)+5' à la
+fin de la fonction \lstinline'f' (on ajoute $1$ à \lstinline'x' en exécutant le
+sous-contrat traduit et on ajoute $2$ par deux fois en exécutant le code des
+deux autres fonctions), donc la postcondition de \lstinline'f' est vérifiée et
+aucune faiblesse de sous-contrat n'est détectée.
 Si on applique $\GSWD$ pour considérer tous les sous-contrats en une seule fois,
-on obtient uniquement \lstinline'x>= \old(x)+3' après exécution des trois
+on obtient uniquement \lstinline'x >= \old(x)+3' après exécution des trois
 sous-contrats, ce qui permet d'exhiber un contre-exemple pour cette faiblesse
 des sous-contrats.
 
 Inversement, $\GSWD$ produit un \GSWCE qui n'indique pas de manière précise
 lequel des sous-contrats est trop faible, alors que $\SSWD$ apporte cette
 précision.
-Dans la figure~\ref{fig:contracts-ex2}, $\GSWD$ remplaçant le code des trois
-fonctions appelées par leur contrat, il est impossible de déterminer quel
+Dans le listing~\ref{fig:contracts-ex2}, puisque $\GSWD$ remplace le code des
+trois fonctions appelées par leur contrat, il est impossible de déterminer quel
 sous-contrat est trop faible.
 Les contre-exemples générés par un prouveur souffrent du même problème
 d'imprécision : prendre en compte tous les sous-contrats au lieu du code
@@ -406,7 +416,7 @@ on a \lstinline'x >= \old(x)+3' en exécutant
 \lstinline'g1',  \lstinline'g2' et le sous-contrat de \lstinline'g3',
 exhibant la faiblesse du sous-contrat de \lstinline'g3'.
 Ainsi, la technique $\SSWD$ fournit à l'ingénieur validation un diagnostic plus
-précis qu'un contre-exemple produit par un prouveur.
+précis qu'un contre-exemple produit par \GSWD ou par un prouveur.
 
 Nous définissons une technique de détection combinée de faiblesses de
 sous-contrats, notée \SWD, qui consiste à appliquer d'abord $\SSWD$ puis $\GSWD$
@@ -422,11 +432,11 @@ unique sous-contrat).
 \label{sec:swd-scenarios}
 
 
-Retrouvons Alice là où nous l'avons laissée au chapitre~\ref{sec:ncd}.
+Retrouvons Alice là où nous l'avons laissée à la fin du chapitre~\ref{sec:ncd}.
 Alice spécifie la deuxième boucle de la fonction
-\lstinline'delete_substr', qui copie les éléments de la
+\lstinline'delete_substr' (qui copie les éléments de la
 chaîne \lstinline'str' dans la chaîne \lstinline'dest' jusqu'à l'indice
-\lstinline'start', avec ce contrat de boucle :
+\lstinline'start') avec ce contrat de boucle :
 
 \begin{pretty-codeACSL}
 loop invariant \forall integer m; 0 <= m < j ==> dest[m] == \at(str[m],Pre);
@@ -456,10 +466,11 @@ spécifier, dont la preuve par \Wp échoue.
 Alice pense d'abord que cet échec de la preuve est causé par une non-conformité
 de la boucle par rapport à son contrat.
 Elle applique donc la méthode \NCD dans l'espoir d'obtenir un \NCCE.
-Bien qu'ayant couvert les chemins du programme avec 12170 cas de tests, aucun
-\NCCE n'est produit.
-Alice a maintenant le choix entre analyser manuellement le programme pour afin
-de localiser le problème et relancer la preuve en augmentant le {\em timeout},
+Bien qu'ayant couvert les chemins du programme respectant la clause
+\lstinline'typically strlen <= 5' avec 12170 cas de tests, aucun \NCCE n'est
+produit.
+Alice a maintenant le choix entre analyser manuellement le programme afin
+de localiser le problème ou relancer la preuve en augmentant le {\em timeout},
 ce qui peut lui prendre beaucoup de temps.
 Elle décide d'analyser le programme car elle suspecte une faiblesse de
 spécification d'un des sous-contrats.
@@ -471,7 +482,7 @@ la fonction \lstinline'find_substr' est trop faible pour l'invariant de boucle
 En effet, ayant enlevé les contraintes sur le résultat de la fonction
 \lstinline'\result', l'exécution du contrat de \lstinline'find_substr' produit
 une valeur de retour qui ne permet pas de valider l'invariant.
-À partir du contre exemple produit par \SSWD et la nature de l'invariant non
+À partir du contre exemple produit par \SSWD et de la nature de l'invariant non
 satisfait, Alice peut facilement localiser le problème dans le contrat de la
 fonction \lstinline'find_substr'.
 
@@ -488,18 +499,33 @@ loop variant strlen-sublen-j;
 La vérification déductive de la fonction échoue, et \NCD ne parvient pas à
 exhiber de contre-exemple car le programme ne comporte pas de non-conformité.
 En revanche, l'application de \SWD met en évidence la faiblesse de ce dernier
-contrat de boucle, qui est insuffisant pour la preuve de la fonction.
+contrat de boucle, qui est insuffisant pour la preuve de la postcondition de la
+fonction.
 En effet, le contrat indique (par sa clause \lstinline'loop assigns') que la
 boucle peut modifier \lstinline'dest[start .. strlen-sublen-1]' et
 \lstinline'j'.
 Des cas de tests sont donc générés dans lesquels l'exécution du
 contrat modifie la valeur de \lstinline'j' en respectant la contrainte de
 l'invariant \lstinline'start <= j <= strlen-sublen' et modifie les valeurs du
-tableau, sans contrainte particulière, ce qui ne permet pas de vérifier la
-postcondition de la fonction \lstinline'delete_substr'.
+tableau, sans contrainte particulière, de manière à violer la postcondition de
+la fonction \lstinline'delete_substr'.
+Un des contre-exemples produits est \ce{
+  \lstinline'dest[0] = 23;'
+  \lstinline'dest[1] = -27;'
+  $\mbox{\lstinline'nondet'}_{\mbox{\lstinline'dest[0]'}}\mbox{\lstinline' = 11;'}$
+  $\mbox{\lstinline'nondet'}_{\mbox{\lstinline'j'}}\mbox{\lstinline' = 1;'}$
+  \lstinline'str[0] = 74;'
+  \lstinline'str[1] = 48;'
+  \lstinline'strlen = 2;'
+  \lstinline'sublen = 1;'
+  \lstinline'substr[0] = 74'
+} où $\mbox{\lstinline'nondet'}_{\mbox{\lstinline'dest[0]'}}$ et
+$\mbox{\lstinline'nondet'}_{\mbox{\lstinline'j'}}$ sont les valeurs non
+déterministes produites par la fonction \lstinline'Nondet' afin de simuler la
+modification des variables \lstinline'dest[0]' et \lstinline'j' par la boucle.
 
-Ici aussi, le résultat de \SWD indique à Alice précisément quel(s)
-sous-contrat(s) sont trop faibles pour la propriété non prouvée par \Wp, lui
+Ici aussi, le résultat de \SWD indique à Alice précisément quels
+sous-contrats sont trop faibles pour la propriété non prouvée par \Wp, lui
 facilitant son travail de revue du code et lui permettant de progresser
 rapidement vers une spécification correcte et complète de son programme.
 
@@ -507,15 +533,19 @@ rapidement vers une spécification correcte et complète de son programme.
 \section*{Conclusion du chapitre}
 
 
-Dans ce chapitre, nous avons définit les notions de faiblesse de l'ensemble des
-sous-contrats et faiblesse d'un sous-contrat.
-Nous avons également présenté les spécificités de la traduction des annotations
-par rapport à la traduction pour la détection de non-conformités présentée au
-chapitre~\ref{sec:traduction}.
-Enfin, nous avons continué le cas pratique du chapitre~\ref{sec:ncd} pour
-montrer l'intérêt de la détection des faiblesses des sous-contrats.
+Dans ce chapitre, nous avons défini les notions de faiblesse de l'ensemble des
+sous-contrats et de faiblesse d'un sous-contrat.
+Notons qu'en l'absence de faiblesse de chacun des sous-contrats, il peut exister
+une faiblesse (globale) de l'ensemble des sous-contrats.
+L'exemple du listing~\ref{fig:contracts-ex1} illustre cette subtilité.
 
-Le chapitre~\ref{sec:method} montrera que l'utilisation combinée de la détection
-des non-conformités présentée au chapitre~\ref{sec:ncd} et la détection des
-faiblesses de sous-contrats présentée dans ce chapitre peut aider au diagnostic
-des échecs de preuve.
+Nous avons également présenté les spécificités de la traduction des annotations
+pour la détection de faiblesses de sous-contrats par rapport à leur traduction
+pour la détection de non-conformités présentée au chapitre~\ref{sec:traduction}.
+Enfin, nous avons continué le cas pratique du chapitre~\ref{sec:ncd} pour
+illustrer et montrer l'intérêt de la détection des faiblesses des sous-contrats.
+
+Le chapitre~\ref{sec:method} présente une méthode qui combine la
+détection des non-conformités présentée au chapitre~\ref{sec:ncd} et la
+détection des faiblesses de sous-contrats présentée dans ce chapitre pour aider
+l'utilisateur à diagnostiquer les échecs de preuve.
