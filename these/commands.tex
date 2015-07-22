@@ -1,6 +1,8 @@
 \newcommand\ppnode[1]{\tikz{\node[pnode,ppcommon]{#1};}}
 \newcommand\ppleaf[1]{\tikz{\node[pleaf,ppcommon]{#1};}}
 
+\newcolumntype{H}{>{\setbox0=\hbox\bgroup}c<{\egroup}@{}}
+
 \newcommand*\Let[2]{\State #1 $\gets$ #2}
 
 \colorlet{greenv}{green!70!black!100}
