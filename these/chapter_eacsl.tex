@@ -5,23 +5,27 @@
 \chapterintro
 
 
-Dans ce chapitre nous présentons notre implémentation du modèle mémoire en C
-qui permet d'exécuter les annotations \eacsl présentées dans
+Dans ce chapitre nous présentons notre implémentation du modèle mémoire des
+programmes C qui permet d'exécuter les annotations \eacsl présentées dans
 le chapitre~\ref{sec:runtime}.
 Notre bibliothèque permet au greffon \eacsltoc de vérifier à l'exécution les
 annotations \eacsl portant sur le modèle mémoire.
 
 \eacsltoc traduit automatiquement un programme C annoté en un autre
-programme dont l'exécution échouera si une annotation n'est pas valide.
+programme C dont l'exécution échouera si une annotation n'est pas valide.
 Si aucune annotation n'est violée, le comportement
 du nouveau programme est exactement le même que celui du programme d'origine.
 Ce greffon utilise notre bibliothèque afin de vérifier à l'exécution les
-annotations \eacsl portant sur le modèle mémoire.
-Le greffon \eacsltoc n'étant lui-même pas le fruit de nos travaux, il ne sera
-pas présenté dans ce chapitre.
+annotations \eacsl portant sur la mémoire.
+Le greffon \eacsltoc lui-même n'étant pas le fruit de nos travaux
+\cite{Delahaye/SAC13}, il ne sera pas présenté dans ce chapitre.
 
-Nous présentons la bibliothèque en partie~\ref{sec:eacsl-impl} et les résultats
-de nos expérimentations en partie~\ref{sec:eacsl-exp}.
+Nous présentons la bibliothèque en partie~\ref{sec:eacsl-impl}.
+Au cours de nos travaux, nous avons mesuré la capacité de détection d'erreur de
+notre implémentation et nous avons comparé les performances à l'exécution de
+plusieurs choix d'implémentation.
+Nous présentons les résultats de nos expérimentations en
+partie~\ref{sec:eacsl-exp}.
 
 
 \section{Architecture de la bibliothèque de monitoring de la mémoire}
@@ -29,11 +33,20 @@ de nos expérimentations en partie~\ref{sec:eacsl-exp}.
 
 
 La figure~\ref{fig:mmodel-architecture} présente l'architecture générale de la
-bibliothèque au moyen du graphe de dépendances des fonctions C les plus
+bibliothèque au moyen du graphe de dépendance des fonctions C les plus
 importantes.
 Une flèche $A \rightarrow B$ signifie que la fonction $A$ appelle la fonction
 $B$.
 
+\begin{figure}[h!]
+  \centering
+  \includegraphics[scale=.55]{figures/mmodel_architecture.pdf}
+  \vspace{-.8cm}
+  \caption{Architecture de la bibliothèque de monitoring de la mémoire
+    \label{fig:mmodel-architecture}}
+\end{figure}
+
+L'architecture comporte quatre niveaux, numérotés de \circled{1} à \circled{4}.
 Les fonctions du niveau \circled{1} correspondent à l'implémentation de la
 structure de données {\em store} (présentée au chapitre~\ref{sec:runtime})
 gardant les informations à propos des blocs alloués.
@@ -57,66 +70,19 @@ comparaison d'efficacité des différentes implémentations du {\em store},
 effectuée en partie~\ref{sec:eacsl-exp}.
 
 
-\begin{landscape}
-  \begin{figure}
-    \includegraphics[scale=.55]{figures/mmodel_architecture.pdf}
-    \vspace{-2.5cm}
-    \caption{Architecture de la bibliothèque de monitoring de la mémoire
-      \label{fig:mmodel-architecture}}
-  \end{figure}
-\end{landscape}
-
-
 \section{Expérimentations}
 \label{sec:eacsl-exp}
 
 
-Pour évaluer notre implémentation de la bibliothèque, nous avons effectué plus
-de 300 exécutions sur plus de 30 programmes, obtenus à partir d'une dizaine
-d'exemples.
-Nous avons volontairement gardés des exemples plutôt courts (moins de 200 lignes
-de code) car ils ont dû être annotés en \eacsl manuellement.
-
-Nous avons mesuré le temps d'exécution du programme d'origine et du code
-instrumenté par \eacsltoc avec différentes options, afin d'évaluer les
-performances des différentes implémentations du {\em store} et des différentes
-optimisations.
-Des indicateurs comme le nombre de variables, d'allocations mémoires,
-d'enregistrements et de requêtes a également été enregistré.
+Nous présentons maintenant le résultats de nos expérimentations visant à évaluer
+la capacité de détection d'erreurs de la bibliothèque et la performance à
+l'exécution des différents choix d'implémentation.
 
 
-\textbf{Implémentation du {\em store} :}\\
-Pour déterminer quelle implémentation du {\em store} est la plus appropriée,
-nous avons comparé des implémentations utilisant : des Patricia tries, des
-listes chaînées, des arbres binaires de recherche non équilibrés et des Splay
-trees.
-
-Notre implémentation utilisant les Patricia tries est en moyenne 2500 fois plus
-rapide que l'implémentation à base de listes chaînées, 200 fois plus rapide que
-celle utilisant les arbres binaires de recherche, et 27 fois plus rapide que
-celle se basant sur les Splay trees.
-
-La version utilisant les Splay trees offre des performances comparables (ou
-légèrement meilleures, jusqu'à 3 fois) sur les exemples contenant de fréquents
-accès mémoire consécutifs au même bloc dans le {\em store}.
-En revanche, sur des exemples où les accès méoire consécutifs ne se font pas sur
-le même bloc (une multiplication de matrices dans notre exemple), les
-performances sont beaucoup moins bonnes (jusqu'à 500 fois).
-Ceci est dû à la nature des Splay treees : le dernier élément accédé est remonté
-à la racine de l'arbre.
-
-\textbf{Calcul du plus grand préfixe commun :} \\
-Nous avons comparé deux implémentations de ce calcul.
-La première utilise un parcours linéaire de l'adresse (bit-à-bit, de gauche à
-droite).
-La seconde est une recherche dichotomique du meilleur préfixe dans un tableau
-dont le contenu et les indices (indiquant le prochain élément à tester) sont
-pré-calculés.
-Cette seconde implémentation s'est révélée en moyenne 2.7 fois plus rapide que
-la première sur nos exemples.
+\subsection{Capacité de détection d'erreurs}
 
 
-\begin{figure}[tb]
+\begin{figure}
   \centering
   \begin{tabular}{c|c|c|c|c|c}
     & alarmes & mutants & équivalents & tués & \% erronés tués \\
@@ -136,80 +102,115 @@ la première sur nos exemples.
 \end{figure}
 
 
-\textbf{Capacité de détection d'erreurs :} \\
-Nous avons utilisé le test mutationnel pour évaluer la capacité de détection
-d'erreurs en utilisant la vérification d'assertion à l'exécution avec
+Nous avons utilisé la technique de mutation pour évaluer la capacité de
+détection d'erreurs en utilisant la vérification d'assertion à l'exécution avec
 \framac.
-Nous avons considéré 5 exemples annotés et généré leurs {\em mutants} (en
-appliquant une {\em mutation} sur leur code source) et leur avons appliqué la
-vérification à l'exécution.
-Les mutations incluent : modifications d'opérateur arithmétique numérique,
-modifications d'opérateur arithmétique sur les pointeurs, modifications
-d'opérateur de comparaison et modifications d'opérateur logique ($land$ et
-$lor$).
+Nous avons considéré 5 programmes écrits par nos soins.
+Nous avons généré leurs {\em mutants} (en appliquant une {\em mutation} sur leur
+code source) et leur avons appliqué la vérification à l'exécution.
+Les mutations du programme incluent : modifications d'opérateur arithmétique
+numérique, modifications d'opérateur arithmétique sur les pointeurs,
+modifications d'opérateur de comparaison et modifications d'opérateur logique
+($et$ et $ou$).
 L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
 utilisé pour produire les cas de test.
 Chaque mutant a été instrumenté par \eacsltoc et exécuté sur chaque cas de test
 pour vérifier que la spécification était satisfaite à l'exécution.
 Les programmes d'origine passent toutes les vérifications à l'exécution.
 Lorsqu'une violation d'une annotation a été reportée pour au moins un cas de
-testn le mutant est considéré comme étant {\em tué}.
+test, le mutant est considéré comme étant {\em tué}.
 La figure~\ref{tab:mutation-exp} présente les résultats.
-Exception faite des mutants équivalents (lorsque la mutation produit un
-programme équivalent au programme d'origine), tous les mutants erronés ont été
-tués.
+La première colonne contient les exemples étudiés.
+La deuxième colonne contient le nombre d'annotations dans chaque programme,
+générées par interprétation abstraite (le greffon \Value a été utilisé).
+Les colonnes suivantes contiennent le nombre de mutants générés, le nombre de
+mutants équivalents, le nombre de mutants non-équivalents tués, et le
+pourcentage des mutants non-équivalents tués lors de l'exécution.
+Lors de ces expérimentations, tous les mutants non-équivalents erronés ont été
+tués, ce qui témoigne de la précision et de la complétude de notre méthode.
 
 
-\begin{figure}[bt]
+\subsection{Performance des choix d'implémentation}
+
+
+Pour évaluer la performance à l'exécution de notre implémentation de la
+bibliothèque, nous avons effectué plus de 300 exécutions sur plus de 30
+programmes, obtenus à partir d'une dizaine de programmes écrits et annotés par
+nos soins.
+Nous avons volontairement gardé des exemples plutôt courts (moins de 200 lignes
+de code) car ils ont dû être annotés en \eacsl manuellement.
+
+Nous avons mesuré le temps d'exécution du programme d'origine et du code
+instrumenté par \eacsltoc avec différentes options, afin d'évaluer les
+performances des différentes implémentations du {\em store} et des différentes
+optimisations.
+Des indicateurs comme le nombre de variables, d'allocations mémoires,
+d'enregistrements et de requêtes ont également été enregistrés.
+
+
+\textbf{Calcul du plus grand préfixe commun :} \\
+Nous avons comparé deux implémentations de ce calcul, qui est utilisé par
+l'implémentation du {\em store} utilisant des Patricia tries.
+La première implémentation utilise un parcours linéaire de l'adresse (bit-à-bit,
+de gauche à droite).
+La seconde implémentation est une recherche dichotomique du meilleur préfixe
+dans un tableau dont le contenu et les indices sont pré-calculés.
+Elle implémente l'algorithme~\ref{algo:prefix} présenté en
+partie~\ref{sec:mpgpc}.
+Cette seconde implémentation s'est révélée en moyenne 2.7 fois plus rapide que
+la première sur nos exemples.
+
+
+\begin{figure}[h!]
   \begin{tikzpicture}
     \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log,
         legend columns=2,xlabel={$N$},ylabel={temps (s.)}]
       \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
       \loadedtable;
       \addplot [color=red,ultra thick] table[x=N,y=list] {\loadedtable}
-      node[above,pos=1] {$list^1$};
+      node[above,pos=1] {list};
 
       \addplot [color=red,dashed,ultra thick]
       table[x=N,y=list-DFA] {\loadedtable}
-      node[below,left,pos=1,yshift=-.5cm] {$list^2$};
+      node[below,left,pos=1,yshift=-.5cm] {list-AS};
 
       \addplot [color=blue,ultra thick] table[x=N,y=bst] {\loadedtable}
-      node[above,right,pos=1] {$bst^1$};
+      node[above,right,pos=1] {bst};
 
       \addplot [color=blue,dashed,ultra thick]
       table[x=N,y=bst-DFA] {\loadedtable}
-      node[above,right,pos=1] {$bst^2$};
+      node[above,right,pos=1] {bst-AS};
 
       \addplot [color=greenv,ultra thick] table[x=N,y=Pt] {\loadedtable}
-      node[above,left,pos=1,xshift=-1.4cm] {$Pt_1^1$};
+      node[above,left,pos=1,xshift=-1.4cm] {Pt};
 
       \addplot [color=greenv,dashed,ultra thick]
       table[x=N,y=Pt-DFA] {\loadedtable}
-      node[above,left,pos=1] {$Pt_2^1$};
+      node[above,left,pos=1] {Pt-dicho};
 
       \addplot [color=orange,ultra thick] table[x=N,y=Pt-opti] {\loadedtable}
-      node[below,right,pos=1,yshift=-.5cm,xshift=-1.2cm] {$Pt_1^2$};
+      node[below,right,pos=1,yshift=-.5cm,xshift=-1.2cm] {Pt-AS};
 
       \addplot [color=orange,dashed,ultra thick]
       table[x=N,y=Pt-opti-DFA] {\loadedtable}
-      node[above,left,pos=1] {$Pt_2^2$};
+      node[above,left,pos=1] {Pt-dicho-AS};
 
       \addplot [color=violet,ultra thick] table[x=N,y=St] {\loadedtable}
-      node[below,right,pos=1] {$St^1$};
+      node[below,right,pos=1] {St};
 
       \addplot [color=violet,dashed,ultra thick]
       table[x=N,y=St-DFA] {\loadedtable}
-      node[below,right,pos=1,yshift=-.7cm] {$St^2$};
+      node[below,right,pos=1,yshift=-.7cm] {St-AS};
 
       %% \foreach \i in {
       %%   list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
       %%   \addplot table [x=N, y=\i] {\loadedtable};
       %% }
 
-      \legend{list$^1$,list$^2$,bst$^1$,bst$^2$,Pt$_1^1$,Pt$_2^1$,Pt$_1^2$,
-        Pt$_2^2$,St$^1$,St$^2$}
+      \legend{list,list-AS,bst,bst-AS,Pt,Pt-dicho,Pt-AS,Pt-dicho-AS,St,St-AS}
     \end{axis}
   \end{tikzpicture}
+  \vspace{-.8cm}
   \caption{Comparaison du temps d'exécution des différentes implémentations du
     {\em store} sur un tri fusion
     \label{fig:mmodel-exp}}
@@ -233,16 +234,23 @@ tués.
 %% \end{figure}
 
 
+\textbf{Implémentation du {\em store} :}\\
+Pour déterminer quelle implémentation du {\em store} est la plus appropriée,
+nous avons comparé quatre implémentations utilisant : des Patricia tries, des
+listes chaînées, des arbres binaires de recherche non équilibrés et des arbres
+binaires de recherche équilibrés (Splay trees~\cite{Sleator/85}).
+
 La figure~\ref{tab:mmodel-exp} présente les résultats des expérimentations
 comparant les différentes implémentations du {\em store} et du calcul du plus
 grand préfixe commun.
-$bS_{10000}$ est une recherche binaire dans un tableaux de 10000 éléments.
+La première colonne du tableau contient les exemples étudiés.
+$bS_{10000}$ est une recherche binaire dans un tableau de 10000 éléments.
 $iS_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
 $mM_{n^2}$ est une multiplication de matrices $n \times n$. mI$_{n^2}$ contient
 des calculs matriciels (dont inversion et multiplication) sur des  matrices
 $n \times n$.
 $qS_n$ est un tri rapide sur un tableau de $n$ éléments.
-$bbS_{10000}$ est un tri à bulles sur un tableau à 10000 éléments.
+$bbS_{10000}$ est un tri à bulle sur un tableau à 10000 éléments.
 $m_{30000}$ est une fusion de deux listes chaînées de 10000 et 20000 éléments.
 $Rbt_{10000}$ est une insertion/suppression de 10000 éléments dans un arbre rouge
 et noir.
@@ -250,27 +258,34 @@ $mS_n$ est un tri fusion d'une liste chaînée de $n$ éléments.
 La ligne supplémentaire ``+ RTE'' de chaque exemple correspond à une application
 préalable du greffon \rte qui génère des assertions qui sont vraies si le
 programme ne contient pas d'erreur à l'exécution.
+Nous appelons ces assertions à vérifier des ``alarmes''.
 
-Les colonnes ont la signification suivante : $\danger$ contient le nombre
-d'alarmes du programme,  $\emptyset$ contient le temps d'exécution du programme
-original, $bst$ correspond à l'implémentation par arbres binaires de recherche,
-$mask$ est le nombre de fois où est calculé le plus grand préfixe commun, $sb$
-est le nombre d'insertion dans le {\em store}, $Pt$ correspond à
-l'implémentation par Patricia tries, $St$ correspond à l'implémentation par
-Splay trees.
-L'exposant $^1$ (respectivement $^2$) correspond aux expérimentations sans
-(respectivement avec) application d'une analyse statique permettant de
-n'instrumenter que ce qui est nécessaire (section 6 de \cite{\citeeacsltoc}).
+La colonne $\danger$ contient le nombre d'alarmes du programme (générées par les
+greffons \rte et \Value).
+La colonne $\emptyset$ contient le temps d'exécution du programme original.
+Tous les temps d'exécution sont mesurés en secondes.
+Un temps d'exécution est noté $\infty$ quand il dépasse 24 heures.
+Dans les colonnes suivantes, le suffixe ``-AS'' correspond aux expérimentations
+avec application d'une analyse statique permettant de n'instrumenter que ce qui
+est nécessaire (section 6 de \cite{\citeeacsltoc}).
 Cette analyse n'étant pas le fruit de nos travaux, nous ne la présentons pas
 ici.
-L'indice $_1$ (resp. $_2$) correspond à l'implémentation non optimisée
-(respectivement optimisée) du calcul du plus grand préfixe commun pour
-l'implémentation utilisant les Patricia tries.
-Le temps d'analyse du programme avec le debugger \valgrind \cite{\citevalgrind}
-est indiqué dans la dernière colonne.
-Le temps d'exécution des colonnes $\emptyset$, $list^1$, $list^2$, $bst^1$,
-$bst^2$, $Pt_1^1$, $Pt_2^1$, $Pt_1^2$, $Pt_2^2$, $St^1$, $St^2$ et valgrind est en
-secondes, ce temps est noté $\infty$ quand il dépasse 24 heures.
+La colonne $list$ contient le temps d'exécution du programme lorsque le
+{\em store} est implémenté par une liste chaînée.
+La colonne $bst$ contient le temps d'exécution du programme lorsque le
+{\em store} est implémenté par un arbre binaire de recherche non équilibré.
+La colonne $Pt$ contient le temps d'exécution du programme lorsque le
+{\em store} est implémenté par un Patricia trie et lorsque la recherche du
+masque du plus grand préfixe commun de deux adresses est implémentée de manière
+linéaire.
+La colonne $Pt-dicho$ contient le temps d'exécution du programme lorsque le
+{\em store} est implémenté par un Patricia trie et lorsque la recherche du
+masque du plus grand préfixe commun de deux adresses est implémentée en
+utilisant l'algorithme~\ref{algo:prefix} présenté en partie~\ref{sec:mpgpc}.
+La colonne $St$ contient le temps d'exécution du programme lorsque le
+{\em store} est implémenté par un Splay tree.
+Le temps d'analyse du programme sans instrumentation avec le débogueur
+\valgrind~\cite{\citevalgrind} est indiqué dans la dernière colonne.
 
 Nous remarquons que le temps d'exécution de \valgrind n'est pas comparable avec
 celui de notre bibliothèque, cela s'explique simplement par le fait que celui-ci
@@ -286,27 +301,89 @@ passé par chaque implémentation du {\em store} sur un tri fusion de 1000, 5000
 dernières lignes de la figure~\ref{tab:mmodel-exp}).
 
 Les résultats de nos expérimentations confirment nos hypothèses, à savoir :
+
 \begin{itemize}
-\item le Patricia trie est la structure de données la plus appropriée pour
+\item[\textbf{H1}]
+  le Patricia trie est la structure de données la plus appropriée pour
   l'implémentation du {\em store};
-\item notre optimisation du calcul du plus grand préfixe commun par recherche
-  dichotomique et utilisation d'indices pré-calculés entraîne un vrai gain de
-  performance;
-\item l'utilisation d'une analyse statique visant à réduire l'instrumentation
+
+\item[\textbf{H2}]
+  notre optimisation de la recherche du masque du plus grand préfixe commun par
+  recherche dichotomique et l'utilisation d'indices pré-calculés entraîne un
+  vrai gain de performance;
+
+\item[\textbf{H3}]
+  l'utilisation d'une analyse statique visant à réduire l'instrumentation
   du programme permet de réduire le temps d'exécution de manière efficace.
 \end{itemize}
 
 
+Concernant \textbf{H1}, la figure~\ref{tab:mmodel-exp} montre que
+l'implémentation du {\em store} par un Patricia trie est la plus efficace.
+Elle est en moyenne 2500 fois plus rapide que l'implémentation à base de listes
+chaînées, 200 fois plus rapide que celle utilisant les arbres binaires de
+recherche, et 27 fois plus rapide que celle se basant sur les Splay trees.
+
+La version utilisant les Splay trees offre des performances comparables (ou
+légèrement meilleures, jusqu'à 3 fois) sur les exemples contenant de fréquents
+accès mémoire consécutifs au même bloc dans le {\em store}, comme c'est le cas
+du tri fusion (voir la figure~\ref{fig:mmodel-exp}).
+En revanche, sur des exemples où les accès mémoire consécutifs ne se font pas
+sur le même bloc (une multiplication de matrices dans notre exemple), les
+performances sont beaucoup moins bonnes (jusqu'à 500 fois).
+Ceci est dû à la nature des Splay trees : le dernier élément accédé est remonté
+à la racine de l'arbre.
+
+Concernant \textbf{H2}, la figure~\ref{tab:mmodel-exp} montre que la version
+dichotomique de la recherche du masque du plus grand préfixe commun est toujours
+plus efficace qu'une recherche linéaire.
+Elle est en moyenne 3 fois plus rapide que cette dernière.
+
+Concernant \textbf{H3}, nos résultats montrent que l'utilisation d'une analyse
+statique visant à réduire l'instrumentation du programme entraîne un gain de
+performance.
+En effet, pour chacune des implémentations du {\em store}, l'analyse statique
+permet de réduire le temps d'exécution.
+L'exécution après analyse statique peut être jusqu'à 200 fois plus rapide sur
+certains exemples.
+Elle permet notamment de ne pas observer de {\em timeout} pour les listes
+chaînées et les arbres binaires de recherche sur l'exemple du tri fusion de
+50000 éléments.
+
+
 \section*{Conclusion du chapitre}
+
 
 Dans ce chapitre nous avons présenté l'architecture de l'implémentation de la
 bibliothèque de monitoring de la mémoire, dont les algorithmes et les principes
 théoriques ont été traités dans le chapitre~\ref{sec:runtime}.
-Nous avons également présenté les résultats de nos expérimentations visant à
+
+Nous avons présenté les résultats de nos expérimentations visant à
 mesurer la capacité de détection d'erreurs et les performances à l'exécution de
 notre implémentation.
-Ces expérimentations ont en particulier confirmé l'efficacité d'une
-implémentation du {\em store} à base de Patricia trie.
+Nous avons notamment comparé les performances de quatre implémentations du
+{\em store}.
+Nous avons également comparé deux implémentations de la recherche du masque du
+plus grand préfixe commun, dans le cas où le {\em store} est implémenté en
+utilisant un Patricia trie.
+Enfin, nous avons mesuré l'impact de l'utilisation d'une analyse statique visant
+à réduire l'instrumentation du programme (section 6 de \cite{\citeeacsltoc}),
+pour chacune des implémentations du {\em store}.
+Nos expérimentations ont mis en avant l'efficacité d'une implémentation du
+{\em store} à base de Patricia trie.
+Elles ont également montré qu'une recherche du masque du plus grand préfixe
+commun par dichotomie (l'algorithme est présenté en partie~\ref{sec:mpgpc}) est
+plus efficace qu'une recherche linéaire et que l'analyse statique permet
+effectivement de réduire le temps de la vérification à l'exécution.
+
+Le travail réalisé a permis de concevoir une méthode et un outil de vérification
+à l'exécution des annotations \eacsl portant sur le modèle mémoire.
+Nos travaux ont permis de déterminer expérimentalement quelles implémentations
+du {\em store} et des différents algorithmes sont les plus efficaces pour notre
+outil de vérification.
+L'implémentation du {\em store} à base de Patricia trie et les différents
+algorithmes présentés dans ce chapitre et dans le chapitre~\ref{sec:runtime}
+sont intégrés à l'outil \eacsltoc~\cite{\citeeacsltoc}.
 
 
 \begin{landscape}
