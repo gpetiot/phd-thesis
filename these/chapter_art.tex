@@ -1,5 +1,6 @@
 
-\chapter{État de l'art}
+\chapter[État de l'art]{Combinaisons d'analyses statiques et dynamiques pour
+  l'aide à la preuve}
 \label{sec:state-art}
 
 
@@ -7,25 +8,25 @@
 
 
 Dans ce chapitre nous passons en revue les travaux existants combinant analyses
-statiques et analyses dynamiques, ou ayant pour objectif d'aider la vérification
-déductive.
+statiques et analyses dynamiques, et en particulier ceux qui ont pour objectif
+d'aider la vérification déductive.
 Nous présentons leurs forces et leurs faiblesses puis concluons en mettant en
-avant ce que nous souhaitons apporter à ces travaux.
+avant la contribution que nous souhaitons apporter à ces domaines.
 La partie~\ref{sec:art-comb} présente les travaux combinant analyses statiques
 et dynamiques et la partie~\ref{sec:art-proof} recense les travaux visant à
 aider la vérification déductive de programmes.
 
 
-\section{Combinaisons d'analyses statiques et d'analyses dynamiques}
+\section{Combinaisons d'analyses statiques et dynamiques}
 \label{sec:art-comb}
 
 
 Les méthodes statiques et les méthodes dynamiques ont des avantages et des
-inconvénients complémentaires : l'analyse statique étant complète mais
-imprécise, l'analyse dynamique étant précise mais incomplète. L’idée de les
-combiner pour associer leurs avantages et combattre leurs inconvénients
-\cite{Ernst/WODA03} est une voie de recherche active et fructueuse dans le
-domaine de la vérification de programmes.
+inconvénients complémentaires : l'analyse statique est complète mais
+imprécise, l'analyse dynamique est précise mais incomplète.
+L’idée de les combiner pour associer leurs avantages et combattre leurs
+inconvénients \cite{Ernst/WODA03} est une voie de recherche active et fructueuse
+dans le domaine de la vérification de programmes.
 
 
 \subsubsection*{Vérification formelle et test avec \spark}
@@ -45,136 +46,135 @@ La vérification des hypothèses utilisées par la preuve ou le test d'une parti
 d'un programme \spark est présentée dans \cite{Kanig/TAP14}.
 La méthodologie utilisée permet uniquement d'utiliser le test ou la preuve sur
 une fonction, contrairement à \framac où il est possible d'utiliser différentes
-techniques de vérification sur différentes propriétés d'une même fonction.
+techniques de vérification (interprétation abstraite, calcul de plus faible
+précondition, etc.) sur différentes propriétés d'une même fonction.
 
 
-\subsubsection*{\textsc{Static ANalysis and TEst}}
+\subsubsection*{\textsc{Static ANalysis and TEst} (\sante)}
 
 
 La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
 \framac, combine l'interprétation abstraite, le {\em slicing} et la
-génération de tests structurels avec \pathcrawler. L’analyse statique
-signale les instructions risquant de provoquer des erreurs à l’exécution par des
-alarmes, dont certaines peuvent être de fausses alarmes, puis l’analyse
-dynamique génère des tests confirmant ou infirmant ces alarmes. Sur des
-programmes de grande taille, l'analyse dynamique peut manquer de temps pour
-classer toutes ces alarmes (à cause de l'explosion combinatoire des exécutions
-possibles). Le {\em slicing} est utilisé pour réduire la taille des programmes
-testés et donc le temps nécessaire à leur analyse.
+génération de tests structurels avec \pathcrawler.
+L’analyse statique signale les instructions risquant de provoquer des erreurs à
+l’exécution par des alarmes, dont certaines peuvent être de fausses alarmes,
+puis l’analyse dynamique génère des tests confirmant ou infirmant ces alarmes.
+Sur des programmes de grande taille, l'analyse dynamique peut manquer de temps
+pour classer toutes ces alarmes (à cause de l'explosion combinatoire des
+exécutions possibles).
+Le {\em slicing} est utilisé pour réduire la taille des programmes testés et
+donc le temps nécessaire à leur analyse.
 
-Cette méthode utilise l'analyse de valeurs
-(interprétation abstraite) afin de sélectionner les instructions pour lesquelles
-le risque d'une erreur à l'exécution n'est pas écarté (nous les appellerons
-``alarmes'' par la suite), par exemple une division par zéro ou un accès
-invalide à la mémoire.
+Cette méthode utilise l'analyse de valeurs (interprétation abstraite) afin de
+sélectionner les instructions pour lesquelles le risque d'une erreur à
+l'exécution n'est pas écarté (nous les appellerons ``alarmes'' par la suite),
+par exemple une division par zéro ou un accès invalide à la mémoire.
 
-Ces alarmes vont être validées par des tests. Nous utilisons
-\pathcrawler \cite{\citepathcrawler}, un outil de génération de tests
-structurels, pour tenter de mettre en évidence un cas de test pour lequel le
-chemin d'exécution passe par cette alarme, et provoque une erreur.
+Ces alarmes vont être confirmées ou non par des tests.
+L'outil de génération de tests structurels \pathcrawler \cite{\citepathcrawler}
+est utilisé pour tenter de mettre en évidence un cas de test pour lequel le
+chemin d'exécution passe par cette alarme et provoque une erreur.
 
-Pour diminuer le coût de la génération de tests, nous simplifions
-syntaxiquement les programmes qui lui seront soumis pour ne garder que les
-instructions dont dépend l'alarme considérée, on appelle cette opération
-{\em slicing} \cite{Korel/88}. Nous obtenons ainsi des programmes plus simples,
-tels que si une alarme est présente dans le programme d'origine, elle l'est
-également dans les programmes simplifiés si le {\em slicing} a été paramétré
-pour conserver les instructions dont dépend cette alarme. Et si elle provoque
-une erreur dans le programme d'origine, alors il en sera de même dans les
-programmes simplifiés, avec les mêmes entrées. L'utilisation du {\em slicing}
-peut être paramétrée par différentes options, qui seront détaillées plus bas.
+Pour diminuer le coût de la génération de tests, \sante simplifie syntaxiquement
+les programmes qui lui seront soumis pour ne garder que les instructions dont
+dépend l'alarme considérée, on appelle cette opération le
+{\em slicing}~\cite{Korel/88}.
+Des programmes plus simples sont ainsi obtenus, tels que si on constate une
+erreur dans un programme simplifié, alors cette erreur existe dans le programme
+d'origine.
 
 La première phase de la méthode (l'interprétation abstraite) peut donc assurer
 que certaines instructions ne provoqueront pas d'erreur à l'exécution, tandis
 que la seconde phase permet de confirmer que certaines alarmes produisent
-effectivement une erreur à l'exécution. Et la mise en commun des résultats des
-deux phases permet de classifier davantage d'alarmes dans l'une ou l'autre de
-ces deux catégories que chacune des deux méthodes prise séparément. La preuve de
-la correction de cette méthode et le résultat des analyses comparées sont
-détaillés dans \cite{Chebaro/11} et \cite{\citesante} et ne seront pas répétés
-ici.
+effectivement une erreur à l'exécution.
+La mise en commun des résultats des deux phases permet de classifier davantage
+d'alarmes dans l'une ou l'autre de ces deux catégories que chacune des deux
+méthodes prise séparément.
 
-L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
-simplifié et est soumis en l'état à \pathcrawler.
+%% L'utilisation du {\em slicing} peut être paramétrée par différentes options,
+%% qui seront détaillées plus bas.
+%% L'option {\em none} signifie l'absence de {\em slicing} : le programme n'est pas
+%% simplifié et est soumis en l'état à \pathcrawler.
 
-L'option {\em all} génère un seul programme
-simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
-option ne tire pas profit du fait que certaines alarmes peuvent être
-indépendantes (et peuvent donc être soumises séparément), la complexité du
-programme soumis à \pathcrawler peut l'empêcher de générer des cas de
-test pour toutes les alarmes dans le temps qui lui est imparti.
+%% L'option {\em all} génère un seul programme
+%% simplifié contenant toutes les alarmes signalées par l'analyse de valeur. Cette
+%% option ne tire pas profit du fait que certaines alarmes peuvent être
+%% indépendantes (et peuvent donc être soumises séparément).
+%% La complexité du programme soumis à \pathcrawler peut l'empêcher de générer des
+%% cas de test pour toutes les alarmes dans le temps qui lui est imparti.
 
-L'option {\em each} tente de corriger ce
-défaut, elle génère un programme simplifié par alarme et invoque
-\pathcrawler autant de fois. Ainsi, les alarmes les plus simples ne sont
-pas pénalisées par les plus complexes. Néanmoins, en cas de dépendances
-mutuelles entre alarmes, plusieurs programmes identiques seront soumis à
-\pathcrawler, ce qui est une perte de temps.
+%% L'option {\em each} tente de corriger ce défaut.
+%% Elle génère un programme simplifié par alarme et invoque \pathcrawler autant de
+%% fois.
+%% Ainsi, les alarmes les plus simples ne sont pas pénalisées par les plus
+%% complexes.
+%% Néanmoins, en cas de dépendances mutuelles entre alarmes, plusieurs programmes
+%% identiques seront soumis à \pathcrawler, ce qui est une perte de temps.
 
-
-L'option {\em min} tente de corriger
-les inconvénients de {\em all} et de {\em each} et propose de générer une
-couverture minimale des alarmes par {\em slicing}, de manière à regrouper dans
-un même ensemble les alarmes ayant une relation de dépendance \cite{\citesante}.
-Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
-dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
-$a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
-Dans cet exemple, la couverture minimale est constituée des deux ensembles
-couvrants $\{a_1; a_2\}$ et $\{a_1; a_3; a_4; a_5\}$.
-
-
-\begin{figure}
-  \centering
-  \begin{tikzpicture}
-    \node(s) at (0,1) {$a_1$};
-    \node(t) at (1,0) {$a_2$};
-    \node(q) at (1,1) {$a_3$};
-    \node(d) at (2,1) {$a_4$};
-    \node(v) at (3,1) {$a_5$};
-    \path[->,thick] (s) edge (q);
-    \path[->,thick] (q) edge (d);
-    \path[->,thick] (d) edge (v);
-    \path[->,thick] (s) edge (t);
-  \end{tikzpicture}
-  \caption{Graphe de dépendances des alarmes}
-  \label{fig:deps}
-\end{figure}
+%% L'option {\em min} tente de corriger les inconvénients de {\em all} et de
+%% {\em each}.
+%% Elle propose de générer une couverture minimale des alarmes par {\em slicing},
+%% de manière à regrouper dans un même ensemble les alarmes ayant une relation de
+%% dépendance \cite{\citesante}.
+%% Considérons par exemple les alarmes $\{a_1; a_2; a_3; a_4; a_5\}$, dont les
+%% dépendances (Fig.~\ref{fig:deps}) sont : $a_2$ dépend de $a_1$; $a_5$ dépend de
+%% $a_4$ qui dépend de $a_3$, qui dépend de $a_1$.
+%% Dans cet exemple, la couverture minimale est constituée des deux ensembles
+%% couvrants $\{a_1; a_2\}$ et $\{a_1; a_3; a_4; a_5\}$.
 
 
-Chacun de ces ensembles sera utilisé pour générer un programme simplifié ne
-contenant que des alarmes ayant une relation de dépendance, évitant ainsi
-d'avoir plusieurs programmes identiques en cas de dépendances mutuelles (et
-réduisant le nombre d'appels à \pathcrawler).
-On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
-cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
-cas de {\em each}.
+%% \begin{figure}
+%%   \centering
+%%   \begin{tikzpicture}
+%%     \node(s) at (0,1) {$a_1$};
+%%     \node(t) at (1,0) {$a_2$};
+%%     \node(q) at (1,1) {$a_3$};
+%%     \node(d) at (2,1) {$a_4$};
+%%     \node(v) at (3,1) {$a_5$};
+%%     \path[->,thick] (s) edge (q);
+%%     \path[->,thick] (q) edge (d);
+%%     \path[->,thick] (d) edge (v);
+%%     \path[->,thick] (s) edge (t);
+%%   \end{tikzpicture}
+%%   \caption{Graphe de dépendances des alarmes}
+%%   \label{fig:deps}
+%% \end{figure}
 
-Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
-{\em min} hérite de l'inconvénient de l'option {\em all} : les alarmes les plus
-complexes à classifier pénalisent les autres, qui peuvent ne pas être
-diagnostiquées dans le temps imparti.
 
-Pour corriger ce défaut, l'option {\em smart} est définie.
-Elle consiste à appliquer {\em min} itérativement en
-diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
-supprimées seront des alarmes classifiées ou des {\em alarmes finales}.
-Nous appelons \emph{alarme finale} une alarme dont aucune autre alarme de dépend
-mais pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
-Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
-mutuelles).
+%% Chacun de ces ensembles sera utilisé pour générer un programme simplifié ne
+%% contenant que des alarmes ayant une relation de dépendance, évitant ainsi
+%% d'avoir plusieurs programmes identiques en cas de dépendances mutuelles (et
+%% réduisant le nombre d'appels à \pathcrawler).
+%% On remarque que si toutes les alarmes sont dépendantes, on se retrouve dans le
+%% cas de {\em all}, et si elles sont toutes indépendantes, on se retrouve dans le
+%% cas de {\em each}.
 
-De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
-l'ensemble des alarmes privé des alarmes finales) produira un programme
-simplifié plus petit. Ainsi, les alarmes qui n'ont pas été diagnostiquées à
-l'itération précédente auront une chance supplémentaire de l'être, et ainsi de
-suite jusqu'à ce que toutes les alarmes soient diagnostiquées ou que l'ensemble
-considéré soit vide.
+%% Dans le cas où les ensembles couvrants contiennent de nombreuses alarmes,
+%% {\em min} hérite de l'inconvénient de l'option {\em all} : les alarmes les plus
+%% complexes à classifier pénalisent les autres, qui peuvent ne pas être
+%% diagnostiquées dans le temps imparti.
 
-Sur l'exemple considéré plus haut, la première itération génère la
-couverture minimale $\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$. S'il reste des
-alarmes non diagnostiquées, les alarmes finales ($a_2$ et $a_5$) et les alarmes
-diagnostiquées ne seront plus considérées. L'itération suivante génère la
-couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
+%% Pour corriger ce défaut, l'option {\em smart} est définie.
+%% Elle consiste à appliquer {\em min} itérativement en
+%% diminuant l'ensemble des alarmes considérées à chaque itération. Les alarmes
+%% supprimées seront des alarmes classifiées ou des {\em alarmes finales}.
+%% Nous appelons \emph{alarme finale} une alarme dont aucune autre alarme de dépend
+%% mais pouvant avoir des dépendances mutuelles avec d'autres alarmes finales.
+%% Sur notre exemple, $a_2$ et $a_5$ sont des alarmes finales (sans dépendances
+%% mutuelles).
+
+%% De cette manière, le {\em slicing} appliqué à l'itération suivante (sur
+%% l'ensemble des alarmes privé des alarmes finales) produira un programme
+%% simplifié plus petit. Ainsi, les alarmes qui n'ont pas été diagnostiquées à
+%% l'itération précédente auront une chance supplémentaire de l'être, et ainsi de
+%% suite jusqu'à ce que toutes les alarmes soient diagnostiquées ou que l'ensemble
+%% considéré soit vide.
+
+%% Sur l'exemple considéré plus haut, la première itération génère la
+%% couverture minimale $\{\{a_1; a_2\}; \{a_1; a_3; a_4; a_5\}\}$. S'il reste des
+%% alarmes non diagnostiquées, les alarmes finales ($a_2$ et $a_5$) et les alarmes
+%% diagnostiquées ne seront plus considérées. L'itération suivante génère la
+%% couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 
 \subsubsection*{\dyta}
@@ -186,47 +186,50 @@ utilisé pour spécifier des pré/post-conditions et des invariants de programme
 C\#, il identifie également les bugs potentiels (violations de contrat) par
 interprétation abstraite.
 
-\dyta instrumente ensuite le programme pour rajouter des instructions
-assurant le rôle de pré-conditions, pour ne pas générer de cas de test qui n'ont
-aucune chance de produire d'erreur à l'exécution. L'instrumentation rajoute
-également des points de contrôle à l'endroit des instructions signalées par
-l'analyse statique, afin de guider l'exécution symbolique dynamique du programme
-par \pex.
-%% Cette étape est semblable à l'instrumentation
-%% opérée par \sante pour rajouter des points de contrôle afin
-%% de guider l'exécution concolique du programme par \pathcrawler.
+Après cette analyse statique, \dyta instrumente le programme pour ajouter des
+instructions assurant le rôle de pré-conditions, pour ne pas générer de cas de
+test qui n'ont aucune chance de produire d'erreur à l'exécution.
+L'instrumentation ajoute également des points de contrôle à l'endroit des
+instructions signalées par l'analyse statique, afin de guider l'exécution
+symbolique dynamique du programme par \pex.
+Cette étape est semblable à l'instrumentation opérée par \sante pour rajouter
+des points de contrôle afin de guider l'exécution concolique du programme par
+\pathcrawler.
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
 \dyta de calculer les points de contrôle à partir desquels les alarmes
-(instructions potentiellement dangereuses) sont inatteignables. La génération
-dynamique de tests réduit le nombre de faux positifs de l'analyse statique, et
-cette dernière guide l'exploration pour la génération dynamique de tests.
+(instructions potentiellement dangereuses) sont inatteignables.
+La génération dynamique de tests réduit le nombre de faux positifs de l'analyse
+statique, et cette dernière guide l'exploration pour la génération dynamique de
+tests.
 
 
 \subsubsection*{Vérification collaborative et test}
 
 
 Cette méthode \cite{Christakis/FM12} part du constat que la plupart
-des outils de vérifications statiques (outils utilisant simplement des
+des outils de vérification statique (outils utilisant simplement des
 heuristiques, outils d'interprétation abstraite, model-checkers, ou outils de
 preuve) font des compromis afin d'améliorer les performances, de réduire le
 nombre de faux positifs ou de limiter l'effort à fournir pour annoter le
 programme. Cela se traduit par la supposition d'une propriété tout au long de
-l'analyse dy programme (par exemple qu'un certains type d'erreurs ne peut pas
-se produire), cette propriété n'est pas vérifiée par l'analyseur. Ceci
-implique que de tels analyseurs ne peuvent garantir l'absence d'erreurs dans un
-programme. Si un analyseur fait un compromis en supposant une propriété, il
-faut utiliser un autre analyseur capable de valider cette propriété.
+l'analyse du programme (par exemple qu'un certain type d'erreurs ne peuvent pas
+se produire).
+Cette propriété n'est pas vérifiée par l'analyseur.
+Ceci implique que de tels analyseurs ne peuvent garantir l'absence d'erreurs
+dans un programme.
+Si un analyseur fait un compromis en supposant une propriété, il faut utiliser
+un autre analyseur capable de valider cette propriété.
 
 Cette méthode propose d'exprimer les compromis dans un langage de contrats,
 afin de faciliter la collaboration entre plusieurs outils d'analyse statique
-et permettant de décrire le fait qu'un assertion ait été complètement vérifiée
+et permettant de décrire le fait qu'une assertion a été complètement vérifiée
 par un analyseur ou partiellement vérifiée sous certaines hypothèses.
 
 Pour faciliter la vérification statique du programme, l'utilisateur doit au
 préalable ajouter des annotations (invariants de boucle par exemple). Les
 propriétés qui n'ont pas été vérifiées statiquement sont validées par des tests
-unitaires. Le programme est instrumenté afin de rajouter des vérifications à
+unitaires. Le programme est instrumenté afin d'ajouter des vérifications à
 l'exécution pour guider la génération de contre-exemples. \pex est utilisé pour
 générer des cas de test par exécution concolique,
 mettant en évidence des contre-exemples. L'utilisateur peut décider de
@@ -246,14 +249,14 @@ programme.
 
 Cette méthode \cite{Slaby/FMICS12} combine une instrumentation du
 code source, une étape de {\em slicing} et une exécution symbolique.
-L'instrumentation rajoute des instructions simulant le comportement de
+L'instrumentation ajoute des instructions simulant le comportement de
 l'automate fini correspondant au programme, dont les états correspondent aux
 propriétés du programme à vérifier.
 Le {\em slicing} est appliqué pour réduire la taille du programme, on ne
 conserve que le code relatif aux états d'erreur de l'automate. Le programme
 simplifié doit être équivalent au programme instrumenté en ce qui concerne
 l'atteignabilité des états d'erreur de l'automate.
-L'exécution symbolique du programme par \klee \cite{\citeklee} va permettre
+L'exécution symbolique du programme par \klee \cite{\citeklee} permet
 de mettre en évidence des contre-exemples pour ces propriétés.
 
 %% L'utilisation du {\em slicing} afin de réduire la portion de code analysée
@@ -267,13 +270,14 @@ de mettre en évidence des contre-exemples pour ces propriétés.
 %% (pouvant lever différents types d'alarmes) avant l'instrumentation.
 
 
-\subsubsection*{Localisation d'erreurs par slicing guidé par la trace d'exécution}
+\subsubsection*{Localisation d'erreurs par slicing guidé par une trace
+  d'exécution}
 
 
 Cette méthode \cite{Jiang/QSIC12} utilise un {\em slicing} arrière à
 partir d'une instruction de déréférencement produisant une {\em Null Pointer
-Exception} (en Java). Le {\em slicing} est guidé par la trace du programme
-fournissant la pile des appels de méthode n'ayant pas terminé. Une analyse
+Exception} (en Java). Le {\em slicing} est guidé par une trace du programme
+fournissant la pile des appels de méthodes n'ayant pas terminé. Une analyse
 statique des pointeurs est ensuite opérée sur le programme slicé afin de
 déterminer si chacun des pointeurs peut être \lstinline[language=java]{null}.
 Puis une analyse d'alias est opérée afin d'augmenter la précision de l'analyse
@@ -285,33 +289,34 @@ statique.
 %% le résultat paramètre le {\em slicing}, puis termine par une analyse statique.
 
 
-\subsubsection*{\cegar : Raffinement d'abstraction guidé par des contre-exemples}
+\subsubsection*{\cegar : Raffinement d'abstraction guidé par des
+  contre-exemples}
 
 
-Le raffinement d'abstraction guidé par des contre-exemples \cite{\citecegar}
-associe
-l’abstraction par prédicats et le model-checking : une abstraction du programme
+Le raffinement d'abstraction guidé par des contre-exemples
+\cite{\citecegar, Pasareanu/07} associe l’abstraction par prédicats
+\cite{Ball/FMCO04} et le model-checking : une abstraction du programme
 est générée à partir d’un ensemble de prédicats et invariants. Si le
 model-checking prouve la non-accessibilité des états d'erreurs de l'automate,
-alors le modèle concret est correct (pas d'erreurs de sûreté ou de liveness).
+alors le modèle concret est correct.
 Si le model-checking a trouvé un contre-exemple pour le modèle abstrait il faut
 déterminer s'il correspond à un contre-exemple réel dans le système concret.
 Pour cela, l'algorithme détermine s'il existe une trace d'exécution concrète
 correspondant à la trace d'exécution abstraite aboutissant au contre-exemple.
 Si une telle trace existe, un bug a été trouvé. Sinon, de nouveaux prédicats
-seront créés pour raffiner l'abstraction afin que ce contre-exemple en soit
+sont créés pour raffiner l'abstraction afin que ce contre-exemple en soit
 absent à la prochaine itération. Et ainsi de suite. Ce processus peut ne pas
 terminer. Plusieurs outils de vérification se basent sur cette méthode, parmi
 lesquels \blast \cite{\citeblast}, \magic \cite{\citemagic} et
 \slam \cite{\citeslam}.
 
-Cette approche élimine les contre-exemples un par un, l'abstraction ainsi
-générée peut donc mettre un certain temps avant de converger vers une forme
-acceptable. Une amélioration a été proposée afin d'accélérer la convergence du
+Cette approche élimine les contre-exemples un par un, et peut donc ne pas
+converger.
+Une amélioration a été proposée afin d'accélérer la convergence du
 raffinement de l'abstraction : \cegaar \cite{\citecegaar}. Cette technique
 élimine une infinité de contre-exemples (traces infaisables) de la forme
-$\alpha . \lambda^{*} . \beta$ en une seule étape, où $\lambda$ correspond à une
-ou plusieurs exécutions d'une boucle.
+$\alpha . \lambda^{*} . \beta$ en une seule étape, où $\lambda$ correspond à un
+nombre quelconque d'exécutions d'une boucle.
 
 
 \subsubsection*{\blast}
@@ -320,7 +325,7 @@ ou plusieurs exécutions d'une boucle.
 \blast \cite{\citeblast} vérifie les propriétés temporelles de sûreté d'un
 programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
 raffinement des abstractions du programme est basé sur une abstraction par
-prédicat et la découverte des prédicats se fait par interpolation. C'est une
+prédicats et la découverte des prédicats se fait par interpolation. C'est une
 implémentation de la méthode \cegar \cite{\citecegar} tout comme
 \slam \cite{\citeslam} et \magic \cite{\citemagic}. La génération des cas
 de test se fait par exécution symbolique.
@@ -334,19 +339,22 @@ propriétés ne contient pas de quantificateurs, contrairement à \acsl.
 \subsubsection*{\smart}
 
 
-\smart \cite{\citesmart} (basé sur son prédécesseur \dart \cite{\citedart})
-génère des tests par exécution concolique. Pour résoudre le problème de
-l'explosion du nombre de chemins, il va calculer à la demande des résumés de
-fonction qui sont des pré-conditions et post-conditions pour chaque fonction
-(contraintes sur les variables en entrée et en sortie). Ces résumés vont être
-réutilisés si possible afin d'éviter de ré-exécuter la fonction correspondante.
+\smart ({\em Systematic Modular Automated Random Testing}) \cite{\citesmart},
+basé sur son prédécesseur \dart ({\em Directed Automated Random Testing})
+\cite{\citedart} génère des tests par exécution concolique.
+Pour résoudre le problème de l'explosion du nombre de chemins, il va calculer à
+la demande des résumés de fonction qui sont des contrats (pré-conditions et
+post-conditions) pour chaque fonction (contraintes sur les variables en entrée
+et en sortie).
+Ces résumés vont être réutilisés si possible afin d'éviter de ré-exécuter la
+fonction correspondante.
 La génération automatique de ces résumés est présentée comme se faisant par
 ``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
 dynamique car utilisant une exécution symbolique (et résolution de contraintes).
 \smart exécute une analyse dynamique compositionnelle, c'est-à-dire que les
 résultats intermédiaires sont mémorisés sous la forme de résumés réutilisables.
 C'est une extension de l'algorithme d'analyse dynamique non compositionnelle de
-\dart, mais n'effectue pas d'analyse statique. 
+\dart.
 
 
 \subsubsection*{\synergy, \dash et \yogi}
@@ -373,7 +381,8 @@ les relations d'alias mises en évidence par les tests. La génération de tests
 guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
 la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
 \synergy combine \slam et \dart (\cegar compositionnel + test non
-compositionnel). L'algorithme est intra-procédural.
+compositionnel).
+L'algorithme est intra-procédural.
 
 
 \subsubsection*{\Smash}
@@ -393,36 +402,36 @@ qu'une propriété n'est jamais violée (si un résumé statique est applicable)
 de mettre en évidence une exécution violant une propriété (si un résumé
 dynamique est applicable). Par construction, il n'est pas
 possible que les deux résumés soient applicables.
-\Smash est la version compositionelle de \dash.
+\Smash est la version compositionnelle de \dash.
 
-La figure~\ref{tab:microsoft-summary} résume les caractéristiques de ces outils.
+%% La figure~\ref{tab:microsoft-summary} résume les caractéristiques de ces outils.
 
-\begin{figure}[bt]
-  \centering
-  \begin{scriptsize}
-    \begin{tabular}{c|c|c|c|c|c|c}
-      \multirow{3}{*}{Outils} & \multicolumn{3}{c|}{Analyse statique}
-      & \multicolumn{3}{c}{Analyse dynamique} \\
-      & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc}
-      & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c}{inter-proc} \\
-      & & non-compo & compo & & non-compo & compo \\
-      \hline
-      \slam & & & \ok & & & \\
-      \hline
-      \dart & & & & & \ok & \\
-      \hline
-      \smart & & & & & & \ok \\
-      \hline
-      \synergy & \ok & & & \ok & & \\
-      \hline
-      \dash & & \ok & & & \ok & \\
-      \hline
-      \Smash & & & \ok & & & \ok \\
-    \end{tabular}
-  \end{scriptsize}
-  \caption{Type d'analyse et caractéristiques des outils de Microsoft}
-  \label{tab:microsoft-summary}
-\end{figure}
+%% \begin{figure}[bt]
+%%   \centering
+%%   \begin{scriptsize}
+%%     \begin{tabular}{c|c|c|c|c|c|c}
+%%       \multirow{3}{*}{Outils} & \multicolumn{3}{c|}{Analyse statique}
+%%       & \multicolumn{3}{c}{Analyse dynamique} \\
+%%       & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c|}{inter-proc}
+%%       & \multirow{2}{*}{intra-proc} & \multicolumn{2}{c}{inter-proc} \\
+%%       & & non-compo & compo & & non-compo & compo \\
+%%       \hline
+%%       \slam & & & \ok & & & \\
+%%       \hline
+%%       \dart & & & & & \ok & \\
+%%       \hline
+%%       \smart & & & & & & \ok \\
+%%       \hline
+%%       \synergy & \ok & & & \ok & & \\
+%%       \hline
+%%       \dash & & \ok & & & \ok & \\
+%%       \hline
+%%       \Smash & & & \ok & & & \ok \\
+%%     \end{tabular}
+%%   \end{scriptsize}
+%%   \caption{Type d'analyse et caractéristiques des outils de Microsoft}
+%%   \label{tab:microsoft-summary}
+%% \end{figure}
 
 
 \subsubsection*{Analyses statique et dynamique pour la génération d'invariants}
@@ -466,32 +475,36 @@ la qualité des invariants générés par \daikon.
 
 \cite{Romano/ICST11} propose une méthode de génération de données
 de test mettant en évidence des {\em Null Pointer Exceptions} de Java. Tout
-d'abord une analyse inter-procédurale du flot de contrôle et du flôt de données
+d'abord une analyse inter-procédurale du flot de contrôle et du flot de données
 collecte les chemins menant aux exceptions. Cette analyse se fait en arrière, en
-partant des exceptions, propageant les contraintes sur les entrées dans le CFG.
+partant des exceptions, propageant les contraintes sur les entrées dans le
+graphe de flot de contrôle.
 Les entrées de test sont ensuite générées par un algorithme génétique, dans le
 but de couvrir ces chemins. Les individus (des entrées potentielles), dont le
 type de donnée peut être complexe, sont encodés sous forme XML.
 
 Cette méthode a été comparée avec d'autres façons de générer des données de
-test \cite{Ahn/TAP10}, leurs expérimentations
-ont montré qu'elle était plus efficace que d'autres stratégies de recherche
-optimale comme le {\em hill climbing} et le recuit simulé, mais est moins
-efficace que la programmation par contraintes (en terme de temps d'exécution).
+test \cite{Ahn/TAP10}.
+Les expérimentations présentées dans \cite{Romano/ICST11} ont montré que la
+méthode était plus efficace que d'autres stratégies de recherche optimale comme
+le {\em hill climbing} et le recuit simulé, mais est moins efficace que la
+programmation par contraintes (en terme de temps d'exécution).
 
 
 \subsubsection*{Preuve et validation à l'exécution}
 
 
-La plateforme \textsc{staRVOOrS} \cite{Ahrendt/FM15} propose une vérification en
+La plateforme \textsc{staRVOOrS} ({\em Static and Runtime Verification
+  of Object-Oriented Software}) \cite{Ahrendt/FM15} propose une vérification en
 deux étapes : vérification déductive du programme avec \textsc{KeY} afin de
 prouver les propriétés portant sur les données, puis une validation à
-l'exécution avec \textsc{Larva} afin de vérifier les propriétés portant sur le
+l'exécution avec \textsc{Larva} ({\em Logical Automata for Runtime Verification
+  and Analysis}) afin de vérifier les propriétés portant sur le
 flot de contrôle.
 Cette méthode repose sur \textsc{ppDATE}, un langage de spécification encodant
-les propriétés du flot de contrôle à base d'automates, où les états de
+les propriétés du flot de contrôle par des automates, où les états de
 l'automate sont augmentés par des pré- et postconditions (à la \jml) afin
-d'encoder les propriétés portant sur les données du programme.
+d'encoder les propriétés fonctionnelles du programme.
 
 
 \section{Aide à la preuve de programmes}
@@ -501,8 +514,8 @@ d'encoder les propriétés portant sur les données du programme.
 \subsubsection*{Analyse des arbres de preuve}
 
 
-Une précision plus grande peut être obtenue en analysant statiquement les
-branches d'un arbre de preuve.
+Un diagnostic plus précis en cas d'échec de preuve peut être obtenu en analysant
+statiquement les branches d'un arbre de preuve.
 La méthode proposée par \cite{Gladisch/TAP09} dans le contexte du prouveur
 \textsc{KeY} applique des règles de déduction à une formule mêlant le programme
 et sa spécification.
@@ -510,8 +523,8 @@ Cette méthode propose une vérification de la préservation de falsifiabilité
 ({\em falsifiability preservation checking}) qui permet de décider si l'échec
 de preuve d'une branche provient d'une erreur ou d'une faiblesse de contrat.
 Cependant, cette technique ne peut détecter les erreurs que si les contrats sont
-suffisamment forts et elle n'est automatique que si le proveur peut décider la
-(non-)satisfiabilité d'une formule logique de premier ordre exprimant la
+suffisamment forts et elle n'est automatique que si le prouveur peut décider la
+(non-)satisfaisabilité d'une formule logique de premier ordre exprimant la
 condition de la préservation de falsifiabilité.
 
 \cite{Engel/TAP07} présente une méthode de génération automatique de tests
@@ -533,7 +546,7 @@ faiblesse de spécification.
 \cite{Tschannen/14} propose une vérification en deux étapes qui compare les
 échecs de preuve d'un programme \eiffel avec et sans déroulage des boucles et
 {\em inlining} des fonctions.
-Cette méthode suggère des modification à apporter au code et à la spécification 
+Cette méthode suggère des modifications à apporter au code et à la spécification
 après comparaison des échecs de preuve.
 L'{\em inlining} des fonctions et le déroulage des boucles sont limités
 respectivement à un nombre donné d'appels imbriqués et à un nombre donné
@@ -554,14 +567,14 @@ programmes.
 
 
 Les axiomes sont des propriétés logiques utilisées comme hypothèses par les
-prouveurs et sont donc rarement vérifiées.
-Néanmoins, les vérifier permet de s'assurer de la consistance d'une
+prouveurs et sont donc rarement vérifiés.
+Néanmoins, les vérifier permet de s'assurer de la cohérence d'une
 axiomatisation.
 \cite{Ahn/TAP10} propose d'appliquer du test à base de modèles
 ({\em model-based testing}) sur un modèle défini à partir d'un axiome afin de
 détecter les erreurs éventuelles dans les axiomes.
 Ce travail s'intéresse au cas où la vérification déductive réussit à cause
-d'une axiomatisation invalide (inconsistante), ce qui est complémentaire à nos
+d'une axiomatisation invalide (incohérence), ce qui est complémentaire à nos
 motivations qui visent à traiter le cas où la vérification déductive échoue.
 
 \cite{Christakis/FM12} propose de compléter les résultats des analyses statiques
@@ -578,16 +591,16 @@ spécification trop faible.
 \subsubsection*{Exécution des contre-exemples}
 
 
-\cite{Muller/FM11} propose d'étendre un validateur d'assertions à l'exécution
+\cite{Muller/FM11} propose d'étendre un vérificateur d'assertions à l'exécution
 ({\em runtime assertion checker}) afin de l'utiliser comme débogueur
-({\em debugger}) afin de comprendre les contre-exemples d'échecs de preuve
+({\em debugger}) pour comprendre les contre-exemples d'échecs de preuve
 complexes.
 
 L'environnement de développement \dafny \cite{Leino/FIDE14} fournit un retour à
 l'utilisateur pendant la phase de développement.
 \dafny intègre le \boogie {\em Verification Debugger} \cite{LeGoues/SEFM11}
 qui aide l'utilisateur à comprendre les contre-exemples produits par des
-outils de vérification tels \boogie.
+outils de vérification tels que \boogie.
 Actuellement, \dafny ne supporte que les contre-exemples fournis par le solveur
 et ne produit pas d'informations supplémentaires quand la vérification échoue
 ou atteint un {\em timeout}.
@@ -599,17 +612,17 @@ ou atteint un {\em timeout}.
 Nous avons présenté dans ce chapitre les différents travaux de vérification
 existants qui combinent analyses statiques et analyses dynamiques ou qui visent
 à aider la vérification déductive.
-Nous poursuivons les travaux précédents afin d'aider la vérification déductive
-par la génération de contre-exemples.
-La technique originale de diagnostic des échecs de preuve que nous présentons
-dans les chapitres suivants donne un résultat plus précis que les travaux
-présentés dans ce chapitre.
-En particulier, nous affirmons que les contre-exemples générés par notre méthode
-permettent de mieux identifier la raison des échecs de preuve qu'un
-contre-exemple extrait à partir d'un prouveur.
+Parmi eux, nous poursuivons des travaux précédents au CEA afin d'aider la
+vérification déductive par la génération de contre-exemples par exécution
+concolique.
+Nous présentons dans les chapitres suivants une technique originale de
+diagnostic des échecs de preuve.
+En particulier, la thèse que nous défendons est que les contre-exemples générés
+par notre méthode par analyse dynamique permettent de mieux identifier la raison
+des échecs de preuve qu'un contre-exemple extrait à partir d'un prouveur.
 Nous affirmons par la même occasion l'indépendance de notre méthode vis-à-vis
 des prouveurs sous-jacents utilisés.
 À notre connaissance, une telle méthode combinant le test et la preuve,
-fournissant automatiquement un retour précis à l'utilisateur quant à la raison
-des échecs de preuve, n'a pas été étudiée, implémentée et expérimentée
+fournissant automatiquement un retour aussi précis à l'utilisateur quant à la
+raison des échecs de preuve, n'a pas été étudiée, implémentée et expérimentée
 auparavant.
