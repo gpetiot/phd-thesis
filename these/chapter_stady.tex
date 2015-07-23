@@ -7,8 +7,9 @@
 
 Dans ce chapitre nous présentons l'architecture générale du greffon \stady,
 notre implémentation de la méthode présentée aux chapitres~\ref{sec:ncd},
-\ref{sec:swd} et~\ref{sec:method}, ainsi que certains détails d'implémentation
-en partie~\ref{sec:stady-implem}.
+\ref{sec:swd} et~\ref{sec:method}.
+Nous présentons quelques détails d'implémentation que nous avons jugé
+importants en partie~\ref{sec:stady-implem}.
 En partie~\ref{sec:stady-exp} nous présentons les résultats de nos
 expérimentations visant à mesurer la capacité de diagnostic des échecs de preuve
 et les performances de \stady.
@@ -18,16 +19,14 @@ et les performances de \stady.
 \label{sec:stady-implem}
 
 
-%\begin{landscape}
-\begin{center}
-  \begin{figure}[tb]
-    \includegraphics[scale=.5]{figures/stady_architecture.pdf}
-    \vspace{-11cm}
+\begin{figure}[tb]
+  \begin{center}
+    \includegraphics[scale=.45]{figures/stady_architecture.pdf}
+    \vspace{-.6cm}
     \caption{Architecture de \textsc{StaDy}
       \label{fig:stady-architecture}}
-  \end{figure}
-\end{center}
-%\end{landscape}
+  \end{center}
+\end{figure}
 
 
 \begin{figure}[tb]\scriptsize
@@ -86,24 +85,25 @@ Les deux fonctionnalités centrales de l'outil sont, conformément à ce qui est
 décrit dans le chapitre~\ref{sec:traduction}, la traduction des annotations,
 effectuée par le module \textsc{Translate}, et la génération de tests, pilotée
 par le module \textsc{Test\_generation}.
-Donnons maintenant une vue d'ensemble de ces opérations et des modules qui les
-composent.
+Les parties~\ref{sec:stady-trad} et~\ref{sec:stady-gen} présentent ces
+opérations et les modules qui les composent.
 
 
 \subsection{Traduction des annotations}
+\label{sec:stady-trad}
 
 
 Afin de traduire les annotations \eacsl en C nous avons besoin de définir des
 types de données spécifiques.
-Le module \textsc{Insertion} définit le type des insertions de code telles
-qu'elles sont définies au chapitre~\ref{sec:traduction}.
+Le module \textsc{Insertion} définit le type des listes d'insertions de code
+telles qu'elles sont définies au chapitre~\ref{sec:traduction}.
 Le module \textsc{Symbolic\_label} définit les labels symboliques qui permettent
 d'associer un endroit du programme aux insertions de code (début ou fin d'une
 fonction, début ou fin d'une boucle, avant ou après une instruction).
 Le module \textsc{Function} définit le type de données des fonctions générées
 de toute pièce par la traduction.
 Le module \textsc{Input\_domain} définit des types de données représentant les
-domaines et les différentes contraintes sur les variables en entrées du
+domaines et les différentes contraintes sur les variables en entrée du
 programme (c'est-à-dire les variables en entrée de la fonction sous vérification
 et les variables globales).
 
@@ -118,16 +118,17 @@ source d'erreurs.
 Notre manière de faire a permis de réduire drastiquement le temps de
 développement de \stady.
 
-Le module \textsc{Inline} définit une transformation de programme ``inlinant''
+Le module \textsc{Inline} définit une transformation de programme dépliant
 les prédicats et fonctions logiques dans les annotations.
 En d'autres termes, cette transformation remplace un appel à un prédicat ou une
 fonction par sa définition et remplace les paramètres formels par les paramètres
 effectifs à l'appel.
 Ce module permet de traiter à moindre coût les annotations contenant des appels
-de fonctions logiques ou de prédicats définis par l'utilisteur, en revanche il
-ne permet pas de supporter les fonctions récursives ou les prédicats inductifs.
+de fonctions logiques ou de prédicats définis par l'utilisateur.
+En revanche il ne permet pas de supporter les fonctions récursives ou les
+prédicats inductifs.
 Le module \textsc{Inline} fournit la fonction \ocamlinline{pred}
-qui produit la version {\em inlinée} du prédicat passé en paramètre :
+qui produit la version dépliée du prédicat passé en paramètre :
 
 \begin{ocamlcode}
 val pred : Cil_types.predicate -> Cil_types.predicate
@@ -160,10 +161,10 @@ puisque nous ne modifions pas l'arbre de syntaxe abstraite et nous stockons les
 insertions de code en dehors de l'arbre.
 
 Le module \textsc{Print} est invoqué par le module \textsc{Translate} afin
-d'écrire dans les fichier correspondant le résultat de la traduction qui
+d'écrire dans les fichiers correspondants le résultat de la traduction qui
 incorpore les nouvelles fonctions ainsi que les insertions de code aux endroits 
 adéquats.
-Ce module fournit la classe \ocamlinline{print_insertions} :
+Ce module fournit la classe \ocamlinline{print_insertions} suivante :
 
 \begin{ocamlcode}
 class print_insertions:
@@ -182,6 +183,7 @@ Une fois les fichiers générés, la génération de tests débute.
 
 
 \subsection{Génération de tests}
+\label{sec:stady-gen}
 
 
 Nous définissons maintenant les types de données qui nous permettent de
@@ -202,7 +204,7 @@ de hachage stockent notamment les contre-exemples \NCCE et \SWCE générés par
 Le module \textsc{Test\_generation} définit un protocole de communication pour
 communiquer avec \pathcrawler et ouvre un canal de communication ({\em socket})
 entre \stady et \pathcrawler afin de récupérer les résultats du test.
-Ce module fournit la fonction \ocamlinline{run} :
+Ce module fournit la fonction \ocamlinline{run} suivante :
 
 \begin{ocamlcode}
 val run: entry_point:string ->
@@ -319,83 +321,8 @@ Notre support de l'arithmétique des pointeurs ne comprend pas la différence de
 pointeurs (\lstinline'p1-p2') et les offsets négatifs (\lstinline'*(p-i)'), ce
 qui est dû aux limitations du générateur de tests \pathcrawler.
 
-Nous évaluons d'abord la capacité de \stady à détecter les non-conformités dans
-les programmes, puis nous évaluons sa capacité à détecter les faiblesses de
-sous-contrats.
-
-
-\subsection{Détection de non-conformités}
-
-
-Afin d'évaluer la capacité de détection de non-conformités de \stady, nous
-l'avons appliqué sur des programmes corrects et incorrects de la compétition
-de vérification logicielle de TACAS 2014 \footnote{
-  \url{https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/loops}
-}.
-
-Premièrement, nous avons exécuté \stady sur 20 programmes erronés manipulant des
-tableaux et des boucles.
-Les propriétés à invalider étaient à l'origine exprimées sous la forme
-d'assertions C, que nous avons manuellement remplacées par des assertions \eacsl
-équivalentes.
-Les préconditions \eacsl appropriées ont également été ajoutées.
-Les programmes contenant des boucles infinies et des propriétés d'atteignabilité
-à invalider ne sont pas traités car il n'est pas possible de les exécuter avec
-\pathcrawler.
-Pour chacun des programmes considérés, \stady a détecté la non-conformité des
-annotations.
-La figure~\ref{fig:scam-experiments1} présente le temps qui a été nécessaire
-pour invalider les propriétés et le nombre de chemins d'exécution explorés par
-la génération de tests. 
-
-Deuxièmement, nous avons utilisé le test mutationnel afin d'évaluer la capacité
-de \stady à détecter les non-conformités dans des programmes incorrects.
-Nous avons considérés 20 programmes corrects du même benchmark et 6 programmes
-corrects supplémentaires classiques (fusion de tableaux, recherche par
-dichotomie et différents tris de tableaux).
-Nous avons annotés ces programmes avec \eacsl afin d'exprimer les préconditions,
-les postconditions, la validité des pointeurs, les invariants et variants des
-boucles.
-Nous avons utilisé le test mutationnel sur ces programmes corrects afin de
-générer des programmes modifiés (appelés {\em mutants}) et de voir si \stady
-est capable de {\em tuer}, c'est-à-dire trouver une erreur, dans ces mutants.
-Les mutations appliquées simulent des erreurs de programmation classiques, elles
-peuvent être une modification d'opérateur arithmétique (numérique ou sur les
-pointeurs), une modification d'opérateur de comparaison, la négation d'une
-condition ou la négation d'un opérateur logique (de conjonction ou de
-disjonction).
-La figure~\ref{fig:scam-experiments2} indique le nombre total de mutants et le
-nombre de mutants erronés, ainsi que le nombre de mutants tués et la proportion
-de mutants erronés tués par \stady.
-Le taux de détection des non-conformités par \stady est en moyenne de 96.68\%
-et a atteint 100\% sur de nombreux programmes.
-Ce taux n'est pas parfait car le langage \eacsl n'est pas exhaustivement traité
-par \stady et par le générateur de tests \pathcrawler.
-
-
-\subsection{Détection de faiblesses de sous-contrats}
-
-
-\begin{figure*}[bt]
-  \tiny
-  \mbox{}\hspace{-20mm}
-  \begin{center}
-    \begin{tabular}{r|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
-      &&\multicolumn{3}{c|}{Preuve}&\multicolumn{4}{c|}{\NCD}
-      &\multicolumn{4}{c|}{\CWD}&\multicolumn{2}{c|}{$\NCD+\CWD$}&\\
-      \hline
-      \input{full_exp_latex_IEEE.csv}
-    \end{tabular}
-  \end{center}
-  \caption{Diagnostic des échecs de preuve sur des mutants}
-  \label{tab:exp}
-\end{figure*}
-
-
-Évaluons à présent la capacité de \stady à détecter les faiblesses de
-sous-contrats.
-Les hypothèses de recherche que nous souhaitons vérifier par nos
-expérimentations sont les suivantes.
+Les hypothèses que nous souhaitons valider par nos expérimentations sont les
+suivantes.
 
 \begin{itemize}
 \item[\textbf{H1}]
@@ -415,6 +342,101 @@ expérimentations sont les suivantes.
   automatique.
 \end{itemize}
 
+Afin de vérifier ces hypothèses nous avons réalisé deux campagnes
+d'expérimentations.
+La première mesure la capacité de \stady à détecter les non-conformités dans les
+programmes avec \NCD.
+La seconde campagne mesure la capacité de \stady à détecter les faiblesses de
+sous-contrats par \SWD, ainsi que l'apport de \SWD par rapport à \NCD pour le
+diagnostic des échecs de preuve.
+
+Les expériences ont été menées sur un processeur Intel Core i7-3520M 3.00GHz
+$\times$ 4 sous Linux Ubuntu 14.04.
+
+
+\subsection{Détection de non-conformités}
+
+
+\textbf{Protocole expérimental.}
+Afin d'évaluer la capacité de détection de non-conformités de \NCD, nous
+l'avons appliqué sur des programmes corrects et incorrects de la compétition
+de vérification logicielle de TACAS 2014 \footnote{
+  \url{https://svn.sosy-lab.org/software/sv-benchmarks/trunk/c/loops}
+}.
+
+Premièrement, nous avons exécuté \stady sur 20 programmes erronés manipulant des
+tableaux et des boucles.
+Les propriétés à invalider étaient à l'origine exprimées sous la forme
+d'assertions C, que nous avons manuellement remplacées par des assertions \eacsl
+équivalentes.
+Des préconditions \eacsl appropriées ont également été ajoutées.
+Les programmes contenant des boucles infinies et des propriétés d'atteignabilité
+à invalider ne sont pas traités car il n'est pas possible de les exécuter avec
+\pathcrawler.
+
+Deuxièmement, nous avons utilisé le test mutationnel afin d'évaluer la capacité
+de \stady à détecter les non-conformités dans des programmes incorrects.
+Nous avons considéré 20 programmes corrects du même {\em benchmark} et 6
+programmes corrects supplémentaires classiques (fusion de tableaux, recherche
+par dichotomie et différents tris de tableaux).
+Nous avons annoté ces programmes avec \eacsl afin d'exprimer les préconditions,
+les postconditions, la validité des pointeurs, les invariants et variants des
+boucles.
+Nous avons utilisé le test mutationnel sur ces programmes corrects afin de
+générer des programmes modifiés (appelés {\em mutants}) et de voir si \stady
+est capable de {\em tuer}, c'est-à-dire trouver une erreur, dans ces mutants.
+Les mutations appliquées simulent des erreurs de programmation classiques, elles
+peuvent être une modification d'opérateur arithmétique (numérique ou sur les
+pointeurs), une modification d'opérateur de comparaison, la négation d'une
+condition ou la négation d'un opérateur logique (de conjonction ou de
+disjonction).
+Ces mutations peuvent générer des mutants équivalents au programme d'origine.
+Nous déterminons si un mutant est équivalent par analyse manuelle des mutants
+non tués.
+
+\textbf{Résultats expérimentaux.}
+Pour chacun des programmes erronés considérés dans la première phase de cette
+expérimentation, \stady a détecté la non-conformité des annotations.
+La figure~\ref{fig:scam-experiments1} présente ces exemples et le temps qui a
+été nécessaire pour invalider les propriétés et le nombre de chemins d'exécution
+explorés par la génération de tests.
+Les résultats de la deuxième phase de l'expérimentation sont présentés dans la
+figure~\ref{fig:scam-experiments2}.
+La figure~\ref{fig:scam-experiments2} indique le nombre total de mutants, le
+nombre de mutants non équivalents, le nombre de mutants non-équivalents tués par
+\NCD et la proportion de mutants non-équivalents tués par \NCD.
+Pour cette campagne d'expérimentations, \NCD a détecté une non-conformité dans
+1019 des 1054 mutants non-équivalents.
+Le taux de détection des non-conformités par \stady est en moyenne de 96.68\%
+et a atteint 100\% sur de nombreux programmes.
+Ce taux n'est pas parfait car le langage \eacsl n'est pas exhaustivement traité
+par \stady et par le générateur de tests \pathcrawler.
+Cette première campagne d'expérimentations permet donc de valider partiellement
+l'hypothèse \textbf{H1} puisque l'étape \NCD de \stady permet à elle seule de
+diagnostiquer la plupart des échecs de preuve dans les programmes C.
+
+
+\subsection{Détection de faiblesses de sous-contrats}
+
+
+\begin{figure}[bt]
+  \tiny
+  \begin{center}
+    \begin{tabular}{r|c|c|c|c|c|c|c|c|c|c|c|c|c|c|c}
+      &&\multicolumn{3}{c|}{Preuve}&\multicolumn{4}{c|}{\NCD}
+      &\multicolumn{4}{c|}{\CWD}&\multicolumn{2}{c|}{$\NCD+\CWD$}&\\
+      \hline
+      \input{full_exp_latex_IEEE.csv}
+    \end{tabular}
+  \end{center}
+  \vspace{-.4cm}
+  \caption{Diagnostic des échecs de preuve sur des mutants
+    \label{tab:exp}}
+\end{figure}
+
+Évaluons à présent la capacité de \stady à détecter les faiblesses de
+sous-contrats par \SWD et l'apport de \SWD par rapport à \NCD pour le
+diagnostic des échecs de preuve.
 
 \textbf{Protocole expérimental.}
 Nous avons évalué \stady sur 20 programmes annotés de \cite{ACSLbyExample},
@@ -424,7 +446,7 @@ et leurs spécifications expriment des propriétés non triviales sur les tablea
 Ils sont corrects et prouvés par \Wp.
 Nous appliquons \stady sur des versions modifiées (ou {\em mutants}) des
 programmes C, qui sont générées de manière systématique.
-Chaque programme mutant est obteny par l'application d'une {\em mutation} unique
+Chaque programme mutant est obtenu par l'application d'une {\em mutation} unique
 sur le programme d'origine.
 Les mutations sont les suivantes : modification d'un opérateur binaire dans le
 code ou dans la spécification, négation d'une condition dans le code,
@@ -439,36 +461,46 @@ cas des opérations arithmétiques sur les pointeurs.
 La première étape consiste à essayer de prouver chaque mutant à l'aide de \Wp.
 Les mutants prouvés respectent leur spécification et sont classifiés comme étant
 corrects.
-Nous appliquons ensuite la méthode \NCD sur les mutants restants.
+Nous appliquons ensuite la méthode \NCD aux mutants restants.
 Cette étape classifie l'échec de preuve pour certains mutants comme étant due à
 une non-conformité, indiquant l'annotation violée ainsi qu'un \NCCE.
-Une troisième étape est l'application de la méthode \SWD sur les mutants non
+Une troisième étape est l'application de la méthode \SWD aux mutants non
 encore classifiés, qui permet de classer certains d'entre eux comme ayant
-une faiblesse de sous-contrats et indiquant l'annotation non prouvée, les
+une faiblesse de sous-contrats, en indiquant l'annotation non prouvée, les
 contrats trop faibles et un \SWCE.
 Si aucun contre-exemple n'a été trouvé par \SWD, le mutant reste non classifié.
-La figure~\ref{tab:exp} présente les résultats de ces expérimentations.
-Les colonnes contiennent le nombre de mutants générés et les résultats de
-chacune des trois étapes du protocole : le nombre (\#) et la proportion (\%) des
-mutants classifiés, le temps d'exécution maximal et moyen (affiché sur deux
-lignes) pour les mutants classifiés ($t^\text{\ok}$ et $t^\text{\ko}$) et pour
-les mutants non classifiés ($t^\text{?}$) à chaque étape.
-Les proportions sont calculées en fonction des mutants restant non classifiés
-après l'étape précédente.
-Les colonnes $\NCD+\SWD$ contiennent les résultats après les deux étapes $\NCD$
-et \SWD : la colonne $t$ contient le temps maximal et le temps moyen pour tous
-les mutants sans distinction du résultat de la classification.
-La mesure du temps d'exécution s'arrête à la fin de la preuve (en cas de succès)
-ou au premier \NCCE ou \SWCE généré.
-Le nombre de mutants restant non classifiés à la fin de l'expérimentation (\#?)
-est donné dans la dernière colonne.
-
-Les experiences ont été menées sur un processeur Intel Core i7-3520M 3.00GHz
-$\times$ 4 sous Linux Ubuntu 14.04.
 
 
 \textbf{Résultats expérimentaux.}
-Pour les 20 programmes considérés, 928 mutants on été générés.
+La figure~\ref{tab:exp} présente les résultats de ces expérimentations.
+La colonne \#mut contient le nombre de mutants générés pour chaque exemple.
+Les trois colonnes de l'étape $Preuve$ contiennent respectivement le nombre de
+mutants prouvés (\#\ok), le temps d'exécution maximal et moyen (affiché sur
+deux lignes) pour les mutants prouvés ($t^\text{\ok}$) et pour les mutants non
+prouvés ($t^\text{?}$).
+Notons que les mutants prouvés sont les mutants équivalents.
+Les quatre colonnes de l'étape \NCD contiennent respectivement le nombre de
+mutants classifiés par \NCD (\#\ko), la proportion de mutants classifiés par
+\NCD parmi les mutants non prouvés (\%), le temps d'exécution maximal et moyen
+pour les mutants classifiés par \NCD ($t^\text{\ko}$) et pour les mutants non
+classifiés ($t^\text{?}$).
+Les quatre colonnes de l'étape \SWD contiennent respectivement le nombre de
+mutants classifiés par \SWD (\#\ko), la proportion de mutants classifiés par
+\SWD parmi les mutants non classifiés par \NCD (\%), le temps d'exécution
+maximal et moyen pour les mutants classifiés par \SWD ($t^\text{\ko}$) et pour
+les mutants non classifiés ($t^\text{?}$).
+Les deux colonnes $\NCD+\SWD$ synthétisent les résultats des étapes \NCD et
+\SWD.
+La colonne \% contient la proportion de mutants non équivalents classifiés par
+\NCD ou \SWD.
+La colonne $t$ contient le temps maximal et le temps moyen pour tous
+les mutants sans distinction du résultat de la classification.
+La mesure du temps d'exécution s'arrête à la fin de la preuve (en cas de succès)
+ou au premier \NCCE ou \SWCE généré.
+La colonne \#? contient le nombre de mutants restant non classifiés à la fin
+de l'expérimentation.
+
+Pour les 20 programmes considérés, 928 mutants ont été générés.
 80 d'entre eux ont été prouvés à l'aide de \Wp.
 Parmi les 848 mutants non prouvés, \NCD a détecté une non-conformité introduite
 par une mutation dans 776 mutants (91.5\%), laissant 72 mutants non classifiés.
@@ -476,9 +508,9 @@ Parmi ces 72 mutants, \SWD a pu générer un contre-exemple (soit un \NCCE soit 
 \SWCE) pour 48 d'entre eux (66.7\%), laissant finalement 24 programmes non
 classifiés.
 Ces 24 mutants peuvent être des mutants équivalents qui n'ont pas été
-prouvés par \Wp pour cause d'une incapacité de prouver, ou des mutants dont la
+prouvés par \Wp pour cause d'une incapacité de prouveur, ou des mutants dont la
 mutation s'est produite dans une annotation non traitée par \stady (la mutation
-étant dont actuellement indétectable), ou des mutants non équivalents pour
+étant actuellement indétectable), ou des mutants non équivalents pour
 lesquels la génération de tests n'a généré aucun contre-exemple mais est
 incomplète (c'est-à-dire qu'elle a été interrompue car elle ne respectait pas la
 limite de temps imposée).
@@ -496,11 +528,10 @@ Concernant \textbf{H2}, \NCD a diagnostiqué 776 des 848 mutants non prouvés
 (91.5\%).
 \SWD a diagnostiqué 48 des 72 mutants restants (66.7\%), ce qui a contribué
 de manière significative (et complémentaire à \NCD) au diagnostic et à
-l'explication de nombreux échecs de preuve.
+l'explication de certains échecs de preuve.
 
 Dans nos expérimentations, nous laissons à chaque prouveur 40 secondes pour
-prouver chaque propriété (aussi appelée ``condition de vérification'' ou
-``objectif de preuve'').
+prouver chaque propriété.
 Nous laissons 5 secondes à chaque session de génération de tests.
 Rappelons qu'il y a au plus une session pour l'étape \NCD par mutant, mais
 qu'il y a autant de sessions que nécessaire pour l'étape \SWD, le nombre
@@ -513,7 +544,7 @@ que nous utilisons le critère {\em k-path} du générateur, avec $k = 4$.
 Le {\em timeout} de chaque session de test et le {\em k-path} limitent
 fortement la couverture de test mais \stady détecte néanmoins 97.2\% des
 mutations introduites dans les programmes mutants.
-Ceci confirme l'hypothèse \textbf{H3} et démontre que la méthode proposé peut
+Ceci confirme l'hypothèse \textbf{H3} et démontre que la méthode proposée peut
 classifier les échecs de preuve et générer des contre-exemples de manière
 efficace même lorsque la couverture de test est partielle.
 De plus, la méthode peut également être utilisée sur des programmes dont le
@@ -535,7 +566,7 @@ secondes) lorsqu'elle n'aboutit pas.
 
 \textbf{Bilan des expérimentations.}
 Nos expérimentations ont montré que la méthode que nous proposons permet de
-classifier automatiquement un proportion importante des échecs de preuve, dans
+classifier automatiquement une proportion importante des échecs de preuve, dans
 un temps comparable au temps d'une preuve automatique, et pour des programmes
 pour lesquels uniquement une couverture de test partielle est possible.
 \SWD complète efficacement \NCD afin d'obtenir un diagnostic plus complet et
@@ -544,12 +575,12 @@ plus précis des échecs de preuve.
 \textbf{Validité des expérimentations.}
 Comme c'est souvent le cas dans le domaine de la vérification logicielle, une
 des principales menaces à la validité de nos expérimentations est liée à la
-représentativité des résultats.%, c'est-à-dire leur \textit{validité externe}.
+représentativité des résultats.
 Dans notre cas, la nature du problème nous restreint aux programmes annotés
-et réalistes qui ne peuvent pas générés automatiquement ou récupérés de bases
-de données de code existant mais non spécifié.
+et réalistes qui ne peuvent pas être générés automatiquement ou être récupérés
+dans des bases de données de code non spécifié existantes.
 Afin de réduire cette atteinte à la validité de nos expérimentations, nous
-avons utilisés des programmes provenant d'un benchmark indépendant
+avons utilisé des programmes provenant d'un {\em benchmark} indépendant
 \cite{ACSLbyExample}, créé pour illustrer les différents usages du langage de
 spécification \acsl pour la vérification déductive de programmes avec \framac.
 
@@ -557,8 +588,8 @@ Le passage à l'échelle des résultats est également une autre menace potentie
 puisque nous n'avons pas démontré leur validité pour des programmes de plus
 grande taille.
 Néanmoins, du fait du raisonnement modulaire de la vérification déductive, nous
-somme persuadés que la technique proposée devrait uniquement être appliquée au
-niveau unitaire, chaque fonction prise séparément, puisque un ingénieur
+sommes persuadés que la technique proposée devrait uniquement être appliquée au
+niveau unitaire, chaque fonction prise séparément, puisqu'un ingénieur
 validation essaiera de prouver un programme de cette manière.
 
 La préoccupation majeure du passage à l'échelle est liée à l'utilisation du
@@ -570,7 +601,6 @@ manière simple de réduire le domaine des variables d'entrée (en utilisant la
 clause \lstinline'typically').
 
 Un autre obstacle à la validité peut être dû aux mesures utilisées.
-% i.e. \textit{construct validity}.
 Afin de réduire cette menace, nous avons mesuré de manière précise nos
 résultats, ce qui inclut le temps d'analyse pour chaque étape et chaque mutant,
 les valeurs moyennes et maximales, en séparant les échecs de preuve classifiés
@@ -586,17 +616,24 @@ erreurs des utilisateurs par des mutations, ce qui permet de recréer des
 situations fréquentes et problématiques (code incorrect, annotation incorrecte,
 spécification incomplète) aboutissant à des échecs de preuve.
 Cette approche semble appropriée pour les non-conformités et les faiblesses de
-sous-contrats, mais l'est certainement moins pour les cas plus subtiles
+sous-contrats, mais l'est certainement moins pour les cas plus subtils
 d'incapacités de prouveur.
 Ces résultats devraient être confirmés à l'avenir par une évaluation de \stady
-par un échantillon représentatif d'utilisateurs.
+par un échantillon représentatif d'utilisateurs réels.
 
 
 \section*{Conclusion du chapitre}
 
 
-Dans ce chapitre, nous avons présenté l'architecture du greffon \stady, notre
-implémentation de la méthode présentée aux chapitres~\ref{sec:ncd},
-\ref{sec:swd} et~\ref{sec:method}.
+Dans ce chapitre, nous avons présenté l'architecture du greffon \stady qui
+implémente la méthode présentée aux chapitres~\ref{sec:ncd}, \ref{sec:swd}
+et~\ref{sec:method}.
 Nous avons également présenté les résultats de nos expérimentations évaluant
 la capacité de diagnostic des échecs de preuve et les performances de \stady.
+Ces expérimentations ont été menées sur un échantillon de programmes provenant
+d'un {\em benchmark} indépendant pour ne pas fausser les résultats.
+Nous avons simulé les erreurs de programmation et de spécification par une
+technique automatique de mutation.
+Il faudrait maintenant évaluer \stady, d'une part sur des exemples de plus
+grande taille, d'autre part avec un échantillon représentatif d'utilisateurs
+réels.
