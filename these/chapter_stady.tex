@@ -8,7 +8,7 @@
 Dans ce chapitre nous présentons l'architecture générale du greffon \stady,
 notre implémentation de la méthode présentée aux chapitres~\ref{sec:ncd},
 \ref{sec:swd} et~\ref{sec:method}.
-Nous présentons quelques détails d'implémentation que nous avons jugé
+Nous présentons quelques éléments d'implémentation que nous avons jugé
 importants en partie~\ref{sec:stady-implem}.
 En partie~\ref{sec:stady-exp} nous présentons les résultats de nos
 expérimentations visant à mesurer la capacité de diagnostic des échecs de preuve
@@ -23,7 +23,7 @@ et les performances de \stady.
   \begin{center}
     \includegraphics[scale=.45]{figures/stady_architecture.pdf}
     \vspace{-.6cm}
-    \caption{Architecture de \textsc{StaDy}
+    \caption{Dépendances entre les modules de \textsc{StaDy}
       \label{fig:stady-architecture}}
   \end{center}
 \end{figure}
@@ -110,7 +110,7 @@ et les variables globales).
 Les types définis par \textsc{Function} et \textsc{Insertion} sont des
 extensions des types de l'arbre de syntaxe abstraite fournis par \framac, ils
 nous permettent de ne pas modifier l'arbre de syntaxe abstraite du programme et
-de stocker les insertions de code en de hors de l'arbre.
+de stocker les insertions de code en dehors de l'arbre.
 En effet, la modification de l'arbre de syntaxe abstraite par les greffons de
 \framac est une opération complexe car il faut maintenir les relations
 des données entre l'état {\em avant} et {\em après} la modification, ce qui est
@@ -128,7 +128,8 @@ de fonctions logiques ou de prédicats définis par l'utilisateur.
 En revanche il ne permet pas de supporter les fonctions récursives ou les
 prédicats inductifs.
 Le module \textsc{Inline} fournit la fonction \ocamlinline{pred}
-qui produit la version dépliée du prédicat passé en paramètre :
+qui produit la version dépliée du prédicat passé en paramètre.
+Son profil est le suivant :
 
 \begin{ocamlcode}
 val pred : Cil_types.predicate -> Cil_types.predicate
@@ -136,7 +137,8 @@ val pred : Cil_types.predicate -> Cil_types.predicate
 
 Le module \textsc{Translate} définit les transformations de programme à opérer
 lors de la traduction des annotations \eacsl en C.
-La signature du module fournit une fonction \ocamlinline{translate} :
+Ce module fournit une fonction \ocamlinline{translate} dont le profil est le
+suivant :
 
 \begin{ocamlcode}
 val translate:
@@ -384,10 +386,11 @@ les postconditions, la validité des pointeurs, les invariants et variants des
 boucles.
 Nous avons utilisé le test mutationnel sur ces programmes corrects afin de
 générer des programmes modifiés (appelés {\em mutants}) et de voir si \stady
-est capable de {\em tuer}, c'est-à-dire trouver une erreur, dans ces mutants.
-Les mutations appliquées simulent des erreurs de programmation classiques, elles
-peuvent être une modification d'opérateur arithmétique (numérique ou sur les
-pointeurs), une modification d'opérateur de comparaison, la négation d'une
+est capable de {\em tuer}, c'est-à-dire de trouver une erreur, dans ces mutants.
+Les mutations sont appliquées sur le code uniquement et simulent des erreurs de
+programmation classiques.
+Elles peuvent être une modification d'opérateur arithmétique (numérique ou sur
+les pointeurs), une modification d'opérateur de comparaison, la négation d'une
 condition ou la négation d'un opérateur logique (de conjonction ou de
 disjonction).
 Ces mutations peuvent générer des mutants équivalents au programme d'origine.
@@ -634,6 +637,13 @@ Ces expérimentations ont été menées sur un échantillon de programmes proven
 d'un {\em benchmark} indépendant pour ne pas fausser les résultats.
 Nous avons simulé les erreurs de programmation et de spécification par une
 technique automatique de mutation.
+Ces expérimentations ont montré que la méthode proposée permet de
+classifier automatiquement une proportion importante des échecs de preuve, dans
+un temps comparable au temps d'une preuve automatique, et pour des programmes
+pour lesquels uniquement une couverture de test partielle est possible.
+Nos expérimentations montrent également que \SWD complète efficacement \NCD afin
+d'obtenir un diagnostic plus complet et plus précis des échecs de preuve.
+
 Il faudrait maintenant évaluer \stady, d'une part sur des exemples de plus
 grande taille, d'autre part avec un échantillon représentatif d'utilisateurs
 réels.
