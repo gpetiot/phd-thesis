@@ -4,7 +4,7 @@
 
 
 Dans ce chapitre, nous rappelons les objectifs de la thèse en
-partie~\ref{sec:obj} puis présentons le bilan des travaux réalisés en
+partie~\ref{sec:obj} puis nous présentons le bilan des travaux réalisés en
 partie~\ref{sec:bilan} ainsi que les perspectives envisagées en
 partie~\ref{sec:after}.
 
@@ -38,41 +38,57 @@ outil sur différents programmes.
 Nous proposons une méthode originale d'aide à la vérification déductive par
 génération de tests structurels sur une version instrumentée du programme
 d'origine.
-Cette méthode consiste en deux étapes.
+Cette méthode consiste en une première étape de détection de non-conformités
+puis en une seconde étape de détection de faiblesses de sous-contrats (contrats
+de boucle ou de fonction appelée).
 
-Premièrement, nous essayons de détecter les non-conformités du code par
-rapport à la spécification.
-Cette phase nécessite une traduction en C des annotations \acsl afin
+Nous avons dans un premier temps conçu une méthode de détection des
+non-conformités du code par rapport à la spécification dans les programmes C.
+Cette méthode nécessite une traduction en C des annotations \acsl afin
 d'expliciter les violations potentielles d'annotations par la création de
 nouvelles branches dans le programme.
 La préservation de la sémantique par cette traduction nous assure de trouver
 les erreurs dans le code et dans la spécification par génération de tests
 structurels à condition de couvrir tous les chemins d'exécution faisables du
 programme.
+Nous avons formalisé cette traduction afin de justifier sa correction.
+Puis nous avons implémenté cette méthode dans \stady et expérimenté son
+efficacité par des mutations.
+Il est apparu que sur des programmes mutants, nous étions capables de détecter
+les erreurs introduites.
+En revanche lorsqu'aucune erreur n'a été détectée, le programme mutant peut
+être équivalent au programme d'origine, ou bien on peut avoir introduit une
+faiblesse de sous-contrat.
+Une telle faiblesse ne rend pas le programme invalide, mais empêche la
+vérification déductive du programme.
 
-Deuxièmement, si le programme ne contient pas de non-conformité, nous essayons
-de détecter les faiblesses de sous-contrats (contrats de boucle ou de fonction
-appelée).
-Cette seconde phase nécessite une traduction en C des annotations \acsl
+Nous avons alors décidé dans un second temps d'adapter notre méthode de
+détection des non-conformités afin de pouvoir détecter les faiblesses de
+sous-contrats.
+Cette nouvelle méthode nécessite une traduction en C des annotations \acsl
 différente de la première, car nous voulons pouvoir ``exécuter'' certains
 contrats au lieu du code qu'ils spécifient.
+Nous avons intégré cette méthode à \stady et expérimenté son efficacité par des
+mutations dans le cadre du diagnostic des échecs de preuve.
+Nos expérimentations ont permis de mettre en évidence le gain apporté par cette
+dernière méthode par rapport à une détection des non-conformités seule.
+
+Nous avons ensuite conçu une méthode combinant la détection des non-conformités
+et la détection des faiblesses de sous-contrats afin d'aider au diagnostic des
+échecs de preuve.
+Cette méthode combinée essaie d'abord d'exhiber des non-conformités.
+Si aucune non-conformité n'est détectée, elle recherche des faiblesses de
+sous-contrats.
 Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
 et si la génération de tests a couvert tous les chemins d'exécution faisables
 du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
 sinon le problème reste non résolu.
 
-Cette méthode de diagnostic des échecs de preuve par génération de tests
-structurels est notre principale contribution, elle inclut la traduction en C
-des annotations \acsl pour la détection de non-conformités, la traduction en C
-des annotations \acsl pour la détection de faiblesses de sous-contrats, la
-justification de correction de ces traductions, l'implémentation de notre
-méthode de diagnostic des échecs de preuve par le test sous la forme d'un
-greffon \framac (\stady) et des expérimentations évaluation l'impact de la
-méthode sur le diagnostic des échecs de preuve.
-
-Une autre contribution est la validation à l'exécution des annotations \acsl
-liées au modèle mémoire, ainsi que l'implémentation d'une bibliothèque
-permettant de valider ces annotations à l'exécution.
+Les différentes composantes de la méthode sont donc implémentées dans le
+greffon \stady, mais la méthode de diagnostic elle-même ne l'est pas.
+D'autre part, l'implémentation souffre de quelques limitations dues au support
+incomplet du langage de spécification \acsl.
+Ces deux points sont laissés en perspectives.
 
 
 \subsection{Publications associées à la thèse}
@@ -94,7 +110,6 @@ C pour la détection de non-conformités entre le code et la spécification.
 L'article~\cite{Genestier/TAP15} recense plusieurs programmes C dont la
 vérification déductive a été facilitée par \stady.
 
-\commentGP{si accepté :}
 L'article~\cite{Petiot/ISSRE15} présente une méthode globale de diagnostic des
 échecs de preuve combinant la détection des non-conformités entre le code et la
 spécification et la détection des faiblesses de sous-contrats.
@@ -144,14 +159,56 @@ Peut-être que ces travaux peuvent servir de base à une méthode de traduction
 des spécifications inductives en code impératif (en C notamment) ce qui
 permettrait de prendre en charge les prédicats inductifs dans \stady.
 
+Notre implémentation ne traite pas non plus les annotations faisant intervenir
+les nombres réels mathématiques et les nombres flottants du C.
+De telles annotations permettent notamment d'exprimer les erreurs d'arrondi
+se produisant lors des calculs sur les nombres flottants
+\cite{Goubault/VMCAI11}.
+Leur intégration au sein de \stady nécessiterait de formaliser leur traduction
+en C et de pouvoir les exécuter symboliquement et concrètement lors de la
+génération de tests, d'une manière similaire à ce que nous avons réalisé pour
+les entiers mathématiques d'\eacsl.
 
-\subsection{Expérimentations}
+
+\subsection{Automatisation de la méthode}
+
+
+La méthode de détection des non-conformités et la méthode de détection des
+faiblesses de sous-contrats sont implémentées dans \stady, mais la méthode les
+combinant ne l'est pas.
+En effet, l'utilisation actuelle de \stady est la suivante.
+\stady doit être lancé une première fois en mode
+``détection de non-conformités''' (son mode par défaut).
+Puis, si aucune non-conformité n'a été détectée, \stady peut être lancé un
+nombre quelconque de fois en mode ``détection de faiblesses de sous-contrats''.
+Dans ce second mode, l'utilisateur indique à \stady pour quels contrats une
+faiblesse doit être recherchée.
+Il revient donc à l'utilisateur de réduire ou d'augmenter progressivement
+l'ensemble des contrats au fur et à mesure des exécutions de \stady.
+
+Ce processus pourrait être automatisé au cours d'une seule exécution de \stady
+qui lancerait d'abord une détection de non-conformités puis une ou plusieurs
+détections de faiblesses de sous-contrats.
+Les contrats pour lesquels une faiblesse peut être recherchée pourraient être
+déterminée en analysant les dépendances entre les annotations du programme.
+
+
+\subsection{Expérimentations avec des utilisateurs}
 
 
 Au cours de cette thèse nous avons expérimenté l'efficacité de notre outil en
 terme de capacité de diagnostic et de temps d'exécution.
 Néanmoins, nous n'avons pas pu mesurer l'impact réel de l'outil du point de vue
 d'un utilisateur qui a pour tâche de spécifier et vérifier un programme.
+
+Nous pourrions par exemple former deux groupes d'utilisateurs débutants dans le
+domaine de la vérification déductive, avec le niveau le plus homogène possible.
+Les utilisateurs du premier groupe auraient uniquement à leur disposition
+l'outil de preuve, tandis que ceux du second groupe pourraient également
+utiliser \stady.
+Les deux groupes auraient à spécifier et prouver formellement des programmes
+et nous pourrions ainsi comparer les résultats produits par chacun des groupes.
+
 Une telle expérimentation permettrait de quantifier et qualifier l'aide au
 diagnostic des échecs de preuve fourni par \stady et donc l'apport d'un tel
-outil.
+outil pour la spécification et la vérification déductive des programmes.
