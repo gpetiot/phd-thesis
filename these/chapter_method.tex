@@ -138,8 +138,8 @@ contre-exemple de non-conformité (\NCCE) et a présenté une méthode de détec
 des non-conformités (\NCD).
 
 \textbf{Faiblesse de sous-contrat.}
-Un échec de preuve peut également être dû à une faiblesse d'un
-sous-contrat, ce qui cause un manque d'hypothèses et ne permet pas de prouver
+Un échec de preuve peut également être dû à une faiblesse d'un (ou de plusieurs)
+sous-contrat(s), ce qui cause un manque d'hypothèses et ne permet pas de prouver
 une propriété.
 Le chapitre~\ref{sec:swd} a défini la notion de sous-contrat, de faiblesse de
 sous-contrat, de contre-exemple pour la faiblesse de sous-contrats (\SWCE) et
@@ -314,17 +314,17 @@ chercher une non-conformité ou une faiblesse de contrat.
     ou renforcer la précondition de la fonction sous vérification
     \\
     \hline
-    \circled{2} & Faiblesse de sous-contrats de $S$ vis-à-vis de l'annotation
-    $a$ :
+    \circled{2} & Faiblesse de sous-contrats parmi ceux de $S$ vis-à-vis de
+    l'annotation $a$ :
     \ (\cw,~$V$,~$a$,~$S$)
     & renforcer un ou plusieurs sous-contrats de $S$ \\
     \hline
-    \circled{3} & Incapacité de prouveur
+    \circled{3} & Incapacité de prouveur \newline (test complet)
     & ajouter des lemmes ou des assertions pour aider le prouveur,
     ou utiliser un autre prouveur plus approprié,
     ou utiliser un prouveur interactif (comme \coq) \\
     \hline
-    \circled{4} & Non-classifié
+    \circled{4} & Non-classifié \newline (test incomplet)
     & renforcer la clause $\mbox{\lstinline'typically'}$
     ou le critère de couverture (par exemple $k$-path),
     ou augmenter le temps alloué à la génération de tests ({\em timeout}) \\
@@ -340,6 +340,7 @@ validation les actions à effectuer une fois que l'échec de preuve a été
 diagnostiqué, afin de l'aider dans son processus de spécification et de
 vérification déductive.
 Nos suggestions sont résumées en figure~\ref{fig:suggestions}.
+Nous les expliquons ci-dessous.
 
 Une \emph{non-conformité} du code vis-à-vis d'une annotation $a$ signifie qu'il
 y a une incohérence entre la précondition, l'annotation $a$ et le code du
@@ -394,6 +395,9 @@ Nous avons présenté notre méthode de diagnostic des échecs de
 preuve utilisant les techniques de détection présentées dans les
 chapitres~\ref{sec:ncd} et~\ref{sec:swd}.
 Enfin, nous avons suggéré des actions qu'un ingénieur validation peut effectuer
-après qu'un échec de preuve ait été diagnostiqué et ce pour chaque situation.
+après qu'un échec de preuve ait été diagnostiqué et ce dans chacune des quatre
+situations identifiées : non-conformité, faiblesse de sous-contrat, incapacité
+du prouveur et test complet, et incapacité du prouveur et test incomplet
+(non-classifié).
 Ces actions sont une assistance à l'ingénieur validation dans son processus de
 spécification et de vérification déductive d'un programme.
