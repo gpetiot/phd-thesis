@@ -23,7 +23,7 @@
     && où $\loc$ est une adresse fraîche &\\
 
     \comp{$x \Zclear \semicolon$}{$(\env, \store)$}
-    &=& ($\env[\mathit{x} \mapsto \bot], \store[\env(\mathit{x}) \mapsto \bot]$)
+    &=& ($\env-\{x\}, \store-\{\env(x)\}$)
     & \eqlabel{C-Z-unset} \\
 
     \comp{\lstinline'fassert('$e$\lstinline');'}{$\mem$}
@@ -62,11 +62,9 @@
 
     \comp{\lstinline'free('$x$\lstinline')'}{$(\env, \store)$}
     &=&
-    $(\env[x$\lstinline'[0]' $\mapsto \bot$, ...,
-      $x$\lstinline'['\eval{$\mathit{sizeof}(x)$}{$(\env, \store)$}\lstinline'-1]'
-      $\mapsto \bot]$,
+    $(\env-\{x\mbox{\lstinline'[0]'}\}-\ldots-\{x$\lstinline'['\eval{$\mathit{sizeof}(x)$}{$(\env, \store)$}\lstinline'-1]'$\},$
     & \eqlabel{C-free} \\
-    && $\store[\env(x) \mapsto \bot])$ &\\
+    && $\store-\{\env(x)\})$ &\\
 
     \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$(\env, \store)$} &=&
     $\mathcal{F} \llbracket$ \lstinline'/*@ ... */'

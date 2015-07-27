@@ -41,9 +41,10 @@ d'exécution).
 
 Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
 test normalisée en suivant la grammaire de la figure~\ref{fig:gram-c}.
-La clause \lstinline'ensures' aux lignes 4--5 indique qu'elle retourne $1$ quand
-la valeur \lstinline'v' en paramètre est présente dans le tableau \lstinline't'
-de longueur \lstinline'n' en paramètre, et $0$ sinon.
+La clause \lstinline'ensures' aux lignes 4--5 indique qu'elle retourne une
+valeur différente de zéro quand la valeur \lstinline'v' en paramètre est
+présente dans le tableau \lstinline't' de longueur \lstinline'n' en paramètre,
+et $0$ sinon.
 
 La clause \lstinline'requires' de la ligne 1 indique que la taille du tableau
 \lstinline'n' est positive ou nulle.
@@ -64,8 +65,11 @@ Le variant de boucle ligne 10 permet de vérifier la terminaison de la boucle.
 La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
 et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
 Notons que pour prouver formellement la postcondition, l'invariant de boucle
-suivant est nécessaire, mais n'est pas inclus dans cet exemple simplifié :
-\lstinline'\forall integer k; 0<=k<=i-1 ==> \old(t[k])!=v;'.
+suivant est nécessaire, mais n'est pas inclus volontairement dans cet exemple
+simplifié : \lstinline'\forall integer k; 0<=k<=i-1 ==> \old(t[k])!=v;'.
+Le terme \lstinline'\old' fait référence à la valeur du terme au début de la
+fonction courante.
+\lstinline{\result} fait référence au résultat d'une fonction.
 
 
 \subsection{Syntaxe des instructions et fonctions}
@@ -82,6 +86,7 @@ Pour des raisons de commodité, nous considérons qu'un label précède chaque
 annotation à l'intérieur d'une fonction.
 Nous considérons aussi qu'un label est présent au début et à la fin de chaque
 corps de boucle.
+Ceci n'est pas spécifié par la grammaire de la figure~\ref{fig:gram-c}.
 Dans la figure~\ref{fig:gram-c}, la notation ``${\textit{as}\;X}$'' en exposant
 signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
 par la chaîne à laquelle on fait référence en exposant.
@@ -118,9 +123,17 @@ La clause \lstinline'ensures' désigne la postcondition de la fonction.
 Les assertions peuvent être associées à des instructions quelconques.
 Un invariant de boucle, un variant (qui garantit la terminaison)
 et une clause \lstinline'loop assigns' doivent être associés aux boucles.
+Ces clauses sont facultatives.
+Par exemple la fonction du listing~\ref{lst:normalized} n'a pas de clause
+\lstinline'assigns'.
+Les symboles non-terminaux \textit{exp}, \textit{term} et \textit{pred} ne sont
+pas définis figure~\ref{fig:gram-c}.
+Nous les définissons maintenant en partie~\ref{sec:gram-term}
+et~\ref{sec:gram-pred}.
 
 
 \subsection{Syntaxe des termes \eacsl et des expressions C}
+\label{sec:gram-term}
 
 \input{figures/fig_grammar_exp_term}
 
@@ -128,6 +141,7 @@ La figure~\ref{fig:gram-exp-term} définit la grammaire des termes \eacsl et des
 expressions C du langage.
 \textit{cst} est toute constante du langage C : constante entière, chaîne de
 caractère littérale, constante flottante, etc.
+Nous considérons ici \textit{cst} comme un symbole terminal.
 Les termes \eacsl peuvent être vus comme une extension des expressions C.
 Ils peuvent être d'un type C (comme une expression C) ou d'un type logique (nous
 nous limitons à \lstinline'integer' dans nos travaux).
@@ -153,14 +167,10 @@ généralisé $\Pi_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lst
 \lstinline'k' tel que
 $\mbox{\lstinline't1'} \le \mbox{\lstinline'k'} \le \mbox{\lstinline't2'}$ et
 $\mbox{\lstinline't3'} \neq 0$.
-Le terme \lstinline'\old' fait référence à la valeur du terme au début de la
-fonction courante.
 \lstinline'\null' est le terme correspondant au pointeur \lstinline'NULL'.
-\lstinline{\result} fait référence au résultat d'une fonction.
 
 
-\subsubsection{Entiers mathématiques}
-\label{sec:eacsl-integers}
+\subsubsection*{Entiers mathématiques}
 
 
 En plus des entiers machine, les termes \eacsl peuvent être des entiers
@@ -171,7 +181,7 @@ opérations sur les entiers, ainsi que les variables logiques sont de type
 L'arithmétique entière est non bornée et donc les débordements d'entier
 (\textit{overflows}) sont impossibles.
 \eacsl dispose d'un système de sous-typage pour convertir automatiquement les
-types entiers du C vers les entiers mathématiques.
+types entiers bornés du C vers les entiers mathématiques.
 Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
 \lstinline{1} et \lstinline{x+1} sont de type \lstinline{integer} et une
 conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
@@ -197,6 +207,7 @@ Dans la suite, sauf mention contraire, ``entier'' fait référence à
 
 
 \subsection{Syntaxe des prédicats \eacsl}
+\label{sec:gram-pred}
 
 \input{figures/fig_grammar_pred}
 
@@ -209,8 +220,9 @@ on peut déréférencer \lstinline'ptr' et donc écrire \lstinline'*ptr'.
 Dans le cas où son argument est de la forme \lstinline'ptr+(x..y)', le prédicat
 est valide si et seulement si \lstinline'ptr+x', \lstinline'ptr+(x+1)', \ldots,
 \lstinline'ptr+y' sont valides.
-Les quantifications existentielles (\lstinline'\exists') et universelles
-(\lstinline'\forall') doivent porter sur des domaines finis d'entiers.
+Dans \eacsl, les quantifications existentielles (\lstinline'\exists') et
+universelles (\lstinline'\forall') doivent porter sur des domaines finis
+d'entiers.
 Le symbole \lstinline'==>' encode l'implication logique et le symbole
 \lstinline'<==>' encode l'équivalence logique de deux prédicats.
 
@@ -220,10 +232,15 @@ Le symbole \lstinline'==>' encode l'implication logique et le symbole
 
 
 Nous définissons dans les parties~\ref{sec:env} et~\ref{sec:store} les notions
-d'environnement et de $store$, qui nous permettent de définir la notion de
+d'environnement et de {\em store}, qui nous permettent de définir la notion de
 mémoire en partie~\ref{sec:mem}.
+Un environnement associe à chaque désignation (appelée \textit{left-value} dans
+la grammaire de la figure~\ref{fig:gram-c}) une adresse en mémoire.
+La notion de {\em store} associe aux adresses en mémoire des valeurs.
+Le tout constitue une mémoire.
 Cette notion de mémoire nous permet de définir la sémantique dénotationnelle des
-instructions et fonctions d'un programme annoté par rapport à une mémoire.
+instructions et fonctions d'un programme annoté comme des modifications de
+mémoires.
 Dans la suite du document, nous utilisons les notations suivantes :
 \begin{itemize}
 \item $\mathit{lv}$, $\mathit{lv_1}$ et $\mathit{lv_2}$ sont des left-values;
@@ -253,15 +270,15 @@ Le domaine $LV$ correspond à l'entité syntaxique \textit{left-value}.
 $LOC$ est le domaine des adresses (positions) en mémoire, incluant l'adresse
 nulle, notée \lstinline'NULL' $\in LOC$.
 $\bot$ dénote une adresse indéfinie et donc invalide.
-Un environnement $\env$ est une fonction
+Un environnement dénoté $\env$ est une fonction partielle
 $\env \in LV \rightarrow LOC \cup \{\bot\}$
-qui associe une adresse ou $\bot$ (indéfini) à chaque left-value.
+qui associe une adresse ou $\bot$ (adresse indéfinie) à chaque left-value.
 Nous notons $ENV = LV \rightarrow LOC \cup \{\bot\}$ le domaine des
 environnements.
 La notation $\env$[$\mathit{lv} \mapsto \loc$] désigne un nouvel environnement,
 correspondant à l'environnement $\env$ dans lequel l'adresse $\loc$ est associée
 à la left-value $\mathit{lv}$.
-L'environnement $\env$[$\mathit{lv} \mapsto \loc$] est défini par :
+La fonction environnement est définie ainsi :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -270,6 +287,8 @@ L'environnement $\env$[$\mathit{lv} \mapsto \loc$] est défini par :
   ($\env$[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & $\env$($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
+  $\env$($\mathit{lv}$) &=& $\bot$ si le domaine de $\env$ est vide
+  & \eqlabel{env-get-3}\\
 \end{tabular}
 \end{center}
 
@@ -298,26 +317,27 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 \[
 \env_1~\subenv~\env_2~\equiv~
 \forall \mathit{lv}.~\forall \loc.
-~(\env_1(\mathit{lv})=\loc) \Rightarrow (\env_2(\mathit{lv})=\loc)
+~(\env_1(\mathit{lv})=\loc \Rightarrow \env_2(\mathit{lv})=\loc)
 \]
 
 
 \subsection{Stores}
 \label{sec:store}
 
-Le domaine des valeurs $VAL$ est défini comme l'union des types que
+Le domaine des valeurs $VAL$ est défini comme l'union des valeurs des types que
 peuvent prendre les termes et prédicats \eacsl et les expressions C :
-$VAL = \cup~\mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
+$VAL = \mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
 $\bot$ dénote une valeur indéfinie qui peut être soit une adresse indéfinie soit
 une valeur indéfinie.
 $LOC$ est inclus dans $VAL$ car nous formalisons les pointeurs et la valeur
 d'un pointeur est une adresse.
-Un store est une fonction $\store \in LOC \rightarrow VAL$ qui
+Un {\em store} est une fonction partielle $\store \in LOC \rightarrow VAL$ qui
 associe une valeur à chaque adresse.
-Nous notons $STORE = LOC \rightarrow VAL$ le domaine des stores.
-La notation $\store$[$\loc \mapsto v$] désigne un nouveau store, correspondant
-au store $\store$ dans lequel la valeur $v$ est stockée à l'adresse $\loc$.
-Le store $\store$[$\loc \mapsto v$] est défini par :
+Nous notons $STORE = LOC \rightarrow VAL$ le domaine des {\em stores}.
+La notation $\store$[$\loc \mapsto v$] désigne un nouveau {\em store},
+correspondant au {\em store} $\store$ dans lequel la valeur $v$ est stockée à
+l'adresse $\loc$.
+La fonction {\em store} est définie ainsi :
 
 \begin{center}
 \begin{tabular}{rclr}
@@ -325,6 +345,8 @@ Le store $\store$[$\loc \mapsto v$] est défini par :
   ($\store$[$\loc_1 \mapsto v$])($\loc_2$) & =
   & $\store$($\loc_2$) si $\loc_1 \neq \loc_2$
   & \eqlabel{store-get-2}\\
+  $\store$($\loc$) &=& $\bot$ si le domaine de $\store$ est vide
+  & \eqlabel{store-get-3}\\
 \end{tabular}
 \end{center}
 
@@ -353,7 +375,7 @@ $v$ est également à l'adresse $\loc$ dans $\store_2$.
 \[
 \store_1~\subenv~\store_2~\equiv~
 \forall \loc.~\forall v.
-~(\store_1(\loc)=v) \Rightarrow (\store_2(\loc)=v)
+~(\store_1(\loc)=v \Rightarrow \store_2(\loc)=v)
 \]
 
 
@@ -361,7 +383,7 @@ $v$ est également à l'adresse $\loc$ dans $\store_2$.
 \label{sec:mem}
 
 Nous définissons la notion de mémoire, correspondant à un couple environnement,
-store : $MEM = ENV \times STORE$.
+store : $MEM = ENV \times STORE~\cup~\{\errormem\}$.
 Une mémoire $\mem \in MEM$ est un paramètre et un résultat des fonctions
 sémantiques définies dans la suite du chapitre.
 Cette mémoire sera notée :
@@ -402,22 +424,24 @@ l'environnement $\env$.
 À cette adresse mémoire est associée une valeur $v_i$ dans le {\em store}.
 Donc la sémantique d'un accès à un élément d'un tableau
 $x\mbox{\lstinline'['}i\mbox{\lstinline']'}$ est sa valeur définie par
-$\store(\env(\mathit{x}$
-\lstinline'['\eval{$\mathit{i}$}{$(\env, \store)$}\lstinline']'$))$.
+$\store(\env(x$\lstinline'['\eval{$i$}{$(\env, \store)$}\lstinline']'$))$ où
+\eval{$i$}{$(\env, \store)$} est la sémantique de $i$ dans la mémoire,
+c'est-à-dire la valeur de $i$ dans la mémoire $(\env, \store)$.
+Définissons maintenant la fonction sémantique $\mathcal{E}$.
 
 
 \subsection{Sémantique dénotationnelle des termes, prédicats et expressions}
 
 \input{figures/fig_semantics_exp_term}
 
-La sémantique dénotationnelle des expressions C et des termes et prédicats
-\eacsl est exprimée avec la fonction
+La sémantique dénotationnelle des expressions C, des termes et des prédicats
+\eacsl est définie par la fonction
 $\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow MEM \rightarrow VAL$.
 Les domaines de syntaxe abstraite $EXP$, $TERM$ et $PRED$ correspondent
 respectivement aux entités
 syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
 figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
-Cette fonction associe une valeur à une expression C (et un terme et un prédicat
+Cette fonction associe une valeur à une expression C (un terme et un prédicat
 \eacsl) en fonction d'une mémoire $\mem = (\env, \store)$, à condition que cette
 expression ne génère pas d'effet de bord, hypothèse satisfaite par le langage
 considéré après normalisation du code par \framac.
@@ -440,9 +464,13 @@ Dans les règles \eqlabel{E-unop} et \eqlabel{E-binop}, $\mathit{unop}$ et
 $\mathit{binop}$ correspondent à l'application de l'opérateur unaire ou binaire
 correspondant, parmi ceux autorisés par la grammaire de la
 figure~\ref{fig:gram-exp-term}.
-Dans la règle \eqlabel{E-abs}, $\lvert . \rvert : VAL \rightarrow VAL$ est la
+Dans la règle \eqlabel{E-abs}, $\lvert~.~\rvert : VAL \rightarrow VAL$ est la
 fonction valeur absolue.
-Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ correspond à la mémoire au
+Dans les règles \eqlabel{E-sum}, \eqlabel{E-prod} et \eqlabel{E-num}, la
+variable $k$ liée au terme $\mbox{\lstinline'\\lambda integer'}~k\semicolon~t_3$
+est substituée dans le terme $t_3$ par une nouvelle variable $k'$ liée à
+l'opérateur $\Sigma$ ou $\Pi$.
+Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ désigne la mémoire au
 début de l'exécution de la fonction courante, nous supposons
 qu'une telle mémoire est conservée à chaque appel.
 Notons que nous n'avons pas formalisé la mémorisation des états mémoires au
@@ -473,11 +501,9 @@ Le pointeur égal à l'adresse d'une variable globale est toujours valide, et le
 pointeur égal à l'adresse d'une variable locale est valide dans la portée de
 cette variable.
 Ainsi, le prédicat \lstinline'\valid(x)' est vrai si \lstinline'x'
-peut être déréférencé et est accessible en écriture, c'est-à-dire n'est pas une
-constante.
+peut être déréférencé.
 De la même manière, \lstinline'\valid(x+(t1..t2))' est valide si les pointeurs
-\lstinline'(x+t1)', ..., \lstinline'(x+t2)' peuvent être déréférencés et sont
-accessibles en écriture.
+\lstinline'(x+t1)', ..., \lstinline'(x+t2)' peuvent être déréférencés.
 
 \input{figures/fig_semantics_pred}
 
@@ -487,7 +513,7 @@ accessibles en écriture.
 La sémantique dénotationnelle des instructions C est exprimée avec la fonction
 $\mathcal{C} : INSTR \rightarrow MEM \rightarrow MEM$.
 Cette fonction associe à une instruction $i$, dans un contexte mémoire $\mem$,
-une nouvelle mémoire $\mem'$ qui tient compte des effets de bord effectués par
+une nouvelle mémoire $\mem'$ qui tient compte des modifications effectuées par
 $i$ dans $\mem$.
 La sémantique d'une séquence d'instructions est exprimée avec la fonction
 $\mathcal{C}^{*} : INSTR^{*} \rightarrow MEM \rightarrow MEM$.
@@ -512,14 +538,13 @@ $\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 
 La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
 La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $x$
-dans l'environnement $\env$, où $\loc$ est fraîche (non utilisée).
+dans l'environnement $\env$, où $\loc$ est une adresse fraîche (non utilisée).
 Les règles \eqlabel{C-set} et \eqlabel{C-set-2} associent la valeur de $e$
 à l'adresse de la left-value correspondante dans le store.
 Dans la règle \eqlabel{C-Z-set}, la variable entière (non bornée) $x$ est
 allouée et on lui affecte la valeur de $e$ dans $\store$.
-Dans la règle \eqlabel{C-Z-unset}, la variable entière (non bornée) $x$
-est désallouée.
-%Une instruction soulignée manipule des entiers non bornés.
+Dans la règle \eqlabel{C-Z-unset}, la variable entière (non bornée) $x$ et son
+adresse sont enlevées de la mémoire.
 Les règles \eqlabel{C-Z-set} et \eqlabel{C-Z-unset} traitent uniquement le cas
 où une left-value est un identificateur et pas un accès à un tableau car le
 langage \eacsl ne supporte pas les tableaux d'entiers non bornés.
@@ -545,12 +570,12 @@ La sémantique de la fonction \lstinline'malloc' donnée par la règle
 \eqlabel{C-malloc} énonce que de nouvelles adresses (fraîches) sont associées
 aux left-values allouées pour le tableau $x$, et que la valeur
 associée à l'adresse de $x$ dans le store est l'adresse du premier
-élémént alloué ($\env(x$\lstinline'[0]'$)$), comme c'est le cas dans le langage
+élément alloué ($\env(x$\lstinline'[0]'$)$), comme c'est le cas dans le langage
 C.
 La sémantique de la fonction \lstinline'free' donnée par la règle
-\eqlabel{C-free} est l'inverse de la sémantique de \lstinline'malloc' : la
-valeur indéfinie $\bot$ est associée aux left-values désallouées et à l'adresse
-de la variable $x$.
+\eqlabel{C-free} est l'inverse de la sémantique de \lstinline'malloc' : les
+left-values allouées et l'adresse de la variable $x$ sont enlevées de la
+mémoire.
 Dans ces deux règles, $x$ est une variable de type pointeur, la
 valeur associée à son adresse dans la règle \eqlabel{C-malloc} est donc une
 adresse.
@@ -657,5 +682,6 @@ langage \eacsl normalisé que nous traitons.
 Nous avons défini la sémantique dénotationnelle de chaque élément du langage
 pour pouvoir justifier de la correction de la traduction des annotations en C
 dans le but de générer des tests.
-Le chapitre~\ref{sec:traduction} présentera la traduction de ces annotations
-\eacsl en code C sémantiquement équivalent.
+Le chapitre~\ref{sec:traduction} présente la traduction de ces annotations
+\eacsl en code C dont il justifie qu'il est sémantiquement équivalent, en
+utilisant les fonctions définissant la sémantique dénotationnelle.
