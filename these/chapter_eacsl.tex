@@ -32,6 +32,12 @@ partie~\ref{sec:eacsl-exp}.
 \label{sec:eacsl-impl}
 
 
+Les annotations présentées au chapitre~\ref{sec:runtime} prennent en paramètre
+des adresses mémoire, et non des left-values.
+La vérification de ces annotations nécessite donc une représentation du
+{\em store} tel qu'il a été présenté dans la partie~\ref{sec:mem-model}, mais ne
+nécessite pas de représenter l'environnement.
+
 La figure~\ref{fig:mmodel-architecture} présente l'architecture générale de la
 bibliothèque au moyen du graphe de dépendance des fonctions C les plus
 importantes.
@@ -53,14 +59,35 @@ gardant les informations à propos des blocs alloués.
 Plusieurs implémentations sont fournies pour ces fonctions, correspondant à
 différentes structures de données génériques : listes chaînées, arbres binaires
 de recherche, Splay trees et Patricia tries.
+La fonction \lstinline'get_exact' de la figure~\ref{fig:mmodel-architecture}
+implémente l'algorithme~\ref{algo:get-exact}.
+La fonction \lstinline'get_cont' implémente l'algorithme~\ref{algo:get-cont}.
+La fonction \lstinline'add_element' implémente
+l'algorithme~\ref{algo:add-block}.
+La fonction \lstinline'remove_element' implémente
+l'algorithme~\ref{algo:rem-block}.
 Les fonctions du niveau \circled{2} servent à modifier le contenu du {\em store}
 (ajout ou suppression d'élément, initialisation des éléments, etc.).
 Les fonctions du niveau \circled{3} doivent être appelées en lieu et place des
 fonctions de la bibliothèque standard associées (\lstinline'malloc', etc.).
+Les fonctions \lstinline'e_acsl_malloc', \lstinline'e_acsl_calloc',
+\lstinline'e_acsl_realloc' et \lstinline'e_acsl_free' de la
+figure~\ref{fig:mmodel-architecture} correspondent respectivement aux fonctions
+\lstinline'__malloc', \lstinline'__calloc',
+\lstinline'__realloc' et \lstinline'__free' présentées au
+chapitre~\ref{sec:runtime}.
 Les fonctions du niveau \circled{4} permettent de calculer la valeur des
 annotations \eacsl, elles retournent la valeur du terme ou du prédicat \eacsl
 correspondant.
 Ces fonctions ne modifient pas le contenu du {\em store}.
+Les fonctions \lstinline'offset', \lstinline'block_length',
+\lstinline'base_addr', \lstinline'initialized', \lstinline'valid',
+\lstinline'valid_read' et \lstinline'freeable' de la
+figure~\ref{fig:mmodel-architecture} correspondent respectivement aux fonctions
+\lstinline'__offset', \lstinline'__block_length',
+\lstinline'__base_addr', \lstinline'__initialized', \lstinline'__valid',
+\lstinline'__valid_read' et \lstinline'__freeable' présentées au
+chapitre~\ref{sec:runtime}.
 
 Les fonctions des niveaux \circled{2}, \circled{3} et \circled{4} sont
 implémentées de manière indépendante à l'implémentation du {\em store} (niveau
@@ -74,9 +101,9 @@ effectuée en partie~\ref{sec:eacsl-exp}.
 \label{sec:eacsl-exp}
 
 
-Nous présentons maintenant le résultats de nos expérimentations visant à évaluer
-la capacité de détection d'erreurs de la bibliothèque et la performance à
-l'exécution des différents choix d'implémentation.
+Nous présentons maintenant les résultats de nos expérimentations visant à
+évaluer la capacité de détection d'erreurs de la bibliothèque et la performance
+à l'exécution des différents choix d'implémentation.
 
 
 \subsection{Capacité de détection d'erreurs}
@@ -105,12 +132,12 @@ l'exécution des différents choix d'implémentation.
 Nous avons utilisé la technique de mutation pour évaluer la capacité de
 détection d'erreurs en utilisant la vérification d'assertion à l'exécution avec
 \framac.
-Nous avons considéré 5 programmes écrits par nos soins.
+Nous avons considéré 5 programmes écrits et annotés par nos soins.
 Nous avons généré leurs {\em mutants} (en appliquant une {\em mutation} sur leur
 code source) et leur avons appliqué la vérification à l'exécution.
-Les mutations du programme incluent : modifications d'opérateur arithmétique
-numérique, modifications d'opérateur arithmétique sur les pointeurs,
-modifications d'opérateur de comparaison et modifications d'opérateur logique
+Les mutations du programme incluent : modifications d'opérateurs arithmétiques
+numériques, modifications d'opérateurs arithmétiques sur les pointeurs,
+modifications d'opérateurs de comparaison et modifications d'opérateurs logiques
 ($et$ et $ou$).
 L'outil de génération de test \pathcrawler \cite{\citepathcrawler} a été
 utilisé pour produire les cas de test.
@@ -121,11 +148,11 @@ Lorsqu'une violation d'une annotation a été reportée pour au moins un cas de
 test, le mutant est considéré comme étant {\em tué}.
 La figure~\ref{tab:mutation-exp} présente les résultats.
 La première colonne contient les exemples étudiés.
-La deuxième colonne contient le nombre d'annotations dans chaque programme,
-générées par interprétation abstraite (le greffon \Value a été utilisé).
+La deuxième colonne contient le nombre d'annotations dans chaque programme.
 Les colonnes suivantes contiennent le nombre de mutants générés, le nombre de
-mutants équivalents, le nombre de mutants non-équivalents tués, et le
-pourcentage des mutants non-équivalents tués lors de l'exécution.
+mutants équivalents à leur programme d'origine (décidé par analyse manuelle), le
+nombre de mutants non-équivalents tués, et le pourcentage des mutants
+non-équivalents tués lors de l'exécution.
 Lors de ces expérimentations, tous les mutants non-équivalents erronés ont été
 tués, ce qui témoigne de la précision et de la complétude de notre méthode.
 
@@ -144,8 +171,6 @@ Nous avons mesuré le temps d'exécution du programme d'origine et du code
 instrumenté par \eacsltoc avec différentes options, afin d'évaluer les
 performances des différentes implémentations du {\em store} et des différentes
 optimisations.
-Des indicateurs comme le nombre de variables, d'allocations mémoires,
-d'enregistrements et de requêtes ont également été enregistrés.
 
 
 \textbf{Calcul du plus grand préfixe commun :} \\
@@ -164,7 +189,9 @@ la première sur nos exemples.
 \begin{figure}[h!]
   \begin{tikzpicture}
     \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log,
-        legend columns=2,xlabel={$N$},ylabel={temps (s.)}]
+        legend columns=2,xlabel={$N$},ylabel={temps (s.)},scaled ticks=false,
+        x tick label style={rotate=90,anchor=east}, xlabel near ticks,
+        xtick={1000,5000,10000,50000,100000}]
       \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
       \loadedtable;
       \addplot [color=red,ultra thick] table[x=N,y=list] {\loadedtable}
@@ -212,7 +239,7 @@ la première sur nos exemples.
   \end{tikzpicture}
   \vspace{-.8cm}
   \caption{Comparaison du temps d'exécution des différentes implémentations du
-    {\em store} sur un tri fusion
+    {\em store} sur un tri fusion de $N$ éléments
     \label{fig:mmodel-exp}}
 \end{figure}
 
@@ -236,13 +263,50 @@ la première sur nos exemples.
 
 \textbf{Implémentation du {\em store} :}\\
 Pour déterminer quelle implémentation du {\em store} est la plus appropriée,
-nous avons comparé quatre implémentations utilisant : des Patricia tries, des
-listes chaînées, des arbres binaires de recherche non équilibrés et des arbres
-binaires de recherche équilibrés (Splay trees~\cite{Sleator/85}).
+nous avons comparé quatre implémentations utilisant des chaînées (notées $list$
+sur les figures~\ref{fig:mmodel-exp} et~\ref{tab:mmodel-exp}), des arbres
+binaires de recherche non équilibrés (notés $bst$), des arbres binaires de
+recherche équilibrés (Splay trees~\cite{Sleator/85}, notés $St$) et des Patricia
+tries.
+Nous distinguons deux implémentations à base de Patricia tries : la première
+(notée $Pt$) où l'algorithme de recherche du masque du plus grand préfixe commun
+est implémenté de manière linéaire, et la seconde (notée $Pt-dicho$) où la
+recherche du masque du plus grand préfixe commun est implémentée en utilisant
+l'algorithme~\ref{algo:prefix} présenté en partie~\ref{sec:mpgpc}.
+
+Le greffon \eacsltoc utilise une analyse statique qui permet de n'instrumenter
+que ce qui est nécessaire.
+Une analyse dataflow arrière est faite afin de déterminer une sur-approximation
+des left-values dont l'instrumentation est nécessaire pour chaque annotation,
+ce qui réduit le  nombre de left-values surveillées à l'exécution.
+Cette analyse n'étant pas le fruit de nos travaux (section 6 de
+\cite{\citeeacsltoc}), nous ne la présentons pas ici.
+Nous en profitons néanmoins pour mesurer l'impact qu'a cette analyse pour
+chaque implémentation du {\em store} dans nos expérimentations.
+Ces mesures sont respectivement dénotées pour chaque implémentation
+$list$-$AS$, $bst$-$AS$, $St$-$AS$, $Pt$-$AS$ et $Pt$-$dicho$-$AS$.
+
+La figure~\ref{fig:mmodel-exp} représente graphiquement le temps (en secondes)
+passé par chaque implémentation du {\em store} sur un tri fusion pour $N$ =
+1000, 5000, 10000, 50000 et 100000 éléments.
+Les données chiffrées sont dans les cinq dernières lignes de la
+figure~\ref{tab:mmodel-exp}.
+Nous voyons sur la figure~\ref{fig:mmodel-exp} que, sur cet exemple, les
+implémentations du {\em store} sont, de la plus efficace à la moins efficace :
+Splay tree, Patricia trie ``dicho'', Patricia trie ``linéaire'', arbre binaire
+de recherche et liste chaînée.
+Pour chacune de ces implémentations, l'utilisation de l'analyse statique
+dataflow apporte un gain d'efficacité.
+Les meilleures performances de l'implémentation à base de Splay tree sont dues à
+la nature de l'exemple (un tri fusion) où il y a de nombreux accès mémoire
+consécutifs sur même bloc, ce qui joue en faveur des Splay tree : le dernier
+élément accédé est remonté à la racine de l'arbre.
+La figure~\ref{tab:mmodel-exp} prend en compte un plus large spectre de
+programmes, ce qui permet de nuancer ces résultats.
 
 La figure~\ref{tab:mmodel-exp} présente les résultats des expérimentations
 comparant les différentes implémentations du {\em store} et du calcul du plus
-grand préfixe commun.
+grand préfixe commun sur de nombreux exemples.
 La première colonne du tableau contient les exemples étudiés.
 $bS_{10000}$ est une recherche binaire dans un tableau de 10000 éléments.
 $iS_{10000}$ est un tri par insertion d'un tableau de 10000 éléments.
@@ -255,35 +319,32 @@ $m_{30000}$ est une fusion de deux listes chaînées de 10000 et 20000 élément
 $Rbt_{10000}$ est une insertion/suppression de 10000 éléments dans un arbre rouge
 et noir.
 $mS_n$ est un tri fusion d'une liste chaînée de $n$ éléments.
-La ligne supplémentaire ``+ RTE'' de chaque exemple correspond à une application
-préalable du greffon \rte qui génère des assertions qui sont vraies si le
+La ligne supplémentaire ``+ RTE'' de chaque exemple correspond à l'exemple après
+application du greffon \rte qui génère des assertions qui sont vraies si le
 programme ne contient pas d'erreur à l'exécution.
 Nous appelons ces assertions à vérifier des ``alarmes''.
 
-La colonne $\danger$ contient le nombre d'alarmes du programme (générées par les
-greffons \rte et \Value).
+La colonne $\danger$ contient le nombre d'annotations du programme (celles
+ajoutées manuellement et celles générées par le greffon \rte).
 La colonne $\emptyset$ contient le temps d'exécution du programme original.
 Tous les temps d'exécution sont mesurés en secondes.
 Un temps d'exécution est noté $\infty$ quand il dépasse 24 heures.
-Dans les colonnes suivantes, le suffixe ``-AS'' correspond aux expérimentations
-avec application d'une analyse statique permettant de n'instrumenter que ce qui
-est nécessaire (section 6 de \cite{\citeeacsltoc}).
-Cette analyse n'étant pas le fruit de nos travaux, nous ne la présentons pas
-ici.
-La colonne $list$ contient le temps d'exécution du programme lorsque le
-{\em store} est implémenté par une liste chaînée.
-La colonne $bst$ contient le temps d'exécution du programme lorsque le
-{\em store} est implémenté par un arbre binaire de recherche non équilibré.
-La colonne $Pt$ contient le temps d'exécution du programme lorsque le
-{\em store} est implémenté par un Patricia trie et lorsque la recherche du
-masque du plus grand préfixe commun de deux adresses est implémentée de manière
-linéaire.
-La colonne $Pt-dicho$ contient le temps d'exécution du programme lorsque le
-{\em store} est implémenté par un Patricia trie et lorsque la recherche du
-masque du plus grand préfixe commun de deux adresses est implémentée en
-utilisant l'algorithme~\ref{algo:prefix} présenté en partie~\ref{sec:mpgpc}.
-La colonne $St$ contient le temps d'exécution du programme lorsque le
-{\em store} est implémenté par un Splay tree.
+%% La colonne $list$ contient le temps d'exécution du programme lorsque le
+%% {\em store} est implémenté par une liste chaînée.
+%% La colonne $bst$ contient le temps d'exécution du programme lorsque le
+%% {\em store} est implémenté par un arbre binaire de recherche non équilibré.
+%% La colonne $Pt$ contient le temps d'exécution du programme lorsque le
+%% {\em store} est implémenté par un Patricia trie et lorsque la recherche du
+%% masque du plus grand préfixe commun de deux adresses est implémentée de manière
+%% linéaire.
+%% La colonne $Pt-dicho$ contient le temps d'exécution du programme lorsque le
+%% {\em store} est implémenté par un Patricia trie et lorsque la recherche du
+%% masque du plus grand préfixe commun de deux adresses est implémentée en
+%% utilisant l'algorithme~\ref{algo:prefix} présenté en partie~\ref{sec:mpgpc}.
+%% La colonne $St$ contient le temps d'exécution du programme lorsque le
+%% {\em store} est implémenté par un Splay tree.
+Les colonnes $list$ à $St$-$AS$ contiennent le temps d'exécution du programme
+pour chaque implémentation du {\em store}.
 Le temps d'analyse du programme sans instrumentation avec le débogueur
 \valgrind~\cite{\citevalgrind} est indiqué dans la dernière colonne.
 
@@ -294,11 +355,6 @@ propriétés comme l'absence d'erreur de segmentation ou l'absence de fuite de
 mémoire.
 En effet, notre démarche vise à supporter au maximum les annotations \eacsl,
 ce qui nécessite un monitoring plus lourd.
-
-La figure~\ref{fig:mmodel-exp} représente graphiquement le temps (en secondes)
-passé par chaque implémentation du {\em store} sur un tri fusion de 1000, 5000,
-10000, 50000 et 100000 éléments (les données chiffrées sont dans les cinq
-dernières lignes de la figure~\ref{tab:mmodel-exp}).
 
 Les résultats de nos expérimentations confirment nos hypothèses, à savoir :
 
@@ -317,13 +373,8 @@ Les résultats de nos expérimentations confirment nos hypothèses, à savoir :
   du programme permet de réduire le temps d'exécution de manière efficace.
 \end{itemize}
 
-
 Concernant \textbf{H1}, la figure~\ref{tab:mmodel-exp} montre que
 l'implémentation du {\em store} par un Patricia trie est la plus efficace.
-Elle est en moyenne 2500 fois plus rapide que l'implémentation à base de listes
-chaînées, 200 fois plus rapide que celle utilisant les arbres binaires de
-recherche, et 27 fois plus rapide que celle se basant sur les Splay trees.
-
 La version utilisant les Splay trees offre des performances comparables (ou
 légèrement meilleures, jusqu'à 3 fois) sur les exemples contenant de fréquents
 accès mémoire consécutifs au même bloc dans le {\em store}, comme c'est le cas
@@ -333,6 +384,10 @@ sur le même bloc (une multiplication de matrices dans notre exemple), les
 performances sont beaucoup moins bonnes (jusqu'à 500 fois).
 Ceci est dû à la nature des Splay trees : le dernier élément accédé est remonté
 à la racine de l'arbre.
+En moyenne, l'implémentation à base de Patricia trie est 2500 fois plus rapide
+que l'implémentation à base de listes chaînées, 200 fois plus rapide que celle
+utilisant les arbres binaires de recherche, et 27 fois plus rapide que celle se
+basant sur les Splay trees.
 
 Concernant \textbf{H2}, la figure~\ref{tab:mmodel-exp} montre que la version
 dichotomique de la recherche du masque du plus grand préfixe commun est toujours
@@ -360,7 +415,7 @@ théoriques ont été traités dans le chapitre~\ref{sec:runtime}.
 
 Nous avons présenté les résultats de nos expérimentations visant à
 mesurer la capacité de détection d'erreurs et les performances à l'exécution de
-notre implémentation.
+nos implémentations.
 Nous avons notamment comparé les performances de quatre implémentations du
 {\em store}.
 Nous avons également comparé deux implémentations de la recherche du masque du
