@@ -11,8 +11,8 @@ Dans ce cas il est possible que la preuve échoue soit parce que le prouveur
 n'est pas assez puissant pour mener la preuve à terme, soit parce qu'il ne
 dispose pas de suffisamment d'hypothèses à partir des sous-contrats (contrats
 de boucles et contrats des fonctions appelées).
-En effet, il se peut par exemple qu'un invariant de boucle est prouvé mais est
-insuffisant pour prouver la postcondition de la fonction sous test.
+En effet, il se peut par exemple qu'un invariant de boucle soit prouvé mais
+qu'il soit insuffisant pour prouver la postcondition de la fonction sous test.
 Dans ce cas, nous disons qu'il y a une faiblesse du sous-contrat.
 Nous utilisons la génération de tests pour exhiber ces faiblesses.
 
@@ -332,13 +332,15 @@ $\GSWD$ peut produire quatre résultats : (\nc,\,$V$,\,$a$),
 (\cw,\,$V$,\,$a$,\,$C$), ``\no'' ou ``\textsf{?}''.
 Elle retourne (\nc,\,$V$,\,$a$) si un \NCCE $V$ a été trouvé pour l'annotation
 $a$, et (\cw,\,$V$,\,$a$,\,$C$) si $V$ a été classifié en tant que \GSWCE
-indiquant l'annotation $a$ et l'ensemble des sous-contrats $C$.
+indiquant que l'ensemble des sous-contrats $C$ est trop faible pour vérifier
+l'annotation $a$.
 Le chemin de programme $\pi_V$ activé par le cas de test $V$ et menant à
 l'erreur (sur $P^{\NC}$ ou $P^{\GSW}$) est également enregistré.
 Si $\GSWD$ a réussi à explorer l'intégralité des chemins du programme sans
 trouver de \GSWCE, elle retourne \no.
-Sinon, si l'exploration des chemins du programme est seulement partielle, elle
-retourne \textsf{?} ({\em unknown}).
+Sinon, si l'exploration des chemins du programme est seulement partielle, et
+qu'aucun contre-exemple n'a été trouvé, elle retourne \textsf{?}
+({\em unknown}).
 
 
 \section{Détection de faiblesse d'un sous-contrat}
@@ -524,8 +526,8 @@ $\mbox{\lstinline'nondet'}_{\mbox{\lstinline'j'}}$ sont les valeurs non
 déterministes produites par la fonction \lstinline'Nondet' afin de simuler la
 modification des variables \lstinline'dest[0]' et \lstinline'j' par la boucle.
 
-Ici aussi, le résultat de \SWD indique à Alice précisément quels
-sous-contrats sont trop faibles pour la propriété non prouvée par \Wp, lui
+Ici aussi, le résultat de \SWD indique à Alice précisément quel
+sous-contrat est trop faible pour la propriété non prouvée par \Wp, lui
 facilitant son travail de revue du code et lui permettant de progresser
 rapidement vers une spécification correcte et complète de son programme.
 
