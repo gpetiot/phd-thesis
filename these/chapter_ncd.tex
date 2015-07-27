@@ -4,11 +4,6 @@
 
 \chapterintro
 
-% Alain : je propose les trois paragraphes suivants pour remplacer ceci :
-% \textit{``Dans ce chapitre, nous présentons la notion de non-conformité entre le
-% code et sa spécification, puis nous illustrons la détection de non-conformités
-% dans différents scénarios.''}
-
 
 Il est souvent difficile de déterminer la raison de l'échec de la vérification
 déductive d'un programme C annoté en \eacsl.
@@ -20,10 +15,10 @@ non-conformité entre un code et sa spécification, approfondie dans ce chapitre
 et la faiblesse de spécification, étudiée dans le chapitre suivant.
 La non-conformité entre un code et sa spécification est une notion de correction
 relative entre code et spécification.
-Ce n'est que lorsqu'une spécification est correcte en ce sens -- vis-à-vis du
-code qu'elle spécifie -- qu'il est pertinent d'étudier le second problème, celui
-de la précision suffisante de certaines annotations pour permettre d'en
-démontrer d'autres.
+Ce n'est que lorsqu'une spécification et un code sont corrects, c'est-à-dire
+conformes, qu'il est pertinent d'étudier le second problème, celui de la
+précision suffisante de certaines annotations pour permettre d'en démontrer
+d'autres.
 C'est pourquoi cette seconde question -- de complétude de la spécification --
 est étudiée après la question de non-conformité étudiée ici.
 
@@ -35,10 +30,13 @@ divisions par zéro ou les accès à un tableau hors de ses bornes.
 On ne s'y intéresse qu'indirectement, par vérification déductive d'assertions
 précédant immédiatement un code susceptible de générer une telle erreur.
 Une telle assertion doit être fausse lorsque les conditions de déclenchement de
-l'erreur sont réunies. On ne considère donc que des erreurs concernant le code
-\textbf{et} sa spécification. De plus, parmi ces erreurs, on ne considère que
-celles que nous pouvons détecter par analyse dynamique d'une instrumentation du
-programme annoté.
+l'erreur sont réunies.
+On ne considère donc que des erreurs concernant le code \textbf{et} sa
+spécification.
+De plus, parmi ces erreurs, on ne considère que celles que nous pouvons
+détecter par analyse dynamique d'une instrumentation du programme annoté,
+c'est-à-dire qu'elles correspondent à la violation d'une annotation du fragment
+d'\eacsl défini au chapitre~\ref{sec:lang}.
 Ce sont ces erreurs que nous appelons ``non-conformités''.
 
 Nous proposons plusieurs scénarios de détection de non-conformités entre un code
@@ -46,7 +44,7 @@ et sa spécification, par instrumentation du programme annoté et génération d
 tests structurels pour cette instrumentation.
 La partie~\ref{sec:ncd-def} définit la notion de non-conformité.
 La partie~\ref{sec:ncd-ex} présente l'exemple que nous utilisons tout au long
-de ce chapitre.
+de ce chapitre pour illustrer nos propos.
 La partie~\ref{sec:ncd-scenarios} illustre la détection de non-conformités dans
 deux scénarios construits sur l'exemple présenté en partie~\ref{sec:ncd-ex}.
 
@@ -187,7 +185,7 @@ Pendant le processus de spécification et de vérification déductive, la
 génération de tests peut fournir automatiquement à l'ingénieur validation un
 retour rapide et pertinent afin de l'aider dans son travail.
 En effet, la génération de tests peut trouver un contre-exemple mettant en
-évidence le non respect de la spécification par le code.
+évidence le non respect de la spécification par le code ou l'inverse.
 Ceci est applicable dès le début du processus de spécification, lorsque la
 vérification déductive ne peut pas aboutir car le programme à vérifier n'est
 pas entièrement spécifié (il manque par exemple des contrats de boucle et de
@@ -201,14 +199,14 @@ L'absence de \NCCE après une exploration partielle (ou, si possible, complète)
 des chemins du programme donne à l'ingénieur validation une confiance accrue
 (respectivement une garantie) quant à la conformité du code vis-à-vis de la
 spécification.
-Cette information pousse l'ingénieur à penser que l'échec de la preuve est dû à
-un manque dans la spécification, soit une annotation trop faible, plutôt qu'à
-une erreur, ce qui l'incite à annoter davantage le programme.
+Cette information pousse l'ingénieur à penser que l'échec de la preuve est dû 
+soit à un manque dans la spécification, soit à une annotation trop faible,
+plutôt qu'à une erreur, ce qui l'incite à annoter davantage le programme.
 
 Dans le cas contraire, un contre-exemple met immédiatement en évidence le
-non-respect de la spécification par le programme, signifiant pour l'ingénieur
-validation que cette non-conformité doit être corrigée avant de spécifier
-davantage le programme.
+non-respect de la spécification par le programme (ou l'inverse), signifiant pour
+l'ingénieur validation que cette non-conformité doit être corrigée avant de
+poursuivre la preuve.
 Remarquons que l'objectif n'est certainement pas de faire correspondre à tout
 prix la spécification à un code (potentiellement erroné), mais d'aider
 l'ingénieur validation à identifier le problème (dans la spécification ou dans
@@ -235,8 +233,8 @@ requires \separated(dest+(0..strlen-1), str+(0..strlen-1));
 typically strlen <= 5;
 \end{pretty-codeACSL}
 
-Nous rappelons que la clause \lstinline{typically c;} étend \eacsl et définit
-une précondition \lstinline'c' qui n'est prise en compte que par la génération
+Nous rappelons que la clause \lstinline'typically p;' étend \eacsl et définit
+une précondition \lstinline'p' qui n'est prise en compte que par la génération
 de tests.
 Cette clause permet à Alice de renforcer la précondition si elle souhaite
 restreindre l'exploration des chemins du programme, en diminuant leur nombre.
@@ -321,6 +319,16 @@ définis.
 \label{sec:ncd-incr}
 
 
+\begin{figure}[bt]
+  \lstinputlisting{listings/deleteSubstr.c}
+  \vspace{-3mm}
+  \caption{Fonction \lstinline{delete_substr} spécifiée
+    %et prouvée automatiquement
+  }
+  \vspace{-3mm}
+  \label{lst:delete-substr-full}
+\end{figure}
+
 Alice spécifie maintenant la première boucle \lstinline'for' de la ligne 4 de la
 figure~\ref{fig:deleteSubstrTrous} :
 
@@ -363,14 +371,6 @@ Après correction de l'erreur, le contrat de boucle est prouvé avec succès par
 De manière similaire, Alice spécifie et vérifie de manière itérative les deux
 autres boucles du programme.
 
-\begin{figure}[t]
-  \lstinputlisting{listings/deleteSubstr.c}
-  \vspace{-3mm}
-  \caption{Fonction \lstinline{delete_substr} spécifiée}
-  \vspace{-3mm}
-  \label{lst:delete-substr-full}
-\end{figure}
-
 La fonction \lstinline{delete_substr} étant maintenant entièrement spécifiée
 (figure~\ref{lst:delete-substr-full}), elle peut être prouvée par \Wp.
 Cependant le {\em timeout} par défaut du prouveur (10 secondes par propriété)
@@ -402,6 +402,11 @@ des preuves de programmes.
 Nous avons montré que la détection de non-conformité par génération de tests
 rendue possible par la traduction des annotations permettait d'aborder la preuve
 de manière incrémentale et itérative.
+Nous avons illustré la démarche sur l'exemple de la
+figure~\ref{fig:deleteSubstrTrous}.
+Cette démarche a abouti au code et à la spécification de la
+figure~\ref{lst:delete-substr-full}.
+%qui est prouvée automatiquement avec le greffon \Wp de \framac.
 En effet, il est possible de spécifier partiellement un programme puis de
 détecter si le code est conforme à cette partie avant de poursuivre le travail
 de spécification.
