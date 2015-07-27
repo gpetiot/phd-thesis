@@ -1,7 +1,7 @@
 int is_present(int* t, int n, int v) {
  §$Beg_{\texttt{is\_present}}:$§
   int *old_t = t; int *old_val_t = malloc(((n-1)+1)*sizeof(int)); int old_n = n;
-  int old_v = v; int res§$_{\texttt{is\_present}}$§ = 0; int i = 0; int iter_t;
+  int old_v = v; int res§$_{\texttt{is\_present}}$§; int i; int iter_t; res§$_{\texttt{is\_present}}$§ = 0; i = 0;
   for(iter_t = 0; iter_t < n; iter_t++) old_val_t[iter_t] = t[iter_t];
   §$\underline{\Zinit \mbox{var\_{38} = 0}}$§; §$\underline{\Zinit \mbox{var\_{39} = n}}$§; int var_40 = §$\underline{ \mbox{var\_38}\Zclear\ \mbox{<= var\_{39}}\Zclear}$§; fassume(var_40);
   fassume(fvalidr(t,0,(n-1)));

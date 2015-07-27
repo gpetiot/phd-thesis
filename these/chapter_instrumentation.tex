@@ -64,9 +64,9 @@ au début de la portion de code insérée, et la notation
 être désallouée à la fin du code inséré.
 Nous soulignons les opérations (affectation, comparaison, \dots) qui utilisent
 l'arithmétique non bornée (par opposition à l'arithmétique modulaire), et
-doivent être traduites en utilisant une bibliothèque comme GMP afin de conserver
-la sémantique de l'arithmétique entière non bornée d'\eacsl et de pouvoir
-raisonner sur les débordements d'entiers.
+doivent être traduites en utilisant une bibliothèque comme GMP~\cite{GMP} afin
+de conserver la sémantique de l'arithmétique entière non bornée d'\eacsl et de
+pouvoir raisonner sur les débordements d'entiers.
 La partie~\ref{sec:integers} illustre la détection de débordements d'entiers par
 GMP.
 
@@ -234,10 +234,6 @@ aux lignes 29--34 du listing~\ref{lst:abbrv}.
     négatif dû à une traduction naïve},label=lst:Z:1]
                 {listings/naive_false_negative.c}
 
-\lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
-    une traduction naïve},label=lst:Z:2]
-                {listings/naive_false_positive.c}
-
 
 Les listings~\ref{lst:Z:1} et~\ref{lst:Z:2} montrent deux exemples où
 une traduction naïve des annotations contenant des entiers mathématiques mène
@@ -257,6 +253,11 @@ représenter les valeurs pouvant provoquer un débordement d'entier (ici
 Les variables nécessaires pour la gestion des entiers non bornés sont créées et
 initialisées, puis le résultat est calculé et les comparaisons sont faites en
 tant qu'entier non borné.
+
+\lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
+    une traduction naïve},label=lst:Z:2]
+                {listings/naive_false_positive.c}
+
 Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \eacsl (ligne 2)
 qui est toujours correcte : pour tout entier positif \lstinline'x', son
 successeur est aussi positif.
@@ -271,15 +272,15 @@ faux négatif dans le premier cas et un faux positif dans le deuxième cas, ce
 qui porterait atteinte à la correction et à la précision de notre méthode.
 Les règles de traduction pour les constructions \eacsl que nous présentons
 respectent la sémantique des entiers non bornés d'\eacsl et suppose
-l'utilisation d'une bibliothèque externe telle GMP, comme illustré dans les
-listings~\ref{lst:abbrv} et~\ref{lst:Z:1}.
+l'utilisation d'une bibliothèque externe telle GMP, comme c'est illustré dans
+les listings~\ref{lst:abbrv} et~\ref{lst:Z:1}.
 
 
 \section{Traduction des annotations \eacsl}
 \label{sec:annot}
 
 
-La traduction des annotations est définie par les règles dans cette partie.
+La traduction des annotations est définie dans cette partie par des règles.
 Cela requiert de traduire les termes et les prédicats \eacsl.
 Ces transformations sont décrites par les règles des parties~\ref{sec:term}
 et~\ref{sec:pred}.
@@ -295,7 +296,7 @@ chapitre précédent :
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)^*$;
 \item $y$ et $z$ sont des left-values quelconques;
-\item $i$, $i_1$, $i_2$ sont des instructions C;
+%\item $i$, $i_1$, $i_2$ sont des instructions C;
 \item $P$ est un programme C annoté et $P'$ est le programme instrumenté
   obtenu après traduction du programme $P$.
 \end{itemize}
@@ -347,6 +348,8 @@ La figure~\ref{fig:annot} décrit les règles de traduction pour les assertions
 \textsc{$\alpha$-assume-pre}), les clauses \lstinline'assigns'
 (\textsc{$\alpha$-check-assigns}) et les postconditions
 (\textsc{$\alpha$-check-post}).
+Ces règles utilisent la traduction des prédicats notée $(l, p) \prule (I, e)$ et
+la traduction des termes notée $(l, t) \trule (I, e)$.
 La règle \textsc{$\alpha$-assert} vérifie simplement avec la fonction
 \lstinline'fassert' la valeur $e$ de la traduction du prédicat $p$ au label $l$.
 La règle \textsc{$\alpha$-check-pre} vérifie avec la fonction
@@ -469,6 +472,8 @@ normalisation, est désignée par la variable \lstinline[escapechar=§]'res'$_f$
 $f$ est le nom de la fonction courante.
 Cette variable est unique dans chaque fonction après normalisation de l'arbre de
 syntaxe abstraite par \framac.
+Notons que l'accès au nom de la fonction courante n'est pas formalisé pour
+simplifier les règles.
 La règle \textsc{$\tau$-const} établit qu'une variable entière GMP est définie
 pour prendre la valeur d'une contante entière non bornée.
 Les constantes d'un autre type sont implicitement converties en entier non
@@ -603,7 +608,7 @@ Les règles \textsc{$\pi$-true} et \textsc{$\pi$-false} indiquent que
 Les autres règles sont compositionnelles :
 les prédicats fils sont traduits récursivement, puis le résultat de la
 traduction est construit à partir des valeurs des prédicats fils.
-La règle \textsc{$\pi$-equiv} utilise l'équivalence
+La règle \textsc{$\pi$-equiv} utilise l'équivalence suivante
 $p_1 \Leftrightarrow p_2 \equiv p_1 \Rightarrow p_2 \land p_2 \Rightarrow p_1$
 sous la forme $(\lnot p_1 \lor p_2) \land (\lnot p_2 \lor p_1)$.
 Les règles \textsc{$\pi$-and}, \textsc{$\pi$-or} et \textsc{$\pi$-impl}
@@ -727,9 +732,10 @@ est une variable globale ou un paramètre formel de la fonction sous test
 \textbf{Arithmétique non bornée.}
 Tandis que l'utilisation d'une bibliothèque externe d'arithmétique non bornée
 (comme GMP) pour traduire les entiers d'\eacsl est appropriée pour la validation
-à l'exécution, il n'en est pas de même pour la génération de tests :
-si le code des fonctions de la bibliothèque est analysé par le
-générateur de tests, alors cette solution se révèlera inefficace.
+à l'exécution, il n'en est pas de même pour la génération de tests qui traite
+tous les chemins d'exécution : si le code des fonctions de la bibliothèque est
+analysé par le générateur de tests, cette solution se révèlera inefficace
+à cause de l'explosion du nombre de chemins d'exécution.
 En effet, la génération de tests à partir du programme instrumenté aura à
 traiter un code beaucoup plus compliqué, avec de nombreux appels de fonctions, 
 des allocations/désallocations dynamiques, etc.
@@ -858,7 +864,8 @@ la traduction.
 L'absence d'erreur (propriété~\ref{lem:noerror}) est un lemme nécessaire à la
 justification des propriétés~\ref{th:error} et~\ref{th:inclusion}.
 Il énonce que la traduction d'un terme ou d'un prédicat \eacsl quelconque ne
-provoque pas d'erreur.
+provoque pas d'erreur à l'exécution, pas de division par zéro, pas d'accès
+invalide, etc.
 
 Dans les parties~\ref{sec:term-translation} et~\ref{sec:predicate-translation}
 nous déclinons ces propriétés sur les termes et sur les prédicats.
@@ -897,11 +904,11 @@ initiale ne sont pas impactées dans la mémoire résultante
 terme n'est pas la mémoire d'erreur $\errormem$ (propriété~\ref{lem:noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque terme.
 Elles nous permettent de prouver la propriété~\ref{lem:term-correct}.
-Pour ne pas alourdir ce chapitre, la preuve n'est fournie que pour la règle
-\textsc{$\tau$-const} de traduction des constantes.
+À titre d'exemple, la preuve est fournie pour la règle \textsc{$\tau$-const} de
+traduction des constantes.
 
 
-\subsubsection{Correction de la traduction des constantes}
+\subsubsection*{Correction de la traduction des constantes}
 
 
 Rappelons la règle de traduction des constantes :
@@ -942,8 +949,8 @@ Nous les justifions une à une :
 
 \begin{proof}[Justification de la propriété~\ref{lem:term-correct}.]~\\
   Nous transformons le membre droit en une expression identique au membre gauche
-  en appliquant les règles de sémantique dénotationnelle et de définition des
-  mémoires :
+  en appliquant les règles de sémantique dénotationnelle (indiquées à chaque
+  étape au dessus du symbole $=$) et de définition des mémoires :
 
   \begin{tabular}{rcl}
     \multicolumn{3}{l}{
@@ -1034,11 +1041,11 @@ prédicat n'est pas la mémoire d'erreur $\errormem$
 (propriété~\ref{lem:noerror}).
 Ces propriétés sont vérifiées par la traduction de chaque prédicat.
 Elles nous permettent de prouver la propriété~\ref{lem:pred-correct}.
-Pour ne pas alourdir ce chapitre, la preuve n'est fournie que pour la règle
-\textsc{$\pi$-and} de traduction des conjonctions.
+À titre d'exemple, la preuve est fournie pour la règle \textsc{$\pi$-and} de
+traduction des conjonctions.
 
 
-\subsubsection{Correction de la traduction des conjonctions}
+\subsubsection*{Correction de la traduction des conjonctions}
 
 
 La règle de traduction du prédicat de conjonction \textsc{$\pi$-and} est
@@ -1487,6 +1494,7 @@ Nous les justifions une à une :
     \end{tabular}
   \end{center}
 
+  Raisonnons par l'absurde.
   Supposons que le code généré à partir de l'\lstinline'assert' produit une
   erreur :
 
@@ -1867,7 +1875,7 @@ annotations \eacsl : \lstinline'assert', \lstinline'requires',
 \lstinline'loop invariant', \lstinline'loop assigns' et
 \lstinline'loop variant'.
 Ces différentes instrumentations des annotations nous permettront par la suite
-de détecter différentes erreurs dans le code et la spécification.
+de détecter différentes contradictions entre le code et la spécification.
 
 Grâce à notre justification de correction, nous pouvons assurer l'absence de
 faux positifs lors de la génération de tests sur le programme instrumenté : si
@@ -1875,9 +1883,11 @@ une erreur est trouvée par la génération de tests alors il y a une erreur dan
 le programme d'origine.
 Cette propriété est énoncée comme une implication si l'on considère le langage
 C et le langage \eacsl dans leur ensemble, mais si on se restreint au
-sous-ensemble du langage décrit par la grammaire du chapitre précédent elle
-s'énonce comme une équivalence, c'est-à-dire que toute erreur dans le programme
-original est également trouvée par la génération de tests.
+sous-ensemble du langage décrit par la grammaire du chapitre précédent il y a
+probablement une équivalence, c'est-à-dire que s'il y a une erreur dans le
+programme original et si la traduction des annotations \eacsl est correcte,
+alors il y a une erreur dans le programme instrumenté et elle est révélée par la
+génération de tests.
 
 La justification de cette propriété est fournie de manière formelle pour les
 assertions et de manière informelle mais intuitive et rigoureuse pour les
