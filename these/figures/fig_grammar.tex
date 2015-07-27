@@ -10,22 +10,22 @@
     \underline{\lstinline');'} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{id}
     \underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'} \\
-    & $\mid$ & \underline{\lstinline'if('} \textit{exp}
+    & $\mid$ & \underline{\lstinline'if'} \underline{\lstinline'('} \textit{exp}
     \underline{\lstinline')'}
     \underline{$\bopen$} \textit{instr}$^{*}$ \underline{$\bclose$}
     \underline{\lstinline'else'} \underline{$\bopen$} \textit{instr}$^{*}$
     \underline{$\bclose$} \\
     & $\mid$ & \textit{label} \underline{\lstinline'\:'}
-    \underline{\lstinline'/*@ assert'} \textit{pred}
-    \underline{\lstinline'\; */'} \\
+    \underline{\lstinline'/*@'} \underline{\lstinline'assert'} \textit{pred}
+    \underline{\lstinline'\;'} \underline{\lstinline'*/'} \\
     & $\mid$ & \textit{label}$^{\textit{as}\;l}$ \underline{\lstinline'\:'}
-    \underline{\lstinline'/*@ loop invariant'} \textit{pred}
+    \underline{\lstinline'/*@'} \underline{\lstinline'loop invariant'} \textit{pred}
     \underline{\semicolon} \\
     &        & \underline{\lstinline'    loop assigns'} \textit{term}$^{+}$
     \underline{\semicolon} \\
     &        & \underline{\lstinline'    loop variant'} \textit{term}
-    \underline{\lstinline'\; */'} \\
-    &        & \underline{\lstinline'while('} \textit{exp}
+    \underline{\lstinline'\;'} \underline{\lstinline'*/'} \\
+    &        & \underline{\lstinline'while'} \underline{\lstinline'('} \textit{exp}
     \underline{\lstinline')'}
     \underline{$\bopen$}
     \textit{BegIter}$_l$ \underline{\lstinline'\:'} \underline{\semicolon}
@@ -37,14 +37,14 @@
     \textit{basic-type} & ::= & \underline{\lstinline'int'}
     $\mid$ \underline{\lstinline'char'}
     $\mid$ \underline{\lstinline'long'} \\
-    \textit{function} & ::= & \underline{\lstinline'/*@ requires'}
+    \textit{function} & ::= & \underline{\lstinline'/*@'} \underline{\lstinline'requires'}
     \textit{pred} \underline{\semicolon} \\
     &     & \underline{\lstinline'    typically'} \textit{pred}
     \underline{\semicolon} \\
     &     & \underline{\lstinline'    assigns'}
     \textit{term}$^{+}$ \underline{\semicolon} \\
     &     & \underline{\lstinline'    ensures'} \textit{pred}
-    \underline{\lstinline'\; */'} \\
+    \underline{\lstinline'\;'} \underline{\lstinline'*/'} \\
     &     & \textit{type}$^{\textit{as}\;T}$ \textit{id}$^{\textit{as}\;f}$
     \underline{\lstinline'('} (\textit{type} \textit{id})$^{*}$
     \underline{\lstinline')'} \underline{$\bopen$}
