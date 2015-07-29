@@ -49,6 +49,8 @@ int delete_substr(char *str, int strlen, char *substr, int sublen, char *dest) {
  for(j = 0; j < start; j++) dest[j] = str[j];
  /*@ loop invariant \forall integer m; start <= m < j ==>
    @                    \at(str[m+sublen],Pre) == dest[m];
+   @ loop invariant \forall integer i; 0 <= i < strlen ==>
+   @                    str[i] == \at(str[i], Pre);
    @ loop invariant start <= j <= strlen-sublen;
    @ loop assigns dest[start..strlen-sublen-1], j;
    @ loop variant strlen-sublen-j; */

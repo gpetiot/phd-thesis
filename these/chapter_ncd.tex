@@ -323,7 +323,7 @@ définis.
   \lstinputlisting{listings/deleteSubstr.c}
   \vspace{-3mm}
   \caption{Fonction \lstinline{delete_substr} spécifiée
-    %et prouvée automatiquement
+    et prouvée automatiquement
   }
   \vspace{-3mm}
   \label{lst:delete-substr-full}
@@ -405,8 +405,10 @@ de manière incrémentale et itérative.
 Nous avons illustré la démarche sur l'exemple de la
 figure~\ref{fig:deleteSubstrTrous}.
 Cette démarche a abouti au code et à la spécification de la
-figure~\ref{lst:delete-substr-full}.
-%qui est prouvée automatiquement avec le greffon \Wp de \framac.
+figure~\ref{lst:delete-substr-full}
+qui est prouvée automatiquement avec le greffon \Wp de \framac
+\footnote{nécessite l'option \texttt{-wp-split}, \framac Sodium, \altergo 0.95.2
+  et \cvcthree 2.4.1}.
 En effet, il est possible de spécifier partiellement un programme puis de
 détecter si le code est conforme à cette partie avant de poursuivre le travail
 de spécification.
