@@ -74,17 +74,12 @@
 \newcommand{\cw}{\textsf{sw}\xspace}
 \newcommand{\yes}{\textsf{yes}\xspace}
 \renewcommand{\no}{\textsf{no}\xspace}
-\renewcommand{\C}{{\ensuremath\mathcal{C}\xspace}}
+\ifx\C\undefined
+  \newcommand{\C}{{\ensuremath\mathcal{C}\xspace}}
+\else
+  \renewcommand{\C}{{\ensuremath\mathcal{C}\xspace}}
+\fi
 \newcommand{\A}{{\ensuremath\mathcal{A}\xspace}}
-
-\declareupmtheorem{myproperty}{Propri\'et\'e}{Liste des propri\'et\'es}
-
-\newenvironment{example}[1][Exemple]{\begin{trivlist}
-\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
-\newenvironment{remark}[1][Remarque]{\begin{trivlist}
-\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
-\newenvironment{notation}[1][Notations]{\begin{trivlist}
-\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
 
 \newcommand{\commentAG}[1]{{\color{red}((AG: {#1}))}}
 \newcommand{\commentGP}[1]{\colorbox{violet}{{\color{white}((GP: {#1}))}}}

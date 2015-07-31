@@ -4,13 +4,24 @@
 \usepackage[frenchb]{babel}
 \usepackage[nounderscore]{syntax}
 \usepackage{listings,courier,multirow,colortbl,hyperref,url,etex,pstricks-add,
-  lscape,tikz,pgfplots,amssymb,xspace,mathtools,stmaryrd,faktor,algorithm}
-\usepackage{algpseudocode}
+  lscape,tikz,pgfplots,amssymb,xspace,mathtools,stmaryrd,faktor,algorithm,
+  algpseudocode}
 \usetikzlibrary{matrix,shapes,backgrounds,fit,chains,arrows}
 
 
 \input{commands}
 \input{style_listings}
+
+
+
+\declareupmtheorem{myproperty}{Propri\'et\'e}{Liste des propri\'et\'es}
+\newenvironment{example}[1][Exemple]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remarque]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{notation}[1][Notations]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+
 
 
 \declarethesis{Contribution à la Vérification de Programmes C par Combinaison
