@@ -56,20 +56,19 @@ précondition, etc.) sur différentes propriétés d'une même fonction.
 La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
 \framac, combine l'interprétation abstraite, le {\em slicing} et la
 génération de tests structurels avec \pathcrawler.
-L’analyse statique signale les instructions risquant de provoquer des erreurs à
-l’exécution par des alarmes, dont certaines peuvent être de fausses alarmes,
-puis l’analyse dynamique génère des tests confirmant ou infirmant ces alarmes.
-Sur des programmes de grande taille, l'analyse dynamique peut manquer de temps
-pour classer toutes ces alarmes (à cause de l'explosion combinatoire des
-exécutions possibles).
-Le {\em slicing} est utilisé pour réduire la taille des programmes testés et
-donc le temps nécessaire à leur analyse.
+%% L’analyse statique signale les instructions risquant de provoquer des erreurs à
+%% l’exécution par des alarmes, dont certaines peuvent être de fausses alarmes,
+%% puis l’analyse dynamique génère des tests confirmant ou infirmant ces alarmes.
+%% Sur des programmes de grande taille, l'analyse dynamique peut manquer de temps
+%% pour classer toutes ces alarmes (à cause de l'explosion combinatoire des
+%% exécutions possibles).
+%% Le {\em slicing} est utilisé pour réduire la taille des programmes testés et
+%% donc le temps nécessaire à leur analyse.
 
-Cette méthode utilise l'analyse de valeurs (interprétation abstraite) afin de
-sélectionner les instructions pour lesquelles le risque d'une erreur à
+L'analyse de valeurs (par interprétation abstraite) sélectionne les instructions
+pour lesquelles le risque d'une erreur à
 l'exécution n'est pas écarté (nous les appellerons ``alarmes'' par la suite),
 par exemple une division par zéro ou un accès invalide à la mémoire.
-
 Ces alarmes vont être confirmées ou non par des tests.
 L'outil de génération de tests structurels \pathcrawler \cite{\citepathcrawler}
 est utilisé pour tenter de mettre en évidence un cas de test pour lequel le
