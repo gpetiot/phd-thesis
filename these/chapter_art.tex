@@ -369,6 +369,9 @@ Les états de l'abstraction, les régions, sont des classes d'équivalence des
 états du programme concret. S'il n'existe aucun chemin de la région initiale
 vers une région d'erreur, alors il n'existe aucune suite de transitions
 concrètes menant d'un état initial concret à un état d'erreur concret.
+\synergy combine \slam et \dart (\cegar compositionnel + test non
+compositionnel).
+L'algorithme est intra-procédural.
 
 \dash \cite{\citedash} est une évolution de \synergy, prenant en
 compte les appels de procédure et les pointeurs (contrairement à
@@ -378,9 +381,6 @@ compte les appels de procédure et les pointeurs (contrairement à
 les relations d'alias mises en évidence par les tests. La génération de tests
 guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
 la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
-\synergy combine \slam et \dart (\cegar compositionnel + test non
-compositionnel).
-L'algorithme est intra-procédural.
 
 
 \subsubsection*{\Smash}
