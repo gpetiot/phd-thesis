@@ -347,9 +347,8 @@ post-conditions) pour chaque fonction (contraintes sur les variables en entrée
 et en sortie).
 Ces résumés vont être réutilisés si possible afin d'éviter de ré-exécuter la
 fonction correspondante.
-La génération automatique de ces résumés est présentée comme se faisant par
-``analyse statique interprocédurale'' mais se rattacherait plutôt à une analyse
-dynamique car utilisant une exécution symbolique (et résolution de contraintes).
+La génération automatique de ces résumés se base sur une exécution symbolique et
+une résolution de contraintes.
 \smart exécute une analyse dynamique compositionnelle, c'est-à-dire que les
 résultats intermédiaires sont mémorisés sous la forme de résumés réutilisables.
 C'est une extension de l'algorithme d'analyse dynamique non compositionnelle de
