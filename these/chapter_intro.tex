@@ -24,7 +24,8 @@ le plan de la thèse est annoncé en partie~\ref{sec:plan}.
 
 Le domaine de la vérification et de la validation regroupe un ensemble de
 techniques du cycle de développement des logiciels qui ont pour objectif de
-s'assurer de leur correction et de leur sûreté.
+s'assurer de leur bon fonctionnement (notamment de leur correction et de leur
+sûreté).
 Ces deux notions sont apparues dans les années soixante-dix avec les travaux de
 \bsc{Dijkstra}~\cite{Dijkstra/75}, \bsc{Floyd}~\cite{Floyd/63} et
 \bsc{Hoare}~\cite{Hoare/69}.
@@ -120,11 +121,11 @@ peuvent éventuellement être plus simples.
 Par exemple, le domaine des entiers pourrait être abstrait par un domaine de
 trois valeurs $(-, 0, +)$ symbolisant respectivement les entiers négatifs,
 l'entier nul et les entiers positifs.
-Appliquée à l’analyse de valeurs, elle consiste à calculer à chaque ligne du
-code une sur-approximation de l’ensemble des valeurs prises par chaque variable
-en cette ligne lors de toutes les exécutions du programme, permettant ainsi de
-détecter certaines erreurs comme les divisions par zéro ou les accès en dehors
-des bornes des tableaux.
+Une analyse de valeurs par interprétation abstraite consiste à calculer à chaque
+ligne du code une sur-approximation de l’ensemble des valeurs prises par chaque
+variable en cette ligne lors de toutes les exécutions du programme, permettant
+ainsi de détecter certaines erreurs comme les divisions par zéro ou les accès en
+dehors des bornes des tableaux.
 
 Pour contourner le problème d’indécidabilité, la théorie de l’interprétation
 abstraite construit une méthode qui, à la même question, répondra ``oui'',
@@ -147,7 +148,7 @@ logiciels critiques.
 \fluctuat~\cite{\citefluctuat} mesure précisément les approximations faites à
 l'exécution d'un programme C.
 \framac intègre un greffon d'interprétation abstraite nommé
-\Value~\cite{\citevalue}.
+\Value~\cite{\citevalue,\citeframac}.
 
 
 \subsubsection{Abstraction à base de prédicats}
@@ -155,8 +156,8 @@ l'exécution d'un programme C.
 
 
 L'abstraction à base de prédicats \cite{Schiller/OOPSLA12,Ball/FMCO04} est une
-technique permettant de générer automatiquement des abstractions de systèmes
-ayant un nombre d'états fini.
+technique permettant de générer automatiquement des abstractions ayant un nombre
+d'états fini.
 Pour un programme $P$ au nombre d'états infini, un ensemble fini de prédicats
 $E = \{f_1, ..., f_n\}$ est défini.
 Ces prédicats sont des expressions booléennes sur les variables de $P$ et les
@@ -164,12 +165,11 @@ constantes du langage.
 
 Chaque état concret de $P$ est mis en correspondance avec un état abstrait de
 l'abstraction de $P$, après évaluation par les prédicats de $E$. Un état
-abstrait est un $n$-uplet de valeurs booléennes correspondant à la
-satisfaisabilité des $n$ prédicats.
-Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et si la
-satisfaisabilité de ces prédicats à l'état concret $e$ est évaluée
-respectivement à $false, true, true$, alors l'état $e$ correspond à l'état
-abstrait $(\lnot f_1, f_2, f_3)$ dans l'abstraction générée.
+abstrait est un $n$-uplet de valeurs booléennes des $n$ prédicats.
+Par exemple, si 3 prédicats $f_1, f_2, f_3$ sont définis et si la valeur de ces
+prédicats à l'état concret $e$ est évaluée respectivement à $false, true, true$,
+alors l'état $e$ correspond à l'état abstrait $(\lnot f_1, f_2, f_3)$ dans
+l'abstraction générée.
 
 L'abstraction générée comporte un nombre fini d'états (au plus $2^n$) car il n'y
 a qu'un nombre fini de prédicats.
@@ -218,11 +218,11 @@ différents prouveurs afin de vérifier ces formules.
 
 L’analyse dynamique est basée sur des techniques d’exécution du programme, de
 simulation d’un modèle \cite{Whitner/WSC89} ou d'exécution symbolique
-\cite{Clarke/76}.
+\cite{Clarke/76,King/76}.
 
 Ces techniques permettent notamment de réaliser de la génération de tests pour
 un système.
-Les tests peuvent s’appliquer tout au long du cycle de développement d’un
+Le test peut être utilisé tout au long du cycle de développement d’un
 logiciel. Les tests unitaires vérifient le bon fonctionnement des différentes
 entités d’un système, indépendamment les unes des autres. Les tests
 d'intégration vérifient la bonne communication entre ces entités. Les tests de
@@ -234,8 +234,8 @@ En général, les techniques de test ne sont pas exhaustives et n'explorent qu'u
 sous-ensemble des chemins d'exécution du programme.
 En conséquence, l’absence d’échecs lors du passage des tests n’est pas une
 garantie absolue de bon fonctionnement du système.
-Néanmoins, selon les critères utilisés pour la génération des tests, et selon la
-couverture des chemins d'exécution fournie par les tests, on peut acquérir un
+Néanmoins, selon les critères utilisés pour la génération des tests, et selon le
+niveau de couverture fourni par les tests, on peut acquérir un
 certain niveau de confiance dans un système ainsi validé.
 
 Les méthodes de test peuvent être classées en trois catégories : le test
@@ -275,8 +275,8 @@ Une couverture structurelle de ce graphe est recherchée, selon un critère qui
 peut être par exemple ``toutes les instructions'', ``toutes les branches''
 (toutes les décisions) ou ``tous les chemins''.
 
-\pathcrawler \cite{\citepathcrawler} est un outil de génération de tests
-structurels pour les programmes C.
+\pathcrawler \cite{Williams/ASE04,\citepathcrawler} est un outil de génération
+de tests structurels pour les programmes C.
 C'est le générateur de tests que nous utilisons dans nos travaux.
 Il est possible de l'utiliser sous la forme d'un service web :
 \textsc{PathCrawler Online} \cite{\citepconline}.
@@ -285,7 +285,7 @@ Il est possible de l'utiliser sous la forme d'un service web :
 il génère des cas de test respectant un critère de couverture de test. Le
 critère ``tous les chemins'' impose une couverture de tous les chemins
 faisables de $P$. L'exploration exhaustive de tous les chemins étant en pratique
-irréalisable sur des programmes réels, le critère ``tous les k-chemins'' a
+irréalisable sur des programmes réels, le critère ``tous les $k$-chemins'' a
 été défini.
 Il limite l'exploration aux chemins qui ont au plus $k$ itérations
 consécutives de chaque boucle.
@@ -297,13 +297,14 @@ L’exécution concrète permet de confirmer que le chemin parcouru lors de
 l'exécution d'un test est bien celui pour lequel le cas de test exécuté a été
 généré.
 L'exécution symbolique permet de mettre en relation les chemins et les sorties
-du programme avec les entrées, produisant des contraintes qui caractérisent des
-chemins d'exécution.
+du programme avec les entrées, produisant des ``prédicats de chemin''.
+Un prédicat de chemin est un ensemble de contraintes sur les entrées qui
+caractérisent un chemin d'exécution du programme.
 Le principe de l'exécution concolique est de produire progressivement de
 nouvelles entrées pour le programme sous test, dans le but d'exécuter d'autres
 branches du programme.
-Ce processus est répété jusqu'à ce qu'une erreur soit détectée ou que le code
-du programme soit entièrement testé.
+Ce processus est répété jusqu'à ce que le code du programme soit entièrement
+couvert par rapport au critère de couverture sélectionné.
 
 \pathcrawler commence par construire une version instrumentée de $P$
 permettant de tracer l'exécution de chaque cas de test.
@@ -319,7 +320,8 @@ contraintes basé sur \prolog.
 l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
 de $P$ en suivant le chemin $\pi$.
  
-La méthode de génération de test est composée des étapes suivantes :
+La méthode de génération de tests pour le critère ``tous les chemins'' est
+composée des étapes suivantes :
 
 \begin{itemize}
 \item[$(\mathcal{G}_1)$]
@@ -337,8 +339,8 @@ Sinon, aller à $(\mathcal{G}_3)$.
 
 \item[$(\mathcal{G}_3)$]
 Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
-les contraintes du chemin courant. Si les contraintes sont insatisfaisables,
-aller à $(\mathcal{G}_5)$.
+les contraintes du chemin partiel courant $\pi$.
+Si les contraintes sont insatisfaisables, aller à $(\mathcal{G}_5)$.
 Sinon, aller à $(\mathcal{G}_4)$.
 
 \item[$(\mathcal{G}_4)$]
@@ -355,16 +357,19 @@ lequel les contraintes correspondant à $d$ ont été niées, et retour à l'ét
 $(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
 (en considérant que le solveur de contraintes peut trouver une solution dans un
 temps raisonnable) et que seulement le plus court des préfixes infaisables de
-chaque chemin infaisable est exploré.
+chaque chemin infaisable est exploré \cite{\citepathcrawler}.
 \end{itemize}
+
+Cette méthode s'adapte facilement au critère de couverture
+``tous les $k$-chemins'' en évitant d'explorer les chemins avec $\ge k+1$
+itérations consécutives pour une boucle.
 
 Plusieurs outils se basent sur l'exécution concolique pour explorer un programme
 sous test, dont \smart~\cite{\citesmart}, \pex~\cite{\citepex},
 \sage~\cite{\citesage}, \cute~\cite{\citecute}, \klee~\cite{\citeklee},
-\Exe~\cite{\citeexe}, et \pathcrawler~\cite{\citepathcrawler}.
+\Exe~\cite{\citeexe}, et \pathcrawler~\cite{Williams/ASE04,\citepathcrawler}.
 Ces outils utilisent des solveurs de contraintes pour générer des cas de test
-permettant d'aboutir à une couverture souhaitée des exécutions du programme par
-les tests.
+permettant d'aboutir à une couverture souhaitée du programme par les tests.
 
 
 \subsubsection{Test fonctionnel}
@@ -374,11 +379,9 @@ les tests.
 Le test fonctionnel, ou test ``boîte noire'', génère des jeux de test en
 fonction du comportement attendu du programme, qui peut être exprimé sous la
 forme d'une spécification formelle (un contrat) ou d'informations de conception
-informelles.
+informelles (documentation, cahier des charges).
 Le test fonctionnel est utilisé pour vérifier la conformité des réactions du
 logiciel avec les attentes de l'utilisateur, sans connaissance du code source.
-Le principe du test fonctionnel est de choisir un cas de test pour chaque
-comportement particulier du programme sous test. 
 Il existe de nombreuses techniques qui se différencient par la manière de
 choisir les données de test, parmi lesquelles :
 
@@ -403,8 +406,9 @@ offre la possibilité de réaliser des partitions de domaines.
 \label{sec:monitoring}
 
 
-La validation à l'exécution ou {\em runtime checking} \cite{Clarke/06} est
-l'évaluation de la spécification formelle d'un programme lors de son exécution.
+La validation à l'exécution ou {\em runtime assertion checking} \cite{Clarke/06}
+est l'évaluation de la spécification formelle d'un programme lors de son
+exécution.
 Cette méthode opère généralement sur une version modifiée (on dira
 {\em instrumentée}) du programme.
 Ainsi, si une annotation du programme initial est invalide, l'exécution du
@@ -447,8 +451,8 @@ en partie~\ref{sec:framac}.
 \label{sec:framac}
 
 
-\framac \cite{\citeframac} est une plate-forme dédiée à l'analyse statique
-des programmes C, conjointement dévelopée par Inria et le CEA LIST.
+\framac \cite{\citeframac} est une plate-forme dédiée à l'analyse
+des programmes C, conjointement dévelopée par le CEA LIST et Inria.
 Son architecture comporte un noyau et un écosystème de greffons, rendant l’outil
 extensible.
 Les greffons peuvent échanger des informations et utiliser les  services fournis
@@ -464,43 +468,48 @@ dédiées portant sur le code source, exprimées dans le langage \acsl.
 comportementale \cite{Hatcliff/12}, inspiré de \jml \cite{\citejml}, pouvant
 exprimer des propriétés fonctionnelles de programmes C : préconditions,
 postconditions, invariants, etc.
+Les annotations du langage \acsl sont écrites en utilisant la logique
+du premier ordre, et il est possible de définir ses propres fonctions et
+prédicats.
 
 La spécification d'une fonction comprend les préconditions (exprimées par une
 clause \lstinline'requires') requises lors de l'appel et les postconditions
-(\lstinline'ensures') assurées lors du retour.
+(clause \lstinline'ensures') assurées lors du retour.
 Parmi ces postconditions, une clause \lstinline'assigns' indique quels sont les
 emplacements mémoire qui peuvent être affectés par la fonction.
 
-\lstinputlisting[caption={Exemple de spécification \acsl},label=lst:swap]
-   {listings/swap.c}
+\lstinputlisting[caption={Exemple de spécification \acsl},label=lst:swap]{
+  listings/swap.c}
 
 Considérons par exemple une spécification fournie pour une fonction
 \lstinline'swap' (listing~\ref{lst:swap}).
 La première précondition établit que les deux arguments doivent être des
 pointeurs valides, autrement dit, le déréférencement de \lstinline'a' ou de
-\lstinline'b' ne produira pas d'erreur à l'exécution.
-La seconde précondition impose que les emplacements mémoire occupés par chacune
-de ces variables soient disjoints. En plus de \lstinline'\valid' et
-\lstinline'\separated', \acsl fournit de nombreux prédicats et
-fonctions afin de décrire les états de la mémoire.
+\lstinline'b' pour la lecture ou l'écriture des valeurs pointées ne produira pas
+d'erreur à l'exécution.
+La seconde précondition (ligne 2) impose que les emplacements mémoire occupés
+par chacune de ces variables soient disjoints et donc que leurs plages
+d'adresses soient différentes.
+La clause \lstinline'assigns' de la ligne 3 indique que seules les valeurs
+pointées par les pointeurs \lstinline'a' et \lstinline'b' peuvent être modifiées
+par la fonction.
+En plus de \lstinline'\valid' et \lstinline'\separated', \acsl fournit de
+nombreux prédicats et fonctions afin de décrire les états de la mémoire.
 L'expression \lstinline'\at(e,l)' fait référence à la valeur de l'expression
 \lstinline'e' dans l'état de la mémoire au label \lstinline'l'.
 \lstinline'Pre' est un label prédéfini qui fait référence à l'état de la mémoire
 avant l'exécution de la fonction.
-Ainsi, les postconditions (\lstinline'ensures') du listing~\ref{lst:swap}
-signifient qu'à la fin de la fonction, \lstinline'*a' aura la valeur que
-\lstinline'*b' avait au début de la fonction, et réciproquement.
+Ainsi, les postconditions (lignes 4--5) du listing~\ref{lst:swap} signifient
+qu'à la fin de la fonction, \lstinline'*a' aura la valeur que \lstinline'*b'
+avait au début de la fonction, et réciproquement.
 
 Le langage \acsl offre aussi la possibilité d'écrire des annotations dans le
 code source, permettant d'exprimer des propriétés devant être vraies à un point
-donné du programme : les assertions (\lstinline'assert').
+donné du programme : les assertions (clause \lstinline'assert').
 Il est également possible d'exprimer des propriétés devant être vraies avant une
 boucle et après chaque itération de cette boucle : les invariants de boucle
-(\lstinline'loop invariant').
+(clause \lstinline'loop invariant').
 
-Les annotations du langage \acsl sont écrites en utilisant la logique
-du premier ordre, et il est possible de définir ses propres fonctions et
-prédicats.
 Les greffons peuvent valider ou invalider les propriétés \acsl et
 générer des annotations \acsl.
 Les annotations sont donc un moyen d'échanger des informations entre les
@@ -512,13 +521,37 @@ charge de valider ou invalider cette assertion.
 
 Parmi les greffons de \framac, nous pouvons citer \Value (analyse de valeurs par
 interprétation abstraite), \Wp (vérification déductive), \pathcrawler
-(génération de tests structurels), \textsc{Slicing} (simplification syntaxique)
-et \rte (détection d'erreurs à l'exécution potentielles).
+(génération de tests structurels), \textsc{Slicing} (simplification syntaxique),
+\eacsltoc (validation d'assertions à l'exécution) et \rte (détection
+d'erreurs à l'exécution potentielles).
 
 
 \section{Problématique et motivations}
 \label{sec:pb-motiv}
 
+
+La figure~\ref{fig:motiv} présente un schéma classique de vérification des
+logiciels.
+Le code du logiciel est écrit par un ingénieur développement en se basant sur
+une spécification informelle dont la correction n'est pas remise en cause.
+La vérification de logiciels repose le plus souvent sur une spécification
+formelle encodant les propriétés du programme à vérifier.
+La spécification formelle est écrite par un ingénieur validation en se basant
+sur la spécification informelle.
+La tâche de spécification et de vérification déductive (définie en
+\ref{sec:preuve}) des programmes effectuée par l'ingénieur validation est longue
+et difficile et nécessite une connaissance des outils de preuve de programmes.
+En effet, un échec de preuve de programme peut être dû :
+\begin{itemize}
+\item à une non-conformité du code par rapport à sa spécification;
+\item à un contrat de boucle ou de fonction appelée  trop faible pour prouver
+  une autre propriété;
+\item ou à une incapacité du prouveur.
+\end{itemize}
+Il est souvent difficile pour l'utilisateur de décider laquelle de ces trois
+raisons est la cause de l'échec de la preuve, car cette information n'est pas
+(en général) donnée par le prouveur et requiert donc une revue approfondie
+du code et de la spécification.
 
 \begin{figure}[bt]
   \begin{center}
@@ -547,26 +580,6 @@ et \rte (détection d'erreurs à l'exécution potentielles).
   \caption{Processus de vérification par la preuve\label{fig:motiv}}
 \end{figure}
 
-La figure~\ref{fig:motiv} présente un schéma classique de vérification des
-logiciels.
-Le code du logiciel est écrit par un ingénieur développement en se basant sur
-une spécification informelle dont la correction n'est pas remise en cause.
-La vérification de logiciels repose le plus souvent sur une spécification
-formelle encodant les propriétés du programme à vérifier.
-La spécification formelle est écrite par un ingénieur validation en se basant
-sur la spécification informelle.
-La tâche de spécification et de vérification déductive (définie en
-\ref{sec:preuve}) des programmes effectuée par l'ingénieur validation est longue
-et difficile et nécessite une connaissance des outils de preuve de programmes.
-En effet, un échec de preuve de programme peut être dû à une non-conformité du
-code par rapport à sa spécification, à un contrat de boucle ou de fonction
-appelée  trop faible pour prouver une autre propriété, ou à une incapacité du
-prouveur.
-Il est souvent difficile pour l'utilisateur de décider laquelle de ces trois
-raisons est la cause de l'échec de la preuve, car cette information n'est pas
-(ou rarement) donnée par le prouveur et requiert donc une revue approfondie
-du code et de la spécification.
-
 L'objectif de cette thèse est de fournir une méthode de diagnostic automatique
 des échecs de preuve afin de décider si la cause d'un échec de preuve est une
 non-conformité entre le code et la spécification, ou la faiblesse d'un ou
@@ -591,9 +604,9 @@ Cette phase nécessite une traduction en C des annotations \acsl afin
 d'expliciter les violations potentielles d'annotations par la création de
 nouvelles branches dans le programme.
 La préservation de la sémantique par cette traduction nous assure de trouver
-les erreurs dans le code et dans la spécification par génération de tests
-structurels à condition de couvrir tous les chemins d'exécution faisables du
-programme.
+les erreurs de conformité entre le code et la spécification par génération de
+tests structurels à condition de couvrir tous les chemins d'exécution faisables
+du programme.
 L'aspect méthodologique de cette première étape est détaillé
 dans~\cite{Petiot/TAP14} et la traduction des annotations est présentée
 dans~\cite{Petiot/SCAM14}.
@@ -619,7 +632,7 @@ faiblesses de sous-contrats, la justification de correction de ces traductions,
 l'implémentation de notre méthode de diagnostic des échecs de preuve par le test
 sous la forme d'un greffon \framac appelé \stady et des expérimentations
 évaluant l'impact de la méthode sur le diagnostic des échecs de preuve.
-L'outil nous a notamment permis de faciliter la vérification déductive de
+L'outil \stady nous a notamment permis de faciliter la vérification déductive de
 certains programmes \cite{Genestier/TAP15}.
 
 Une autre contribution est la validation à l'exécution des annotations \acsl
