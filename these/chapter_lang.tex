@@ -39,8 +39,11 @@ d'exécution).
     \lstinline{n}},
   label=lst:normalized]{listings/is_present_normalized.c}
 
-Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction sous
-test normalisée en suivant la grammaire de la figure~\ref{fig:gram-c}.
+Nous présentons dans le listing~\ref{lst:normalized} un exemple de fonction
+normalisée en suivant la grammaire de la figure~\ref{fig:gram-c}.
+Le terme \lstinline'\old' fait référence à la valeur du terme au début de la
+fonction courante.
+\lstinline{\result} fait référence au résultat d'une fonction.
 La clause \lstinline'ensures' aux lignes 4--5 indique qu'elle retourne une
 valeur différente de zéro quand la valeur \lstinline'v' en paramètre est
 présente dans le tableau \lstinline't' de longueur \lstinline'n' en paramètre,
@@ -56,48 +59,30 @@ Elle renforce la précondition pour limiter l'explosion combinatoire du nombre d
 chemins à explorer par la génération de tests, elle permet d'obtenir une
 couverture partielle des chemins : seuls les chemins satisfaisant cette clause
 sont considérés.
-Ici elle limite l'espace des états de \lstinline'n' (et donc la taille de
+Ici elle limite l'espace des valeurs de \lstinline'n' (et donc la taille de
 \lstinline't') à $[0, 6]$ (cela peut être vu comme une ``finitization''
 \cite{\citekorat}).
 L'invariant de boucle de la ligne 9 spécifie des bornes pour \lstinline'i'
 sur l'ensemble des itérations de la boucle.
-Le variant de boucle ligne 10 permet de vérifier la terminaison de la boucle.
-La postcondition des lignes 4--5 définit que \lstinline'\result' est non nul si
-et seulement s'il existe un élément de \lstinline't' égal à \lstinline'v'.
+Un variant de boucle permet de s'assurer de la terminaison d'une boucle : le
+terme du variant doit être positif ou nul avant chaque itération et doit
+décroître strictement entre chaque itération.
+Ainsi, le variant de boucle de la ligne 10 spécifie que la boucle pourra
+s'exécuter au plus \lstinline'n-i' fois.
 Notons que pour prouver formellement la postcondition, l'invariant de boucle
 suivant est nécessaire, mais n'est pas inclus volontairement dans cet exemple
 simplifié : \lstinline'\forall integer k; 0<=k<=i-1 ==> \old(t[k])!=v;'.
-Le terme \lstinline'\old' fait référence à la valeur du terme au début de la
-fonction courante.
-\lstinline{\result} fait référence au résultat d'une fonction.
 
 
 \subsection{Syntaxe des instructions et fonctions}
 
 \input{figures/fig_grammar}
 
-La figure~\ref{fig:gram-c} définit la grammaire des instructions et fonctions C.
+La figure~\ref{fig:gram-c} définit la grammaire des instructions et fonctions C
+considérées ici.
 Les symboles terminaux sont \underline{soulignés}.
 Les symboles non-terminaux sont en \textit{italique}.
-Nous supposons que les fonctions respectent la forme normale définie par
-l'entité syntaxique \textit{function} de la grammaire définie dans la
-figure~\ref{fig:gram-c}.
-Pour des raisons de commodité, nous considérons qu'un label précède chaque
-annotation à l'intérieur d'une fonction.
-Nous considérons aussi qu'un label est présent au début et à la fin de chaque
-corps de boucle.
-Ceci n'est pas spécifié par la grammaire de la figure~\ref{fig:gram-c}.
-Dans la figure~\ref{fig:gram-c}, la notation ``${\textit{as}\;X}$'' en exposant
-signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
-par la chaîne à laquelle on fait référence en exposant.
-Par exemple, si \texttt{foo} est le nom (\textit{id}) de la fonction sous test,
-la règle \textit{function} indique que les labels $\texttt{Beg}_f$ et
-$\texttt{End}_f$ dans le corps de cette fonction doivent être
-$\texttt{Beg}_{\texttt{foo}}$ et $\texttt{End}_{\texttt{foo}}$, ce qui assure des
-labels uniques au début et à la fin du corps de la fonction.
-Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
-de chaque fonction, qu'elle retourne une variable appelée \lstinline'res'$_f$ et
-que cette variable n'entre pas en conflit avec une autre variable du programme.
+
 \textit{left-value} est toute expression pouvant se trouver en
 partie gauche d'une affectation (variable simple ou déréférencée).
 Les accès aux pointeurs et aux tableaux sont notés \lstinline't[i]' (ou
@@ -105,12 +90,46 @@ Les accès aux pointeurs et aux tableaux sont notés \lstinline't[i]' (ou
 Pour simplifier, \textit{basic-type} se limite aux types C \lstinline'int',
 \lstinline'char' et \lstinline'long', et \textit{type} se limite aux types
 simples (non pointeur) et aux pointeurs sur types simples.
-\textit{label} respecte les mêmes contraintes que \textit{id} mais fait
-référence aux labels d'un programme C.
 \textit{id} fait référence aux identificateurs de variable (et de fonctions)
 autorisés dans le langage C : suite de caractères alphanumériques pouvant
 contenir des ``\lstinline'_''' mais dont le premier caractère ne peut pas être
 numérique.
+
+Les instructions de la forme \textit{id} \underline{\lstinline'('}
+\textit{exp}$^{*}$ \underline{\lstinline');'} (respectivement
+\textit{left-value} \underline{\lstinline'='} \textit{id}
+\underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'})
+correspondent respectivement aux appels de fonction sans (resp. avec)
+affectation de la valeur de retour.
+\textit{label} respecte les mêmes contraintes que \textit{id} mais fait
+référence aux labels d'un programme C.
+Pour des raisons de commodité, nous considérons qu'un label précède chaque
+annotation (assertion ou contrat de boucle) à l'intérieur d'une fonction.
+Nous considérons aussi qu'un label est présent au début et à la fin de chaque
+corps de boucle.
+Les assertions peuvent être associées à des instructions quelconques.
+Un invariant de boucle, un variant et une clause \lstinline'loop assigns'
+peuvent être associés aux boucles.
+Ces clauses sont facultatives.
+Par exemple la fonction du listing~\ref{lst:normalized} n'a pas de clause
+\lstinline'assigns'.
+
+Nous supposons que les fonctions respectent la forme normale définie par
+l'entité syntaxique \textit{function} de la grammaire définie dans la
+figure~\ref{fig:gram-c}.
+Ceci n'est pas spécifié par la grammaire de la figure~\ref{fig:gram-c}.
+Dans la figure~\ref{fig:gram-c}, la notation ``${\textit{as}\;X}$'' en exposant
+signifie que chaque occurrence de $X$ dans la règle courante doit être remplacée
+par la chaîne à laquelle on fait référence en exposant.
+Par exemple, si \texttt{foo} est le nom (\textit{id}) d'une fonction,
+la règle \textit{function} indique que les labels $\texttt{Beg}_f$ et
+$\texttt{End}_f$ dans le corps de cette fonction doivent être
+$\texttt{Beg}_{\texttt{foo}}$ et $\texttt{End}_{\texttt{foo}}$, ce qui assure des
+labels uniques au début et à la fin du corps de la fonction.
+Nous supposons qu'il existe une unique instruction \lstinline'return' à la fin
+de chaque fonction, qu'elle retourne une variable appelée \lstinline'res'$_f$ et
+que cette variable n'entre pas en conflit avec une autre variable du programme.
+
 Un contrat de fonction à la \eiffel~\cite{\citeeiffel} peut être associé à
 chaque fonction pour spécifier les préconditions et postconditions.
 La clause \lstinline'requires' d'un contrat de fonction désigne la précondition.
@@ -118,21 +137,14 @@ La clause \lstinline'typically' désigne la précondition pour le test, comme so
 nom l'indique elle est spécifique au test et permet de limiter l'explosion
 combinatoire du nombre de chemins.
 La clause \lstinline'assigns' liste les termes pouvant être modifiés par la
-fonction (c'est une sur-approximation).
+fonction.
 La clause \lstinline'ensures' désigne la postcondition de la fonction.
-Les assertions peuvent être associées à des instructions quelconques.
-Un invariant de boucle, un variant (qui garantit la terminaison)
-et une clause \lstinline'loop assigns' doivent être associés aux boucles.
-Ces clauses sont facultatives.
-Par exemple la fonction du listing~\ref{lst:normalized} n'a pas de clause
-\lstinline'assigns'.
-Les symboles non-terminaux \textit{exp}, \textit{term} et \textit{pred} ne sont
-pas définis figure~\ref{fig:gram-c}.
-Nous les définissons maintenant en partie~\ref{sec:gram-term}
-et~\ref{sec:gram-pred}.
+
+Les symboles non-terminaux \textit{exp}, \textit{term} et \textit{pred} sont
+définis dans les parties~\ref{sec:gram-term} et~\ref{sec:gram-pred}.
 
 
-\subsection{Syntaxe des termes \eacsl et des expressions C}
+\subsection{Syntaxe des expressions C et des termes \eacsl}
 \label{sec:gram-term}
 
 \input{figures/fig_grammar_exp_term}
@@ -141,10 +153,9 @@ La figure~\ref{fig:gram-exp-term} définit la grammaire des termes \eacsl et des
 expressions C du langage.
 \textit{cst} est une constante entière ou une chaîne de caractère littérale.
 Les constantes flottantes ne sont pas considérées.
-Nous considérons ici \textit{cst} comme un symbole terminal.
 Les termes \eacsl peuvent être vus comme une extension des expressions C.
 Ils peuvent être d'un type C (comme une expression C) ou d'un type logique (nous
-nous limitons à \lstinline'integer' dans nos travaux).
+nous limitons à \lstinline'integer' ($\mathbb{Z}$) dans nos travaux).
 Les termes sont ``purs'', c'est-à-dire qu'ils sont sans effet de bord.
 De même, nous nous limitons aux expressions C ``pures''.
 Pour cette raison, nous ne considérons pas les expressions comme \lstinline'x++'
@@ -152,19 +163,13 @@ ou \lstinline'++x'.
 Pour cette même raison, les appels de fonction -- pouvant produire des effets 
 de bord -- sont considérés non pas comme des expressions (qui ne peuvent pas
 générer d'effets de bord) mais comme des instructions.
-Les instructions de la forme \textit{id} \underline{\lstinline'('}
-\textit{exp}$^{*}$ \underline{\lstinline');'} (respectivement
-\textit{left-value} \underline{\lstinline'='} \textit{id}
-\underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'}) de la
-figure~\ref{fig:gram-c} correspondent respectivement aux appels de fonction sans
-(resp. avec) affectation de la valeur de retour.
 Le terme \lstinline'\abs' fait référence à la valeur absolue d'un terme.
 \lstinline'\sum(t1, t2, \lambda integer k; t3)' est la somme généralisée
 $\sum_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
 \lstinline'\product(t1, t2, \lambda integer k; t3)' est le produit
 généralisé $\Pi_{\mbox{\lstinline'k = t1'}}^{\mbox{\lstinline't2'}}\mbox{\lstinline't3'}$.
 \lstinline'\numof(t1, t2, \lambda integer k; t3)' fait référence au nombre de
-\lstinline'k' tel que
+valeurs de \lstinline'k' telles que
 $\mbox{\lstinline't1'} \le \mbox{\lstinline'k'} \le \mbox{\lstinline't2'}$ et
 $\mbox{\lstinline't3'} \neq 0$.
 \lstinline'\null' est le terme correspondant au pointeur \lstinline'NULL'.
@@ -174,18 +179,17 @@ $\mbox{\lstinline't3'} \neq 0$.
 
 
 En plus des entiers machine, les termes \eacsl peuvent être des entiers
-mathématiques de type \lstinline{integer} qui sont définis sur l'ensemble
-$\mathbb{Z}$ : les constantes entières, les
-opérations sur les entiers, ainsi que les variables logiques sont de type
-\lstinline{integer}.
+mathématiques de type \lstinline'integer' dans l'ensemble $\mathbb{Z}$.
+Dans un terme \eacsl, les constantes entières, les opérations sur les entiers,
+ainsi que les variables logiques sont de type \lstinline'integer'.
 L'arithmétique entière est non bornée et donc les débordements d'entier
 (\textit{overflows}) sont impossibles.
 \eacsl dispose d'un système de sous-typage pour convertir automatiquement les
 types entiers bornés du C vers les entiers mathématiques.
-Par exemple, si \lstinline{x} est une variable C de type \lstinline{int},
-\lstinline{1} et \lstinline{x+1} sont de type \lstinline{integer} et une
-conversion implicite d'\lstinline{int} vers \lstinline{integer} est introduite
-dans ce contexte quand la variable \lstinline{x} est typée.
+Par exemple, si \lstinline{x} est une variable C de type \lstinline{int}, les
+termes \eacsl \lstinline{1} et \lstinline{x+1} sont de type \lstinline{integer}
+et une conversion implicite d'\lstinline{int} vers \lstinline{integer} est
+introduite dans ce contexte quand la variable \lstinline{x} est typée.
 Ce choix a été fait pour plusieurs raisons.
 Premièrement, un des buts principaux de \framac est la preuve de programmes par
 appel à des prouveurs externes.
