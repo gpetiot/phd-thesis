@@ -11,10 +11,10 @@
     \textit{instr} & ::= & \textit{type} \textit{id} \underline{\semicolon} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{exp}
     \underline{\semicolon} \\
-    & $\mid$ & \textit{id} \underline{\lstinline'('} \textit{exp}$^{*}$
+    & $\mid$ & \textit{id} \underline{\lstinline'('} \textit{exp}$^{*}_,$
     \underline{\lstinline');'} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{id}
-    \underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'} \\
+    \underline{\lstinline'('} \textit{exp}$^{*}_,$ \underline{\lstinline');'} \\
     & $\mid$ & \underline{\lstinline'if'} \underline{\lstinline'('} \textit{exp}
     \underline{\lstinline')'}
     \underline{$\bopen$} \textit{instr}$^{*}$ \underline{$\bclose$}
@@ -26,7 +26,7 @@
     & $\mid$ & \textit{label}$^{\textit{as}\;l}$ \underline{\lstinline'\:'}
     \underline{\lstinline'/*@'} \underline{\lstinline'loop invariant'} \textit{pred}
     \underline{\semicolon} \\
-    &        & \underline{\lstinline'    loop assigns'} \textit{term}$^{+}$
+    &        & \underline{\lstinline'    loop assigns'} \textit{term}$^{+}_,$
     \underline{\semicolon} \\
     &        & \underline{\lstinline'    loop variant'} \textit{term}
     \underline{\lstinline'\;'} \underline{\lstinline'*/'} \\
@@ -42,11 +42,11 @@
     &     & \underline{\lstinline'    typically'} \textit{pred}
     \underline{\semicolon} \\
     &     & \underline{\lstinline'    assigns'}
-    \textit{term}$^{+}$ \underline{\semicolon} \\
+    \textit{term}$^{+}_,$ \underline{\semicolon} \\
     &     & \underline{\lstinline'    ensures'} \textit{pred}
     \underline{\lstinline'\;'} \underline{\lstinline'*/'} \\
     &     & \textit{type}$^{\textit{as}\;T}$ \textit{id}$^{\textit{as}\;f}$
-    \underline{\lstinline'('} (\textit{type} \textit{id})$^{*}$
+    \underline{\lstinline'('} (\textit{type} \textit{id})$^{*}_,$
     \underline{\lstinline')'} \underline{$\bopen$}
     \textit{Beg}$_f$ \underline{\lstinline'\:'}
     $T$ \underline{\lstinline'res'$_f\semicolon$}
