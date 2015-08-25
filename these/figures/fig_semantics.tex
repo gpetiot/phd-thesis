@@ -1,5 +1,6 @@
 \begin{figure}[h!]
   \begin{tabular}{rcll}
+    \comp{$i$}{$\errormem$} &=& $\errormem$ & \eqlabel{C-err} \\
     \comp{$T~x\semicolon$}{$(\env, \store)$}
     &=& ($\env$[$x \mapsto \loc$], $\store$[$\loc \mapsto \bot$])
     où $\loc$ est une adresse fraîche & \eqlabel{C-decl} \\
