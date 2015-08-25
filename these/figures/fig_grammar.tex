@@ -3,6 +3,11 @@
     \textit{left-value} & ::= & \textit{id}
     $\mid$  \textit{id} \underline{\lstinline'['} \textit{exp}
       \underline{\lstinline']'} \\
+    \textit{type} & ::= & \textit{basic-type}
+    $\mid$ \textit{basic-type} \underline{\lstinline'*'} \\
+    \textit{basic-type} & ::= & \underline{\lstinline'int'}
+    $\mid$ \underline{\lstinline'char'}
+    $\mid$ \underline{\lstinline'long'} \\
     \textit{instr} & ::= & \textit{type} \textit{id} \underline{\semicolon} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{exp}
     \underline{\semicolon} \\
@@ -32,11 +37,6 @@
     \textit{instr}$^{*}$
     \textit{EndIter}$_l$ \underline{\lstinline'\:'} \underline{\semicolon}
     \underline{$\bclose$} \\
-    \textit{type} & ::= & \textit{basic-type}
-    $\mid$ \textit{basic-type} \underline{\lstinline'*'} \\
-    \textit{basic-type} & ::= & \underline{\lstinline'int'}
-    $\mid$ \underline{\lstinline'char'}
-    $\mid$ \underline{\lstinline'long'} \\
     \textit{function} & ::= & \underline{\lstinline'/*@'} \underline{\lstinline'requires'}
     \textit{pred} \underline{\semicolon} \\
     &     & \underline{\lstinline'    typically'} \textit{pred}
@@ -55,6 +55,6 @@
     \underline{\lstinline'return res'$_f\semicolon$}
     \underline{$\bclose$} \\
   \end{tabular}
-  \caption{Grammaire des instructions et fonctions C}
+  \caption{Grammaire des instructions et fonctions}
   \label{fig:gram-c}
 \end{figure}
