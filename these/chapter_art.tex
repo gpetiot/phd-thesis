@@ -34,9 +34,9 @@ dans le domaine de la vérification de programmes.
 
 L'intégration de la vérification formelle dans un processus de validation à base
 de tests (comme c'est le cas dans l'avionique) est présenté dans
-\cite{Comar/ERTS12} dans le cadre de \spark \cite{\citespark}.
-\spark est un sous-ensemble du langage Ada orienté pour la conception
-d'applications critiques sûres et sécurisées.
+\cite{Comar/ERTS12} dans le cadre de la plate-forme \spark.
+\spark~\cite{\citespark} est un sous-ensemble du langage Ada orienté pour la
+conception d'applications critiques sûres et sécurisées.
 C'est aussi un écosystème d'outils contenant entre autres l'outil de preuve
 \textsc{SPARKprove} et l'outil de test \textsc{SPARKtest}.
 \cite{Comar/ERTS12} présente la vérification des contrats \spark implicites et
@@ -50,12 +50,13 @@ techniques de vérification (interprétation abstraite, calcul de plus faible
 précondition, etc.) sur différentes propriétés d'une même fonction.
 
 
-\subsubsection*{\textsc{Static ANalysis and TEst} (\sante)}
+\subsubsection*{Détection des erreurs à l'exécution dans \sante}
 
 
-La méthode \sante \cite{Chebaro/11, \citesante}, mise en \oe{}uvre au sein de
-\framac, combine l'interprétation abstraite, le {\em slicing} et la
-génération de tests structurels avec \pathcrawler.
+La méthode \sante (\textsc{Static ANalysis and TEst})
+\cite{Chebaro/11, \citesante} pour la détection des erreurs à l'exécution, mise
+en \oe{}uvre au sein de \framac, combine l'interprétation abstraite, le
+{\em slicing} et la génération de tests structurels avec \pathcrawler.
 %% L’analyse statique signale les instructions risquant de provoquer des erreurs à
 %% l’exécution par des alarmes, dont certaines peuvent être de fausses alarmes,
 %% puis l’analyse dynamique génère des tests confirmant ou infirmant ces alarmes.
@@ -76,8 +77,7 @@ chemin d'exécution passe par cette alarme et provoque une erreur.
 
 Pour diminuer le coût de la génération de tests, \sante simplifie syntaxiquement
 les programmes qui lui seront soumis pour ne garder que les instructions dont
-dépend l'alarme considérée, on appelle cette opération le
-{\em slicing}~\cite{Korel/88}.
+dépend l'alarme considérée, on appelle cette opération le {\em slicing}.
 Des programmes plus simples sont ainsi obtenus, tels que si on constate une
 erreur dans un programme simplifié, alors cette erreur existe dans le programme
 d'origine.
@@ -86,9 +86,8 @@ La première phase de la méthode (l'interprétation abstraite) peut donc assure
 que certaines instructions ne provoqueront pas d'erreur à l'exécution, tandis
 que la seconde phase permet de confirmer que certaines alarmes produisent
 effectivement une erreur à l'exécution.
-La mise en commun des résultats des deux phases permet de classifier davantage
-d'alarmes dans l'une ou l'autre de ces deux catégories que chacune des deux
-méthodes prise séparément.
+La mise en commun des résultats des deux phases permet de classifier plus
+d'alarmes que chacune des deux méthodes prise séparément.
 
 %% L'utilisation du {\em slicing} peut être paramétrée par différentes options,
 %% qui seront détaillées plus bas.
@@ -176,7 +175,7 @@ méthodes prise séparément.
 %% couverture $\{\{a_1; a_3; a_4\}\}$. Et ainsi de suite.
 
 
-\subsubsection*{\dyta}
+\subsubsection*{Détection d'erreurs guidée par analyse statique avec \dyta}
 
 
 \dyta \cite{\citedyta} est un outil combinant une phase d'analyse statique et
@@ -184,10 +183,12 @@ une phase d'analyse dynamique. \codecontracts \cite{\citecodecontracts} est
 utilisé pour spécifier des pré/post-conditions et des invariants de programmes
 C\#, il identifie également les bugs potentiels (violations de contrat) par
 interprétation abstraite.
+La deuxième étape utilise la génération de tests par exécution symbolique
+dynamique avec \pex~\cite{\citepex}.
 
-Après cette analyse statique, \dyta instrumente le programme pour ajouter des
-instructions assurant le rôle de pré-conditions, pour ne pas générer de cas de
-test qui n'ont aucune chance de produire d'erreur à l'exécution.
+\dyta instrumente le programme pour ajouter des instructions assurant le rôle de
+pré-conditions, pour ne pas générer de cas de test qui n'ont aucune chance de
+produire d'erreur à l'exécution.
 L'instrumentation ajoute également des points de contrôle à l'endroit des
 instructions signalées par l'analyse statique, afin de guider l'exécution
 symbolique dynamique du programme par \pex.
@@ -196,17 +197,16 @@ des points de contrôle afin de guider l'exécution concolique du programme par
 \pathcrawler.
 
 L'analyse statique du graphe du flot de contrôle du programme permet à
-\dyta de calculer les points de contrôle à partir desquels les alarmes
-(instructions potentiellement dangereuses) sont inatteignables.
-La génération dynamique de tests réduit le nombre de faux positifs de l'analyse
-statique, et cette dernière guide l'exploration pour la génération dynamique de
-tests.
+\dyta de calculer les points de contrôle à partir desquels les instructions
+potentiellement dangereuses sont inatteignables.
+La génération de tests réduit le nombre de faux positifs de l'analyse statique,
+et cette dernière guide l'exploration pour la génération de tests.
 
 
 \subsubsection*{Vérification collaborative et test}
 
 
-Cette méthode \cite{Christakis/FM12} part du constat que la plupart
+La méthode de \cite{Christakis/FM12} part du constat que la plupart
 des outils de vérification statique (outils utilisant simplement des
 heuristiques, outils d'interprétation abstraite, model-checkers, ou outils de
 preuve) font des compromis afin d'améliorer les performances, de réduire le
@@ -229,11 +229,11 @@ Pour faciliter la vérification statique du programme, l'utilisateur doit au
 préalable ajouter des annotations (invariants de boucle par exemple). Les
 propriétés qui n'ont pas été vérifiées statiquement sont validées par des tests
 unitaires. Le programme est instrumenté afin d'ajouter des vérifications à
-l'exécution pour guider la génération de contre-exemples. \pex est utilisé pour
-générer des cas de test par exécution concolique,
-mettant en évidence des contre-exemples. L'utilisateur peut décider de
-privilégier l'analyse statique ou le test selon qu'il spécifie ou non son
-programme.
+l'exécution pour guider la génération de contre-exemples.
+\pex~\cite{\citepex} est utilisé pour générer des cas de test par exécution
+concolique, mettant en évidence des contre-exemples.
+L'utilisateur peut décider de privilégier l'analyse statique ou le test selon
+qu'il spécifie ou non son programme.
 
 %% Cette combinaison d'analyse statique, d'une instrumentation et du test est
 %% comparable à \sante, bien qu'il manque l'étape de slicing
@@ -246,13 +246,13 @@ programme.
 \subsubsection*{Vérification de propriétés décrites par des automates finis}
 
 
-Cette méthode \cite{Slaby/FMICS12} combine une instrumentation du
+La méthode de \cite{Slaby/FMICS12} combine une instrumentation du
 code source, une étape de {\em slicing} et une exécution symbolique.
 L'instrumentation ajoute des instructions simulant le comportement de
 l'automate fini correspondant au programme, dont les états correspondent aux
 propriétés du programme à vérifier.
-Le {\em slicing} est appliqué pour réduire la taille du programme, on ne
-conserve que le code relatif aux états d'erreur de l'automate. Le programme
+Le {\em slicing} est appliqué pour réduire la taille du programme afin de ne
+conserver que le code relatif aux états d'erreur de l'automate. Le programme
 simplifié doit être équivalent au programme instrumenté en ce qui concerne
 l'atteignabilité des états d'erreur de l'automate.
 L'exécution symbolique du programme par \klee \cite{\citeklee} permet
@@ -273,7 +273,7 @@ de mettre en évidence des contre-exemples pour ces propriétés.
   d'exécution}
 
 
-Cette méthode \cite{Jiang/QSIC12} utilise un {\em slicing} arrière à
+La méthode de \cite{Jiang/QSIC12} utilise un {\em slicing} arrière à
 partir d'une instruction de déréférencement produisant une {\em Null Pointer
 Exception} (en Java). Le {\em slicing} est guidé par une trace du programme
 fournissant la pile des appels de méthodes n'ayant pas terminé. Une analyse
@@ -318,24 +318,25 @@ $\alpha . \lambda^{*} . \beta$ en une seule étape, où $\lambda$ correspond à 
 nombre quelconque d'exécutions d'une boucle.
 
 
-\subsubsection*{\blast}
+\subsubsection*{Vérification des propriétés temporelles de sûreté avec \blast}
 
 
 \blast \cite{\citeblast} vérifie les propriétés temporelles de sûreté d'un
-programme C, ou met en évidence un chemin d'exécution violant une propriété. Le
-raffinement des abstractions du programme est basé sur une abstraction par
-prédicats et la découverte des prédicats se fait par interpolation. C'est une
-implémentation de la méthode \cegar \cite{\citecegar} tout comme
-\slam \cite{\citeslam} et \magic \cite{\citemagic}. La génération des cas
-de test se fait par exécution symbolique.
+programme C, ou met en évidence un chemin d'exécution violant une propriété.
+Le raffinement des abstractions du programme est basé sur une abstraction par
+prédicats et la découverte des prédicats se fait par interpolation.
+C'est une implémentation de la méthode \cegar \cite{\citecegar} tout comme
+\slam \cite{\citeslam} et \magic \cite{\citemagic}.
+La génération des cas de test se fait par exécution symbolique.
 
 \blast ne traite ni les débordements arithmétiques ni les opérations
 bit-à-bit, et considère que toutes les opérations arithmétiques sur les
-pointeurs sont sûres. Le langage d'invariants utilisé pour décrire les
-propriétés ne contient pas de quantificateurs, contrairement à \acsl.
+pointeurs sont sûres.
+Le langage d'invariants utilisé pour décrire les propriétés ne contient pas de
+quantificateurs.
 
 
-\subsubsection*{\smart}
+\subsubsection*{Génération de tests avec résumés : \smart}
 
 
 \smart ({\em Systematic Modular Automated Random Testing}) \cite{\citesmart},
@@ -355,52 +356,51 @@ C'est une extension de l'algorithme d'analyse dynamique non compositionnelle de
 \dart.
 
 
-\subsubsection*{\synergy, \dash et \yogi}
+\subsubsection*{Collaboration de sur-approximation et sous-approximation}
 
 
-\synergy \cite{\citesynergy} est un algorithme combinant du test (essayer
+\synergy~\cite{\citesynergy} est un algorithme combinant du test (essayer
 d'atteindre un état d'erreur) et une abstraction (trouver une abstraction
 suffisamment précise montrant qu'aucun chemin ne peut atteindre un état
-d'erreur). La sous-approximation du test et la sur-approximation de
-l'abstraction sont raffinées de manière itérative. L'abstraction est utilisée
-pour guider la génération de tests. Les tests sont utilisés pour décider
-{\em où} raffiner l'abstraction.
+d'erreur).
+La sous-approximation du test et la sur-approximation de l'abstraction sont
+raffinées de manière itérative.
+L'abstraction est utilisée pour guider la génération de tests.
+Les tests sont utilisés pour décider {\em où} raffiner l'abstraction.
 Les états de l'abstraction, les régions, sont des classes d'équivalence des
-états du programme concret. S'il n'existe aucun chemin de la région initiale
-vers une région d'erreur, alors il n'existe aucune suite de transitions
-concrètes menant d'un état initial concret à un état d'erreur concret.
-\synergy combine \slam et \dart (\cegar compositionnel + test non
+états du programme concret.
+S'il n'existe aucun chemin de la région initiale vers une région d'erreur, alors
+il n'existe aucune suite de transitions concrètes menant d'un état initial
+concret à un état d'erreur concret.
+\synergy combine \slam et \dart (\cegar compositionnel et test non
 compositionnel).
 L'algorithme est intra-procédural.
 
-\dash \cite{\citedash} est une évolution de \synergy, prenant en
-compte les appels de procédure et les pointeurs (contrairement à
-\synergy).
+\dash~\cite{\citedash} est une évolution de \synergy, prenant en compte les
+appels de procédure et les pointeurs (contrairement à \synergy).
 \dash est inter-procédural mais non compositionnel.
-\dash raffine l'abstraction en utilisant uniquement
-les relations d'alias mises en évidence par les tests. La génération de tests
-guide non seulement {\em où} raffiner l'abstraction, mais aussi {\em comment}
-la raffiner. Cet algorithme est implémenté dans \yogi \cite{\citeyogi}.
+\dash raffine l'abstraction en utilisant uniquement les relations d'alias mises
+en évidence par les tests.
+La génération de tests détermine non seulement {\em où} raffiner l'abstraction,
+mais aussi {\em comment} la raffiner.
+Cet algorithme est implémenté dans \yogi~\cite{\citeyogi}.
 
-
-\subsubsection*{\Smash}
-
-
-\Smash \cite{\citesmash} combine une abstraction par prédicats et une génération
-dynamique de tests (par exécution concolique). Pour chaque fonction, un résumé
-est calculé par analyse statique (vrai pour toutes les exécutions, permettant
-de prouver l'absence d'erreurs, c'est une sur-approximation) et un autre résumé
-est calculé par analyse dynamique (vrai pour quelques exécutions uniquement,
-permettant de montrer l'existence d'erreurs, c'est une sous-approximation). Ces
-résumés sont calculés à la demande et seront utilisés aussi bien par l'analyse
-statique que par l'analyse dynamique (les deux analyses s'exécutent
+\Smash est la version compositionnelle de \dash~\cite{\citedash}.
+\Smash~\cite{\citesmash} combine une abstraction par prédicats et une génération
+dynamique de tests (par exécution concolique).
+Pour chaque fonction, un résumé est calculé par analyse statique (vrai pour
+toutes les exécutions, permettant de prouver l'absence d'erreurs, c'est une
+sur-approximation) et un autre résumé est calculé par analyse dynamique (vrai
+pour quelques exécutions uniquement, permettant de montrer l'existence
+d'erreurs, c'est une sous-approximation).
+Ces résumés sont calculés à la demande et seront utilisés aussi bien par
+l'analyse statique que par l'analyse dynamique (les deux analyses s'exécutent
 simultanément).
 Ces résumés sont progressivement raffinés pour chaque fonction, afin de prouver
 qu'une propriété n'est jamais violée (si un résumé statique est applicable), ou
 de mettre en évidence une exécution violant une propriété (si un résumé
-dynamique est applicable). Par construction, il n'est pas
-possible que les deux résumés soient applicables.
-\Smash est la version compositionnelle de \dash.
+dynamique est applicable).
+Par construction, il n'est pas possible que les deux résumés soient applicables.
 
 %% La figure~\ref{tab:microsoft-summary} résume les caractéristiques de ces outils.
 
@@ -435,7 +435,7 @@ possible que les deux résumés soient applicables.
 \subsubsection*{Analyses statique et dynamique pour la génération d'invariants}
 
 
-Cette méthode \cite{Gupta/TACAS09} propose une solution au problème du
+\cite{Gupta/TACAS09} propose une solution au problème du
 passage à l'échelle de la génération d'invariants (de programmes impératifs) par
 résolution de contraintes. Les invariants arithmétiques linéaires sont générés
 d'après les informations obtenues par interprétation abstraite du programme, par
@@ -445,21 +445,23 @@ contraintes de simplifier le système de contraintes et de réduire l'espace de
 recherche.
 
 
-\subsubsection*{\dsdcrasher et \checkncrash}
+\subsubsection*{Recherche d'erreurs par détection d'invariants avec \dsdcrasher
+  et \checkncrash}
 
 
 L'outil \dsdcrasher \cite{\citedsdcrasher} combine une première analyse
-dynamique, une analyse statique et une seconde analyse dynamique. La première
-analyse dynamique utilise une génération de tests et des techniques
+dynamique, une analyse statique et une seconde analyse dynamique.
+La première analyse dynamique utilise une génération de tests et des techniques
 d'apprentissage pour générer des invariants probables (inférence de la
 spécification par \daikon \cite{\citedaikon}).
 
 Les deux dernières étapes sont celles de l'outil \checkncrash
-\cite{\citecheckncrash}. L'analyse statique (\escjavatwo \cite{\citeescjavatwo})
-va émettre des alarmes concernant le non-respect des invariants, et la seconde
-analyse dynamique va tenter de confirmer ces alarmes par résolution de
-contraintes et génération de tests (\jcrasher \cite{\citejcrasher}). La
-classification des alarmes et la génération de tests sont très dépendantes de
+\cite{\citecheckncrash}.
+L'analyse statique (\escjavatwo \cite{\citeescjavatwo}) va émettre des alarmes
+concernant le non-respect des invariants, et la seconde analyse dynamique va
+tenter de confirmer ces alarmes par résolution de contraintes et génération de
+tests (\jcrasher \cite{\citejcrasher}).
+La classification des alarmes et la génération de tests sont très dépendantes de
 la qualité des invariants générés par \daikon.
 
 %% Cette méthode se distingue de \sante \cite{\citesante} par son analyse
@@ -610,9 +612,8 @@ ou atteint un {\em timeout}.
 Nous avons présenté dans ce chapitre les différents travaux de vérification
 existants qui combinent analyses statiques et analyses dynamiques ou qui visent
 à aider la vérification déductive.
-Parmi eux, nous poursuivons des travaux précédents au CEA afin d'aider la
-vérification déductive par la génération de contre-exemples par exécution
-concolique.
+Parmi eux, nous poursuivons des travaux précédents afin d'aider la vérification
+déductive par la génération de contre-exemples par exécution concolique.
 Nous présentons dans les chapitres suivants une technique originale de
 diagnostic des échecs de preuve.
 En particulier, la thèse que nous défendons est que les contre-exemples générés
