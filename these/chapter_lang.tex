@@ -101,6 +101,10 @@ Les instructions de la forme \textit{id} \underline{\lstinline'('}
 \underline{\lstinline'('} \textit{exp}$^{*}$ \underline{\lstinline');'})
 correspondent respectivement aux appels de fonction sans (resp. avec)
 affectation de la valeur de retour.
+La notation $e^*_s$ signifie que le motif $e$ est répété 0, 1 ou plusieurs fois,
+et les occurrences du motif sont séparées par le symbole $s$.
+De manière similaire, la notation $e^+_s$ signifie que le motif $e$ est répété
+une ou plusieurs fois. \todo{notations}
 \textit{label} respecte les mêmes contraintes que \textit{id} mais fait
 référence aux labels d'un programme C.
 Pour des raisons de commodité, nous considérons qu'un label précède chaque
@@ -151,6 +155,7 @@ définis dans les parties~\ref{sec:gram-term} et~\ref{sec:gram-pred}.
 
 La figure~\ref{fig:gram-exp-term} définit la grammaire des termes \eacsl et des
 expressions C du langage.
+Le symbole \lstinline'\~' est l'opérateur de négation bit-à-bit.
 \textit{cst} est une constante entière ou une chaîne de caractère littérale.
 Les constantes flottantes ne sont pas considérées.
 Les termes \eacsl peuvent être vus comme une extension des expressions C.
@@ -190,6 +195,7 @@ Par exemple, si \lstinline{x} est une variable C de type \lstinline{int}, les
 termes \eacsl \lstinline{1} et \lstinline{x+1} sont de type \lstinline{integer}
 et une conversion implicite d'\lstinline{int} vers \lstinline{integer} est
 introduite dans ce contexte quand la variable \lstinline{x} est typée.
+
 Ce choix a été fait pour plusieurs raisons.
 Premièrement, un des buts principaux de \framac est la preuve de programmes par
 appel à des prouveurs externes.
@@ -227,6 +233,9 @@ est valide si et seulement si \lstinline'ptr+x', \lstinline'ptr+(x+1)', \ldots,
 Dans \eacsl, les quantifications existentielles (\lstinline'\exists') et
 universelles (\lstinline'\forall') doivent porter sur des domaines finis
 d'entiers.
+Le symbole \lstinline'!' est l'opérateur de négation logique, le symbole
+\lstinline'&&' est l'opérateur de conjonction logique et le symbole
+\lstinline'||' est l'opérateur de disjonction logique.
 Le symbole \lstinline'==>' encode l'implication logique et le symbole
 \lstinline'<==>' encode l'équivalence logique de deux prédicats.
 
@@ -259,7 +268,8 @@ Dans la suite du document, nous utilisons les notations suivantes :
 \item $t$, $t_1$, $t_2$ et $t_3$ sont des termes \eacsl;
 \item $h$, $h_1$, $h_2$, $h_3$ sont des expressions C ou des termes \eacsl;
 \item $p$, $p_1$, $p_2$ sont des prédicats \eacsl;
-\item $\loc$, $\loc_1$, $\loc_2$, $\loc_N$ sont des adresses en mémoire;
+\item $\loc$, $\loc_1$, $\loc_2$, $\loc_N$\todo{nouveau symbole} sont des
+  adresses en mémoire;
 \item $T$ est un type C;
 \item $\mathit{unop}$ est un opérateur unaire;
 \item $\mathit{binop}$ est un opérateur binaire;
@@ -320,9 +330,10 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 
 \[
 \env_1~\subenv~\env_2~\equiv~
-\forall \mathit{lv}.~\forall \loc.
+\forall \mathit{lv} \in \mathit{LV}.~\forall \loc \in \mathit{LOC}.
 ~(\env_1(\mathit{lv})=\loc \Rightarrow \env_2(\mathit{lv})=\loc)
 \]
+\todo{domaines}
 
 
 \subsection{Stores}
@@ -378,9 +389,10 @@ $v$ est également à l'adresse $\loc$ dans $\store_2$.
 
 \[
 \store_1~\subenv~\store_2~\equiv~
-\forall \loc.~\forall v.
+\forall \loc \in \mathit{LOC}.~\forall v \in \mathit{VAL}.
 ~(\store_1(\loc)=v \Rightarrow \store_2(\loc)=v)
 \]
+\todo{domaines}
 
 
 \subsection{Mémoires}
@@ -442,9 +454,9 @@ La sémantique dénotationnelle des expressions C, des termes et des prédicats
 \eacsl est définie par la fonction
 $\mathcal{E} : (EXP \cup TERM \cup PRED) \rightarrow MEM \rightarrow VAL$.
 Les domaines de syntaxe abstraite $EXP$, $TERM$ et $PRED$ correspondent
-respectivement aux entités
-syntaxiques \textit{exp}, \textit{term} et \textit{pred} définies dans les
-figures~\ref{fig:gram-exp-term} et~\ref{fig:gram-pred}.
+respectivement aux entités syntaxiques \textit{exp}, \textit{term} et
+\textit{pred} définies dans les figures~\ref{fig:gram-exp-term}
+et~\ref{fig:gram-pred}.
 Cette fonction associe une valeur à une expression C (un terme et un prédicat
 \eacsl) en fonction d'une mémoire $\mem = (\env, \store)$, à condition que cette
 expression ne génère pas d'effet de bord, hypothèse satisfaite par le langage
@@ -541,6 +553,10 @@ $\mathcal{C}$ sur chaque instruction dans l'ordre de la séquence.
 \input{figures/fig_semantics}
 
 La sémantique des instructions C est donnée en figure~\ref{fig:sem-instr}.
+La règle \eqlabel{C-err} indique que toute évaluation d'instruction à partir de
+la mémoire d'erreur $\errormem$ produit $\errormem$.
+Pour toutes les règles suivantes, nous supposons que l'évaluation se fait à
+partir d'une mémoire différente de $\errormem$. \todo{règle \eqlabel{C-err}}
 La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $x$
 dans l'environnement $\env$, où $\loc$ est une adresse fraîche (non utilisée).
 Les règles \eqlabel{C-set} et \eqlabel{C-set-2} associent la valeur de $e$
