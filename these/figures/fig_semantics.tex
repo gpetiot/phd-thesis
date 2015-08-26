@@ -103,7 +103,7 @@
     $\neq 0$, \comps{$B$}{$\mem$} sinon & \eqlabel{C-if} \\
 
     \comp{\lstinline'/*@ assert' $p\semicolon$ \lstinline' */'}{$\mem$}
-    &=& $\mem$ si (\eval{$p$}{$\mem$}), $\errormem$ sinon
+    &=& $\mem$ si (\eval{$p$}{$\mem$}) $\neq 0$, $\errormem$ sinon
     & \eqlabel{C-assert} \\
     \multicolumn{3}{l}{
       \comp{
@@ -113,10 +113,10 @@
         \lstinline'*/ while(' $e$ \lstinline')'
         $\bopen A \bclose$}{$\mem$}
     } & \eqlabel{C-while} \\
-    & = & $\errormem$ si $\lnot$ \eval{$p$}{$\mem$} & \eqlabel{C-while-1} \\
+    & = & $\errormem$ si \eval{$p$}{$\mem$} $= 0$ & \eqlabel{C-while-1} \\
     &  & $\mem$ si (\eval{$e$}{$\mem$}) $= 0$ & \eqlabel{C-while-2} \\
     &  & $\errormem$ si (\eval{$t$}{$\mem$}) $< 0$ & \eqlabel{C-while-3} \\
-    &  & $\errormem$ si $\lnot$ \eval{$p$}{(\comps{$A$}{$\mem$})}
+    &  & $\errormem$ si \eval{$p$}{(\comps{$A$}{$\mem$})} $= 0$
     & \eqlabel{C-while-4} \\
     &  & $\errormem$
     si (\eval{$t$}{(\comps{$A$}{$\mem$})}) $\ge$ (\eval{$t$}{$\mem$})
