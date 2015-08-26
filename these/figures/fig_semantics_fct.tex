@@ -9,14 +9,14 @@
         \lstinline')'
         $\bopen A \bclose$}{$\mem$}
     } & \eqlabel{F} \\
-    =& $\errormem$ si $\lnot$ \eval{$p_1$}{$\mem$} et $f$ est
+    =& $\errormem$ si \eval{$p_1$}{$\mem$} $= 0$ et $f$ est
     une fonction appelée & \eqlabel{F-1} \\
     & $\errormem$ si
     $\exists x. (x \in G-X.$
     (\eval{$x$}{(\comps{$A$}{$\mem$})}) $\ne$
     (\eval{$x$}{$\mem$}) $)$ & \eqlabel{F-2} \\
     & $\errormem$ si
-    $\lnot$ \eval{$p_2$}{(\comps{$A$}{$\mem$})}
+    \eval{$p_2$}{(\comps{$A$}{$\mem$})} $= 0$
     & \eqlabel{F-3} \\
     & \comps{$A$}{$\mem$} sinon & \eqlabel{F-4} \\
   \end{tabular}
