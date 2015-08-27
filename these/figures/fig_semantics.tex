@@ -39,16 +39,16 @@
     \comp{$\mathit{lv}$ \lstinline'= fvalid('$x$\lstinline');'}{$(\env, \store)$}
     &=&
     $(\env, \store[\env(\mathit{lv}) \mapsto 0]$)
-    si $\env(x) = \bot$ ou \lstinline'NULL',
+    si $\env(x) = \bot$,
     & \eqlabel{C-fvalid} \\
     && $(\env, \store[\env(\mathit{lv}) \mapsto 1])$ sinon & \\
 
     \comp{$\mathit{lv}$ \lstinline'= fvalidr('$e_1$,$e_2$,$e_3$
       \lstinline');'}{$(\env, \store)$}
     &=& $(\env, \store[\env(\mathit{lv}) \mapsto 0])$ si
-    ($\env(e_1+$\eval{$e_2$}{$(\env, \store)$}$) = \bot$ ou \lstinline'NULL')
+    ($\env(e_1+$\eval{$e_2$}{$(\env, \store)$}$) = \bot$)
     & \eqlabel{C-fvalidr} \\
-    && $\lor \cdots \lor$ ($\env(e_1+$\eval{$e_3$}{$(\env, \store)$}$) = \bot$ ou \lstinline'NULL'),
+    && $\lor \cdots \lor$ ($\env(e_1+$\eval{$e_3$}{$(\env, \store)$}$) = \bot$),
     &\\
     & & $(\env, \store[\env(\mathit{lv}) \mapsto 1])$ sinon & \\
 
@@ -68,6 +68,7 @@
     $(\env-\{x\mbox{\lstinline'[0]'}\}-\ldots-\{x$\lstinline'['$N$\lstinline'-1]'$\},$
     & \eqlabel{C-free} \\
     && $\store-\{\env(x)\}-\{\loc_1\}-...-\{\loc_N\})$ &\\
+    && si $x$ est un pointeur alloué et non libéré, $\errormem$ sinon &\\
 
     \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$(\env, \store)$} &=&
     $\mathcal{F} \llbracket$ \lstinline'/*@ ... */'
