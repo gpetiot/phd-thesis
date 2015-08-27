@@ -4,7 +4,7 @@
     \eval{\lstinline'\\true'}{$\mem$} &=& $1$ & \eqlabel{P-true} \\
     \eval{\lstinline'\\false'}{$\mem$} &=& $0$ & \eqlabel{P-false} \\
     \eval{\lstinline'\\valid('$x$\lstinline')'}{$(\env, \store)$}
-    &=& $0$ si $\env(x) = \bot$ ou \lstinline'NULL',
+    &=& $0$ si $\env(x) = \bot$,
     $1$ sinon & \eqlabel{P-valid} \\
     \eval{\lstinline'\\valid('$x$\lstinline'+('$\mathit{t_1}$
       \lstinline'..'$\mathit{t_2}$\lstinline'))'}{$\mem$} &=&
