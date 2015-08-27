@@ -1,13 +1,13 @@
 \begin{figure}[h!]
   \begin{tabular}{lrl}
-    \textit{left-value} & ::= & \textit{id}
-    $\mid$  \textit{id} \underline{\lstinline'['} \textit{exp}
-      \underline{\lstinline']'} \\
-    \textit{type} & ::= & \textit{basic-type}
-    $\mid$ \textit{basic-type} \underline{\lstinline'*'} \\
     \textit{basic-type} & ::= & \underline{\lstinline'int'}
     $\mid$ \underline{\lstinline'char'}
     $\mid$ \underline{\lstinline'long'} \\
+    \textit{type} & ::= & \textit{basic-type}
+    $\mid$ \textit{basic-type} \underline{\lstinline'*'} \\
+    \textit{left-value} & ::= & \textit{id}
+    $\mid$  \textit{id} \underline{\lstinline'['} \textit{exp}
+      \underline{\lstinline']'} \\
     \textit{instr} & ::= & \textit{type} \textit{id} \underline{\semicolon} \\
     & $\mid$ & \textit{left-value} \underline{\lstinline'='} \textit{exp}
     \underline{\semicolon} \\
