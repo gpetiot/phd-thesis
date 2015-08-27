@@ -1,5 +1,5 @@
-/*@ requires 0 <= n &&
-             \valid(t+(0..n-1));
+/*@ requires 0 <= n
+             && \valid(t+(0..n-1));
     typically n <= 6;
     ensures \result != 0 <==> \exists integer i; 0<=i<=\old(n)-1
                                 && \old(t[i])==\old(v); */
