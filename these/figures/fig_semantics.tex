@@ -52,21 +52,22 @@
     &\\
     & & $(\env, \store[\env(\mathit{lv}) \mapsto 1])$ sinon & \\
 
-    \comp{$x$ \lstinline' = malloc('$e$\lstinline');'}{$(\env, \store)$}
+    \comp{$x$ \lstinline' = malloc('$e$\lstinline'*'$s$\lstinline');'}{$(\env, \store)$}
     &=&
     $(\env[x$\lstinline'[0]' $\mapsto \loc_1$, ...,
-      $x$\lstinline'['\eval{$e$}{$(\env, \store)$}\lstinline'-1]'
+      $x$\lstinline'['$N$\lstinline'-1]'
       $\mapsto \loc_N]$,
     & \eqlabel{C-malloc} \\
-    && $\store[\env(x) \mapsto \loc_1])$
+    && $\store[\env(x) \mapsto \loc_1, \loc_1 \mapsto \bot, ..., \loc_N \mapsto \bot])$
     &\\
-    && où $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
+    && où $N =$ \eval{$e$}{$(\env, \store)$} &\\
+    && et $\loc_1, ..., \loc_N$ sont des adresses fraîches &\\
 
     \comp{\lstinline'free('$x$\lstinline')'}{$(\env, \store)$}
     &=&
-    $(\env-\{x\mbox{\lstinline'[0]'}\}-\ldots-\{x$\lstinline'['\eval{$\mathit{sizeof}(x)$}{$(\env, \store)$}\lstinline'-1]'$\},$
+    $(\env-\{x\mbox{\lstinline'[0]'}\}-\ldots-\{x$\lstinline'['$N$\lstinline'-1]'$\},$
     & \eqlabel{C-free} \\
-    && $\store-\{\env(x)\})$ &\\
+    && $\store-\{\env(x)\}-\{\loc_1\}-...-\{\loc_N\})$ &\\
 
     \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$(\env, \store)$} &=&
     $\mathcal{F} \llbracket$ \lstinline'/*@ ... */'
