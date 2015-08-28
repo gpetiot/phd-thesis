@@ -382,11 +382,11 @@ dans $\env_1$, alors $\loc$ est aussi l'adresse de $\mathit{lv}$ dans $\env_2$.
 \subsection{Stores}
 \label{sec:store}
 
-Le domaine des valeurs $VAL$ est défini comme l'union des valeurs des types des
-termes et prédicats \eacsl et les expressions C :
-$VAL = \mathbb{Z}~\cup~LOC~\cup~\{\bot\}$, où le symbole
-$\bot$ dénote une valeur indéfinie qui peut être soit une adresse indéfinie soit
-une valeur entière indéfinie.
+Le domaine des valeurs $VAL$ est défini comme l'union des valeurs des termes et
+prédicats \eacsl et des expressions C :
+$VAL = \mathbb{Z}~\cup~LOC~\cup~\{\bot\}$.
+Le symbole $\bot$ dénote une valeur indéfinie qui peut être soit une adresse
+indéfinie soit une valeur entière indéfinie.
 $LOC$ est inclus dans $VAL$ car la valeur d'un pointeur est une adresse.
 Un {\em store} est une fonction $\store \in LOC \rightarrow VAL$ qui associe une
 valeur à chaque adresse.
