@@ -15,23 +15,23 @@ while(e) {
   \begin{minipage}{0.49\textwidth}
     \begin{lstlisting}[escapechar=§]
 §$l$§:
-§\tikz[remember picture,overlay]{\node(lc-l1){};}§int e1; §$Spec2Code$§(p, e1);
+§\tikz[remember picture,overlay]{\node(lc-l1){};}§int e1; §$\mathit{Spec2Code}$§(p, e1);
 §\tikz[remember picture,overlay]{\node(lc-l2){};}§fassert(e1);
 while(e) {
 §$\mathit{BegIter_l}$§: ;
   §\tikz[remember picture,overlay]{\node(lc-l3){};}§type_x1 assigns_x1 = x1;
   ...
   §\tikz[remember picture,overlay]{\node(lc-l4){};}§type_xN assigns_xN = xN;
-  §\tikz[remember picture,overlay]{\node(lc-l5){};}§§$\Zinit$\underline{e2}§; §$Spec2Code$§(t, e2);
+  §\tikz[remember picture,overlay]{\node(lc-l5){};}§§$\Zinit$\underline{e2}§; §$\mathit{Spec2Code}$§(t, e2);
   §\tikz[remember picture,overlay]{\node(lc-l6){};}§fassert(§\underline{0 <= e2}§);
   §$A$§
 §$\mathit{EndIter_l}$§: ;
-  §\tikz[remember picture,overlay]{\node(lc-l7){};}§int e3; §$Spec2Code$§(p, e3);
+  §\tikz[remember picture,overlay]{\node(lc-l7){};}§int e3; §$\mathit{Spec2Code}$§(p, e3);
   §\tikz[remember picture,overlay]{\node(lc-l8){};}§fassert(e3);
   §\tikz[remember picture,overlay]{\node(lc-l9){};}§fassert(x1 == assigns_x1);
   ...
   §\tikz[remember picture,overlay]{\node(lc-l10){};}§fassert(xN == assigns_xN);
-  §\tikz[remember picture,overlay]{\node(lc-l11){};}§§$\Zinit$\underline{e4}§; §$Spec2Code$§(t, e4);
+  §\tikz[remember picture,overlay]{\node(lc-l11){};}§§$\Zinit$\underline{e4}§; §$\mathit{Spec2Code}$§(t, e4);
   §\tikz[remember picture,overlay]{\node(lc-l12){};}§fassert(§\underline{e4$\Zclear$ < e2$\Zclear$}§);
 }
     \end{lstlisting}

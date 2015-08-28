@@ -15,7 +15,7 @@ f(...) {
     \begin{lstlisting}[escapechar=§]
 f(...) {
 §$Beg_{\texttt{f}}$§: ;
-  §\tikz[remember picture,overlay]{\node(fc-l1){};}§int e1; §$Spec2Code$§(p1, e1);
+  §\tikz[remember picture,overlay]{\node(fc-l1){};}§int e1; §$\mathit{Spec2Code}$§(p1, e1);
   §\tikz[remember picture,overlay]{\node(fc-l2){};}§fassume(e1);
   §\tikz[remember picture,overlay]{\node(fc-l3){};}§type_x1 assigns_x1 = x1;
   ...
@@ -25,7 +25,7 @@ f(...) {
   §\tikz[remember picture,overlay]{\node(fc-l5){};}§fassert(x1 == assigns_x1);
   ...
   §\tikz[remember picture,overlay]{\node(fc-l6){};}§fassert(xN == assigns_xN);
-  §\tikz[remember picture,overlay]{\node(fc-l7){};}§int e2; §$Spec2Code$§(p2, e2);
+  §\tikz[remember picture,overlay]{\node(fc-l7){};}§int e2; §$\mathit{Spec2Code}$§(p2, e2);
   §\tikz[remember picture,overlay]{\node(fc-l8){};}§fassert(e2);
 }
     \end{lstlisting}
