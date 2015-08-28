@@ -76,6 +76,8 @@ s'exécuter au plus \lstinline'n-i' fois.
 Notons que pour prouver formellement la postcondition, l'invariant de boucle
 suivant est nécessaire, mais n'est pas inclus volontairement dans cet exemple
 simplifié : \lstinline'\forall integer k; 0<=k<=i-1 ==> \old(t[k])!=v;'.
+Les clauses \lstinline'assigns' et \lstinline'loop assigns' ont volontairement
+été omises de cet exemple simplifié. \todo{assigns}
 
 
 \subsection{Syntaxe des instructions et fonctions}
@@ -118,9 +120,6 @@ corps de boucle.
 Les assertions peuvent être associées à des instructions quelconques.
 Un invariant de boucle, un variant et une clause \lstinline'loop assigns'
 peuvent être associés aux boucles.
-Ces clauses sont facultatives.
-Par exemple la fonction du listing~\ref{lst:normalized} n'a pas de clause
-\lstinline'assigns' et \lstinline'loop assigns'.
 
 Nous supposons que les fonctions respectent la forme normale définie par
 l'entité syntaxique \textit{function} de la grammaire définie dans la
