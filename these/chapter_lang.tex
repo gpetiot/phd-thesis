@@ -658,9 +658,9 @@ aux left-values allouées pour le tableau $x$, et que la valeur
 associée à l'adresse de $x$ dans le store est l'adresse du premier
 élément alloué ($\env(x$\lstinline'[0]'$)$), comme c'est le cas dans le langage
 C.
-Le paramètre de la fonction \lstinline'malloc' est un produit de la forme
-$e*s$ où $e$ est le nombre d'éléments à allouer et $s$ est la taille (en octets)
-des éléments.\todo{$e*s$}
+Nous utilisons une fonction \lstinline'malloc' prenant deux paramètres :
+$e$, le nombre d'éléments à allouer, et $s$, la taille (en octets) des éléments.
+\todo{$e,s$}
 Un pointeur alloué dynamiquement à l'aide de la fonction \lstinline'malloc' est
 valide tant qu'il n'est pas libéré par la fonction \lstinline'free'.
 La sémantique de la fonction \lstinline'free' donnée par la règle
