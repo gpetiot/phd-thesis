@@ -5,7 +5,7 @@
       {(l, x) \trule (\emptylist, x)}{}
     }
     {\myinference{$\tau$-lv-array\hspace{-2mm}{}}
-      {(l, t:\mbox{\lstinline'int'}) \trule (I, e)}
+      {(l, t:\mathbb{Z}) \trule (I, e)}
       {(l, x\mbox{\lstinline'['}t\mbox{\lstinline']'}:ctype) \trule
         (I \concat (l, ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~x\mbox{\lstinline'['}e\mbox{\lstinline'];'}),
         \mbox{\lstinline'var_'}n)
@@ -19,7 +19,7 @@
     }
 
     {\myinference{$\tau$-old-array\hspace{-2mm}{}}
-      {(l, t:\mbox{\lstinline'int'}) \trule (I, e)}
+      {(l, t:\mathbb{Z}) \trule (I, e)}
       {(l, \mbox{\lstinline'\\old('}x\mbox{\lstinline'['}t\mbox{\lstinline'])'}:ctype) \trule
         (I \concat (l, ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'= old_val_'}x\mbox{\lstinline'['}e\mbox{\lstinline'];'}),
         \mbox{\lstinline'var_'}n)
