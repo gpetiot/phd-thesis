@@ -67,7 +67,10 @@
     &=&
     $(\env-\{x\mbox{\lstinline'[0]'}\}-\ldots-\{x$\lstinline'['$N$\lstinline'-1]'$\},$
     & \eqlabel{C-free} \\
-    && $\store-\{\env(x)\}-\{\loc_1\}-...-\{\loc_N\})$ &\\
+    && $\store-\{\env(x)\}-\{\env(x$\lstinline'[0]'$)\}-...-\{\env(x$\lstinline'['$N$\lstinline'-1]'$)\})$ &\\
+    \multicolumn{3}{r}{
+    où $N$ est le nombre d'éléments alloués par le \lstinline'malloc' correspondant
+    } & \\
     && si $x$ est un pointeur alloué et non libéré, $\errormem$ sinon &\\
 
     \comp{$f$\lstinline'('$e_1$,...,$e_N$\lstinline');'}{$(\env, \store)$} &=&
@@ -130,7 +133,7 @@
     &  & \comp{\lstinline'/*@ ... */ while('$e$\lstinline')'
       $\bopen A \bclose$}{(\comps{$A$}{$\mem$})} sinon
     & \eqlabel{C-while-7} \\
-  \end{tabular}
+  \end{tabular}\vspace{-.5cm}
   \caption{Sémantique dénotationnelle des instructions}
   \label{fig:sem-instr}
 \end{spacing}
