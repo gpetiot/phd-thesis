@@ -62,24 +62,21 @@
         \trule
         (I_1
         \concat (l,
+        \underline{\Zinit \mbox{\lstinline'var_'}n}\semicolon
         \mbox{\lstinline'if('}
         \underline{e_1\Zclear \mbox{\lstinline' \!= 0'}} \mbox{\lstinline')'}
         \bopen
         I_2
         \concat
         (l,
-        \underline{
-          \Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2 \Zclear
-        }
+        \underline{\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2 \Zclear}
         \semicolon )
         \bclose
         \mbox{\lstinline'else'} \bopen
         I_3
         \concat
         (l,
-        \underline{
-          \Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3 \Zclear
-        }
+        \underline{\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3 \Zclear}
         \semicolon )
         \bclose ),
         \mbox{\lstinline'var_'}n)
