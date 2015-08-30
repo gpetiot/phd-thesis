@@ -1,6 +1,6 @@
-//@ assert x+1 <= INT_MAX; 
-// fails with x = INT_MAX since INT_MAX + 1 does not overflow in ACSL
-fassert(x+1 <= 2147483647); // naive instrumentation: never fails in modular arithmetics
+//@ assert x+1 <= INT_MAX; // fails with x = INT_MAX
+// naive instrumentation: never fails in modular arithmetics
+fassert(x+1 <= 2147483647);
 
 // correct instrumentation with unbounded integers:
 Z_t var_0; Z_init(var_0); Z_set(var_0, x); Z_t var_1; Z_init(var_1); Z_set(var_1, 1);
