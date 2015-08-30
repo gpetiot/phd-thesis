@@ -132,8 +132,8 @@ L'assertion ligne 8 affirme que \lstinline'p' a un offset de la taille d'un
 entier dans son bloc.
 L'assertion ligne 9 affirme que \lstinline'p' peut être déréférencé sur les
 offsets 0 et 1 (\lstinline'*(p+0)' et \lstinline'*(p+1)').
-L'assertion ligne 10 affirme que \lstinline'p' est initialisé mais pas
-\lstinline'p+1'.
+L'assertion ligne 10 affirme que \lstinline'*p' est initialisé mais pas
+\lstinline'*(p+1)'.
 Les annotations du programme sont satisfaites : leur vérification à l'exécution
 ne produit pas d'erreur.
 
@@ -150,6 +150,10 @@ Les lignes 28--37 du listing~\ref{lst:mem-annots-instru} permettent d'exécuter
 l'assertion ligne 9 du listing~\ref{lst:mem-annots}.
 Les lignes 39--48 du listing~\ref{lst:mem-annots-instru} permettent d'exécuter
 l'assertion ligne 10 du listing~\ref{lst:mem-annots}.
+Les appels de la fonction \lstinline'__store_block' (lignes 4--5) servent à
+enregistrer les blocs des nouvelles variables.
+Les appels de la fonction \lstinline'__delete_block' (lignes 50--51) permettent
+de les désinscrire à la fin de leur existence.
 
 
 \section{Modèle mémoire pour la vérification à l'exécution}
@@ -171,9 +175,12 @@ fonction associant une valeur à une adresse.
 Dans ce chapitre, ce terme fait référence à une structure de données qui
 implémente efficacement cette fonction, donc contenant des adresses et des
 valeurs associées.
+C'est dans le {\em store} que les informations sur la validité et
+l'initialisation des blocs mémoire seront enregistrées et recherchées par la
+suite.
 
 Le code instrumenté pouvant accéder et modifier fréquemment les données du
-\textit{store}, une implémentation efficace requiert une structure de données
+{\em store}, une implémentation efficace requiert une structure de données
 offrant une bonne complexité en temps et en espace.
 Cette structure de données doit être triée : on peut avoir besoin d'accéder
 directement à un bloc à partir de son adresse de base, mais aussi à partir de
@@ -196,7 +203,7 @@ nous le verrons au chapitre~\ref{sec:eacsl}.
 
 Notre choix s'est donc porté sur la structure de {\em Patricia trie}
 \cite{Szpankowski/90} (appelé aussi {\em radix tree} ou ``arbre à préfixe
-compact''.
+compact'').
 Cette structure est efficace même si l'arbre n'est pas équilibré.
 Les clés sont les adresses de base des blocs (c'est-à-dire des mots de 32 ou 64
 bits) ou des préfixes d'adresses.
@@ -227,13 +234,14 @@ dans notre cas est en $O(k)$ où $k$ est la longueur d'un mot (c'est-à-dire
 En pratique, un programme ne pouvant allouer des blocs que dans un
 espace mémoire limité, la profondeur de l'arbre est inférieure à cette borne.
 De plus, contrairement aux chaînes de caractères (la première application des
-Patricia tries), la comparaison des mots peut être implémentée très
+Patricia tries), la comparaison des mots de bits peut être implémentée très
 efficacement par des opérations bit-à-bit.
 
 Les données de chaque bloc n'occupent que quelques octets en mémoire, exception
 faite des données d'initialisation du bloc.
-Le statut d'initialisation de chaque octet est monitoré séparément (les champs
-de bits ne sont pas encore supportés).
+Le statut d'initialisation de chaque octet est monitoré séparément
+(lignes 8 et 10 du listing~\ref{lst:mem-annots-instru}) et les champs
+de bits ne sont pas supportés.
 Dans le pire cas (bloc partiellement initialisé), chaque octet utilise un bit
 supplémentaire portant l'information sur son initialisation.
 Nous conservons le nombre d'octets initialisés de chaque bloc dans un
@@ -241,7 +249,8 @@ compteur.
 Dans le cas où tous les octets (ou aucun) sont initialisés, le tableau censé
 contenir les bits portant l'information d'initialisation est libéré et nous
 utilisons alors la valeur du compteur pour avoir cette information.
-De plus, nous utilisons une fonction spécifique dans le cas où tous les octets
+De plus, nous utilisons une fonction spécifique (ligne 12 du
+listing~\ref{lst:mem-annots-instru}) dans le cas où tous les octets
 d'un bloc sont initialisés d'un coup, au lieu d'invoquer une fonction
 d'initialisation sur chaque octet du bloc.
 
@@ -281,7 +290,7 @@ En effet, seuls les trois premiers bits de $a$ sont identiques au trois premiers
 bits de $b$, les words divergent à partir du quatrième bit.
 On notera $p$ = \ppnode{\texttt{011*\,****}} le plus grand préfixe commun à $a$
 et $b$, où le symbole ``{\tt *}'' signifie que la valeur du bit à cette position
-n'a pas d'importance.
+n'est pas définie.
 
 
 \begin{algorithm}
@@ -319,14 +328,18 @@ n'a pas d'importance.
 
 Nous présentons maintenant un algorithme efficace de recherche du plus grand
 préfixe commun de deux adresses.
-Une version naîve et inefficace de cet algorithme consiste en un parcours
+Une version na\"ive et inefficace de cet algorithme consiste en un parcours
 linéaire des mots mémoire de gauche à droite jusqu'à trouver des bits
 différents, de la même manière qu'on pourrait le faire sur des chaînes de
 caractères.
+La complexité de la version na\"ive est en $\mathcal{O}(\mathit{WLEN})$.
 
 La version optimisée de cet algorithme consiste maintenant en une recherche
 dichotomique du masque dans un tableau pré-calculé qui contient tous les masques
 de préfixes possibles.
+La complexité de cet algorithme est en
+$\mathcal{O}(\mathit{log}(\mathit{WLEN}))$ (soit $\le 6$ itérations pour des
+words de 32 bits et $\le 7$ itérations pour des words de 64 bits).
 Les transitions entre les étapes de la recherche se font en utilisant des
 indices pré-calculés, de manière à obtenir le prochain masque à essayer.
 L'algorithme~\ref{algo:prefix} présente cette méthode de recherche.
@@ -382,7 +395,7 @@ Dans ces algorithmes, nous noterons $Ptree$ le type de données des Patricia
 tries et $Block$ le type des blocs.
 Un objet de type $Block$ est caractérisé par un word et une taille.
 Un objet de type $Ptree$ est quant à lui caractérisé par un booléen indiquant
-si l'arbre est une feuille, un word encodant l'adresse du n\oe{}ud, le masque
+si l'arbre est une feuille, un word encodant la valeur et le masque
 du plus grand préfixe commun à ses deux fils, le sous-arbre gauche, le
 sous-arbre droit, le n\oe{}ud ``père'' et le bloc porté par le n\oe{}ud si c'est
 une feuille.
@@ -398,6 +411,10 @@ Ptree = {
   Block leaf;
 };
 \end{lstlisting}
+Par exemple pour la racine du Patricia trie  de la
+figure~\ref{fig:insertion-Patricia-trie-0} \textbf{(a)}, les deux champs
+\lstinline'addr = 0010 0000' et \lstinline'mask = 1111 0000' encodent le
+préfixe \ppnode{\texttt{0010\,****}}.
 Nous utiliserons la constante $emptyPtree$ pour dénoter un Patricia trie vide.
 
 
@@ -416,20 +433,21 @@ Nous utiliserons la constante $emptyPtree$ pour dénoter un Patricia trie vide.
 \State Ptree $x$
 \Let{$x$}{$root$}
 \While{$\lnot \mathit{x.isLeaf}$}
-  \If{$\mathit{x.addr} \Band \mathit{x.mask} \neq a \Band \mathit{x.mask}$}
+  \If{$(\mathit{x.addr} \Band \mathit{x.mask}) \neq (a \Band \mathit{x.mask})$}
     \Return $noBlock$
   \EndIf
-  \If{$\mathit{x.right.addr} \Band \mathit{x.right.mask} == a \Band \mathit{x.right.mask}$}
+  \If{$(\mathit{x.right.addr} \Band \mathit{x.right.mask}) == (a \Band \mathit{x.right.mask})$}
     \State $x \gets \mathit{x.right}$
-  \ElsIf{$\mathit{x.left.addr} \Band \mathit{x.left.mask} == a \Band \mathit{x.left.mask}$}
+  \ElsIf{$(\mathit{x.left.addr} \Band \mathit{x.left.mask}) == (a \Band \mathit{x.left.mask})$}
     \State $x \gets \mathit{x.left}$
   \Else{} \Return $noBlock$
   \EndIf
 \EndWhile
 \If{$a \neq \mathit{x.leaf.ptr}$}
   \Return $noBlock$
-\EndIf{}
-\Return $\mathit{x.leaf}$
+\Else{}
+  \Return $\mathit{x.leaf}$
+\EndIf
 \EndFunction
 \end{algorithmic}
 \caption{Recherche d'une adresse exacte $a$, retourne Block $\cup$ \{noBlock\}
@@ -444,8 +462,9 @@ Nous notons $root$ le {\em store} global représenté par un Patricia trie, dans
 lequel tous les blocs sont enregistrés.
 
 L'algorithme procède comme suit : tant que $x$ n'est pas une feuille -- c'est
-donc un n\oe{}ud ayant deux fils -- on se dirige vers le fils ayant le plus
-grand préfixe commun avec l'adresse $a$ passée en paramètre de l'algorithme.
+donc un n\oe{}ud interne ayant deux fils -- on se dirige vers le fils ayant le
+plus grand préfixe commun avec l'adresse $a$ passée en paramètre de
+l'algorithme.
 Quand on arrive sur une feuille, cette dernière contient l'adresse que l'on
 cherchait.
 
@@ -522,7 +541,7 @@ fonction d'empilement et $pop$ la fonction de dépilement.
 Quand on explore le fils droit, on empile le fils gauche.
 Quand on arrive sur une feuille, on vérifie que $a$ est comprise entre l'adresse
 de base et l'adresse de fin du bloc.
-Si c'est le cas alors a trouvé le bloc que l'on cherchait.
+Si c'est le cas alors on a trouvé le bloc que l'on cherchait.
 Sinon on utilise le dernier n\oe{}ud empilé (et on le dépile) s'il existe,
 sinon on retourne $noBlock$.
 L'instruction $continue$ aux lignes 12 et 18 de l'algorithme~\ref{algo:get-cont}
@@ -664,8 +683,8 @@ est présentée par l'algorithme~\ref{algo:rem-block}.
 L'algorithme commence par rechercher la feuille $x$ qui porte le bloc $B$.
 Si cet élément est la racine, l'arbre devient vide.
 Sinon, Cette feuille a un frère $b$ et un père $f$.
-$b$ et son $f$ sont supprimés, et $b$ remonte d'un niveau (et prend donc la
-place de $f$).
+$B$ et son père $f$ sont supprimés, et $b$ remonte d'un niveau (et prend donc
+la place de $f$).
 Enfin, les champs du nouveau père de $b$ ($g$) sont mis à jour pour
 maintenir la cohérence de l'arbre (le masque du plus grand préfixe commun est
 recalculé).
@@ -765,7 +784,7 @@ défaut en C).
       {(l, \mbox{\lstinline'\\valid('}t\mbox{\lstinline')'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_'}n~
-        \mbox{\lstinline'= __valid('}e,\mbox{\lstinline'sizeof(typeof('}e
+        \mbox{\lstinline'= __valid('}e,\mbox{\lstinline'sizeof(typeof(*'}e
         \mbox{\lstinline')));'}),
         \mbox{\lstinline'var_'}n)
       }{}
@@ -776,8 +795,8 @@ défaut en C).
       {(l, \mbox{\lstinline'\\valid_read('}t\mbox{\lstinline')'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_'}n~
-        \mbox{\lstinline'= __valid_read('}e,\mbox{\lstinline'sizeof(typeof('}
-        \mbox{\lstinline'e)));'}),
+        \mbox{\lstinline'= __valid_read('}e,\mbox{\lstinline'sizeof(typeof(*'}e
+        \mbox{\lstinline')));'}),
         \mbox{\lstinline'var_'}n)
       }{}
     }
@@ -787,8 +806,8 @@ défaut en C).
       {(l, \mbox{\lstinline'\\initialized('}t\mbox{\lstinline')'}) \prule
         (I \concat
         (l, \mbox{\lstinline'int var_'}n~
-        \mbox{\lstinline'= __initialized('}e,\mbox{\lstinline'sizeof(typeof('}
-        \mbox{\lstinline'e)));'}),
+        \mbox{\lstinline'= __initialized('}e,\mbox{\lstinline'sizeof(typeof(*'}e
+        \mbox{\lstinline')));'}),
         \mbox{\lstinline'var_'}n)
       }{}
     }
@@ -823,11 +842,11 @@ annotations en utilisant le même formalisme qu'au chapitre~\ref{sec:traduction}
 Nous rappelons que $\tau$ est la fonction de traduction des termes \eacsl et
 $\pi$ est la fonction de traduction des prédicats \eacsl.
 Dans les règles \textsc{$\pi$-valid}, \textsc{$\pi$-valid-read} et
-\textsc{$\pi$-initialized}, \lstinline'typeof(e)' désigne le type de
-l'expression \lstinline'e', qui est un type C tel que \lstinline'int' ou
+\textsc{$\pi$-initialized}, \lstinline'typeof(*'$e$\lstinline')' désigne le type
+de l'expression \lstinline'*'$e$, qui est un type C tel que \lstinline'int' ou
 \lstinline'char'.
-\lstinline'sizeof(typeof(e))' est le nombre d'octets occupés par un objet
-de ce type en mémoire.
+\lstinline'sizeof(typeof(*'$e$\lstinline'))' est le nombre d'octets occupés par
+un objet de ce type en mémoire.
 
 
 \section*{Conclusion du chapitre}
