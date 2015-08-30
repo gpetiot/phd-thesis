@@ -1,76 +1,76 @@
-\begin{figure}[bt]
-  \begin{minipage}{0.4\textwidth}
-  \begin{tabular}{c|c}
-    au label $l$ & au label $\mathit{EndIter_l}$ \\
-    \hline
-    $
-    \underbracket{
-      \underbracket{
-        (\mathbb{Z})
-        \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
-      }_{\insertball[fill=blue!40]{1},~ \mbox{\lstinline'v1'}}
-      \mbox{\lstinline'<'}
-      \underbracket{
-        (\mathbb{Z})
-        \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
-      }_{\insertball[fill=red!40]{2},~ \mbox{\lstinline'v2'}}
-    }_{
-      \insertball[fill=blue!40]{1}~
-      \insertball[fill=red!40]{2}~
-      \insertball[fill=greenv!40]{3},~
-      \mbox{\lstinline'v3'}
-    }
-    $
-    &
-    $
-    \underbracket{
-      \underbracket{
-        (\mathbb{Z})
-        \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
-      }_{\insertball[fill=gray!40]{5},~ \mbox{\lstinline'v4'}}
-      \mbox{\lstinline'<'}
-      \underbracket{
-        (\mathbb{Z})
-        \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
-      }_{\insertball[fill=gray!40]{6},~ \mbox{\lstinline'v5'}}
-    }_{
-      \insertball[fill=gray!40]{5}~
-      \insertball[fill=gray!40]{6}~
-      \insertball[fill=gray!40]{7},~
-      \mbox{\lstinline'v6'}
-    }
-    $
-    \\
-  \end{tabular}~\\
-  \end{minipage}\hfill
-  \begin{minipage}{0.55\textwidth}
+\begin{figure}[bt]\centering
+  %% \begin{minipage}{0.4\textwidth}
+  %% \begin{tabular}{c|c}
+  %%   au label $l$ & au label $\mathit{EndIter_l}$ \\
+  %%   \hline
+  %%   $
+  %%   \underbracket{
+  %%     \underbracket{
+  %%       (\mathbb{Z})
+  %%       \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
+  %%     }_{\insertball[fill=blue!40]{1},~ \mbox{\lstinline'v1'}}
+  %%     \mbox{\lstinline'<'}
+  %%     \underbracket{
+  %%       (\mathbb{Z})
+  %%       \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
+  %%     }_{\insertball[fill=red!40]{2},~ \mbox{\lstinline'v2'}}
+  %%   }_{
+  %%     \insertball[fill=blue!40]{1}~
+  %%     \insertball[fill=red!40]{2}~
+  %%     \insertball[fill=greenv!40]{3},~
+  %%     \mbox{\lstinline'v3'}
+  %%   }
+  %%   $
+  %%   &
+  %%   $
+  %%   \underbracket{
+  %%     \underbracket{
+  %%       (\mathbb{Z})
+  %%       \underbracket{~\mbox{\lstinline'x'}~}_{(\emptylist, \mbox{\lstinline'x'})}
+  %%     }_{\insertball[fill=gray!40]{5},~ \mbox{\lstinline'v4'}}
+  %%     \mbox{\lstinline'<'}
+  %%     \underbracket{
+  %%       (\mathbb{Z})
+  %%       \underbracket{~\mbox{\lstinline'y'}~}_{(\emptylist, \mbox{\lstinline'y'})}
+  %%     }_{\insertball[fill=gray!40]{6},~ \mbox{\lstinline'v5'}}
+  %%   }_{
+  %%     \insertball[fill=gray!40]{5}~
+  %%     \insertball[fill=gray!40]{6}~
+  %%     \insertball[fill=gray!40]{7},~
+  %%     \mbox{\lstinline'v6'}
+  %%   }
+  %%   $
+  %%   \\
+  %% \end{tabular}~\\
+  %% \end{minipage}\hfill
+  %% \begin{minipage}{0.55\textwidth}
   \begin{tikzpicture}[font=\scriptsize]
     \tikzstyle{ins}=[rounded corners,inner sep=.5mm,thick,node distance=.6cm]
     \node[ins,draw=blue] at (-2.5,2) (ins1) {
-      \lstinline{mpz_t v1; __gmpz_init_set_si(v1,x);}
+      \lstinline{Z_t v1; Z_init(v1); Z_set(v1,x);}
       \insertball[fill=blue!40]{1}};
     \node[left of=ins1,node distance=3.5cm] (l1) {$l$,};
     \node[ins,draw=red,below of=ins1] (ins2) {
-      \lstinline{mpz_t v2; __gmpz_init_set_si(v2,y);}
+      \lstinline{Z_t v2; Z_init(v2); Z_set(v2,y);}
       \insertball[fill=red!40]{2}};
     \node[left of=ins2,node distance=3.5cm] (l2) {$l$,};
     \node[ins,inner sep=0,below of=ins2] (ins3a) {
-      \lstinline{int v3 = __gmpz_cmp(v1, v2)<0;}};
+      \lstinline{int v3 = Z_lt(v1, v2);}};
     \node[inner sep=0,below of=ins3a,node distance=.3cm] (ins3b) {
-      \lstinline{__gmpz_clear(v1); __gmpz_clear(v2);}
+      \lstinline{Z_clear(v1); Z_clear(v2);}
       \insertball[fill=greenv!40]{3}};
     \node[ins,draw=greenv,fit=(ins3a)(ins3b)] (ins3) {};
     \node[left of=ins3a,node distance=3.5cm] (l3) {$l$,};
     \node[ins,draw=gray,below of=ins3] (ins4) {
-      \lstinline{mpz_t v4; __gmpz_init_set_si(v4,x);}
+      \lstinline{Z_t v4; Z_init(v4); Z_set(v4,x);}
       \insertball[fill=gray!40]{5}};
     \node[ins,draw=gray,below of=ins4] (ins5) {
-      \lstinline{mpz_t v5; __gmpz_init_set_si(v5,y);}
+      \lstinline{Z_t v5; Z_init(v5); Z_set(v5,y);}
       \insertball[fill=gray!40]{6}};
     \node[ins,inner sep=0,below of=ins5] (ins6a) {
-      \lstinline{int v6 = __gmpz_cmp(v4, v5)<0;}};
+      \lstinline{int v6 = Z_lt(v4, v5);}};
     \node[inner sep=0,below of=ins6a,node distance=.3cm] (ins6b) {
-      \lstinline{__gmpz_clear(v4); __gmpz_clear(v5);}
+      \lstinline{Z_clear(v4); Z_clear(v5);}
       \insertball[fill=gray!40]{7}};
     \node[ins,draw=gray,fit=(ins6a)(ins6b)] (ins6) {};
     \node[left of=ins4,node distance=3.95cm] (l5) {$\mathit{EndIter_l}$,};
@@ -82,10 +82,10 @@
       \lstinline{fassert(v6);}\insertball[fill=gray!40]{8}};
     \node[left of=ins7,node distance=3.5cm] (l4) {$l$,};
     \node[left of=ins8,node distance=3.95cm] (l8) {$\mathit{EndIter_l}$,};
-    \node[draw,thick,dotted,fit=(l1)(ins1)(ins8)(l8)] (ins) {};
-    \node[below of=ins,node distance=2.9cm] {code à insérer};
+    %% \node[draw,thick,dotted,fit=(l1)(ins1)(ins8)(l8)] (ins) {};
+    %% \node[below of=ins,node distance=2.9cm] {code à insérer};
   \end{tikzpicture}
-  \end{minipage}
+  %% \end{minipage}
   \caption{Génération d'insertions de code à partir d'un invariant de boucle}
   \label{fig:code-gen}
 \end{figure}
