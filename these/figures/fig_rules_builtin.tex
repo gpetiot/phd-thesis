@@ -23,8 +23,8 @@
             \concat
             (l, \mbox{\lstinline' for('}
             \underline{\Zinit j~\mbox{\lstinline'='}~e_1 \Zclear}\semicolon
-            \underline{j~\mbox{\lstinline'<='}~e_2 \Zclear}\semicolon
-            \underline{j\Zclear\mbox{\lstinline'++'}}
+            \underline{j~\mbox{\lstinline'<='}~e_2}\semicolon
+            \underline{j\mbox{\lstinline'++'}}
             \mbox{\lstinline')'} \bopen
             I_3
             \concat
@@ -32,7 +32,9 @@
             \underline{
               \mbox{\lstinline'var_'}n~\mbox{\lstinline'+='}~e_3 \Zclear
             } \semicolon )
-            \bclose
+            \bclose~
+            \underline{e_2 \Zclear}\semicolon
+            \underline{j \Zclear}\semicolon
             ),
             \mbox{\lstinline'var_'}n)
           }
@@ -63,9 +65,9 @@
             (l, \mbox{\lstinline' for('}
             \underline{\Zinit j~\mbox{\lstinline'='}~e_1 \Zclear}
             \semicolon
-            \underline{j~\mbox{\lstinline'<='}~e_2 \Zclear}
+            \underline{j~\mbox{\lstinline'<='}~e_2}
             \semicolon
-            \underline{j\Zclear\mbox{\lstinline'++'}}
+            \underline{j\mbox{\lstinline'++'}}
             \mbox{\lstinline')'} \bopen
             I_3
             \concat (l,
@@ -74,7 +76,9 @@
             (l, \underline{\mbox{\lstinline'var_'}n\mbox{\lstinline'++'}}
             \semicolon)
             \bclose )
-            \bclose
+            \bclose~
+            \underline{e_2 \Zclear}\semicolon
+            \underline{j \Zclear}\semicolon
             ),
             \mbox{\lstinline'var_'}n)
           }
