@@ -14,8 +14,8 @@
         } {
           \splitfrac {
             (I_1 \cdot I_2
-            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 1;'})
-            \cdot (l, \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
+            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 1;'}
+            \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
           } {
             \cdot
             (l, \mbox{\lstinline'while('}
@@ -24,12 +24,11 @@
             \bopen
             I_3
             \cdot (l, \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3
-            \semicolon)
-            \cdot (l, \underline{k\mbox{\lstinline'++'}} \semicolon)
+            \semicolon~ \underline{k\mbox{\lstinline'++'}} \semicolon)
             \bclose )
-            \cdot (l, \underline{k} \Zclear \semicolon )
-            \cdot (l, \underline{e_1} \Zclear \semicolon )
-            \cdot (l, \underline{e_2} \Zclear \semicolon ),
+            \cdot (l, \underline{k} \Zclear \semicolon~
+            \underline{e_1} \Zclear \semicolon~
+            \underline{e_2} \Zclear \semicolon ),
             \mbox{\lstinline'var_'}n)
           }
         }
@@ -50,8 +49,8 @@
         } {
           \splitfrac {
             (I_1 \cdot I_2
-            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 0;'})
-            \cdot (l, \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
+            \cdot (l, \mbox{\lstinline'int var_'}n~\mbox{\lstinline'= 0;'}
+            \Zinit \underline{k~\mbox{\lstinline'='}~e_1}\semicolon )
           } {
             \cdot
             (l, \mbox{\lstinline'while('}
@@ -60,12 +59,12 @@
             \bopen
             I_3
             \cdot (l, \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3
-            \semicolon)
-            \cdot (l, \underline{k\mbox{\lstinline'++'}} \semicolon)
+            \semicolon~
+            \underline{k\mbox{\lstinline'++'}} \semicolon)
             \bclose )
-            \cdot (l, \underline{k} \Zclear \semicolon )
-            \cdot (l, \underline{e_1} \Zclear \semicolon )
-            \cdot (l, \underline{e_2} \Zclear \semicolon ),
+            \cdot (l, \underline{k} \Zclear \semicolon~
+            \underline{e_1} \Zclear \semicolon~
+            \underline{e_2} \Zclear \semicolon ),
             \mbox{\lstinline'var_'}n)
           }
         }
