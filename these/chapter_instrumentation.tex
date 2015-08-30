@@ -139,8 +139,8 @@ T f(T1 i1, ..., Tn in) {
 Ainsi, le programme $P$ réduit à la déclaration de la fonction $f$ de la
 figure~\ref{fig:P} \textbf{(a)} est transformé en programme $P'$ obtenu à partir
 de $P$ par les insertions de code $I_p$, $I_q$, $I_X$, $I_r$, $I_i$, $I_Y$,
-$I_v$ et $I_a$, définies sur la figure~\ref{fig:P} \textbf{(b)}, où $\arule$ est
-défini dans la partie~\ref{sec:annot}.
+$I_v$ et $I_a$, définies sur la figure~\ref{fig:P} \textbf{(b)}, où la fonction
+de traduction $\arule$ est définie dans la partie~\ref{sec:annot}.
 
 \textbf{Sauvegarde des valeurs  au début de la fonction.}
 Indépendamment de la traduction des annotations, un traitement particulier est
@@ -168,12 +168,6 @@ Une fois ce pré-traitement effectué, toute annotation \eacsl de la forme
 \lstinline'loop variant', \lstinline'loop invariant', \lstinline'assigns',
 \lstinline'loop assigns' \bclose et \lstinline'w' est un terme ou un prédicat)
 est traduite.
-%D'autres constructions \eacsl ne sont pas détaillées ici car elles peuvent être
-%réduites au fragment \eacsl considéré.
-%Par exemple, un \lstinline'behavior' est réécrit dans la forme normalisée des
-%programmes comme une implication dans une clause \lstinline'ensures' et les
-%contrats d'instruction peuvent être réécrits comme des implications dans des
-%assertions.
 
 \input{figures/fig_code_gen}
 
@@ -181,24 +175,18 @@ est traduite.
 
 Les figures~\ref{fig:code-gen} et~\ref{fig:code-ins} illustrent la traduction
 de l'invariant de boucle \lstinline'loop invariant x<y' au label de boucle $l$.
-La figure~\ref{fig:code-gen} montre quelles insertions de code sont générées
-pour chaque composant de l'annotation.
-Une séquence d'insertions vide est notée $\emptylist$.
-Les insertions nécessaires à l'évaluation du prédicat \lstinline'x < y' au
-label $l$ et au label $\mathit{EndIter_l}$ apparaissent en partie gauche de la
-figure.
-$(\mathbb{Z})\mbox{\lstinline'x'}$ explicite la conversion (qui est implicite
-dans la suite) du terme \lstinline'x' (qui est une variable du programme et est
-donc du type \lstinline'int' ou autre type C) vers le type logique
-\lstinline'integer'.
+Puisque tout entier d'un type C est implicitement converti en un entier non
+borné de type \lstinline'integer' en \eacsl, cet invariant peut être réécrit
+$\mbox{\lstinline'loop invariant'}~(\mathbb{Z})\mbox{\lstinline'x <'}~(\mathbb{Z})\mbox{\lstinline'y;'}$ pour expliciter cette conversion.
+La figure~\ref{fig:code-gen} montre la séquence d'insertions, étiquetées par
+des labels, obtenue après traduction complète de l'invariant de boucle.
 Les séquences d'instructions numérotées
 \insertball[fill=gray!40,xshift=-1mm,yshift=1mm]{n} désignent les fragments de
-code et font le lien entre les deux parties de la figure.
-La partie droite de la figure montre la séquence d'insertions, étiquetées par
-des labels, obtenue après traduction complète de l'invariant de boucle.
+code générés.
+Cette numérotation est reprise dans la figure~\ref{fig:code-ins}.
 La figure~\ref{fig:code-ins} illustre le principe d'insertion des fragments de
 code de la figure~\ref{fig:code-gen}, qui produit le programme instrumenté en
-appliquant les règles d'insertion décrites ci-dessus.
+appliquant les principes de traduction décrites ci-dessus.
 
 Maintenant que le principe général de la traduction a été présenté, revenons
 sur celle de la fonction du listing~\ref{lst:normalized}.
@@ -238,8 +226,8 @@ Les listings~\ref{lst:Z:1} et~\ref{lst:Z:2} montrent deux exemples où
 une traduction naïve des annotations contenant des entiers mathématiques mène
 à un résultat incorrect.
 Soit \lstinline'x' de type \lstinline'int'.
-L'assertion ligne 1 du listing~\ref{lst:Z:1} est fausse lorsque
-\lstinline'x = INT_MAX'.
+L'assertion ligne 1 du listing~\ref{lst:Z:1} est invalide lorsque
+\lstinline'x = INT_MAX' car \lstinline'INT_MAX+1' ne déborde pas en \eacsl.
 La traduction naïve de cette assertion (ligne 3) utilise les entiers machine
 avec arithmétique modulaire (supposons une architecture 32 bits), donc
 \lstinline'x+1' reste inférieur ou égal à \lstinline'INT_MAX' pour toute valeur
@@ -253,6 +241,34 @@ Les variables nécessaires pour la gestion des entiers non bornés sont créées
 initialisées, puis le résultat est calculé et les comparaisons sont faites en
 tant qu'entier non borné.
 
+La figure~\ref{fig:Z-not} présente la correspondance entre les deux notations
+utilisées dans le listing~\ref{lst:Z:1}.
+La notation abrégée est utilisée dans la suite du document.
+Cette notation nous permet de réécrire
+$\Zinit$ \underline{\lstinline'x; x = y; y'}$\Zclear\semicolon$ en
+$\Zinit$ \underline{\lstinline'x = y'}$\Zclear\semicolon$. \todo{notations}
+
+\begin{figure}\centering
+  \begin{tabular}{c|c|c}
+    \textbf{opération} & \textbf{notation abrégée} & \textbf{notation abstraite}
+    \\ \hline
+    création et initialisation & $\Zinit$ \underline{\lstinline'x;'}
+    & \lstinline'Z_t x; Z_init(x);' \\
+    \hline
+    affectation & \underline{\lstinline'x = y;'} & \lstinline'Z_set(x,y);' \\
+    \hline
+    addition & \underline{\lstinline'x = y+z;'} & \lstinline'Z_add(x,y,z);' \\
+    \hline
+    \multirow{2}{*}{comparaison} & \underline{\lstinline'x < y'}
+    & \lstinline'Z_lt(x,y)' \\
+    & \underline{\lstinline'x <= y'} & \lstinline'Z_le(x,y)' \\
+    \hline
+    libération & \underline{\lstinline'x'}$\Zclear\semicolon$
+    & \lstinline'Z_clear(x);' \\
+  \end{tabular}
+  \caption{Notations pour l'arithmétiques non bornée \label{fig:Z-not}}
+\end{figure}
+
 \lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
     une traduction naïve},label=lst:Z:2]
                 {listings/naive_false_positive.c}
@@ -260,7 +276,7 @@ tant qu'entier non borné.
 Le second exemple (listing~\ref{lst:Z:2}) définit une assertion \eacsl (ligne 2)
 qui est toujours correcte : pour tout entier positif \lstinline'x', son
 successeur est aussi positif.
-Une traduction naïve de cette annotation (ligne 3) génèrera une erreur à
+Une traduction naïve de cette annotation (ligne 4) génèrera une erreur à
 l'exécution pour \lstinline'x = INT_MAX' : en arithmétique modulaire
 \lstinline'x+1' déborde et devient négatif, violant l'assertion ligne 2.
 Une traduction correcte utilisant les entiers non bornés (non présentée ici)
@@ -281,14 +297,15 @@ les listings~\ref{lst:abbrv} et~\ref{lst:Z:1}.
 
 La traduction des annotations est définie dans cette partie par des règles.
 Cela requiert de traduire les termes et les prédicats \eacsl.
-Ces transformations sont décrites par les règles des parties~\ref{sec:term}
+Leur traduction est décrite par les règles des parties~\ref{sec:term}
 et~\ref{sec:pred}.
 Dans ces règles, les notations suivantes s'ajoutent aux notations utilisées au
 chapitre précédent :
 \begin{itemize}
-\item $c_1$, $c_2$, $c_i$ et $c_n$ sont des fragments de programmes C;
-\item $l$, $l_1$, $l_2$, $l_i$, $l_n$, $\mathit{Beg_f}$, $\mathit{End_f}$,
-  $\mathit{BegIter_l}$ et $\mathit{EndIter_l}$ sont des labels du programme;
+\item $c_1$, $c_2$, ..., $c_i$, ..., $c_n$ sont des fragments de programmes C;
+\item $l$, $l_1$, $l_2$, ..., $l_i$, ..., $l_n$, $\mathit{Beg_f}$,
+  $\mathit{End_f}$, $\mathit{BegIter_l}$ et $\mathit{EndIter_l}$ sont des labels
+  du programme;
 \item $j$ et $k$ sont des identificateurs de variables liées
   dans un prédicat \eacsl et un compteur d'itérations dans un programme C;
 \item $x$ est un identificateur de variable C (donc une left-value);
@@ -296,12 +313,12 @@ chapitre précédent :
 \item $I$, $I_1$, $I_2$ et $I_3$ sont des listes d'insertions de code
   $(l_i, c_i)^*$;
 \item $y$ et $z$ sont des left-values quelconques;
-%\item $i$, $i_1$, $i_2$ sont des instructions C;
 \item $P$ est un programme C annoté et $P'$ est le programme instrumenté
   obtenu après traduction du programme $P$.
 \end{itemize}
 
-Les variables \lstinline'res'$_f$, \lstinline'var_'$n$,
+Les variables \lstinline'res'$_f$, \lstinline'var_'$n$, \lstinline'var_'$n_1$,
+..., \lstinline'var_'$n_m$,
 \lstinline'j_'$n$, \lstinline'old_'$x$ et \lstinline'old_val_'$x$ sont
 ``fraîches'', c'est-à-dire que ces identificateurs sont supposés
 différents de tous les autres identifiants de variables du programme instrumenté
@@ -319,8 +336,8 @@ d'une expression par la fonction \lstinline'fassert' est inséré dans le
 programme.
 Le générateur de tests essaiera de couvrir tous les chemins d'exécution
 faisables, donc s'il existe des entrées permettant de rendre fausse
-l'expression de \lstinline'fassert', une erreur sera trouvée et un cas de test
-la produisant sera donné.
+l'expression de \lstinline'fassert', une session complète de génération de tests
+permettra de trouver une erreur et de donner un cas de test la produisant.
 
 La fonction de traduction des annotations, notée $\alpha$, est définie comme une
 fonction partielle qui, à un label $l$ et une annotation $a$,
@@ -353,8 +370,8 @@ s'évalue en la valeur de $p$ ou $t$.
 La règle \textsc{$\alpha$-assert} vérifie simplement avec la fonction
 \lstinline'fassert' la valeur $e$ de la traduction du prédicat $p$ au label $l$.
 La règle \textsc{$\alpha$-check-pre} vérifie avec la fonction
-\lstinline'fassert' la valeur $e$ de la traduction du prédicat $p$ au début de
-la fonction instrumentée.
+\lstinline'fassert' la valeur $e$ de la traduction du prédicat $p$ au début
+d'une fonction appelée.
 La règle \textsc{$\alpha$-assume-pre} traite la précondition de la fonction sous
 test, qui est supposée vraie par définition.
 Cette même règle permet de traduire les clauses \lstinline'typically'
@@ -364,24 +381,25 @@ suppose avec la fonction \lstinline'fassume' que la valeur $e$ de la
 traduction du prédicat $p$ au début de la fonction est vraie.
 La règle \textsc{$\alpha$-check-assigns} vérifie que les left-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
-L'ensemble des left-values considérées est la différence $G-X$, où $G$ est
-l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble des
-left-values de la clause \lstinline'assigns'.
-Dans cette règle, l'expression suivante :
-\[
-\forall (x:\mathit{ctype}) \in G-X :
-(I_1 \concat I_2 \concat
-(Beg_f, \mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon)
-\concat (End_f, \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
-\]
-dénote la liste d'insertions de fragments de code contenant ces deux fragments
-de code $\mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon$ et
-$\mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}$, ainsi que les fragments $I_1$ et $I_2$ qui évaluent $x$ aux labels $Beg_f$ et
-$End_f$, pour chaque left-value $x$ de $G-X$., où $e_1$ est la valeur de $x$ au
-début de la fonction et $e_2$ est la valeur de $x$ à la fin de la fonction.
-Le premier fragment sauvegarde la valeur de $x$ dans \lstinline'var_'$n$ au
-début de la fonction, le second fragment vérifie que la valeur de $x$ n'a pas
-été modifiée en fin de fonction.
+L'ensemble des left-values considérées est la différence
+$G-X = \{x_1, ..., x_m\}$, où $G$ est l'ensemble des left-values dans le
+contexte courant et $X$ est l'ensemble des left-values de la clause
+\lstinline'assigns'.
+%% Dans cette règle, l'expression suivante :
+%% \[
+%% \forall (x:\mathit{ctype}) \in G-X :
+%% (I_1 \concat I_2 \concat
+%% (Beg_f, \mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon)
+%% \concat (End_f, \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
+%% \]
+%% dénote la liste d'insertions de fragments de code contenant ces deux fragments
+%% de code $\mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon$ et
+%% $\mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}$, ainsi que les fragments $I_1$ et $I_2$ qui évaluent $x$ aux labels $Beg_f$ et
+%% $End_f$, pour chaque left-value $x$ de $G-X$., où $e_1$ est la valeur de $x$ au
+%% début de la fonction et $e_2$ est la valeur de $x$ à la fin de la fonction.
+%% Le premier fragment sauvegarde la valeur de $x$ dans \lstinline'var_'$n$ au
+%% début de la fonction, le second fragment vérifie que la valeur de $x$ n'a pas
+%% été modifiée en fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
 
@@ -394,9 +412,11 @@ invariants de boucle (\textsc{$\alpha$-check-invariant}), les variants de boucle
 La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les left-values qui ne
 sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
 boucle.
-Pour chacune de ces left-values, une sauvegarde de leur valeur courante est
-faite au début de chaque itération, puis on vérifie que leur valeur n'a pas été
-modifiée en fin de boucle.
+Pour chacune de ces left-values de l'ensemble $G-X = \{x_1, ..., x_m\}$, où $G$
+est l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble
+des left-values de la clause \lstinline'loop assigns', une sauvegarde de leur
+valeur courante est faite au début de chaque itération, puis on vérifie que leur
+valeur n'a pas été modifiée en fin de boucle.
 La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
 avant la boucle et après chaque itération de la boucle.
 La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
@@ -412,7 +432,7 @@ strictement par rapport à sa valeur au début de l'itération.
 La fonction de traduction des termes, notée $\tau$, est définie comme une
 fonction partielle qui, à un label $l$ et un terme $t$, associe une séquence
 d'insertions de code $(l_i, c_i)^*$ et une expression C dénotée $e$ qui s'évalue
-en la valeur du terme $t$ :
+en la valeur du terme $t$ au label $l$ :
 
 \[
 (l, t) \trule
@@ -420,6 +440,7 @@ en la valeur du terme $t$ :
   \concat (l_n, c_n)}_{I : \text{ liste d'insertions de code}}, e)
 \]
 
+Le fragment de code $c_i$ sera à insérer au label $l_i$.
 Cette fonction est définie dans les figures~\ref{fig:const-id},
 \ref{fig:coerce}, \ref{fig:op} et~\ref{fig:builtin}.
 Ces figures présentent les règles permettant de traduire les termes du langage
@@ -435,8 +456,8 @@ Les insertions de code sont les instructions C nécessaires à l'évaluation du
 terme.
 Elles permettent notamment d'évaluer les sous-termes dont est composé le terme
 $t$.
-L'expression $e$ est pure (elle ne provoque pas d'effet de bord) et correspond à
-l'évaluation du terme $t$ au point de programme $l$.
+L'expression $e$ est pure (elle ne provoque pas d'effet de bord) et représente
+le résultat de l'évaluation du terme $t$ au point de programme $l$.
 L'évaluation de $e$ requiert le plus souvent plusieurs opérations, qui sont
 effectuées par les fragments de programme qui résultent de la traduction du
 terme et seront insérés aux endroits adéquats dans le programme instrumenté.
@@ -461,7 +482,7 @@ left-values (\textsc{$\tau$-lv-simple} pour les identificateurs de variable et
 Deux règles sont nécessaires pour traduire la construction \eacsl
 \lstinline'\old'.
 Appliquée à un identificateur $x$ (règle \textsc{$\tau$-old-simple}), le terme
-est traduit en variable fraîche \lstinline'old_'$x$ qui contient la valeur de
+est traduit en variable \lstinline'old_'$x$ qui contient la valeur de
 $x$ au début de la fonction.
 Appliquée à un accès mémoire (règle \textsc{$\tau$-old-array}), on utilise le
 tableau alloué dynamiquement \lstinline'old_val_'$x$ qui contient les valeurs du
@@ -477,8 +498,6 @@ Notons que l'accès au nom de la fonction courante n'est pas formalisé pour
 simplifier les règles.
 La règle \textsc{$\tau$-const} établit qu'une variable entière GMP est définie
 pour prendre la valeur d'une contante entière non bornée.
-Les constantes d'un autre type sont implicitement converties en entier non
-borné.
 
 \input{figures/fig_rules_coerce}
 
@@ -521,18 +540,19 @@ fonction de l'évaluation de $t_1$.
 La notation suivante :
 \[
 (l,
+\underline{\Zinit \mbox{\lstinline'var_'}n}\semicolon
 \mbox{\lstinline'if('}
 \underline{e_1\Zclear \mbox{\lstinline' \!= 0'}}
 \mbox{\lstinline')'} \bopen
 I_2
 \concat
-(l, \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2 \Zclear}
+(l, \underline{\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2 \Zclear}
 \semicolon )
 \bclose
 \mbox{\lstinline'else'} \bopen
 I_3
 \concat
-(l, \underline{\Zinit \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3 \Zclear}
+(l, \underline{\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_3 \Zclear}
 \semicolon )
 \bclose )
 \]
@@ -801,8 +821,8 @@ respectivement sur les termes, sur les prédicats et sur les annotations.
 
 
 Définissons maintenant les propriétés exprimant la correction de la traduction,
-c'est-à-dire que le code instrumenté a la même sémantique que le code annoté
-dont il est issu.
+c'est-à-dire assurant que le code instrumenté a la même sémantique que le code
+annoté dont il est issu.
 
 Ces propriétés se décomposent en trois parties qui sont la préservation des
 erreurs, l'inclusion des mémoires et l'absence d'erreur à l'exécution due à
@@ -810,10 +830,10 @@ l'instrumentation.
 
 \begin{myproperty}[Préservation des erreurs]
   \label{th:error}
-  À partir de toute mémoire, si l'exécution des instructions obtenues
-  par traduction d'une annotation $a$
-  du programme $P$ provoque une erreur dans le programme instrumenté $P'$ par
-  cette traduction de $a$, alors l'annotation $a$ est invalide.
+  À partir de toute mémoire $\neq \errormem$, si l'exécution des instructions
+  obtenues par traduction d'une annotation $a$ du programme $P$ provoque une
+  erreur dans le programme instrumenté $P'$ par cette traduction de $a$, alors
+  l'annotation $a$ est invalide.
 \end{myproperty}
 
 La préservation des erreurs (propriété~\ref{th:error}) assure l'absence de faux
@@ -826,7 +846,7 @@ une erreur du programme annoté.
   Soit $A$ la séquence d'instructions obtenue à partir d'une liste d'insertions
   de code $I$ selon les règles d'insertion énoncées dans la
   partie~\ref{sec:principles}.
-  Soit $(\env, \store)$ une mémoire quelconque.
+  Soit $(\env, \store) \neq \errormem$ une mémoire quelconque.
   Pour tout préfixe $B$ de $A$, si
   $(\env', \store')$ = \comps{$B$}{$(\env, \store)$}, alors
   $\env \subenv \env'$ et $\store \subenv \store'$.
@@ -844,7 +864,7 @@ la traduction.
   \label{lem:noerror}
   Soit $A$ la séquence d'instructions obtenue à partir d'une liste d'insertions
   de code $I$ issue de la traduction d'un terme ou d'un prédicat.
-  Soit $\mem$ une mémoire quelconque.
+  Soit $\mem \neq \errormem$ une mémoire quelconque.
   Pour tout préfixe $B$ de $A$, \comps{$B$}{$\mem$} $\neq \errormem$.
 \end{myproperty}
 
@@ -874,9 +894,9 @@ annotations, nous devons prouver la correction de la traduction des termes.
   $(I, e)$ où $I$ est une liste d'insertions de code et $e$ est la variable
   donnant la valeur du terme $t$.
   On dit que \emph{la sémantique des termes est préservée} si le fragment de
-  programme $A$ obtenu   à partir de $I$ et exécuté à partir d'une mémoire
-  quelconque $\mem$ donne une mémoire \comps{$A$}{$\mem$} telle que
-  \eval{$t$}{$\mem$} = \eval{$e$}{(\comps{$A$}{$\mem$})}.
+  programme $A$ obtenu à partir de $I$ et exécuté à partir d'une mémoire
+  quelconque $\mem \neq \errormem$ donne une mémoire \comps{$A$}{$\mem$} telle
+  que \eval{$t$}{$\mem$} = \eval{$e$}{(\comps{$A$}{$\mem$})}.
 \end{definition}
 
 \begin{myproperty}[Préservation de la sémantique des termes]
@@ -943,33 +963,40 @@ Nous les justifions une à une :
   en appliquant les règles de sémantique dénotationnelle (indiquées à chaque
   étape au dessus du symbole $=$) et de définition des mémoires :
 
-  \begin{tabular}{rcl}
-    \multicolumn{3}{l}{
+  \begin{spacing}{1.2}
+    \begin{tabular}{rcl}
+      \multicolumn{3}{l}{
+        \eval{\lstinline'var_'$n$}{
+          (\comps{$\Zinit$\underline{\lstinline'var_'$n$ \lstinline'=' $cst$}
+            \semicolon
+          }{$(\env, \store)$})}
+      }\\ 
+      &$\eq{\eqlabel{C-Z-set}}$&
       \eval{\lstinline'var_'$n$}{
-        (\comps{$\Zinit$\underline{\lstinline'var_'$n$ \lstinline'=' $cst$}
-          \semicolon
-        }{$(\env, \store)$})}
-    }\\ 
-    &$\eq{\eqlabel{C-Z-set}}$&
-    \eval{\lstinline'var_'$n$}{
-      ($\env$[\lstinline'var_'$n$ $\mapsto \loc]$,
+        ($\env$[\lstinline'var_'$n$ $\mapsto \loc]$,
+        $\store$[$\loc \mapsto$
+          \eval{$cst$}{$(\env, \store)$}])} \\
+      && où $\loc$ est une adresse fraîche \\
+      &$\eq{\eqlabel{E-lval}}$&
       $\store$[$\loc \mapsto$
-        \eval{$cst$}{$(\env, \store)$}])} \\
-    && où $\loc$ est une adresse fraîche \\
-    &$\eq{\eqlabel{E-lval}}$&
-    $\store$[$\loc \mapsto$
-      \eval{$cst$}{$(\env, \store)$}]
-    (
-    $\env$[\lstinline'var_'$n$ $\mapsto \loc]$
-    (\lstinline'var_'$n$)
-    )\\
-    &$\eq{\eqlabel{env-get-1}}$&
-    $\store$[$\loc \mapsto$
-      \eval{$cst$}{$(\env, \store)$}]
-    ($\loc$)\\
-    &$\eq{\eqlabel{store-get-1}}$&
-    \eval{$cst$}{$(\env, \store)$} \\
-  \end{tabular}
+        \eval{$cst$}{$(\env, \store)$}]
+      (
+      $\env$[\lstinline'var_'$n$ $\mapsto \loc]$
+      (\lstinline'var_'$n$)
+      )\\
+      &$\eq{\eqlabel{env-get-1}}$&
+      $\store$[$\loc \mapsto$
+        \eval{$cst$}{$(\env, \store)$}]
+      ($\loc$)\\
+      &$\eq{\eqlabel{store-get-1}}$&
+      \eval{$cst$}{$(\env, \store)$} \\
+    \end{tabular}
+  \end{spacing}
+
+  On peut appliquer la règle \eqlabel{C-Z-set} car la mémoire
+  \comps{$\Zinit$\underline{\lstinline'var_'$n$ \lstinline'=' $cst$}
+    \semicolon}{$(\env, \store)$} $\neq \errormem$ d'après la
+  propriété~\ref{lem:noerror}.
   ~\\
 \end{proof}
 
@@ -1013,10 +1040,10 @@ nous devons prouver la correction de la traduction des prédicats.
   Soit $p$ un prédicat au label $l$ qui est traduit par le couple $(I, e)$ où
   $I$ est une liste d'insertions de code et $e$ est la variable donnant la
   valeur du prédicat $p$.
-  On dit que \emph{la sémantique des prédiats est préservée} si le fragment de
+  On dit que \emph{la sémantique des prédicats est préservée} si le fragment de
   programme $A$ obtenu à partir de $I$ et exécuté à partir d'une mémoire
-  quelconque $\mem$ donne une mémoire \comps{$A$}{$\mem$} telle que
-  \eval{$p$}{$\mem$} = \eval{$e$}{(\comps{$A$}{$\mem$})}.
+  quelconque $\mem \neq \errormem$ donne une mémoire \comps{$A$}{$\mem$} telle
+  que \eval{$p$}{$\mem$} = \eval{$e$}{(\comps{$A$}{$\mem$})}.
 \end{definition}
 
 \begin{myproperty}[Préservation de la sémantique des prédicats]
@@ -1091,7 +1118,7 @@ Propriété~\ref{lem:noerror}.\\
   \mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_2\semicolon \bclose$
 }{$\mem$} $\neq \errormem$.
 
-Nous les justifions une à une :
+Nous les justifions une à une en raisonnant par induction :
 
 \begin{proof}[Justification de la propriété~\ref{lem:pred-correct}.]~\\
   Par hypothèse, les traductions de $p_1$ et $p_2$ sont
@@ -1604,23 +1631,26 @@ La traduction utilise les trois règles suivantes :
 {\scriptsize
   {\myinference{$\alpha$-check-loop-assigns}
     {
-      \forall (x:ctype) \in G-X :
-      (
-      (BegIter_l, x) \trule (I_1, e_1) \\
-      (EndIter_l, x) \trule (I_2, e_2)
-      )
+      (BegIter_l, x_1) \trule (I_1^1, e_1^1) \quad
+      (EndIter_l, x_1) \trule (I_1^2, e_1^2) \quad
+      ... \quad
+      (BegIter_l, x_m) \trule (I_m^1, e_m^1) \quad
+      (EndIter_l, x_m) \trule (I_m^2, e_m^2)
     }
     {
       \splitfrac{
         (l, \mbox{\lstinline'loop assigns'}~X\semicolon) \arule
       } {
         \splitfrac{
-          \forall (x:ctype) \in G-X :
-        }{
-          (I_1 \concat I_2 \concat (BegIter_l,
-          ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1\semicolon)
+          I_1^1 \concat I_1^2 \concat (BegIter_l,
+          ctype~\mbox{\lstinline'var_'}n_1~\mbox{\lstinline'='}~e_1^1\semicolon)
           \concat (EndIter_l,
-          \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
+          \mbox{\lstinline'fassert('}e_1^2~\mbox{\lstinline'== var_'}n_1\mbox{\lstinline');'}) \concat ...
+        }{
+          \concat I_m^1 \concat I_m^2 \concat (BegIter_l,
+          ctype~\mbox{\lstinline'var_'}n_m~\mbox{\lstinline'='}~e_m^1\semicolon)
+          \concat (EndIter_l,
+          \mbox{\lstinline'fassert('}e_m^2~\mbox{\lstinline'== var_'}n_m\mbox{\lstinline');'})
         }
       }
     }{}
@@ -1751,23 +1781,26 @@ La traduction utilise les trois règles suivantes :
 {\scriptsize
   {\myinference{$\alpha$-check-assigns}
     {
-      \forall (x:ctype) \in G-X :
-      (
-      (Beg_f, x) \trule (I_1, e_1) \\
-      (End_f, x) \trule (I_2, e_2)
-      )
+      (Beg_f, x_1) \trule (I_1^1, e_1^1) \quad
+      (End_f, x_1) \trule (I_1^2, e_1^2) \quad
+      ... \quad
+      (Beg_f, x_m) \trule (I_m^1, e_m^1) \quad
+      (End_f, x_m) \trule (I_m^2, e_m^2)
     }
     {
       \splitfrac{
         (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
       } {
         \splitfrac{
-          \forall (x:ctype) \in G-X :
-        }{
-          (I_1 \concat I_2 \concat (Beg_f,
-          ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1\semicolon)
+          I_1^1 \concat I_1^2 \concat (Beg_f,
+          ctype~\mbox{\lstinline'var_'}n_1~\mbox{\lstinline'='}~e_1^1\semicolon)
           \concat (End_f,
-          \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
+          \mbox{\lstinline'fassert('}e_1^2~\mbox{\lstinline'== var_'}n_1\mbox{\lstinline');'}) \concat ...
+        }{
+          \concat I_m^1 \concat I_m^2 \concat (Beg_f,
+          ctype~\mbox{\lstinline'var_'}n_m~\mbox{\lstinline'='}~e_m^1\semicolon)
+          \concat (End_f,
+          \mbox{\lstinline'fassert('}e_m^2~\mbox{\lstinline'== var_'}n_m\mbox{\lstinline');'})
         }
       }
     }{}
@@ -1861,8 +1894,8 @@ généralité.
 Puis nous avons défini les règles permettant pour chaque terme et prédicat
 \eacsl d'obtenir un code C calculant cette expression tout en préservant la
 sémantique d'\eacsl.
-Ces règles nous ont permis de définir différentes manières de traduire les
-annotations \eacsl : \lstinline'assert', \lstinline'requires',
+Ces règles nous ont permis de définir les règles de traduction des annotations
+\eacsl : \lstinline'assert', \lstinline'requires',
 \lstinline'typically', \lstinline'assigns', \lstinline'ensures',
 \lstinline'loop invariant', \lstinline'loop assigns' et
 \lstinline'loop variant'.
