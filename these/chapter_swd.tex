@@ -152,16 +152,15 @@ par un nouveau code dérivé de leur contrat de la manière suivante.
   \scriptsize{
     {\myinference{$\alpha$-assume-assigns}
       {
-        \forall (x:ctype) \in X :
-        (
-        (End_f, x) \trule (I, e)
-        )
+        (End_f, x_1) \trule (I_1, e_1) \quad
+        ... \quad
+        (End_f, x_m) \trule (I_m, e_m)
       }
       {
         (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
-        \forall (x:ctype) \in X :
-        (I \concat (End_f,
-        e~\mbox{\lstinline'= Nondet();'}) )
+        I_1 \concat (End_f, e_1~\mbox{\lstinline'= Nondet();'})
+        \concat ...
+        \concat I_m \concat (End_f, e_m~\mbox{\lstinline'= Nondet();'})
       }{}
     }
 
@@ -192,7 +191,8 @@ dont la génération est ici notée par \lstinline{Nondet()} (ou simplement en
 utilisant un tableau contenant les variables d'entrée fraîches, dans lequel on
 va lire de nouvelles valeurs pour chaque appel de la fonction \lstinline'g').
 La règle \textsc{$\alpha$-assume-assigns} de la figure~\ref{fig:assume-annot}
-formalise la traduction de la clause \lstinline'assigns'.
+formalise la traduction de la clause \lstinline'assigns' où
+$X = \{x_1, ..., x_m\}$.
 Si le type de retour de \lstinline'g' n'est pas \lstinline{void}, une valeur
 non-déterministe supplémentaire est générée pour la valeur de retour
 \lstinline{ret} (ligne 3 de la figure~\ref{fig:CW-transf-functions}(b)).
@@ -208,16 +208,15 @@ formalise la traduction de la postcondition.
   \scriptsize{
     {\myinference{$\alpha$-assume-loop-assigns}
       {
-        \forall (x:ctype) \in X :
-        (
-        (l, x) \trule (I, e)
-        )
+        (l, x_1) \trule (I_1, e_1) \quad
+        ... \quad
+        (l, x_m) \trule (I_m, e_m) \quad
       }
       {
         (l, \mbox{\lstinline'loop assigns'}~X\semicolon) \arule
-        \forall (x:ctype) \in X :
-        (I \concat (l,
-        e~\mbox{\lstinline'= Nondet();'}) )
+        I_1 \concat (l, e_1~\mbox{\lstinline'= Nondet();'})
+        \concat ...
+        \concat I_m \concat (l, e_m~\mbox{\lstinline'= Nondet();'})
       }{}
     }
 
@@ -255,6 +254,8 @@ Les règles \textsc{$\alpha$-assume-loop-assigns} et
 \textsc{$\alpha$-assume-invariant} de la figure~\ref{fig:assume-loop-annot}
 formalisent respectivement la traduction des clauses \lstinline'loop assigns' et
 \lstinline'loop invariant'.
+Dans la règle \textsc{$\alpha$-assume-loop-assigns} on a :
+$X = \{x_1, ..., x_m\}$.
 La règle \textsc{$\alpha$-assume-invariant} génère un code qui calcule la valeur
 de l'invariant $p$ dans la variable $e$ et fait l'hypothèse que la condition
 $I \land \lnot b$ codée par $e~\mbox{\lstinline'\&\& !'}loopcond$ où $loopcond$

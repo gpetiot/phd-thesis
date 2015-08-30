@@ -28,23 +28,26 @@
 
     {\myinference{$\alpha$-check-assigns}
       {
-        \forall (x:ctype) \in G-X :
-        (
-        (Beg_f, x) \trule (I_1, e_1) \\
-        (End_f, x) \trule (I_2, e_2)
-        )
+        (Beg_f, x_1) \trule (I_1^1, e_1^1) \quad
+        (End_f, x_1) \trule (I_1^2, e_1^2) \quad
+        ... \quad
+        (Beg_f, x_m) \trule (I_m^1, e_m^1) \quad
+        (End_f, x_m) \trule (I_m^2, e_m^2)
       }
       {
         \splitfrac{
           (End_f, \mbox{\lstinline'assigns'}~X\semicolon) \arule
         } {
           \splitfrac{
-            \forall (x:ctype) \in G-X :
-          }{
-            (I_1 \concat I_2 \concat (Beg_f,
-            ctype~\mbox{\lstinline'var_'}n~\mbox{\lstinline'='}~e_1\semicolon)
+            I_1^1 \concat I_1^2 \concat (Beg_f,
+            ctype~\mbox{\lstinline'var_'}n_1~\mbox{\lstinline'='}~e_1^1\semicolon)
             \concat (End_f,
-            \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
+            \mbox{\lstinline'fassert('}e_1^2~\mbox{\lstinline'== var_'}n_1\mbox{\lstinline');'}) \concat ...
+          }{
+            \concat I_m^1 \concat I_m^2 \concat (Beg_f,
+            ctype~\mbox{\lstinline'var_'}n_m~\mbox{\lstinline'='}~e_m^1\semicolon)
+            \concat (End_f,
+            \mbox{\lstinline'fassert('}e_m^2~\mbox{\lstinline'== var_'}n_m\mbox{\lstinline');'})
           }
         }
       }{}
