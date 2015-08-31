@@ -35,16 +35,20 @@ outil sur différents programmes.
 \label{sec:bilan}
 
 
-Nous proposons une méthode originale d'aide à la vérification déductive par
-génération de tests structurels sur une version instrumentée du programme
-d'origine.
-Cette méthode consiste en une première étape de détection de non-conformités
-puis en une seconde étape de détection de faiblesses de sous-contrats (contrats
+Nous avons d'abord développé une méthode de validation à l'exécution des
+annotations \eacsl liées au modèlé mémoire et implémenté une bibliothèque C
+permettant de valider ces annotations à l'exécution.
+
+Nous avons ensuite proposé une méthode originale d'aide à la vérification
+déductive, par génération de tests structurels sur une version instrumentée du
+programme d'origine.
+Cette méthode comporte une première étape de détection de non-conformités,
+puis une seconde étape de détection de faiblesses de sous-contrats (contrats
 de boucle ou de fonction appelée).
 
 Nous avons dans un premier temps conçu une méthode de détection des
 non-conformités du code par rapport à la spécification dans les programmes C.
-Cette méthode nécessite une traduction en C des annotations \acsl afin
+Cette méthode nécessite une traduction en C des annotations \eacsl afin
 d'expliciter les violations potentielles d'annotations par la création de
 nouvelles branches dans le programme.
 La préservation de la sémantique par cette traduction nous assure de trouver
@@ -65,13 +69,13 @@ vérification déductive du programme.
 Nous avons alors décidé dans un second temps d'adapter notre méthode de
 détection des non-conformités afin de pouvoir détecter les faiblesses de
 sous-contrats.
-Cette nouvelle méthode nécessite une traduction en C des annotations \acsl
+Cette nouvelle méthode nécessite une traduction en C des annotations \eacsl
 différente de la première, car nous voulons pouvoir ``exécuter'' certains
 contrats au lieu du code qu'ils spécifient.
 Nous avons intégré cette méthode à \stady et expérimenté son efficacité par des
 mutations dans le cadre du diagnostic des échecs de preuve.
 Nos expérimentations ont permis de mettre en évidence le gain apporté par cette
-dernière méthode par rapport à une détection des non-conformités seule.
+deuxième méthode par rapport à une détection des non-conformités seule.
 
 Nous avons ensuite conçu une méthode combinant la détection des non-conformités
 et la détection des faiblesses de sous-contrats afin d'aider au diagnostic des
@@ -81,36 +85,44 @@ Si aucune non-conformité n'est détectée, elle recherche des faiblesses de
 sous-contrats.
 Si aucune de ces deux phases n'a fourni de raison quant à l'échec de la preuve
 et si la génération de tests a couvert tous les chemins d'exécution faisables
-du programme, alors l'échec de la preuve est dû à une incapacité du prouveur,
-sinon le problème reste non résolu.
+du programme, alors l'échec de la preuve est dû à une incapacité du prouveur.
+Sinon le problème reste non résolu.
 
-Les différentes composantes de la méthode sont donc implémentées dans le
-greffon \stady, mais la méthode de diagnostic elle-même ne l'est pas.
+Nous avons implémenté les différentes composantes de la méthode dans le
+greffon \stady.
+La méthode de diagnostic elle-même n'est pas encore implémentée.
 D'autre part, l'implémentation souffre de quelques limitations dues au support
-incomplet du langage de spécification \acsl.
+incomplet du langage de spécification \eacsl.
 Ces deux points sont laissés en perspectives.
+
+Dans le cadre de travaux effectués avec R. Genestier et A. Giorgetti, \stady a
+été appliqué sur des programmes générant des tableaux structurés et a permis de
+faciliter la vérification déductive de ces programmes.
 
 
 \subsection{Publications associées à la thèse}
 
 
-Dans le cadre de nos travaux, nous avons publié quatre
-articles de recherche lors de conférences internationales :
+Dans le cadre de nos travaux, nous avons présenté quatre
+communications de recherche lors de conférences internationales :
 
-L'article~\cite{Kosmatov/RV13} présente notre méthode de validation à
-l'exécution des annotations \acsl liées au modèle mémoire et l'implémentation
-d'une bibliothèque permettant de valider ces annotations à l'exécution.
+L'article~\cite{Kosmatov/RV13}, publié à RV 2013, présente notre méthode de
+validation à l'exécution des annotations \eacsl liées au modèle mémoire et
+l'implémentation d'une bibliothèque permettant de valider ces annotations à
+l'exécution.
 
-L'article~\cite{Petiot/TAP14} détaille l'aspect méthodologique de notre méthode
-de détection des non-conformités entre le code et sa spécification.
+L'article~\cite{Petiot/TAP14}, publié à TAP 2014, détaille l'aspect
+méthodologique de notre méthode de détection des non-conformités entre le code
+et sa spécification.
 
-L'article~\cite{Petiot/SCAM14} présente la traduction des annotations \acsl en
-C pour la détection de non-conformités entre le code et la spécification.
+L'article~\cite{Petiot/SCAM14}, publié à SCAM 2014, présente la traduction des
+annotations \acsl en C pour la détection de non-conformités entre le code et la
+spécification.
 
-L'article~\cite{Genestier/TAP15} recense plusieurs programmes C dont la
-vérification déductive a été facilitée par \stady.
+L'article~\cite{Genestier/TAP15}, publié à TAP 2015, recense plusieurs
+programmes C dont la vérification déductive a été facilitée par \stady.
 
-Le rapport de recherche~\cite{Petiot/unpublished15} présente une méthode globale
+Le rapport de recherche~\cite{Petiot/unpublished15} présente la méthode globale
 de diagnostic des échecs de preuve combinant la détection des non-conformités
 entre le code et la spécification et la détection des faiblesses de
 sous-contrats.
@@ -177,7 +189,7 @@ les entiers mathématiques d'\eacsl.
 La méthode de détection des non-conformités et la méthode de détection des
 faiblesses de sous-contrats sont implémentées dans \stady, mais la méthode les
 combinant ne l'est pas.
-En effet, l'utilisation actuelle de \stady est la suivante.
+L'utilisation actuelle de \stady est la suivante.
 \stady doit être lancé une première fois en mode
 ``détection de non-conformités''' (son mode par défaut).
 Puis, si aucune non-conformité n'a été détectée, \stady peut être lancé un
@@ -191,7 +203,7 @@ Ce processus pourrait être automatisé au cours d'une seule exécution de \stad
 qui lancerait d'abord une détection de non-conformités puis une ou plusieurs
 détections de faiblesses de sous-contrats.
 Les contrats pour lesquels une faiblesse peut être recherchée pourraient être
-déterminée en analysant les dépendances entre les annotations du programme.
+déterminés en analysant les dépendances entre les annotations du programme.
 
 
 \subsection{Expérimentations avec des utilisateurs}
