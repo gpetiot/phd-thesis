@@ -1,4 +1,4 @@
-\begin{figure}[h!]
+\begin{figure}[h!]\centering
 \begin{spacing}{1.6}
   \begin{tabular}{rclr}
     \eval{\lstinline'\\true'}{$\mem$} &=& $1$ & \eqlabel{P-true} \\
@@ -16,24 +16,26 @@
     & \eqlabel{P-validr} \\
 
     \multicolumn{4}{l}{
-    \eval{\lstinline'\\forall integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'==>' $p$}{$\mem$}
+      \eval{\lstinline'\\forall integer' $k \semicolon t_1$ \lstinline'<=' $k$
+        \lstinline'<=' $t_2$ \lstinline'==>' $p$}{$\mem$}
     }\\
     &=&
-    $\forall k$.
-    (\eval{$t_1$}{$\mem$} $\le k \le$
-    \eval{$t_2$}{$\mem$} $\Rightarrow$ \eval{$p$}{$\mem$})
+    $F'(\mbox{\eval{$t_1$}{$\mem$}}, \mbox{\eval{$t_2$}{$\mem$}},(\lambda~k.\mbox{\eval{$p$}{$\mem$}}))$
     & \eqlabel{P-forall} \\
+    \multicolumn{4}{c}{
+      où $F'(v_1,v_2,f) = \forall i. (v_1 \le i \le v_2 \Rightarrow f(i))$
+    } \\
 
     \multicolumn{4}{l}{
-    \eval{\lstinline'\\exists integer' $k \semicolon t_1$ \lstinline'<=' $k$
-      \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{$\mem$}
+      \eval{\lstinline'\\exists integer' $k \semicolon t_1$ \lstinline'<=' $k$
+        \lstinline'<=' $t_2$ \lstinline'\&\&' $p$}{$\mem$}
     }\\
     &=&
-    $\exists k$.
-    (\eval{$t_1$}{$\mem$} $\le k \le$
-    \eval{$t_2$}{$\mem$} $\land$ \eval{$p$}{$\mem$})
+    $E'(\mbox{\eval{$t_1$}{$\mem$}}, \mbox{\eval{$t_2$}{$\mem$}},(\lambda~k.\mbox{\eval{$p$}{$\mem$}}))$
     & \eqlabel{P-exists} \\
+    \multicolumn{4}{c}{
+      où $E'(v_1,v_2,f) = \exists i. (v_1 \le i \le v_2 \land f(i))$
+    } \\
 
     \eval{\lstinline'\!'$p$}{$\mem$} &=& $\lnot$ (\eval{$p$}{$\mem$})
     & \eqlabel{P-not} \\
