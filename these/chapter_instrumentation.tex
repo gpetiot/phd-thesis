@@ -1209,6 +1209,32 @@ Nous les justifions une à une en raisonnant par induction :
     && et $\loc$ est une adresse fraîche. \\
   \end{tabular}
 
+  Justifions que
+  \eval{\lstinline'var_'$n$}{$(\env'', \store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$])$} = \eval{$e_1$}{(\comps{$A_1$}{$\mem$})}. \todo{var\_n = e1}
+
+  Développons le membre gauche :
+
+  \begin{tabular}{rcl}
+    \multicolumn{3}{l}{
+      \eval{\lstinline'var_'$n$}{$(\env'', \store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$])$}
+    } \\
+    &$\eq{\eqlabel{E-lval}}$& $\store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$]$($\env''$(\lstinline'var_'$n$)) \\
+    &=& $\store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$]$($\env'$[\lstinline'var_'$n$ $\mapsto \loc$](\lstinline'var_'$n$)) par définition de $\env''$ \\
+    &$\eq{\eqlabel{env-get-1}}$& $\store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$]$($\loc$) \\
+    &$\eq{\eqlabel{store-get-1}}$& \eval{$e_1$}{$\mem''$} \\
+    &=& \eval{$e_1$}{($\env'[\mbox{\lstinline'var_'}n \mapsto \loc], \store'[\loc \mapsto \bot]$)} par définition de $\mem''$ \\
+    &$\eq{\eqlabel{E-lval}}$& $\store'[\loc \mapsto \bot]$($\env'[\mbox{\lstinline'var_'}n \mapsto \loc]$($e_1$)) \\
+    &$\eq{\eqlabel{env-get-2}}$& $\store'[\loc \mapsto \bot]$($\env'$($e_1$))
+    car $\mbox{\lstinline'var_'}n \neq e_1$ \\
+    &$\eq{\eqlabel{store-get-2}}$& $\store'$($\env'$($e_1$))
+    car $\loc$ est une adresse fraîche (donc différente de l'adresse de $e_1$) \\
+    &$\eq{\eqlabel{E-lval}}$& \eval{$e_1$}{($\env',\store'$)} \\
+    &=& \eval{$e_1$}{(\comps{$A_1$}{$\mem$})} par définition de $\mem'$ \\
+  \end{tabular}
+
+  On a donc
+  \eval{\lstinline'var_'$n$}{$(\env'', \store''[\loc \mapsto$ \eval{$e_1$}{$\mem''$}$])$} = \eval{$e_1$}{(\comps{$A_1$}{$\mem$})}.
+
   (a) Cas où la valeur de l'expression conditionnelle \lstinline'var_'$n$ est
   vraie, soit \eval{$e_1$}{(\comps{$A_1$}{$\mem$})} = true,
   c'est-à-dire par hypothèse \eqlabel{h1} : \eval{$p_1$}{$\mem$} =
