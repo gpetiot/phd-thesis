@@ -104,9 +104,9 @@ lecture.
 left-value $lv$, il est vrai si $lv$ est initialisée.
 Soit une mémoire $\mem = (\env, \store)$ en accord avec la formalisation des
 mémoires du chapitre~\ref{sec:lang}.
-\initializedt est vrai si il existe une left-value $lv$ et une adresse $\loc$
-telles que l'association $lv \mapsto \loc \in \env$ et le pointeur $t$ a pour
-valeur $\loc$ et $\store(\loc) \neq \bot$.
+\initializedt est vrai s'il existe une left-value $lv$ et une adresse $\loc$
+telles que $\env(lv) = \loc$, le pointeur $t$ a pour valeur $\loc$ et
+$\store(\loc) \neq \bot$.
 
 
 \lstinputlisting[caption={Annotations mémoire -- Exemple en C},
@@ -118,7 +118,7 @@ valeur $\loc$ et $\store(\loc) \neq \bot$.
 \end{figure}
 
 
-Le Listing~\ref{lst:mem-annots} illustre l'utilisation de toutes ces annotations
+Le listing~\ref{lst:mem-annots} illustre l'utilisation de toutes ces annotations
 sur un programme C.
 Un tableau \lstinline't' de trois entiers est alloué ligné 2.
 Les deux premières cases du tableau sont initialisées à 1 aux lignes 3--4.
@@ -261,7 +261,7 @@ d'initialisation sur chaque octet du bloc.
 %\lstinputlisting[caption={Calcul du plus grand préfixe commun},
 %  label=lst:prefix]{listings/common_prefix_mask.c}
 
-Définissons les types {\em word} et {\em masque} utilisés dans ce chapitre.
+Définissons les types {\em word} et {\em Mask} utilisés dans ce chapitre.
 Un {\em word} de taille $n$ est une suite de $n$ bits ($0$ ou $1$).
 La taille d'un word est généralement un multiple de $2$ et dépend de
 l'architecture matérielle.
@@ -271,10 +271,10 @@ Nous utilisons une constante $WLEN$ pour faire référence à la taille des word
 Un {\em masque} est un word dont les $k \le WLEN$ premiers bits sont à $1$ et
 les $WLEN-k$ bits suivants sont à $0$.
 Nous noterons $Mask$ le type des masques.
-Les types de données word et Mask seront utilisés dans les algorithmes présentés
-dans ce chapitre.
+Les types de données {\em word} et {\em Mask} seront utilisés dans les
+algorithmes présentés dans ce chapitre.
 Nous définissons un ordre lexicographique sur les masques.
-Soient $m$ et $m'$ deux masques, $m <= m'$ si et seulement si $m'$ contient au
+Soient $m$ et $m'$ deux masques, $m \le m'$ si et seulement si $m'$ contient au
 moins autant de $1$ que $m$.
 
 Le {\em masque du plus grand préfixe commun} $m$ de deux adresses $a$ et $b$ est
@@ -290,7 +290,7 @@ En effet, seuls les trois premiers bits de $a$ sont identiques au trois premiers
 bits de $b$, les words divergent à partir du quatrième bit.
 On notera $p$ = \ppnode{\texttt{011*\,****}} le plus grand préfixe commun à $a$
 et $b$, où le symbole ``{\tt *}'' signifie que la valeur du bit à cette position
-n'est pas définie.
+ne fait pas partie du préfixe commun.
 
 
 \begin{algorithm}
@@ -325,50 +325,53 @@ n'est pas définie.
   \label{algo:prefix}}
 \end{algorithm}
 
+\begin{definition}[Masque du plus grand préfixe commun (MPGPC)]
+  Le MPGPC de $a$ et $b$ est le plus grand masque $\le$ à la négation du
+  {\em ou}-exclusif de $a$ et de $b$.
+\end{definition}
 
-Nous présentons maintenant un algorithme efficace de recherche du plus grand
-préfixe commun de deux adresses.
+Nous présentons maintenant un algorithme efficace de recherche du masque du plus
+grand préfixe commun de deux adresses.
 Une version na\"ive et inefficace de cet algorithme consiste en un parcours
 linéaire des mots mémoire de gauche à droite jusqu'à trouver des bits
 différents, de la même manière qu'on pourrait le faire sur des chaînes de
 caractères.
 La complexité de la version na\"ive est en $\mathcal{O}(\mathit{WLEN})$.
 
-La version optimisée de cet algorithme consiste maintenant en une recherche
+La version optimisée de cet algorithme consiste en une recherche
 dichotomique du masque dans un tableau pré-calculé qui contient tous les masques
 de préfixes possibles.
+L'algorithme~\ref{algo:prefix} présente cette méthode de recherche.
 La complexité de cet algorithme est en
 $\mathcal{O}(\mathit{log}(\mathit{WLEN}))$ (soit $\le 6$ itérations pour des
 words de 32 bits et $\le 7$ itérations pour des words de 64 bits).
 Les transitions entre les étapes de la recherche se font en utilisant des
-indices pré-calculés, de manière à obtenir le prochain masque à essayer.
-L'algorithme~\ref{algo:prefix} présente cette méthode de recherche.
+indices pré-calculés, de manière à obtenir le prochain masque à comparer avec
+$nxor$.
+La variable $nxor$ contient la négation du {\em ou}-exclusif de $a$ et $b$.
 Le tableau $masks$ contient tous les $WLEN+1$ masques possibles sur
 $WLEN$ bits.
-Le tableau $longer$ contient les indices à essayer en cas de recherche d'un
-masque plus long : si $nxor$ est plus grand que le masque courant à l'indice $i$
-($masks[i]$), le prochain masque à essayer sera celui à l'indice $longer[i]$
+Les tableaux $longer$ et $shorter$ contiennent des indices du tableau $masks$.
+Si $nxor$ est plus grand que le masque courant à l'indice $i$ ($masks[i]$), le
+prochain masque à comparer avec $nxor$ sera celui à l'indice $longer[i]$
 ($masks[longer[i]]$).
-De manière similaire, $shorter$ contient les indices à essayer en cas de
-recherche d'un masque plus court : si $nxor$ est plus petit que le masque
-courant, le prochain masque à essayer sera à l'indice $shorter[i]$.
-Les tableaux $longer$ et $shorter$ ont été remplis de telle manière que si un
-des éléments $k$ de ces tableaux est négatif, alors $- k$ est l'indice du masque
+Si $nxor$ est plus petit que le masque courant, le prochain masque à comparer
+avec $nxor$ sera à l'indice $shorter[i]$.
+Si l'indice courant $k$ est négatif, alors $- k$ est l'indice du masque
 du plus grand préfixe commun.
 
-Sur des words de longueur 16 bits, les tableaux $masks$, $longer$ et $shorter$
+Sur des words de longueur 8 bits, les tableaux $masks$, $longer$ et $shorter$
 sont initialisés de cette manière :
 
 \begin{lstlisting}
-masks = {
-  0x0,0x8000,0xc000,0xe000,0xf000,0xf800,0xfc00,0xfe00,0xff00,0xff80,
-  0xffc0,0xffe0,0xfff0,0xfff8,0xfffc,0xfffe,0xffff };
-longer = { 0,-1,3,-3,6,-5,7,-7,12,-9,11,-11,14,-13,15,16,-16 };
-shorter = { 0,0,1,-2,2,-4,5,-6,4,-8,9,-10,10,-12,13,-14,-15 };
+// index            0    1    2    3    4    5    6    7    8
+byte  masks[] = {0x00,0x80,0xC0,0xE0,0xF0,0xF8,0xFC,0xFE,0xFF};
+int longer [] = {   0,  -1,   3,  -3,   6,  -5,   7,   8,  -8};
+int shorter[] = {   0,   0,   1,  -2,   2,  -4,   5,  -6,  -7};
 \end{lstlisting}
 
-Reprenons notre exemple sur des words de 8 bits, avec $a$ =
-\ppleaf{\texttt{0110\,0111}} et $b$ = \ppleaf{\texttt{0111\,1111}}.
+Considérons deux words de 8 bits $a$ = \ppleaf{\texttt{0110\,0111}} et
+$b$ = \ppleaf{\texttt{0111\,1111}}.
 $nxor$ prend la valeur \texttt{1110\,0111}.
 L'algorithme essaie $i = 4$ d'abord, puis $i = shorter[4] = 2$, puis
 $i = longer[2] = 3$, puis $i = longer[3] = -3$, pour finalement retourner
@@ -393,12 +396,6 @@ Elle est notamment utilisée dans l'instrumentation des annotations
 
 Dans ces algorithmes, nous noterons $Ptree$ le type de données des Patricia
 tries et $Block$ le type des blocs.
-Un objet de type $Block$ est caractérisé par un word et une taille.
-Un objet de type $Ptree$ est quant à lui caractérisé par un booléen indiquant
-si l'arbre est une feuille, un word encodant la valeur et le masque
-du plus grand préfixe commun à ses deux fils, le sous-arbre gauche, le
-sous-arbre droit, le n\oe{}ud ``père'' et le bloc porté par le n\oe{}ud si c'est
-une feuille.
 Voici une définition simplifiée de ces types :
 
 \begin{lstlisting}
@@ -411,6 +408,13 @@ Ptree = {
   Block leaf;
 };
 \end{lstlisting}
+
+Un objet de type $Block$ est caractérisé par un word et une taille.
+Un objet de type $Ptree$ est quant à lui caractérisé par un booléen indiquant
+si l'arbre est une feuille, un word encodant la valeur et le masque
+du plus grand préfixe commun à ses deux fils, le sous-arbre gauche, le
+sous-arbre droit, le n\oe{}ud ``père'' et le bloc porté par le n\oe{}ud si c'est
+une feuille.
 Par exemple pour la racine du Patricia trie  de la
 figure~\ref{fig:insertion-Patricia-trie-0} \textbf{(a)}, les deux champs
 \lstinline'addr = 0010 0000' et \lstinline'mask = 1111 0000' encodent le
@@ -424,12 +428,10 @@ Nous utiliserons la constante $emptyPtree$ pour dénoter un Patricia trie vide.
 
 \begin{algorithm}
 \begin{algorithmic}[1]
-\Statex Ptree $root$
-\Statex
 \Require $root \neq emptyPtree \land a \neq \mnull$
 \Ensure $\mresult \neq noBlock \Rightarrow \mresult.ptr == a$
 \Statex
-\Function{Find-exact}{word $a$}
+\Function{Find-exact}{Ptree $root$, word $a$}
 \State Ptree $x$
 \Let{$x$}{$root$}
 \While{$\lnot \mathit{x.isLeaf}$}
@@ -450,12 +452,12 @@ Nous utiliserons la constante $emptyPtree$ pour dénoter un Patricia trie vide.
 \EndIf
 \EndFunction
 \end{algorithmic}
-\caption{Recherche d'une adresse exacte $a$, retourne Block $\cup$ \{noBlock\}
+\caption{Recherche du bloc d'adresse de base $a$, dans Block $\cup$ \{noBlock\}
   \label{algo:get-exact}}
 \end{algorithm}
 
 
-L'algorithme~\ref{algo:get-exact} retourne le block $B$ dont l'adresse de base
+L'algorithme~\ref{algo:get-exact} retourne le bloc $B$ dont l'adresse de base
 est égale à l'adresse $a$ passée en paramètre si un tel bloc est dans le store,
 ou la valeur $noBlock$ sinon.
 Nous notons $root$ le {\em store} global représenté par un Patricia trie, dans
@@ -474,9 +476,7 @@ cherchait.
 
 \begin{algorithm}[h!]
 \begin{algorithmic}[1]
-\Statex Ptree $root$
-\Statex
-\Function{Find-cont}{word $a$}
+\Function{Find-cont}{Ptree $root$, word $a$}
 \Statex Ptree $x$, Stack $stack$
 \If{$(\mathit{root} == emptyPtree) \lor (a == \mnull)$}
   \Return $noBlock$
@@ -517,15 +517,15 @@ cherchait.
 \EndIf
 \EndFunction
 \end{algorithmic}
-\caption{Recherche du bloc contenant une adresse $a$, retourne Block $\cup$
+\caption{Recherche du bloc contenant une adresse $a$, dans Block $\cup$
   \{noBlock\}
   \label{algo:get-cont}}
 \end{algorithm}
 
 L'algorithme~\ref{algo:get-cont} retourne le bloc $B$ contenant
-l'adresse $a$ passée en paramètre, c'est-à-dire que $a$ est plus grande que
-l'adresse de base de $B$ et plus petite que l'adresse de fin de $B$ (adresse
-de base du bloc + taille du bloc).
+l'adresse $a$ passée en paramètre, c'est-à-dire que l'adresse $a$ est plus
+grande que l'adresse de base de $B$ et plus petite que l'adresse de fin de $B$
+(adresse de base du bloc + taille du bloc).
 Si un tel bloc n'existe pas, la valeur $noBlock$ est renvoyée.
 Cet algorithme est utilisé pour des requêtes du type \lstinline{\valid} ou
 \lstinline{\initialized} où l'adresse passée en paramètre ne correspond pas
@@ -563,11 +563,9 @@ est \ppleaf{\texttt{0010\,0110}}, et crée le père correspondant :
   \label{fig:insertion-Patricia-trie}
 \end{figure}
 
-\begin{algorithm}[h!]
+\begin{algorithm}[tb]
 \begin{algorithmic}[1]
-\Statex Ptree $root$
-\Statex
-\Procedure{Add}{Block $a$}
+\Procedure{Add}{Ptree $root$, Block $a$}
 \Statex Ptree $x$, $b$, $f$; Mask $lprefix$, $rprefix$
 \State $x.addr \gets a.ptr$, $x.mask \gets masks[WLEN]$, $x.left \gets emptyPtree$,
 \State $x.right \gets emptyPtree$, $x.father \gets emptyPtree$, $x.leaf \gets a$
@@ -643,11 +641,11 @@ Ce n\oe{}ud ainsi que son père \ppnode{\texttt{0010\,011*}} sont supprimés, et
 \input{figures/fig_rem_patricia_trie}
 
 
-\begin{algorithm}[h!]
+\begin{algorithm}[tb]
 \begin{algorithmic}[1]
 \Require $root \neq emptyPtree \land B \neq noBlock$
 \Statex
-\Procedure{Rem}{Block $B$}
+\Procedure{Rem}{Ptree $root$, Block $B$}
 \Statex Ptree $x$, $b$, $f$, $g$
 \Let{$x$}{$root$}
 \While{$\lnot x.isLeaf$}
