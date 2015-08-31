@@ -91,7 +91,7 @@ $Type_f$ f(...){ code2;
 $Type_g$ g_swd(...){
   k1=Nondet(); ... kN=Nondet();
   $Type_g$ ret = Nondet();
-  int post; $Spec2Code$(P, post);
+  int post; $\mathit{Spec2Code}$(P, post);
   fassume(post); return ret;
 } //respects contract of g
 $Type_g$ g(...){ code1; }
@@ -128,7 +128,7 @@ $Type_f$ f(...){ code1;
 \begin{lstlisting}[mathescape]
 $Type_f$ f(...){ code1;
   x1=Nondet(); ... xN=Nondet();
-  int inv1; $Spec2Code$(I, inv1);
+  int inv1; $\mathit{Spec2Code}$(I, inv1);
   fassume(inv1 &$ $& !b); //respects l$ $oop contract
   code3; }
 \end{lstlisting}
