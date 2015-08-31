@@ -1,4 +1,4 @@
-\begin{figure}[h!]
+\begin{figure}[h!]\centering
 \begin{spacing}{1.6}
   \begin{tabular}{rclr}
     \eval{$\mathit{cst}$}{$\mem$} &=& $\mathit{cst}$ & \eqlabel{E-cst} \\
@@ -22,23 +22,38 @@
     \eval{\lstinline'\\abs('$t$\lstinline')'}{$\mem$} &=&
     $\lvert$ \eval{$t$}{$\mem$} $\rvert$ & \eqlabel{E-abs} \\
 
-    \eval{\lstinline'\\sum('$t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    \multicolumn{4}{l}{
+      \eval{\lstinline'\\sum('$t_1$, $t_2$,
+        \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    } \\
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
+    $\Sigma'(\mbox{\eval{$t_1$}{$\mem$}},\mbox{\eval{$t_2$}{$\mem$}},(\lambda~k.\mbox{\eval{$t_3$}{$\mem$}}))$
     & \eqlabel{E-sum} \\
+    \multicolumn{4}{c}{
+      où $\Sigma'(v_1,v_2,f) = \sum_{i = v_1}^{v_2} f(i)$
+    } \\
 
-    \eval{\lstinline'\\product('$t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    \multicolumn{4}{l}{
+      \eval{\lstinline'\\product('$t_1$, $t_2$,
+        \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    } \\
     &=&
-    $\prod_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3$}{$\mem$}}$
+    $\Pi'(\mbox{\eval{$t_1$}{$\mem$}},\mbox{\eval{$t_2$}{$\mem$}},(\lambda~k.\mbox{\eval{$t_3$}{$\mem$}}))$
     & \eqlabel{E-prod} \\
+    \multicolumn{4}{c}{
+      où $\Pi'(v_1,v_2,f) = \prod_{i = v_1}^{v_2} f(i)$
+    } \\
 
-    \eval{\lstinline'\\numof('$t_1$, $t_2$,
-      \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    \multicolumn{4}{l}{
+      \eval{\lstinline'\\numof('$t_1$, $t_2$,
+        \lstinline'\\lambda integer' $k \semicolon t_3$ \lstinline')'}{$\mem$}
+    } \\
     &=&
-    $\sum_{k = \mbox{\eval{$t_1$}{$\mem$}}}^{\mbox{\eval{$t_2$}{$\mem$}}} \mbox{\eval{$t_3 ? 1 : 0$}{$\mem$}}$
+    $N'(\mbox{\eval{$t_1$}{$\mem$}},\mbox{\eval{$t_2$}{$\mem$}},(\lambda~k.\mbox{\eval{$t_3$}{$\mem$}}))$
     & \eqlabel{E-num} \\
+    \multicolumn{4}{c}{
+      où $N'(v_1,v_2,f) = \sum_{i = v_1}^{v_2} (f(i) ? 1 : 0)$
+    } \\
 
     \eval{$h_1$ \texttt{?} $h_2$ \texttt{:} $h_3$}{$\mem$}
     &=& \eval{$h_2$}{$\mem$} si (\eval{$h_1$}{$\mem$}) $\neq 0$,

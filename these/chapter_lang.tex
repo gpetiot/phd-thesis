@@ -527,13 +527,25 @@ Dans les règles \eqlabel{E-unop} et \eqlabel{E-binop}, $\mathit{unop}$ et
 $\mathit{binop}$ correspondent à l'application de l'opérateur unaire ou binaire
 correspondant, parmi ceux autorisés par la grammaire de la
 figure~\ref{fig:gram-exp-term}.
-
 Dans la règle \eqlabel{E-abs}, $\lvert~.~\rvert : VAL \rightarrow VAL$ est la
 fonction valeur absolue.
+
 Dans les règles \eqlabel{E-sum}, \eqlabel{E-prod} et \eqlabel{E-num}, la
 variable logique $k$ liée dans le terme
 $\mbox{\lstinline'\\lambda integer'}~k\semicolon~t_3$ est supposée différente de
-toute autre variable du programme (logique ou C).\todo{hypothèse}
+toute autre variable du programme (logique ou C).
+Pour la règle \eqlabel{E-sum} nous définissons une fonction $\Sigma'(v_1,v_2,f)$
+pour tous $v_1$ et $v_2$ de type $VAL$ et pour toute fonction
+$f : VAL \rightarrow VAL$.
+La fonction $\Sigma'$ est définie en fonction de la somme mathématique sur les
+entiers en figure~\ref{fig:gram-exp-term}.
+Lors de l'application de la fonction $\Sigma'$, les deux premiers paramètres
+($t_1$ et $t_2$) sont évalués avant le troisième.
+Ainsi, la variable $k$ a toujours une valeur définie lors l'évaluation du terme
+$t_3$.
+Les règles \eqlabel{E-prod} et \eqlabel{E-num} sont définies de manière
+similaire.
+\todo{lambda k}
 
 Dans la règle \eqlabel{E-old}, $\mem_{Beg_{\mathtt{f}}}$ désigne la mémoire au
 début de l'exécution de la fonction courante, nous supposons
