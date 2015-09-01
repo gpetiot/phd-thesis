@@ -639,7 +639,8 @@ La règle \eqlabel{C-err} indique que toute évaluation d'instruction à partir 
 la mémoire d'erreur $\errormem$ produit $\errormem$.
 Pour toutes les règles suivantes, nous supposons que l'évaluation se fait à
 partir d'une mémoire différente de $\errormem$. \todo{règle \eqlabel{C-err}}
-La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $x$
+La règle \eqlabel{C-decl} alloue l'adresse $\loc$ à la variable $x$ (de type
+\textit{basic-type} ou \textit{basic-type}\lstinline'*')
 dans l'environnement $\env$, où $\loc$ est une adresse fraîche (non utilisée).
 Les règles \eqlabel{C-set} et \eqlabel{C-set-2} associent la valeur de $e$
 à l'adresse de la left-value correspondante dans le store.
