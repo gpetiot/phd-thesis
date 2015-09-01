@@ -222,6 +222,19 @@ aux lignes 29--34 du listing~\ref{lst:abbrv}.
                 {listings/naive_false_negative.c}
 
 
+La figure~\ref{fig:Z-not} présente la correspondance entre les deux notations
+utilisées pour les opérations sur les entiers non bornés dans la suite du
+document.
+Nous nous permettons d'abréger les opérations de création et initialisation
+(resp. de libération) d'une variable $v$ de type $\mathbb{Z}$ effectuées
+avant (resp. après) une autre instruction en accollant $\Zinit$ (resp.
+$\Zclear$) à une occurrence de $v$ dans cette instruction.
+Dans ce cas, les opérations de création et initialisation (resp. de libération)
+sont effectuées avant (resp. après) l'instruction complète.
+Par exemple, cette convention nous permet de réécrire
+$\Zinit$ \underline{\lstinline'x; x = y; y'}$\Zclear\semicolon$ en
+$\Zinit$ \underline{\lstinline'x = y'}$\Zclear\semicolon$. \todo{notations}
+
 Les listings~\ref{lst:Z:1} et~\ref{lst:Z:2} montrent deux exemples où
 une traduction naïve des annotations contenant des entiers mathématiques mène
 à un résultat incorrect.
@@ -241,13 +254,6 @@ Les variables nécessaires pour la gestion des entiers non bornés sont créées
 initialisées, puis le résultat est calculé et les comparaisons sont faites en
 tant qu'entier non borné.
 
-La figure~\ref{fig:Z-not} présente la correspondance entre les deux notations
-utilisées dans le listing~\ref{lst:Z:1}.
-La notation abrégée est utilisée dans la suite du document.
-Cette notation nous permet de réécrire
-$\Zinit$ \underline{\lstinline'x; x = y; y'}$\Zclear\semicolon$ en
-$\Zinit$ \underline{\lstinline'x = y'}$\Zclear\semicolon$. \todo{notations}
-
 \begin{figure}\centering
   \begin{tabular}{c|c|c}
     \textbf{opération} & \textbf{notation abrégée} & \textbf{notation abstraite}
@@ -266,7 +272,8 @@ $\Zinit$ \underline{\lstinline'x = y'}$\Zclear\semicolon$. \todo{notations}
     libération & \underline{\lstinline'x'}$\Zclear\semicolon$
     & \lstinline'Z_clear(x);' \\
   \end{tabular}
-  \caption{Notations pour l'arithmétique non bornée \label{fig:Z-not}}
+  \caption{Exemples de notations pour l'arithmétique non bornée
+    \label{fig:Z-not}}
 \end{figure}
 
 \lstinputlisting[style=c,caption={Propriétés des entiers : faux positif dû à
