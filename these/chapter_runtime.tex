@@ -326,8 +326,8 @@ ne fait pas partie du préfixe commun.
 \end{algorithm}
 
 \begin{definition}[Masque du plus grand préfixe commun (MPGPC)]
-  Le MPGPC de $a$ et $b$ est le plus grand masque $\le$ à la négation du
-  {\em ou}-exclusif de $a$ et de $b$.
+  Le MPGPC de $a$ et $b$ est le plus grand masque inférieur ou égal à la
+  négation du ou exclusif de $a$ et de $b$.
 \end{definition}
 
 Nous présentons maintenant un algorithme efficace de recherche du masque du plus
@@ -348,7 +348,7 @@ words de 32 bits et $\le 7$ itérations pour des words de 64 bits).
 Les transitions entre les étapes de la recherche se font en utilisant des
 indices pré-calculés, de manière à obtenir le prochain masque à comparer avec
 $nxor$.
-La variable $nxor$ contient la négation du {\em ou}-exclusif de $a$ et $b$.
+La variable $nxor$ contient la négation du ou exclusif de $a$ et $b$.
 Le tableau $masks$ contient tous les $WLEN+1$ masques possibles sur
 $WLEN$ bits.
 Les tableaux $longer$ et $shorter$ contiennent des indices du tableau $masks$.

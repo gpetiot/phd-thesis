@@ -541,7 +541,7 @@ $f : VAL \rightarrow VAL$.
 La fonction $\Sigma'$ est définie en fonction de la somme mathématique sur les
 entiers en figure~\ref{fig:sem-exp-term}.
 Lors de l'application de la fonction $\Sigma'$, les deux premiers paramètres
-($t_1$ et $t_2$) sont évalués avant le troisième.
+($v_1$ et $v_2$) sont évalués avant le troisième.
 Ainsi, la variable $k$ a toujours une valeur définie lors l'évaluation du terme
 $t_3$.
 Les règles \eqlabel{E-prod} et \eqlabel{E-num} sont définies de manière
@@ -571,13 +571,13 @@ De la même manière, \lstinline'\valid(x+(t1..t2))' est valide si les pointeurs
 
 %Les règles \eqlabel{P-forall} et \eqlabel{P-exists} sont définies de manière
 %similaire aux règles \eqlabel{E-sum}, \eqlabel{E-prod} et \eqlabel{E-num}.
-Dans la règle \eqlabel{P-forall} nous définissons une fonction $P'(v_1,v_2,f)$
+Dans la règle \eqlabel{P-forall} nous définissons une fonction $F'(v_1,v_2,f)$
 pour tous $v_1$ et $v_2$ de type $VAL$ et pour toute fonction
 $f : VAL \rightarrow VAL$.
 La fonction $F'$ est définie en fonction du quantificateur universel $\forall$
 en figure~\ref{fig:sem-pred}.
 Lors de l'application de la fonction $F'$ dans la règle \eqlabel{P-forall}, les
-deux premiers paramètres ($t_1$ et $t_2$) sont évalués avant le troisième.
+deux premiers paramètres ($v_1$ et $v_2$) sont évalués avant le troisième.
 Ainsi, la variable $k$ a toujours une valeur définie lors l'évaluation du
 prédicat $p$.
 La règle \eqlabel{P-exists} est définie de manière similaire.
