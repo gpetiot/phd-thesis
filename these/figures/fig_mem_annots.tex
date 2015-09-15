@@ -112,42 +112,38 @@
 %%   \label{fig:initialized}
 %% \end{figure}
 
-\begin{figure}[bt]
-  \begin{center}
-    \begin{tikzpicture}[>=latex,font=\sffamily]
-      \node [memcell] at (0,0) (A) {};
-      \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
-      \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
-        \begin{tikzpicture}
-          \node[memcell,init] (p0) {\lstinline't[0]'};
-          \node[memcell,init,anchor=west] at (p0.east) (p1) {\lstinline't[1]'};
-          \node[memcell,uninit,anchor=west] at (p1.east) (p2){\lstinline't[2]'};
-        \end{tikzpicture}
-      };
-      \node [anchor=west,memcell] at (C.east) (D) {};
-      \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
-      \node [anchor=west,memcell] at (E.east) (F) {};
-      \node [below left=-3mm and -6.5mm of C,node distance=0mm] (p0-bot) {};
-      \node [below left=-3mm and -16.5mm of C,node distance=0mm] (p1-bot) {};
-      \node [below left=-3mm and -26.5mm of C,node distance=0mm] (p2-bot) {};
-      \node [below left=-3mm and -36.5mm of C,node distance=0mm] (p3-bot) {};
-      \node [above left=1mm and -6.5mm of C,node distance=0mm] (p0-top) {};
-      \node [above left=1mm and -16.5mm of C,node distance=0mm] (p1-top) {};
-      \node [above left=1mm and -26.5mm of C,node distance=0mm] (p2-top) {};
-      \node [above left=1mm and -36.5mm of C,node distance=0mm] (p3-top) {};
-      \node [below of=p1-bot,node distance=1.5cm] (p) {\lstinline{p}};
-      \draw [->,line width=1.2pt] (p) -- (p1-bot);
-      \node [below of=p0-bot,node distance=1.5cm] (t) {\lstinline{t}};
-      \draw [->,line width=1.2pt] (t) -- (p0-bot);
-      \draw [|<->|,line width=1.2pt] (p0-bot.south) -- (p1-bot.south)
-      node [below=.6cm,fill=white,anchor=center] {\lstinline{\offset(p)}};
-      \draw [|<->|,line width=1.2pt] (p0-top.south) -- (p3-top.south)
-      node [above] {\lstinline{\block_length(p)}};
-      \node [above of=p0-top,node distance=.7cm] (base-p)
-            {\lstinline{\base_addr(p)}};
-      \draw [->,line width=1.2pt] (base-p) -- (p0-top.south);
-    \end{tikzpicture}
-  \end{center}
-  \caption{Adresse de base, longueur du bloc et offset dans un bloc}
-  \label{fig:mem-annots}
-\end{figure}
+\begin{center}
+  \begin{tikzpicture}[>=latex,font=\sffamily]
+    \node [memcell] at (0,0) (A) {};
+    \node [anchor=west,memcell,full] at (A.east) (B) {$bloc_1$};
+    \node [anchor=west,memcell,full,minimum width=4cm] at (B.east) (C) {
+      \begin{tikzpicture}
+        \node[memcell,init] (p0) {\lstinline't[0]'};
+        \node[memcell,init,anchor=west] at (p0.east) (p1) {\lstinline't[1]'};
+        \node[memcell,uninit,anchor=west] at (p1.east) (p2){\lstinline't[2]'};
+      \end{tikzpicture}
+    };
+    \node [anchor=west,memcell] at (C.east) (D) {};
+    \node [anchor=west,memcell,full] at (D.east) (E) {$bloc_3$};
+    \node [anchor=west,memcell] at (E.east) (F) {};
+    \node [below left=-3mm and -6.5mm of C,node distance=0mm] (p0-bot) {};
+    \node [below left=-3mm and -16.5mm of C,node distance=0mm] (p1-bot) {};
+    \node [below left=-3mm and -26.5mm of C,node distance=0mm] (p2-bot) {};
+    \node [below left=-3mm and -36.5mm of C,node distance=0mm] (p3-bot) {};
+    \node [above left=1mm and -6.5mm of C,node distance=0mm] (p0-top) {};
+    \node [above left=1mm and -16.5mm of C,node distance=0mm] (p1-top) {};
+    \node [above left=1mm and -26.5mm of C,node distance=0mm] (p2-top) {};
+    \node [above left=1mm and -36.5mm of C,node distance=0mm] (p3-top) {};
+    \node [below of=p1-bot,node distance=1.5cm] (p) {\lstinline{p}};
+    \draw [->,line width=1.2pt] (p) -- (p1-bot);
+    \node [below of=p0-bot,node distance=1.5cm] (t) {\lstinline{t}};
+    \draw [->,line width=1.2pt] (t) -- (p0-bot);
+    \draw [|<->|,line width=1.2pt] (p0-bot.south) -- (p1-bot.south)
+    node [below=.6cm,fill=white,anchor=center] {\lstinline{\offset(p)}};
+    \draw [|<->|,line width=1.2pt] (p0-top.south) -- (p3-top.south)
+    node [above] {\lstinline{\block_length(p)}};
+    \node [above of=p0-top,node distance=.7cm] (base-p)
+          {\lstinline{\base_addr(p)}};
+          \draw [->,line width=1.2pt] (base-p) -- (p0-top.south);
+  \end{tikzpicture}
+\end{center}
