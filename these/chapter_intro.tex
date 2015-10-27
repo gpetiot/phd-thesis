@@ -287,15 +287,6 @@ C'est le générateur de tests que nous utilisons dans nos travaux.
 Il est possible de l'utiliser sous la forme d'un service web :
 \textsc{PathCrawler Online} \cite{\citepconline}.
 
-Étant donné un programme C sous test $P$ et une précondition sur ses entrées,
-il génère des cas de test respectant un critère de couverture de test. Le
-critère ``tous les chemins'' impose une couverture de tous les chemins
-faisables de $P$. L'exploration exhaustive de tous les chemins étant en pratique
-irréalisable sur des programmes réels, le critère ``tous les $k$-chemins'' a
-été défini.
-Il limite l'exploration aux chemins qui ont au plus $k$ itérations
-consécutives de chaque boucle.
-
 \pathcrawler utilise la technique d’exécution symbolique dynamique, ou exécution
 ``concolique'', qui associe l’exécution concrète du programme et l’exécution
 symbolique afin d’explorer les chemins du programme.
@@ -311,64 +302,6 @@ nouvelles entrées pour le programme sous test, dans le but d'exécuter d'autres
 branches du programme.
 Ce processus est répété jusqu'à ce que le code du programme soit entièrement
 couvert par rapport au critère de couverture sélectionné.
-
-\pathcrawler commence par construire une version instrumentée de $P$
-permettant de tracer l'exécution de chaque cas de test.
-Puis il génère les contraintes représentant la sémantique de chaque instruction
-de $P$.
-L'étape suivante est la génération et la résolution de contraintes pour
-produire les cas de test pour un ensemble de chemins satisfaisant le critère de
-couverture.
-La résolution de contraintes s'effectue à l'aide d'\eclipse \prolog
-\cite{\citeeclipse}, un environnement de programmation en logique par
-contraintes basé sur \prolog.
-Étant donné un préfixe de chemin $\pi$, c'est-à-dire un chemin partiel de $P$,
-l'idée est de résoudre les contraintes correspondant à l'exécution symbolique
-de $P$ en suivant le chemin $\pi$.
- 
-La méthode de génération de tests pour le critère ``tous les chemins'' est
-composée des étapes suivantes :
-
-\begin{itemize}
-\item[$(\mathcal{G}_1)$]
-Création d'une variable logique pour chaque entrée.
-Prise en compte des contraintes de la précondition.
-Le préfixe de chemin initial $\pi$ est vide.
-Aller à $(\mathcal{G}_2)$.
-
-\item[$(\mathcal{G}_2)$]
-Exécuter symboliquement le chemin $\pi$ : ajout des contraintes et
-mise à jour de la mémoire en fonction des instructions de $\pi$.
-Si le solveur de contraintes détermine que certaines contraintes sont
-insatisfaisables, aller à $(\mathcal{G}_5)$.
-Sinon, aller à $(\mathcal{G}_3)$.
-
-\item[$(\mathcal{G}_3)$]
-Appeler le solveur de contraintes pour générer un cas de test $t$ satisfaisant
-les contraintes du chemin partiel courant $\pi$.
-Si les contraintes sont insatisfaisables, aller à $(\mathcal{G}_5)$.
-Sinon, aller à $(\mathcal{G}_4)$.
-
-\item[$(\mathcal{G}_4)$]
-Exécuter le programme avec trace sur le cas de test $t$ généré pour obtenir
-le chemin d'exécution, qui doit commencer par $\pi$.
-Aller à $(\mathcal{G}_5)$.
-
-\item[$(\mathcal{G}_5)$]
-Calculer le prochain chemin partiel $\pi$ à couvrir. Un parcours en profondeur
-détermine la dernière décision $d$ pour laquelle il reste une branche à
-explorer. S'il n'existe pas une telle décision, l'algorithme s'arrête. Sinon,
-$\pi$ est recalculé et contient maintenant le chemin partiel précédent dans
-lequel les contraintes correspondant à $d$ ont été niées, et retour à l'étape
-$(\mathcal{G}_2)$. Cela nous assure que tous les chemins faisables sont couverts
-(en considérant que le solveur de contraintes peut trouver une solution dans un
-temps raisonnable) et que seulement le plus court des préfixes infaisables de
-chaque chemin infaisable est exploré \cite{\citepathcrawler}.
-\end{itemize}
-
-Cette méthode s'adapte facilement au critère de couverture
-``tous les $k$-chemins'' en évitant d'explorer les chemins avec $\ge k+1$
-itérations consécutives pour une boucle.
 
 Plusieurs outils se basent sur l'exécution concolique pour explorer un programme
 sous test, dont \smart~\cite{\citesmart}, \pex~\cite{\citepex},
