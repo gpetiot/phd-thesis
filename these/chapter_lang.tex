@@ -121,6 +121,13 @@ corps de boucle.
 Les assertions peuvent être associées à des instructions quelconques.
 Un invariant de boucle, un variant et une clause \lstinline'loop assigns'
 peuvent être associés aux boucles.
+Nous considérons la sémantique des \textit{assigns} définie dans \cite{ACSL}
+selon laquelle les \textit{left-values} hors de la clause \lstinline'assigns' ou
+\lstinline'loop assigns' ont la même valeur avant et après la fonction ou boucle
+correspondante.
+Certains greffons de \framac peuvent considérer une sémantique plus forte
+interdisant toute affectation d'une \textit{left-value} hors de la clause même
+si sa valeur n'est pas modifiée par la fonction ou la boucle correspondante.
 
 Nous supposons que les fonctions respectent la forme normale définie par
 l'entité syntaxique \textit{function} de la grammaire définie dans la
