@@ -389,9 +389,18 @@ traduction du prédicat $p$ au début de la fonction est vraie.
 La règle \textsc{$\alpha$-check-assigns} vérifie que les left-values qui ne sont
 pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 L'ensemble des left-values considérées est la différence
-$G-X = \{x_1, ..., x_m\}$, où $G$ est l'ensemble des left-values dans le
-contexte courant et $X$ est l'ensemble des left-values de la clause
-\lstinline'assigns'.
+$G-X = \{x_1, ..., x_m\}$, où  $X$ est l'ensemble des left-values de la clause
+\lstinline'assigns' et $G$ est l'ensemble des left-values dans le
+contexte courant qui ne sont en alias avec aucune left-value de $X$.
+Considérons l'exemple du listing~\ref{lst:alias} où une variable \lstinline'x'
+a pour alias \lstinline'*p'.
+La clause \lstinline'assigns' ne nécessitant pas de citer tous les alias,
+\lstinline'assigns x' suffit, et il est inutile de vérifier que la valeur de
+\lstinline'*p' n'a pas été modifiée par la fonction.
+
+\lstinputlisting[style=C,label=lst:alias,
+  caption={Alias de \lstinline'x' et \lstinline'*p'}]{listings/alias.c}
+
 %% Dans cette règle, l'expression suivante :
 %% \[
 %% \forall (x:\mathit{ctype}) \in G-X :
@@ -419,11 +428,12 @@ invariants de boucle (\textsc{$\alpha$-check-invariant}), les variants de boucle
 La règle \textsc{$\alpha$-check-loop-assigns} vérifie que les left-values qui ne
 sont pas dans la clause \lstinline'loop assigns' ne sont pas modifiées par la
 boucle.
-Pour chacune de ces left-values de l'ensemble $G-X = \{x_1, ..., x_m\}$, où $G$
-est l'ensemble des left-values dans le contexte courant et $X$ est l'ensemble
-des left-values de la clause \lstinline'loop assigns', une sauvegarde de leur
-valeur courante est faite au début de chaque itération, puis on vérifie que leur
-valeur n'a pas été modifiée en fin de boucle.
+Pour chacune de ces left-values de l'ensemble $G-X = \{x_1, ..., x_m\}$, où $X$
+est l'ensemble des left-values de la clause \lstinline'loop assigns' et $G$ est
+l'ensemble des left-values dans le contexte courant qui ne sont en alias avec
+aucune left-value de $X$, une sauvegarde de leur valeur courante est faite au
+début de chaque itération, puis on vérifie que leur valeur n'a pas été modifiée
+en fin de boucle.
 La règle \textsc{$\alpha$-check-invariant} vérifie le prédicat de l'invariant
 avant la boucle et après chaque itération de la boucle.
 La règle \textsc{$\alpha$-variant} vérifie que le terme variant est non-négatif
@@ -1863,9 +1873,9 @@ traduction.
 Par hypothèse, la précondition de la fonction sous vérification est vraie, ce
 qui correspond aux lignes 3--4 du code généré.
 Si la fonction modifie une des left-values n'appartenant pas à la clause
-assigns, alors la mémoire d'erreur est obtenue (cas \eqlabel{f-2}), ce qui
-correspond au cas où l'un des \lstinline'fassert' des lignes 10--12 du code
-généré renvoie faux.
+\lstinline'assigns', alors la mémoire d'erreur est obtenue (cas \eqlabel{f-2}),
+ce qui correspond au cas où l'un des \lstinline'fassert' des lignes 10--12 du
+code généré renvoie faux.
 Si la postcondition n'est pas vérifiée à la fin de la fonction, on obtient
 la mémoire d'erreur (cas \eqlabel{f-3}), ce qui correspond au cas où le
 \lstinline'fassert' des lignes 13--14 du code généré renvoie faux.
@@ -1908,9 +1918,9 @@ Si la précondition n'est pas vérifiée au début de la fonction, alors
 la mémoire d'erreur est obtenue (cas \eqlabel{f-1}), ce qui correspond aux
 lignes 3--4 du code généré.
 Si la fonction modifie une des left-values n'appartenant pas à la clause
-assigns, alors la mémoire d'erreur est obtenue (cas \eqlabel{f-2}), ce qui
-correspond au cas où l'un des \lstinline'fassert' des lignes 10--12 du code
-généré renvoie faux.
+\lstinline'assigns', alors la mémoire d'erreur est obtenue (cas \eqlabel{f-2}),
+ce qui correspond au cas où l'un des \lstinline'fassert' des lignes 10--12 du
+code généré renvoie faux.
 Si la postcondition n'est pas vérifiée à la fin de la fonction, on obtient
 la mémoire d'erreur (cas \eqlabel{f-3}), ce qui correspond au cas où le
 \lstinline'fassert' des lignes 13--14 du code généré renvoie faux.

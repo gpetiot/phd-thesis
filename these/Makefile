@@ -35,6 +35,7 @@ LISTINGS=listings/mem_annots.c \
 	listings/mem_annots_instru.c \
 	listings/common_prefix_mask.c \
 	listings/swap.c \
+	listings/alias.c \
 	listings/naive_false_positive.c \
 	listings/naive_false_negative.c \
 	listings/is_present_normalized.c \
@@ -88,6 +89,7 @@ chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
 			listings/naive_false_positive.c \
 			listings/naive_false_negative.c \
 			listings/is_present_instrumented.c \
+			listings/alias.c \
 			figures/fig_code_gen.tex \
 			figures/fig_code_ins.tex \
 			figures/fig_proof_loop_contract.tex \
