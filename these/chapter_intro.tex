@@ -415,7 +415,7 @@ La spécification d'une fonction comprend les préconditions (exprimées par une
 clause \lstinline'requires') requises lors de l'appel et les postconditions
 (clause \lstinline'ensures') assurées lors du retour.
 Parmi ces postconditions, une clause \lstinline'assigns' indique quels sont les
-emplacements mémoire qui peuvent être affectés par la fonction.
+emplacements mémoire qui doivent avoir la même valeur à la fin de la fonction.
 
 \lstinputlisting[caption={Exemple de spécification \acsl},label=lst:swap]{
   listings/swap.c}
