@@ -391,7 +391,13 @@ pas dans une clause \lstinline'assigns' ne sont pas modifiées par la fonction.
 L'ensemble des left-values considérées est la différence
 $G-X = \{x_1, ..., x_m\}$, où  $X$ est l'ensemble des left-values de la clause
 \lstinline'assigns' et $G$ est l'ensemble des left-values dans le
-contexte courant qui ne sont en alias avec aucune left-value de $X$.
+contexte courant qui ne sont en alias avec aucune left-value de $X$
+\footnote{
+  Nous supposons l'absence des alias des éléments de $X$ dans $G$ pour
+  simplifier la présentation des règles et des exemples.
+  En pratique, il est immédiat de vérifier à l'exécution si une left-value
+  donnée est un alias d'un élément de $X$ en comparant les adresses.
+}.
 Considérons l'exemple du listing~\ref{lst:alias} où une variable \lstinline'x'
 a pour alias \lstinline'*p'.
 La clause \lstinline'assigns' ne nécessitant pas de citer tous les alias,
