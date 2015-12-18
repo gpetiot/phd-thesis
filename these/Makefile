@@ -107,6 +107,7 @@ main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 		$(CHAPTERS_TEX) \
 		table_rgf.pdf \
 		full_exp_latex_IEEE.csv \
+		upmext-spimufcphdthesis.cfg \
 		header.tex
 	pdflatex $<
 	bibtex main
