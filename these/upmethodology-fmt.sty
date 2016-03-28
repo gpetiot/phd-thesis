@@ -1380,7 +1380,7 @@
 \renewcommand{\textup}[1]{\textsuperscript{#1}\xspace}
 \def\@textsubscript#1{%
   {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
-\newcommand{\textsubscript}[1]{\@textsubscript{\selectfont#1}}
+\renewcommand{\textsubscript}[1]{\@textsubscript{\selectfont#1}}
 \newcommand{\textdown}[1]{\textsubscript{#1}\xspace}
 
 
