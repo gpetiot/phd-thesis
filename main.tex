@@ -1,4 +1,14 @@
 
+\ifx\textsubscript\undefined
+  \makeatletter
+  \DeclareRobustCommand*\textsubscript[1]{%
+  \@textsubscript{\selectfont#1}}
+  \def\@textsubscript#1{%
+  {\m@th\ensuremath{_{\mbox{\fontsize\sf@size\z@#1}}}}}
+  \makeatother
+\else
+\fi
+
 \documentclass[french]{spimufcphdthesis}
 
 \input{header}
