@@ -1,3 +1,4 @@
+OUTPDF=main.pdf
 BIB=biblio.bib
 FIG= \
 	figures/fig_mem_annots.tex \
@@ -93,12 +94,12 @@ chapter_instrumentation_DEPS=figures/fig_rules_annot.tex \
 			figures/fig_proof_fct_contract_call.tex \
 			figures/fig_proof_fct_contract_main.tex
 
-all: main.pdf # $(CHAPTERS_PDF) abstract.pdf
+all: $(OUTPDF) # $(CHAPTERS_PDF) abstract.pdf
 
 abstract.pdf: abstract.tex
 	pdflatex $<
 
-main.pdf: main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
+$(OUTPDF): main.tex $(BIB) $(FIG) $(LISTINGS) style_listings.tex \
 		table_eacsl_experiments.tex \
 		commands.tex \
 		$(CHAPTERS_TEX) \
@@ -126,9 +127,12 @@ chapter_%.pdf: chapter_%.tex $(all_DEPS) $${chapter_%_DEPS}
 
 .SUFFIXES: .fig .pdf .eps .mll .ml
 
-.PHONY: clean
+.PHONY: clean cleanall
 clean:
 	@rm -f *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
+
+cleanall: clean
+	@rm -f $(OUTPDF)
 
 run_eacsl2c_on_mem_annots: listings/mem_annots.c
 	frama-c $< -e-acsl -then-on e-acsl -print -ocode out.c && \
