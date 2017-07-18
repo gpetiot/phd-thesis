@@ -129,7 +129,7 @@ chapter_%.pdf: chapter_%.tex $(all_DEPS) $${chapter_%_DEPS}
 
 .PHONY: clean cleanall
 clean:
-	@rm -f *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
+	@rm -f *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof table_rgf.pdf
 
 cleanall: clean
 	@rm -f $(OUTPDF)
