@@ -4,7 +4,7 @@
 
 ### Generating the whole document (main.pdf)
 
-̀make`
+`make`
 
 ### Generating a single chapter
 
@@ -13,4 +13,4 @@
 ### Cleaning
 
 `make clean` (to keep main.pdf)
-or ̀make cleanall`
+or `make cleanall`
