@@ -45,7 +45,7 @@
 
 %%--------------------
 %% Load the base package
-\RequirePackage{spimbasephdthesis}
+\RequirePackage{style/spimbasephdthesis}
 
 %%--------------------
 %% Use the style dedicated to PhD thesis from SPIM-UFC
