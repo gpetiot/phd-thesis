@@ -1,8 +1,5 @@
-MLPOST_EXEC :=$(shell which mlpost)
-MLPOST ?= $(MLPOST_EXEC)
 BIB=biblio.bib
-MLFIG= #frama_c_architecture.ml
-FIG=$(MLFIG:.ml=.mps) \
+FIG= \
 	figures/fig_mem_annots.tex \
 	figures/fig_add_patricia_trie.tex \
 	figures/fig_rem_patricia_trie.tex \
@@ -127,21 +124,11 @@ compile_chapter= \
 chapter_%.pdf: chapter_%.tex $(all_DEPS) $${chapter_%_DEPS}
 	$(call compile_chapter,$(patsubst %.tex,%,$<))
 
-.SUFFIXES: .fig .pdf .eps .mll .ml .mps
+.SUFFIXES: .fig .pdf .eps .mll .ml
 
-#MLPOST is a conditional variable.
-ifneq ($(MLPOST),)
-.ml.mps:
-	$(MLPOST) -pdf $<
-	$(RM) $(<:.ml=.cm*)
-
-else
-	$(info Warning: Mlpost is not installed so we use the one versionned.)
-endif
-
-
+.PHONY: clean
 clean:
-	rm *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
+	@rm -f *.toc *.aux *.log *.bbl *.blg *.dvi *.nav *.out *.snm *.lof
 
 run_eacsl2c_on_mem_annots: listings/mem_annots.c
 	frama-c $< -e-acsl -then-on e-acsl -print -ocode out.c && \
