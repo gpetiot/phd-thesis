@@ -227,11 +227,6 @@ la première sur nos exemples.
       table[x=N,y=St-DFA] {\loadedtable}
       node[below,right,pos=1,yshift=-.7cm] {St-AS};
 
-      %% \foreach \i in {
-      %%   list,list-DFA,bst,bst-DFA,Pt,Pt-opti,Pt-DFA,Pt-opti-DFA,St,St-DFA} {
-      %%   \addplot table [x=N, y=\i] {\loadedtable};
-      %% }
-
       \legend{list,list-AS,bst,bst-AS,Pt,Pt-dicho,Pt-AS,Pt-dicho-AS,St,St-AS}
     \end{axis}
   \end{tikzpicture}
@@ -240,23 +235,6 @@ la première sur nos exemples.
     {\em store} sur un tri fusion de $N$ éléments
     \label{fig:mmodel-exp}}
 \end{figure}
-
-
-%% \begin{figure}[bt]
-%%   \begin{tikzpicture}
-%%     \begin{axis}[axis y line=left,width=\textwidth,height=\textwidth,ymode=log]
-%%       \pgfplotstableread{data/table_eacsl_experiments_merge_sort.dat}
-%%       \loadedtable;
-%%       \foreach \i in {
-%%         list,bst,Pt,Pt-opti,St} {
-%%         \addplot table [x=N, y=\i] {\loadedtable};
-%%       }
-%%       \legend{list,bst,Pt$_1$,Pt$_2$,St}
-%%     \end{axis}
-%%   \end{tikzpicture}
-%%   \caption{Comparaison des différentes implémentations du {\em store}
-%%     \label{fig:mmodel-exp-2}}
-%% \end{figure}
 
 
 \textbf{Implémentation du {\em store} :}\\
@@ -327,20 +305,6 @@ ajoutées manuellement et celles générées par le greffon \rte).
 La colonne $\emptyset$ contient le temps d'exécution du programme original.
 Tous les temps d'exécution sont mesurés en secondes.
 Un temps d'exécution est noté $\infty$ quand il dépasse 24 heures.
-%% La colonne $list$ contient le temps d'exécution du programme lorsque le
-%% {\em store} est implémenté par une liste chaînée.
-%% La colonne $bst$ contient le temps d'exécution du programme lorsque le
-%% {\em store} est implémenté par un arbre binaire de recherche non équilibré.
-%% La colonne $Pt$ contient le temps d'exécution du programme lorsque le
-%% {\em store} est implémenté par un Patricia trie et lorsque la recherche du
-%% masque du plus grand préfixe commun de deux adresses est implémentée de manière
-%% linéaire.
-%% La colonne $Pt-dicho$ contient le temps d'exécution du programme lorsque le
-%% {\em store} est implémenté par un Patricia trie et lorsque la recherche du
-%% masque du plus grand préfixe commun de deux adresses est implémentée en
-%% utilisant l'algorithme~\ref{algo:prefix} présenté en partie~\ref{sec:mpgpc}.
-%% La colonne $St$ contient le temps d'exécution du programme lorsque le
-%% {\em store} est implémenté par un Splay tree.
 Les colonnes $list$ à $St$-$AS$ contiennent le temps d'exécution du programme
 pour chaque implémentation du {\em store}.
 Le temps d'analyse du programme sans instrumentation avec le débogueur

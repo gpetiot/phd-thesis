@@ -351,8 +351,6 @@ L'environnement $\env$[$\mathit{lv} \mapsto \loc$] est défini ainsi :
   ($\env$[$\mathit{lv_1} \mapsto \loc$])($\mathit{lv_2}$) & =
   & $\env$($\mathit{lv_2}$) si $\mathit{lv_1} \neq \mathit{lv_2}$
   & \eqlabel{env-get-2}\\
-  %$\env$($\mathit{lv}$) &=& $\bot$ si le domaine de $\env$ est vide
-  %& \eqlabel{env-get-3}\\
 \end{tabular}
 \end{center}
 
@@ -410,15 +408,11 @@ Le {\em store} $\store$[$\loc \mapsto v$] est défini ainsi :
   ($\store$[$\loc_1 \mapsto v$])($\loc_2$) & =
   & $\store$($\loc_2$) si $\loc_1 \neq \loc_2$
   & \eqlabel{store-get-2}\\
-  %$\store$($\loc$) &=& $\bot$ si le domaine de $\store$ est vide
-  %& \eqlabel{store-get-3}\\
   $\store(\mbox{\lstinline'NULL'})$ &=& $\bot$ & \eqlabel{store-get-3} \\
 \end{tabular}
 \end{center}
 \todo{dernière règle}
 
-%Notons que $\bot$ n'est pas dans le domaine des stores.
-%Par conséquent, $\store(\bot)$ n'est pas défini.
 
 Dans la suite, nous utiliserons la notation
 $\store$[$\loc_1 \mapsto v_1, \loc_2 \mapsto v_2$] (en supposant
@@ -468,7 +462,6 @@ Nous définissons une mémoire spécifique d'erreur, notée $\errormem \in MEM$.
 Une telle mémoire est le résultat de l'évaluation soit d'une instruction
 provoquant une erreur soit d'une annotation invalide (par exemple,
 \lstinline'assert' ou \lstinline'loop invariant' faux).
-%L'évaluation des instructions s'arrête dès qu'une mémoire d'erreur est produite.
 
 Une variable simple $x$ de type C scalaire (\lstinline'int', ...) est
 représentée dans une mémoire $\mem = (\env, \store)$ par :
@@ -576,8 +569,6 @@ cette variable.
 De la même manière, \lstinline'\valid(x+(t1..t2))' est valide si les pointeurs
 \lstinline'(x+t1)', ..., \lstinline'(x+t2)' peuvent être déréférencés.
 
-%Les règles \eqlabel{P-forall} et \eqlabel{P-exists} sont définies de manière
-%similaire aux règles \eqlabel{E-sum}, \eqlabel{E-prod} et \eqlabel{E-num}.
 Dans la règle \eqlabel{P-forall} nous définissons une fonction $F'(v_1,v_2,f)$
 pour tous $v_1$ et $v_2$ de type $VAL$ et pour toute fonction
 $f : VAL \rightarrow VAL$.
@@ -721,10 +712,6 @@ est la mémoire dans laquelle les paramètres effectifs (les expressions
 $e_1$, ..., $e_N$) sont affectés aux paramètres formels (les identificateurs
 $x_1$, ..., $x_N$).
 
-%Les règles \eqlabel{C-fassert}, \eqlabel{C-fassume} et \eqlabel{C-free} sont
-%des cas particuliers de la règle \eqlabel{C-fct1}.
-%Les règles \eqlabel{C-fvalid}, \eqlabel{C-fvalidr} et \eqlabel{C-malloc} sont
-%des cas particuliers de la règle \eqlabel{C-fct2}.
 
 La règle \eqlabel{C-return} énonce qu'une instruction \lstinline'return' ne
 modifie pas la mémoire.

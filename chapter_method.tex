@@ -37,12 +37,6 @@ tableau C.
 Le prédicat \acsl \lstinline{is_rgf} aux lignes 1--4 de la figure~\ref{fig:rgf1}
 exprime cette propriété sur un tableau \lstinline'a' de taille \lstinline'n'.
 
-%% \begin{definition}{Fonction à croissance limitée}
-%%   \label{def:rgf}
-%%   Une fonction à croissance limitée de taille $n$ est une endofonction $r$ de
-%%   $\{0, ..., n-1\}$ telle que $r(0) = 0$ et $r(k) \le r(k-1)+1$ pour
-%%   $1 \le k \le n-1$.
-%% \end{definition}
 
 \begin{figure}[tb]
   \centering
@@ -181,8 +175,6 @@ prouveur.
   \path[arrow] (p) -- (ncd);
   \node(cwd) [right of=ncd,test,node distance=4cm] {$\CWD(P)$};
   \path[darrow] (ncd.east) -- node[above] {\no{} / \textsf{?}} (cwd);
-  %\path[darrow] (ncd.east)+(0,.2) -- node[above] {\no} (cwd);
-  %\path[darrow] (ncd.east)+(-.1,-.2) -- node[below] {?} (cwd);
 
   % CWD found a CE
   \node(cwce-ncce) [below of=cwd,node distance=1.2cm]{\circled{2} $V$ est un \CWCE};
@@ -193,8 +185,6 @@ prouveur.
   \node(cov-2) [right of=cwd,test,node distance=4cm]{
     $\NCD(P)=~$\no$\land$\\ $\CWD(P)=~$\no};
   \path[darrow] (cwd.east) -- node[above] {\no{} / \textsf{?}} (cov-2);
-  %\path[darrow] (cwd.east)+(0,.2) -- node[above] {\no} (cov-2);
-  %\path[darrow] (cwd.east)+(-.1,-.2) -- node[below] {?} (cov-2);
   \node(pw) [below of=cov-2,node distance=1.45cm,align=center]{\circled{3} Incapacité\\ de prouveur};
   \path[darrow] (cov-2) -- node[right] {true} (pw);
   \node(qm) [right of=cwce-ncce,node distance=8cm] {\circled{4} Non classifié};

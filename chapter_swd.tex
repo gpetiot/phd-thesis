@@ -229,16 +229,6 @@ formalise la traduction de la postcondition.
       }{}
     }
 
-    %% {\myinference{$\alpha$-assume-invariant-2}
-    %%   {(l, \mbox{\lstinline'p'}) \prule (I_1, \mbox{\lstinline'e1'}) \\
-    %%     (EndIter_l, \mbox{\lstinline'p'}) \prule
-    %%     (I_2, \mbox{\lstinline'e2'})}
-    %%   {
-    %%     (l, \mbox{\lstinline'loop invariant p;'}) \arule
-    %%     I_1 \concat (l, \mbox{\lstinline'fassume(e1);'})
-    %%     \concat I_2 \concat (EndIter_l, \mbox{\lstinline'fassert(e2);'})
-    %%   }{}
-    %% }
   }
   \caption{Règles de traduction pour la détection des faiblesses de
     sous-contrats des boucles}
@@ -267,36 +257,18 @@ initiales des invariants de boucle et pré- et postcondition de \lstinline'f'
 et~\ref{fig:CW-transf-loops}).
 
 
-%\begin{tabular}{cc}
 \begin{figure}[tb]
   \begin{minipage}{0.5\columnwidth}
-  %\begin{figure}
     \lstinputlisting[label=fig:contracts-ex1,caption={Faiblesse de l'ensemble
-        des sous-contrats%Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s
+        des sous-contrats
     }]{listings/ex1.c}
-    %\vspace{-2mm}
-    %\caption{Absence of \CWCE{}s for any single subcontract does not imply absence of global \CWCE{}s}
-    %\label{fig:contracts-ex1}
-  %\end{figure}
-  %\hspace{4mm}
   \end{minipage}
   \begin{minipage}{0.5\columnwidth}
-  %\begin{figure}
-%&
     \lstinputlisting[label=fig:contracts-ex2,caption={Faiblesse d'un
-        sous-contrat%Global \CWCE{}s do not help to find precisely a too weak subcontract
+        sous-contrat
     }]{listings/ex2.c}
-    %\vspace{-2mm}
-    %\caption{Global \CWCE{}s do not help to find precisely a too weak subcontract}
-    %\label{fig:contracts-ex2}
-  %\end{figure}
   \end{minipage}
-  %\vspace{-2mm}
-  %\caption{(a) Faiblesse globale et (b) Faiblesse unique}
-  %\vspace{-5mm}
-  %\label{fig:many-contracts}
 \end{figure}
-%\end{tabular}
 
 \begin{definition}[Faiblesse de l'ensemble des sous-contrats] 
   \label{def:GSW}

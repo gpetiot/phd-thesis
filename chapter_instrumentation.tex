@@ -407,21 +407,6 @@ La clause \lstinline'assigns' ne nécessitant pas de citer tous les alias,
 \lstinputlisting[style=C,label=lst:alias,
   caption={Alias de \lstinline'x' et \lstinline'*p'}]{listings/alias.c}
 
-%% Dans cette règle, l'expression suivante :
-%% \[
-%% \forall (x:\mathit{ctype}) \in G-X :
-%% (I_1 \concat I_2 \concat
-%% (Beg_f, \mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon)
-%% \concat (End_f, \mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}) )
-%% \]
-%% dénote la liste d'insertions de fragments de code contenant ces deux fragments
-%% de code $\mathit{ctype}~\mbox{\lstinline'var_'}n = e_1\semicolon$ et
-%% $\mbox{\lstinline'fassert('}e_2~\mbox{\lstinline'== var_'}n\mbox{\lstinline');'}$, ainsi que les fragments $I_1$ et $I_2$ qui évaluent $x$ aux labels $Beg_f$ et
-%% $End_f$, pour chaque left-value $x$ de $G-X$., où $e_1$ est la valeur de $x$ au
-%% début de la fonction et $e_2$ est la valeur de $x$ à la fin de la fonction.
-%% Le premier fragment sauvegarde la valeur de $x$ dans \lstinline'var_'$n$ au
-%% début de la fonction, le second fragment vérifie que la valeur de $x$ n'a pas
-%% été modifiée en fin de fonction.
 La règle \textsc{$\alpha$-check-post} vérifie la validité de la postcondition
 à la fin de la fonction instrumentée.
 
@@ -742,8 +727,6 @@ Les trois différences sont :
 \item la manière de considérer la précondition de la fonction sous test;
 \item la manière de traiter les annotations liées au modèle mémoire;
 \item et la manière de traiter les fonctions sur les entiers mathématiques.
-%\item et la manière de traiter les potentielles erreurs à l'exécution
-%  introduites par les fragments de code résultant de la traduction.
 \end{itemize}
 
 
@@ -791,27 +774,6 @@ bibliothèque : \pathcrawler offre un support dédié aux fonctions de la
 bibliothèque GMP, dont les opérations sont traduites efficacement en contraintes
 sur les entiers non bornés, que le solveur de contraintes sous-jacent peut
 traiter.
-
-%% \textbf{Erreurs à l'exécution.}
-%% La traduction d'annotations en C peut introduire des erreurs à l'exécution dues
-%% aux termes dont la sémantique est indéfinie dans les annotations, comme
-%% \lstinline'1/0'.
-%% Ce problème peut être évité pour la génération de tests (comme proposé dans
-%% \cite{Delahaye/SAC13} pour la validation à l'exécution), en utilisant le greffon
-%% \rte \cite{\citeframac} sur le code résultant de l'instrumentation.
-%% Celui-ci ajoute des gardes supplémentaires et il suffit ensuite de
-%% ré-instrumenter le programme en tenant compte de ces nouvelles annotations.
-%% Les erreurs à l'exécution liées aux entiers non bornés (division d'un entier
-%% GMP par $0$, débordement pendant une conversion
-%% \lstinline[mathescape=true]{(int)(t:$\mathbb{Z}$)}, etc.) ne sont pas traités
-%% par \rte mais ces erreurs peuvent être évitées en ajoutant les gardes
-%% nécessaires aux règles de traduction.
-%% Par exemple, le cast d'un terme $t$ d'\lstinline'integer' vers \lstinline'int'
-%% (voir la règle \textsc{$\tau$-coerce$_1$} de la figure~\ref{fig:coerce}) peut
-%% être gardé en ajoutant
-%% \lstinline{fassert(}\underline{\lstinline{INT\_MIN <= e}}\lstinline{ && }
-%% \underline{\lstinline{e <= INT\_MAX}}\lstinline{)} avant l'affectation
-%% \underline{\lstinline'var_n = e'}.
 
 
 \section{Justification de correction de la traduction}
